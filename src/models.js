@@ -1,3 +1,5 @@
+'use strict';
+
 var dynamoose = require('dynamoose');
 
 // Schema for DAAC datasets
@@ -76,7 +78,7 @@ var dataSetSchema  = new dynamoose.Schema({
 });
 
 // Schema for granule datasets
-var granuleSchema  = new dynamoose.Schema({
+module.exports.granuleSchema  = new dynamoose.Schema({
   name: {
     // the unique granule name
     type: String,
@@ -128,9 +130,6 @@ var granuleSchema  = new dynamoose.Schema({
 
 // A DAAC data set, e.g. WWLN from HS3
 module.exports.DataSet = dynamoose.model('DataSet', dataSetSchema, {create: false});
-
-// WWLLN granules
-module.exports.Wwlln = dynamoose.model('granules_WWLLN', granuleSchema, {create: false});
 
 // var newRecord = new DataSet({
 //     name: 'WWLLN',

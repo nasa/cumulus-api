@@ -6,6 +6,21 @@ provider:
 
 functions:
 
+  # list all granules
+  listGranules:
+    handler: handler.listGranules
+    events:
+      - http:
+          path: granules/{dataSet}
+          method: get
+
+  getGranules:
+    handler: handler.getGranules
+    events:
+      - http:
+          path: granules/{dataSet}/{granuleName}
+          method: get
+
   # list all dataset records
   listDataSet:
     handler: handler.listDataSets

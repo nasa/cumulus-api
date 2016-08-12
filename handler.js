@@ -1,40 +1,34 @@
 'use strict';
 
-var _ = require('lodash');
-var models = require('./src/models');
-var utils = require('./src/utils');
+var action = require('./src/controllers');
 
-module.exports.listDataSets = function(event, context, cb) {
-
-  models.DataSet.scan().exec(function (err, datasets) {
-    return cb(err, datasets)
-  });
+module.exports.listresults = function(event, context, cb) {
+  action.listresults(event, function (err, results) {
+    return cb(err, results)
+  })
 };
 
 module.exports.getDataSet = function(event, context, cb) {
-  console.log(event);
-  models.DataSet.get({name: event.path.short_name}, function(err, dataset) {
-    console.log(dataset)
-    if (!dataset)
-      err = 'Record was not found';
-    return cb(err, dataset)
-  });
+  action.getDataSet(event, function (err, results) {
+    return cb(err, results)
+  })
 };
 
 module.exports.postDataSet = function(event, context, cb) {
+  action.postDataSet(event, function (err, results) {
+    return cb(err, results)
+  })
+};
 
-  // var token = utils.getToken(event.headers);
 
-  console.log(event.headers)
-  console.log(_.get(event.headers, 'Token', null))
+module.exports.listGranules = function(event, context, cb) {
+  action.listGranules(event, function (err, results) {
+    return cb(err, results)
+  })
+};
 
-  if (_.get(event.headers, 'Token', null) === 'thisisatesttoken') {
-    var newRecord = new models.DataSet(_.get(event, 'body', {}));
-    newRecord.save(function (err) {
-      return cb(err, newRecord);
-    });
-
-  } else {
-    return cb('Invalid Token', null);
-  }
+module.exports.getGranules = function(event, context, cb) {
+  action.getGranules(event, function (err, results) {
+    return cb(err, results)
+  })
 };
