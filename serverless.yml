@@ -6,21 +6,26 @@ provider:
 
 functions:
 
+  # list all dataset records
   listDataSet:
     handler: handler.listDataSets
-
-#   you can add any of the following events
     events:
       - http:
           path: datasets
           method: get
 
+  # get a particular dataset
   getDataSet:
     handler: handler.getDataSet
-
-#   you can add any of the following events
     events:
       - http:
           path: datasets/{short_name}
           method: get
 
+  # post a new dataSet record
+  postDataSet:
+    handler: handler.postDataSet
+    events:
+      - http:
+          path: datasets
+          method: post

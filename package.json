@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cumulus-nasa/workflow-engine#readme",
   "dependencies": {
     "dynamoose": "^0.6.0",
+    "lodash": "^4.14.2",
     "node-env-file": "^0.1.8",
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1"
