@@ -5,6 +5,10 @@ This is app primarily built to run on AWS Lambda and AWS ApiGateway. It is possi
 ### Installation & Test
 
     $ npm install
+
+For test you need to run a local copy of dynamoDB using docker
+
+    $ docker run --rm -p 8000:8000 --name dynamodb peopleperhour/dynamodb
     $ npm run test
 
 ### Deployment
