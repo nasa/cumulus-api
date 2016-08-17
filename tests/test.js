@@ -4,6 +4,11 @@ var should = require('should');
 var dynamoose = require('dynamoose');
 
 // Use local instance of dynamodb (must run on port 8000)
+dynamoose.AWS.config.update({
+  accessKeyId: 'AKID',
+  secretAccessKey: 'SECRET',
+  region: 'us-east-1'
+});
 dynamoose.local();
 
 // set env variables
