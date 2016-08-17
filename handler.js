@@ -2,8 +2,8 @@
 
 var action = require('./src/controllers');
 
-module.exports.listresults = function(event, context, cb) {
-  action.listresults(event, function (err, results) {
+module.exports.listDataSets = function(event, context, cb) {
+  action.listDataSets(event, function (err, results) {
     return cb(err, results)
   })
 };
