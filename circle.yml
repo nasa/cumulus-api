@@ -1,0 +1,19 @@
+dependencies:
+  pre:
+    - sudo apt-get install jq
+  override:
+    - pip install awscli
+
+
+test:
+  override:
+    - ID=$(aws datapipeline create-pipeline --name wwlln-pipeline-test --unique-id wwlln-pipeline-test --tags key=project,value=cumulus | jq -r ".pipelineId") && aws datapipeline put-pipeline-definition --pipeline-definition file://wwlln.json --pipeline-id $ID && aws datapipeline delete-pipeline --pipeline-id $ID
+    - ID=$(aws datapipeline create-pipeline --name avaps-pipeline-test --unique-id avaps-pipeline-test --tags key=project,value=cumulus | jq -r ".pipelineId") && aws datapipeline put-pipeline-definition --pipeline-definition file://avaps.json --pipeline-id $ID && aws datapipeline delete-pipeline --pipeline-id $ID
+
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - aws s3 cp wwlln.json s3://nasa-cumulus/datapipeline-templates/wwlln.json
+      - aws s3 cp avaps.json s3://nasa-cumulus/datapipeline-templates/avaps.json
