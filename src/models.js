@@ -3,7 +3,7 @@
 var dynamoose = require('dynamoose');
 
 // Schema for DAAC datasets
-var dataSetSchema  = new dynamoose.Schema({
+var dataSetSchema = module.exports.dataSetSchema = new dynamoose.Schema({
   name: {
     // The name of the data set, e.g. WWLLN
     type: String,
@@ -78,11 +78,22 @@ var dataSetSchema  = new dynamoose.Schema({
 });
 
 // Schema for granule datasets
-module.exports.granuleSchema  = new dynamoose.Schema({
+var granuleSchema = module.exports.granuleSchema  = new dynamoose.Schema({
   name: {
     // the unique granule name
     type: String,
-    hashKey: true
+    hashKey: true,
+    index: {
+      global: true,
+      hashKey: 'name',
+      rangeKey: 'waitForPipelineSince',
+      name: 'pipelineIndex',
+      throughput: 10
+    }
+  },
+  waitForPipelineSince: {
+    type: Date,
+    default: Date.now,
   },
   sourceFiles: {
     // list of source files on DAAC servers
@@ -116,6 +127,9 @@ module.exports.granuleSchema  = new dynamoose.Schema({
   sentToPipeLine: {
     type: Boolean,
     default: false
+  },
+  lastModified: {
+    type: Number
   }
 },
 {
@@ -126,41 +140,3 @@ module.exports.granuleSchema  = new dynamoose.Schema({
   timestamps: true,
   useDocumentTypes: true
 });
-
-
-// A DAAC data set, e.g. WWLN from HS3
-module.exports.DataSet = dynamoose.model('DataSet', dataSetSchema, {create: false});
-
-// var newRecord = new DataSet({
-//     name: 'WWLLN',
-//     shortName: 'WWLLN',
-//     daacName: 'Global Hydrology Resource Center DAAC',
-//     sourceDataBucket: {
-//       bucketName: 'cumulus-staging',
-//       prefix: 'wwlln/source/',
-//       granulesFiles: 1
-//     },
-//     destinationDataBucket: {
-//       bucketName: 'cumulus-staging',
-//       prefix: 'wwlln/processed/',
-//       granulesFiles: 3
-//     },
-//     dataPipeLine: {
-//       templateUri: 's3://cumulus-staging/wwlln.json',
-//       batchLimit: 20
-//     }
-// });
-
-// newRecord.save();
-
-// var newGranule = new Wwlln({
-//   name: 'AE20140830.Cristobal.loc',
-//   sourceFiles: [
-//     'ftp://hs3.nsstc.nasa.gov/pub/hs3/WWLLN/data/txt/Cristobal/AE20140830.Cristobal.loc'
-//   ],
-//   sourceS3Uris: [
-//     's3://testing-miles-wwlln/ftp%3A//hs3.nsstc.nasa.gov/pub/hs3/WWLLN/data/txt/Cristobal/AE20140823.Cristobal.loc'
-//   ]
-// })
-
-// newGranule.save();
