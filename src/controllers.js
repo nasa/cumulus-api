@@ -5,8 +5,14 @@ var dynamoose = require('dynamoose');
 var models = require('./models');
 var utils = require('./utils');
 
+var datasetTableName = process.env.DATASET_TABLE_NAME || 'datasets';
+var granulesTablePrefix = process.env.GRANULES_PREFIX || 'granules_';
+
 module.exports.listDataSets = function(req, cb) {
-  models.DataSet
+
+  var Dataset = dynamoose.model(datasetTableName, models.dataSetSchema, {create: false});
+
+  Dataset
         .scan()
         .limit(utils.getLimit(req.query))
         .startAt(utils.startAt('name', 'S', req.query))
@@ -16,7 +22,9 @@ module.exports.listDataSets = function(req, cb) {
 };
 
 module.exports.getDataSet = function(req, cb) {
-  models.DataSet.get({name: req.path.short_name}, function(err, dataset) {
+  var Dataset = dynamoose.model(datasetTableName, models.dataSetSchema, {create: false});
+
+  Dataset.get({name: req.path.short_name}, function(err, dataset) {
     if (!dataset)
       err = 'Record was not found';
     return cb(err, dataset)
@@ -25,15 +33,13 @@ module.exports.getDataSet = function(req, cb) {
 
 module.exports.postDataSet = function(req, cb) {
 
-  // var token = utils.getToken(req.headers);
-
-  console.log(req.headers)
-  console.log(_.get(req.headers, 'Token', null))
+  var Dataset = dynamoose.model(datasetTableName, models.dataSetSchema, {create: false});
 
   if (_.get(req.headers, 'Token', null) === 'thisisatesttoken') {
-    var newRecord = new models.DataSet(_.get(req, 'body', {}));
+    var postedRecord = _.get(req, 'body', {});
+    var newRecord = new Dataset(postedRecord);
     newRecord.save(function (err) {
-      return cb(err, newRecord);
+      return cb(err, postedRecord);
     });
 
   } else {
@@ -45,7 +51,7 @@ module.exports.postDataSet = function(req, cb) {
 module.exports.listGranules = function(req, cb) {
 
   //Dataset name
-  var tableName = 'granules_' + req.path.dataSet;
+  var tableName = granulesTablePrefix + req.path.dataSet.toLowerCase();
 
   // WWLLN granules
   var Granules = dynamoose.model(tableName, models.granuleSchema, {create: false, waitForActive: false});
@@ -55,7 +61,11 @@ module.exports.listGranules = function(req, cb) {
           .startAt(utils.startAt('name', 'S', req.query))
           .exec(function (err, records) {
     if (err) {
-      return cb(err.message, null)
+      if (err.message == 'Cannot do operations on a non-existent table') {
+        return cb(`Requested dataset (${req.path.dataSet}) doesn\'t exist`)
+      } else {
+        return cb(err.message, null)
+      }
     }
     return cb(null, records)
   });
@@ -64,7 +74,7 @@ module.exports.listGranules = function(req, cb) {
 module.exports.getGranules = function(req, cb) {
 
   //Dataset name
-  var tableName = 'granules_' + req.path.dataSet;
+  var tableName = granulesTablePrefix + req.path.dataSet.toLowerCase();
 
   // WWLLN granules
   var Granules = dynamoose.model(tableName, models.granuleSchema, {create: false, waitForActive: false});
