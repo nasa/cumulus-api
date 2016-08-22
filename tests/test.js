@@ -43,7 +43,7 @@ describe('Test controllers', function () {
       granulesFiles: 3
     },
     dataPipeLine: {
-      templateUri: 's3://cumulus-staging/wwlln.json',
+      template: 's3://cumulus-staging/wwlln.json',
       batchLimit: 20
     }
   };
@@ -158,7 +158,7 @@ describe('Test controllers', function () {
           dataSet: 'WWLLN2222'
         }
       }, function (err, granules) {
-        err.should.be.equal('Requested dataset (WWLLN2222) doesn\'t exist')
+        err.should.be.equal('Requested dataset (WWLLN2222) doesn\'t exist');
         done();
       });
     });
