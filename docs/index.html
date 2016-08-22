@@ -1,0 +1,297 @@
+<html>
+<head>
+  <title> </title>
+  <link href='assets/bass.css' type='text/css' rel='stylesheet' />
+  <link href='assets/style.css' type='text/css' rel='stylesheet' />
+  <link href='assets/github.css' type='text/css' rel='stylesheet' />
+</head>
+<body class='documentation'>
+  <div class='px2'>
+    <div class='clearfix flex flex-stretch mxn2'>
+      <div class='documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 sm-col-3 md-col-2 sm-show'>
+        <div class='font-smaller fixed sm-col-3 md-col-2 top-0 bottom-0 left-0 overflow-auto black bg-cloudy'>
+          <a href="/" class="h5 button block button-transparent"> </a>
+          <div class='px2'>
+              <a
+                href='#granules'
+                class='regular block'>
+                <code>Granules</code>
+              </a>
+                <a
+                  href='#granules/activatepipeline'
+                  class='button-indent regular block'>
+                  <code>#activatePipeline</code>
+                </a>
+                <a
+                  href='#granules/createpipeline'
+                  class='button-indent regular block'>
+                  <code>#createPipeline</code>
+                </a>
+                <a
+                  href='#granules/process'
+                  class='button-indent regular block'>
+                  <code>#process</code>
+                </a>
+                <a
+                  href='#granules/processgranules'
+                  class='button-indent regular block'>
+                  <code>#processGranules</code>
+                </a>
+                <a
+                  href='#granules/putpipelinedefinition'
+                  class='button-indent regular block'>
+                  <code>#putPipelineDefinition</code>
+                </a>
+              <a
+                href='#processdatasets'
+                class='regular block'>
+                <code>processDatasets</code>
+              </a>
+              <a
+                href='#trigger'
+                class='regular block'>
+                <code>trigger</code>
+              </a>
+          </div>
+        </div>
+      </div>
+      <div class='sm-col sm-col-9 md-col-10 flex flex-column'>
+        <div class='flex-auto full-width'>
+<section id='granules'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules'>
+      <code>
+        Granules<span class='gray'>(dataset, bucketName)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Handles processing and trigerring pending granules with AWS datapipeline</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>dataset</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></td>
+            <td><p>a Dataset DyanmodDB record</p>
+</td>
+          </tr>
+          <tr>
+            <td>bucketName</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code></td>
+            <td><p>name of the AWS S3 bucket for storing pipeline paylosds</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+      <div class='section-indent'>
+<section id='granules/activatepipeline'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules/activatepipeline'>
+      <code>
+        activatePipeline<span class='gray'>(pipelineId)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Activates an AWS datapipeline</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>pipelineId</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code></td>
+            <td><p>an AWS Pipeline ID</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+</section>
+      </div>
+      <div class='section-indent'>
+<section id='granules/createpipeline'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules/createpipeline'>
+      <code>
+        createPipeline<span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>Create a new AWS datapipeline</p>
+
+
+
+
+
+
+
+</section>
+      </div>
+      <div class='section-indent'>
+<section id='granules/process'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules/process'>
+      <code>
+        process<span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>Start processing the granules for a given dataset</p>
+
+
+
+
+
+
+
+</section>
+      </div>
+      <div class='section-indent'>
+<section id='granules/processgranules'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules/processgranules'>
+      <code>
+        processGranules<span class='gray'>(granules)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline
+add pipeline template definition to the newly created pipeline, activate it
+and mark the records on DynamoDB</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>granules</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></td>
+            <td><p>a list of all granules that have to be processed by datapipeline</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+</section>
+      </div>
+      <div class='section-indent'>
+<section id='granules/putpipelinedefinition'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#granules/putpipelinedefinition'>
+      <code>
+        putPipelineDefinition<span class='gray'>(pipelineId)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Adds pipeline definition to a datapipeline</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>pipelineId</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code></td>
+            <td><p>an AWS Pipeline ID</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+</section>
+      </div>
+
+</section>
+<section id='processdatasets'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#processdatasets'>
+      <code>
+        processDatasets<span class='gray'>(datasets)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Iterate through an array of datasets and get granules for each dataset record</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>datasets</td>
+            <td><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></td>
+            <td><p>an array of DyanmodDB records</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+</section>
+<section id='trigger'class='mt2 mb2 py1 px3 keyline-top'>
+  <h3 class='regular'>
+    <a class='black' href='#trigger'>
+      <code>
+        trigger<span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>Get list of all datasets from a DynamoDB table
+Then look for unprocessed granules in each dataset and
+send them for processing on AWS datapipeline</p>
+
+
+
+
+
+
+
+</section>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

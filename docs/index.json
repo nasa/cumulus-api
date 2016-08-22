@@ -1,0 +1,459 @@
+[
+  {
+    "description": "Handles processing and trigerring pending granules with AWS datapipeline",
+    "tags": [
+      {
+        "title": "param",
+        "description": "a Dataset DyanmodDB record",
+        "type": {
+          "type": "NameExpression",
+          "name": "Object"
+        },
+        "name": "dataset"
+      },
+      {
+        "title": "param",
+        "description": "name of the AWS S3 bucket for storing pipeline paylosds",
+        "type": {
+          "type": "NameExpression",
+          "name": "String"
+        },
+        "name": "bucketName"
+      },
+      {
+        "title": "name",
+        "name": "Granules"
+      },
+      {
+        "title": "kind",
+        "kind": "function"
+      }
+    ],
+    "context": {
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 0
+        },
+        "end": {
+          "line": 29,
+          "column": 2
+        }
+      },
+      "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+      "code": "'use strict';\n\nvar AWS = require('aws-sdk');\nvar dynamoose = require('dynamoose');\n\nvar models = require('./models');\nvar utils = require('./utils');\nvar wwlln = require('./wwlln.json');\nvar parameters = require('./parameters.json');\n\nvar datasetTableName = process.env.DATASET_TABLE_NAME || 'datasets';\nvar granulesTablePrefix = process.env.GRANULES_PREFIX || 'cumulus_granules_';\n\nvar s3 = new AWS.S3();\nvar datapipeline = new AWS.DataPipeline();\n\n/**\n * Handles processing and trigerring pending granules with AWS datapipeline\n * @param {Object} dataset a Dataset DyanmodDB record\n * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds\n */\nvar Granules = function (dataset, bucketName) {\n  this.dataset = dataset;\n  this.pipelineGranules = [];\n  this.bucketName = bucketName || 'cumulus-source';\n  this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;\n  this.s3Uri = `s3://${this.bucketName}/${this.keyName}`;\n  this.pipelineGranules = [];\n};\n\nGranules.prototype = {\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n};\n\n/**\n * Iterate through an array of datasets and get granules for each dataset record\n * @param {Object} datasets an array of DyanmodDB records\n */\nvar processDatasets = function (datasets) {\n  datasets.map(function (dataset) {\n    var g = new Granules(dataset);\n    g.process();\n  });\n};\n\n/**\n * Get list of all datasets from a DynamoDB table\n * Then look for unprocessed granules in each dataset and\n * send them for processing on AWS datapipeline\n */\nvar trigger = function () {\n  // Get the model\n  var Dataset = dynamoose.model(\n    datasetTableName,\n    models.dataSetSchema,\n    {create: false}\n  );\n\n  // Get the list of all datasets\n  Dataset.scan().exec(function (err, datasets) {\n    if (err) {\n      return console.error('Error in scanning dataset table', err);\n    }\n    processDatasets(datasets);\n  });\n};\n\ntrigger();"
+    },
+    "params": [
+      {
+        "title": "param",
+        "description": "a Dataset DyanmodDB record",
+        "type": {
+          "type": "NameExpression",
+          "name": "Object"
+        },
+        "name": "dataset"
+      },
+      {
+        "title": "param",
+        "description": "name of the AWS S3 bucket for storing pipeline paylosds",
+        "type": {
+          "type": "NameExpression",
+          "name": "String"
+        },
+        "name": "bucketName"
+      }
+    ],
+    "name": "Granules",
+    "kind": "function",
+    "members": {
+      "instance": [
+        {
+          "description": "Activates an AWS datapipeline",
+          "tags": [
+            {
+              "title": "param",
+              "description": "an AWS Pipeline ID",
+              "type": {
+                "type": "NameExpression",
+                "name": "String"
+              },
+              "name": "pipelineId"
+            },
+            {
+              "title": "name",
+              "name": "activatePipeline"
+            },
+            {
+              "title": "kind",
+              "kind": "function"
+            },
+            {
+              "title": "memberof",
+              "description": "Granules"
+            },
+            {
+              "title": "instance"
+            }
+          ],
+          "context": {
+            "loc": {
+              "start": {
+                "line": 169,
+                "column": 2
+              },
+              "end": {
+                "line": 189,
+                "column": 3
+              }
+            },
+            "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+            "code": "{\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n}"
+          },
+          "params": [
+            {
+              "title": "param",
+              "description": "an AWS Pipeline ID",
+              "type": {
+                "type": "NameExpression",
+                "name": "String"
+              },
+              "name": "pipelineId"
+            }
+          ],
+          "name": "activatePipeline",
+          "kind": "function",
+          "memberof": "Granules",
+          "scope": "instance",
+          "members": {
+            "instance": [],
+            "static": []
+          },
+          "path": [
+            "Granules",
+            "activatePipeline"
+          ]
+        },
+        {
+          "description": "Create a new AWS datapipeline",
+          "tags": [
+            {
+              "title": "name",
+              "name": "createPipeline"
+            },
+            {
+              "title": "kind",
+              "kind": "function"
+            },
+            {
+              "title": "memberof",
+              "description": "Granules"
+            },
+            {
+              "title": "instance"
+            }
+          ],
+          "context": {
+            "loc": {
+              "start": {
+                "line": 108,
+                "column": 2
+              },
+              "end": {
+                "line": 134,
+                "column": 3
+              }
+            },
+            "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+            "code": "{\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n}"
+          },
+          "name": "createPipeline",
+          "kind": "function",
+          "memberof": "Granules",
+          "scope": "instance",
+          "members": {
+            "instance": [],
+            "static": []
+          },
+          "path": [
+            "Granules",
+            "createPipeline"
+          ]
+        },
+        {
+          "description": "Start processing the granules for a given dataset",
+          "tags": [
+            {
+              "title": "name",
+              "name": "process"
+            },
+            {
+              "title": "kind",
+              "kind": "function"
+            },
+            {
+              "title": "memberof",
+              "description": "Granules"
+            },
+            {
+              "title": "instance"
+            }
+          ],
+          "context": {
+            "loc": {
+              "start": {
+                "line": 36,
+                "column": 2
+              },
+              "end": {
+                "line": 38,
+                "column": 3
+              }
+            },
+            "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+            "code": "{\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n}"
+          },
+          "name": "process",
+          "kind": "function",
+          "memberof": "Granules",
+          "scope": "instance",
+          "members": {
+            "instance": [],
+            "static": []
+          },
+          "path": [
+            "Granules",
+            "process"
+          ]
+        },
+        {
+          "description": "Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\nadd pipeline template definition to the newly created pipeline, activate it\nand mark the records on DynamoDB",
+          "tags": [
+            {
+              "title": "param",
+              "description": "a list of all granules that have to be processed by datapipeline",
+              "type": {
+                "type": "NameExpression",
+                "name": "Object"
+              },
+              "name": "granules"
+            },
+            {
+              "title": "name",
+              "name": "processGranules"
+            },
+            {
+              "title": "kind",
+              "kind": "function"
+            },
+            {
+              "title": "memberof",
+              "description": "Granules"
+            },
+            {
+              "title": "instance"
+            }
+          ],
+          "context": {
+            "loc": {
+              "start": {
+                "line": 72,
+                "column": 2
+              },
+              "end": {
+                "line": 103,
+                "column": 3
+              }
+            },
+            "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+            "code": "{\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n}"
+          },
+          "params": [
+            {
+              "title": "param",
+              "description": "a list of all granules that have to be processed by datapipeline",
+              "type": {
+                "type": "NameExpression",
+                "name": "Object"
+              },
+              "name": "granules"
+            }
+          ],
+          "name": "processGranules",
+          "kind": "function",
+          "memberof": "Granules",
+          "scope": "instance",
+          "members": {
+            "instance": [],
+            "static": []
+          },
+          "path": [
+            "Granules",
+            "processGranules"
+          ]
+        },
+        {
+          "description": "Adds pipeline definition to a datapipeline",
+          "tags": [
+            {
+              "title": "param",
+              "description": "an AWS Pipeline ID",
+              "type": {
+                "type": "NameExpression",
+                "name": "String"
+              },
+              "name": "pipelineId"
+            },
+            {
+              "title": "name",
+              "name": "putPipelineDefinition"
+            },
+            {
+              "title": "kind",
+              "kind": "function"
+            },
+            {
+              "title": "memberof",
+              "description": "Granules"
+            },
+            {
+              "title": "instance"
+            }
+          ],
+          "context": {
+            "loc": {
+              "start": {
+                "line": 140,
+                "column": 2
+              },
+              "end": {
+                "line": 163,
+                "column": 3
+              }
+            },
+            "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+            "code": "{\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n}"
+          },
+          "params": [
+            {
+              "title": "param",
+              "description": "an AWS Pipeline ID",
+              "type": {
+                "type": "NameExpression",
+                "name": "String"
+              },
+              "name": "pipelineId"
+            }
+          ],
+          "name": "putPipelineDefinition",
+          "kind": "function",
+          "memberof": "Granules",
+          "scope": "instance",
+          "members": {
+            "instance": [],
+            "static": []
+          },
+          "path": [
+            "Granules",
+            "putPipelineDefinition"
+          ]
+        }
+      ],
+      "static": []
+    },
+    "path": [
+      "Granules"
+    ]
+  },
+  {
+    "description": "Iterate through an array of datasets and get granules for each dataset record",
+    "tags": [
+      {
+        "title": "param",
+        "description": "an array of DyanmodDB records",
+        "type": {
+          "type": "NameExpression",
+          "name": "Object"
+        },
+        "name": "datasets"
+      },
+      {
+        "title": "name",
+        "name": "processDatasets"
+      },
+      {
+        "title": "kind",
+        "kind": "function"
+      }
+    ],
+    "context": {
+      "loc": {
+        "start": {
+          "line": 196,
+          "column": 0
+        },
+        "end": {
+          "line": 201,
+          "column": 2
+        }
+      },
+      "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+      "code": "'use strict';\n\nvar AWS = require('aws-sdk');\nvar dynamoose = require('dynamoose');\n\nvar models = require('./models');\nvar utils = require('./utils');\nvar wwlln = require('./wwlln.json');\nvar parameters = require('./parameters.json');\n\nvar datasetTableName = process.env.DATASET_TABLE_NAME || 'datasets';\nvar granulesTablePrefix = process.env.GRANULES_PREFIX || 'cumulus_granules_';\n\nvar s3 = new AWS.S3();\nvar datapipeline = new AWS.DataPipeline();\n\n/**\n * Handles processing and trigerring pending granules with AWS datapipeline\n * @param {Object} dataset a Dataset DyanmodDB record\n * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds\n */\nvar Granules = function (dataset, bucketName) {\n  this.dataset = dataset;\n  this.pipelineGranules = [];\n  this.bucketName = bucketName || 'cumulus-source';\n  this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;\n  this.s3Uri = `s3://${this.bucketName}/${this.keyName}`;\n  this.pipelineGranules = [];\n};\n\nGranules.prototype = {\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n};\n\n/**\n * Iterate through an array of datasets and get granules for each dataset record\n * @param {Object} datasets an array of DyanmodDB records\n */\nvar processDatasets = function (datasets) {\n  datasets.map(function (dataset) {\n    var g = new Granules(dataset);\n    g.process();\n  });\n};\n\n/**\n * Get list of all datasets from a DynamoDB table\n * Then look for unprocessed granules in each dataset and\n * send them for processing on AWS datapipeline\n */\nvar trigger = function () {\n  // Get the model\n  var Dataset = dynamoose.model(\n    datasetTableName,\n    models.dataSetSchema,\n    {create: false}\n  );\n\n  // Get the list of all datasets\n  Dataset.scan().exec(function (err, datasets) {\n    if (err) {\n      return console.error('Error in scanning dataset table', err);\n    }\n    processDatasets(datasets);\n  });\n};\n\ntrigger();"
+    },
+    "params": [
+      {
+        "title": "param",
+        "description": "an array of DyanmodDB records",
+        "type": {
+          "type": "NameExpression",
+          "name": "Object"
+        },
+        "name": "datasets"
+      }
+    ],
+    "name": "processDatasets",
+    "kind": "function",
+    "members": {
+      "instance": [],
+      "static": []
+    },
+    "path": [
+      "processDatasets"
+    ]
+  },
+  {
+    "description": "Get list of all datasets from a DynamoDB table\nThen look for unprocessed granules in each dataset and\nsend them for processing on AWS datapipeline",
+    "tags": [
+      {
+        "title": "name",
+        "name": "trigger"
+      },
+      {
+        "title": "kind",
+        "kind": "function"
+      }
+    ],
+    "context": {
+      "loc": {
+        "start": {
+          "line": 208,
+          "column": 0
+        },
+        "end": {
+          "line": 223,
+          "column": 2
+        }
+      },
+      "file": "/Users/ajdevseed/lib/repos/nasa/workflow-engine/src/triggers.js",
+      "code": "'use strict';\n\nvar AWS = require('aws-sdk');\nvar dynamoose = require('dynamoose');\n\nvar models = require('./models');\nvar utils = require('./utils');\nvar wwlln = require('./wwlln.json');\nvar parameters = require('./parameters.json');\n\nvar datasetTableName = process.env.DATASET_TABLE_NAME || 'datasets';\nvar granulesTablePrefix = process.env.GRANULES_PREFIX || 'cumulus_granules_';\n\nvar s3 = new AWS.S3();\nvar datapipeline = new AWS.DataPipeline();\n\n/**\n * Handles processing and trigerring pending granules with AWS datapipeline\n * @param {Object} dataset a Dataset DyanmodDB record\n * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds\n */\nvar Granules = function (dataset, bucketName) {\n  this.dataset = dataset;\n  this.pipelineGranules = [];\n  this.bucketName = bucketName || 'cumulus-source';\n  this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;\n  this.s3Uri = `s3://${this.bucketName}/${this.keyName}`;\n  this.pipelineGranules = [];\n};\n\nGranules.prototype = {\n\n  /**\n   * Start processing the granules for a given dataset\n   */\n  process: function () {\n    this.getGranules();\n  },\n\n  /**\n   * Gets all unprocessed granules for a given dataset from DyanomoDB\n   * and send them for processing by AWS datapipeline\n   * @private\n   */\n  getGranules: function () {\n    var self = this;\n    var Granules = dynamoose.model(\n      'granules_' + this.dataset.shortName.toLowerCase(),\n      models.granuleSchema,\n      {\n        create: false,\n        waitForActive: false\n      }\n    );\n\n    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {\n      if (err) {\n        return console.error(`Error scanning granules for ${self.dataset.name}`, err);\n      }\n\n      // console.log(granules);\n      self.processGranules(granules);\n    });\n  },\n\n  /**\n   * Create a payload for AWS Datapipeline, upload it to S3, create a new datapipline\n   * add pipeline template definition to the newly created pipeline, activate it\n   * and mark the records on DynamoDB\n   * @param {Object} granules a list of all granules that have to be processed by datapipeline\n   */\n  processGranules: function (granules) {\n    var self = this;\n\n    if (granules) {\n      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);\n\n      granules.map(function (granule) {\n        console.log(`Processing ${granule.name}`);\n\n        // get the name of each granules\n        self.pipelineGranules.push({\n          name: granule.name,\n          files: granule.sourceS3Uris\n        });\n      });\n\n      console.log('Uploading list of datapipeline files to S3');\n      // upload it to S3\n\n      s3.putObject({\n        Bucket: self.bucketName,\n        Key: self.keyName,\n        Body: JSON.stringify(self.pipelineGranules)\n      }, function (err, data) {\n        if (err) {\n          return console.error(`Error pushing ${self.s3Uri} to S3`, err);\n        }\n\n        self.createPipeline();\n      });\n    }\n  },\n\n  /**\n   * Create a new AWS datapipeline\n   */\n  createPipeline: function () {\n    var self = this;\n\n    // create a new data pipeline\n    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;\n    console.log(`Creating pipeline ${pipelineName}`);\n\n    var params = {\n      name: pipelineName,\n      uniqueId: pipelineName,\n      description: `Processing pipeline for ${self.dataset.name}`,\n      tags: [\n        {\n          key: 'project',\n          value: 'cumulus'\n        }\n      ]\n    };\n\n    datapipeline.createPipeline(params, function (err, pipeline) {\n      if (err) {\n        return console.error(`Creating pipeline ${pipelineName} failed`, err);\n      }\n\n      self.putPipelineDefinition(pipeline.pipelineId);\n    });\n  },\n\n  /**\n   * Adds pipeline definition to a datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  putPipelineDefinition: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),\n      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Putting definition for  ${pipelineId}`);\n\n    datapipeline.putPipelineDefinition(params, function (err, response) {\n      if (err) {\n        return console.error(`putting pipeline ${pipelineId} failed`, err);\n      }\n\n      self.activatePipeline(pipelineId);\n    });\n  },\n\n  /**\n   * Activates an AWS datapipeline\n   * @param {String} pipelineId an AWS Pipeline ID\n   */\n  activatePipeline: function (pipelineId) {\n    var self = this;\n    var params = {\n      pipelineId: pipelineId,\n      parameterValues: [\n        {\n          id: 'myS3FilesList',\n          stringValue: self.s3Uri\n        }\n      ]\n    };\n\n    console.log(`Activating pipeline  ${pipelineId}`);\n    datapipeline.activatePipeline(params, function (err, data) {\n      if (err) {\n        return console.error(`Activating pipeline ${pipelineId} failed`, err);\n      }\n\n      console.log('logging to markGranulesAsSent');\n    });\n  }\n};\n\n/**\n * Iterate through an array of datasets and get granules for each dataset record\n * @param {Object} datasets an array of DyanmodDB records\n */\nvar processDatasets = function (datasets) {\n  datasets.map(function (dataset) {\n    var g = new Granules(dataset);\n    g.process();\n  });\n};\n\n/**\n * Get list of all datasets from a DynamoDB table\n * Then look for unprocessed granules in each dataset and\n * send them for processing on AWS datapipeline\n */\nvar trigger = function () {\n  // Get the model\n  var Dataset = dynamoose.model(\n    datasetTableName,\n    models.dataSetSchema,\n    {create: false}\n  );\n\n  // Get the list of all datasets\n  Dataset.scan().exec(function (err, datasets) {\n    if (err) {\n      return console.error('Error in scanning dataset table', err);\n    }\n    processDatasets(datasets);\n  });\n};\n\ntrigger();"
+    },
+    "name": "trigger",
+    "kind": "function",
+    "members": {
+      "instance": [],
+      "static": []
+    },
+    "path": [
+      "trigger"
+    ]
+  }
+]
