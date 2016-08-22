@@ -20,51 +20,50 @@ process.env.GRANULES_PREFIX = granulesTablePrefix;
 
 var cont = require('../src/controllers');
 var models = require('../src/models');
+var tb = require('../src/tables');
 
-
-describe('Test controllers', function (){
+describe('Test controllers', function () {
   this.timeout(10000);
 
   var Dataset;
   var GranulesWWLN;
-  var testDataSetRecord = 'WWLLN'
+  var testDataSetRecord = 'WWLLN';
   var sampleRecord = {
-      name: testDataSetRecord,
-      shortName: testDataSetRecord,
-      daacName: 'Global Hydrology Resource Center DAAC',
-      sourceDataBucket: {
-        bucketName: 'cumulus-staging',
-        prefix: 'wwlln/source/',
-        granulesFiles: 1
-      },
-      destinationDataBucket: {
-        bucketName: 'cumulus-staging',
-        prefix: 'wwlln/processed/',
-        granulesFiles: 3
-      },
-      dataPipeLine: {
-        templateUri: 's3://cumulus-staging/wwlln.json',
-        batchLimit: 20
-      }
+    name: testDataSetRecord,
+    shortName: testDataSetRecord,
+    daacName: 'Global Hydrology Resource Center DAAC',
+    sourceDataBucket: {
+      bucketName: 'cumulus-staging',
+      prefix: 'wwlln/source/',
+      granulesFiles: 1
+    },
+    destinationDataBucket: {
+      bucketName: 'cumulus-staging',
+      prefix: 'wwlln/processed/',
+      granulesFiles: 3
+    },
+    dataPipeLine: {
+      templateUri: 's3://cumulus-staging/wwlln.json',
+      batchLimit: 20
+    }
   };
 
   var sampleGranule = {
-    "lastModified": 1438142400,
-    "name": "AE20140901.Cristobal.loc",
-    "sourceFiles": [
-      "ftp://hs3.nsstc.nasa.gov/pub/hs3/WWLLN/data/txt/Cristobal/AE20140901.Cristobal.loc"
+    'lastModified': 1438142400,
+    'name': 'AE20140901.Cristobal.loc',
+    'sourceFiles': [
+      'ftp://hs3.nsstc.nasa.gov/pub/hs3/WWLLN/data/txt/Cristobal/AE20140901.Cristobal.loc'
     ],
-    "sourceS3Uris": [
-      "s3://cumulus-source/source-data/wwlln/AE20140901.Cristobal.loc"
+    'sourceS3Uris': [
+      's3://cumulus-source/source-data/wwlln/AE20140901.Cristobal.loc'
     ],
-    "waitForPipelineSince": 1471460282
-  }
+    'waitForPipelineSince': 1471460282
+  };
 
-
-  before(function(done) {
+  before(function (done) {
     // Create the tables
-    Dataset = dynamoose.model(datasetTableName, models.dataSetSchema, {create: true});
-    GranulesWWLN = dynamoose.model(granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
+    Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
+    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
 
     // Add new dataset record for testing
     var newRecord = new Dataset(sampleRecord);
@@ -81,13 +80,13 @@ describe('Test controllers', function (){
     );
   });
 
-  describe('Test dataset controllers', function (){
+  describe('Test dataset controllers', function () {
     it('should list all datasets', function (done) {
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
         should.equal(datasets.length, 1);
         should.equal(datasets[0].name, testDataSetRecord);
-        done()
+        done();
       });
     });
 
@@ -100,7 +99,7 @@ describe('Test controllers', function (){
         should.not.exist(err);
         dataset.should.be.instanceOf(Object);
         should.equal(dataset.name, testDataSetRecord);
-        done()
+        done();
       });
     });
 
@@ -110,13 +109,13 @@ describe('Test controllers', function (){
           short_name: 'something'
         }
       }, function (err, dataset) {
-        err.should.equal('Record was not found')
-        done()
+        err.should.equal('Record was not found');
+        done();
       });
     });
 
     it('should add one record', function (done) {
-      sampleRecord.name = 'WWLLN2'
+      sampleRecord.name = 'WWLLN2';
 
       cont.postDataSet({
         body: sampleRecord,
@@ -125,8 +124,8 @@ describe('Test controllers', function (){
         }
       }, function (err, dataset) {
         should.not.exist(err);
-        dataset.should.equal(sampleRecord)
-        done()
+        dataset.should.equal(sampleRecord);
+        done();
       });
     });
 
@@ -134,12 +133,12 @@ describe('Test controllers', function (){
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
         should.equal(datasets.length, 2);
-        done()
+        done();
       });
     });
   });
 
-  describe('Test granules controllers', function (){
+  describe('Test granules controllers', function () {
     it('should list all datasets', function (done) {
       cont.listGranules({
         path: {
@@ -149,7 +148,7 @@ describe('Test controllers', function (){
         should.not.exist(err);
         should.equal(granules.length, 1);
         should.equal(granules[0].name, sampleGranule.name);
-        done()
+        done();
       });
     });
 
@@ -160,7 +159,7 @@ describe('Test controllers', function (){
         }
       }, function (err, granules) {
         err.should.be.equal('Requested dataset (WWLLN2222) doesn\'t exist')
-        done()
+        done();
       });
     });
 
@@ -172,8 +171,8 @@ describe('Test controllers', function (){
         }
       }, function (err, granule) {
         should.not.exist(err);
-        granule.name.should.be.equal(sampleGranule.name)
-        done()
+        granule.name.should.be.equal(sampleGranule.name);
+        done();
       });
     });
 
@@ -184,15 +183,15 @@ describe('Test controllers', function (){
           granuleName: 'something'
         }
       }, function (err, granule) {
-        err.should.be.equal('Record was not found')
-        done()
+        err.should.be.equal('Record was not found');
+        done();
       });
     });
-
   });
 
-  after(function(done) {
+  after(function (done) {
     Dataset.$__.table.delete(function (err) {
+      should.not.exist(err);
       done();
     });
   });
