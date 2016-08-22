@@ -188,4 +188,4 @@ var dataPipeLineSchema = new dynamoose.Schema(
 
 module.exports.dataSetSchema = dataSetSchema;
 module.exports.granuleSchema = granuleSchema;
-module.exports.dataPipeLine = dataPipeLine;
+module.exports.dataPipeLine = dataPipeLineSchema;
