@@ -59,11 +59,11 @@ var dataSetSchema = new dynamoose.Schema(
       type: 'map',
       map: {
         template: {
-          type: String,
+          type: Object,
           required: true
         },
         parameters: {
-          type: String
+          type: Object
         },
         batchLimit: {
           type: Number,
