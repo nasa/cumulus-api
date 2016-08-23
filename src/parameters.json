@@ -1,7 +1,7 @@
 {
   "parameters": [
     {
-      "watermark" : "s3://cumulus-staging/files.json",
+      "watermark" : "s3://cumulus-source/files.json",
       "id": "myS3FilesList",
       "type": "String",
       "description": "S3 path to the file containing the list of data files"
@@ -10,13 +10,13 @@
       "id": "myUploadBucketPath",
       "type": "String",
       "description": "S3 path to upload processed files",
-      "default": "s3://cumulus-staging/wwlln/processed"
+      "default": "s3://cumulus-source/wwlln/processed"
     },
     {
       "id": "myS3LogsPath",
       "type": "AWS::S3::ObjectKey",
       "description": "S3 folder for logs",
-      "default": "s3://cumulus-staging/logs"
+      "default": "s3://cumulus-source/logs"
     },
     {
       "id": "mySplunkHECToken",

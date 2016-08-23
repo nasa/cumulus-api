@@ -57,11 +57,11 @@
     {
       "resourceRole": "DataPipelineDefaultResourceRole",
       "role": "DataPipelineDefaultRole",
-      "imageId": "ami-e8ed7eff",
+      "imageId": "ami-64a6c773",
       "instanceType": "t2.micro",
       "name": "CumulusDataPipeLine",
       "keyPair": "cumulus-scisco",
-      "securityGroupIds": ["sg-414e593a"],
+      "securityGroupIds": ["sg-3e11b044"],
       "id" : "CumulusEC2Instance",
       "type": "Ec2Resource",
       "actionOnTaskFailure" : "terminate",
