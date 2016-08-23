@@ -22,7 +22,8 @@ var Granules = function (dataset, bucketName) {
   this.pipelineGranules = [];
   this.bucketName = bucketName || 'cumulus-source';
   this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;
-  this.s3Uri = `s3://${this.bucketName}/${this.keyName}`;
+  this.s3UriBase = `s3://${this.bucketName}/`;
+  this.s3Uri = `${this.s3UriBase}/${this.keyName}`;
   this.pipelineGranules = [];
 };
 
@@ -155,7 +156,11 @@ Granules.prototype = {
         return console.error(`putting pipeline ${pipelineId} failed`, err);
       }
 
-      self.activatePipeline(pipelineId);
+      if (!response.errored) {
+        self.activatePipeline(pipelineId);
+      } else {
+        return console.error(`putting pipeline ${pipelineId} failed`, response.validationErrors);
+      }
     });
   },
 
@@ -215,7 +220,7 @@ var trigger = function () {
   var Dataset = dynamoose.model(
     tables.datasetTableName,
     models.dataSetSchema,
-    {create: false}
+    {create: true}
   );
 
   // Get the list of all datasets
