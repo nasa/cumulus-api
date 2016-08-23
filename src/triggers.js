@@ -25,6 +25,7 @@ var Granules = function (dataset, bucketName) {
   this.s3UriBase = `s3://${this.bucketName}/`;
   this.s3Uri = `${this.s3UriBase}/${this.keyName}`;
   this.pipelineGranules = [];
+  this.granules;
 };
 
 Granules.prototype = {
@@ -56,7 +57,6 @@ Granules.prototype = {
         return console.error(`Error scanning granules for ${self.dataset.name}`, err);
       }
 
-      // console.log(granules);
       self.processGranules(granules);
     });
   },
@@ -69,6 +69,7 @@ Granules.prototype = {
    */
   processGranules: function (granules) {
     var self = this;
+    self.granules = granules;
 
     if (granules) {
       console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);
@@ -185,8 +186,7 @@ Granules.prototype = {
       if (err) {
         return console.error(`Activating pipeline ${pipelineId} failed`, err);
       }
-
-      console.log('logging to markGranulesAsSent');
+      self.markGranulesAsSent();
     });
   },
 
@@ -195,7 +195,26 @@ Granules.prototype = {
    * by removeing the waitForPipelineSince value from the record on DynamoDb
    */
   markGranulesAsSent: function () {
+    var self = this;
+    var Granules = dynamoose.model(
+      'granules_' + this.dataset.shortName.toLowerCase(),
+      models.granuleSchema,
+      {
+        create: false,
+        waitForActive: false
+      }
+    );
 
+    console.log(`Marking granules for ${self.dataset.name} as sent`);
+    this.granules.map(function (granule) {
+      Granules.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
+        if (err) {
+          console.error(`Updating granule ${granule.name} failed`, err);
+        } else {
+          console.log(`${granule.name} marked as sent on dynamoDB`);
+        }
+      });
+    });
   }
 };
 
