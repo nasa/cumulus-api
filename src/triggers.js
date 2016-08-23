@@ -5,8 +5,6 @@ var dynamoose = require('dynamoose');
 
 var models = require('./models');
 var utils = require('./utils');
-var wwlln = require('./wwlln.json');
-var parameters = require('./parameters.json');
 var tables = require('./tables');
 
 var s3 = new AWS.S3();
@@ -140,8 +138,8 @@ Granules.prototype = {
     var self = this;
     var params = {
       pipelineId: pipelineId,
-      pipelineObjects: utils.pipelineTemplateConverter(wwlln.objects, 'fields'),
-      parameterObjects: utils.pipelineTemplateConverter(parameters.parameters, 'attributes'),
+      pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
+      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes'),
       parameterValues: [
         {
           id: 'myS3FilesList',
