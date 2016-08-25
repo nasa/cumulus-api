@@ -22,7 +22,11 @@ var Granules = function (dataset, bucketName) {
   this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;
   this.s3UriBase = `s3://${this.bucketName}/`;
   this.s3Uri = `${this.s3UriBase}/${this.keyName}`;
-  this.pipelineGranules = [];
+  this.pipelineGranules = {
+    granuleSize: dataset.sourceDataBucket.granulesFiles,
+    datasetName: dataset.name,
+    granules: []
+  };
   this.granules;
 };
 
@@ -76,7 +80,7 @@ Granules.prototype = {
         console.log(`Processing ${granule.name}`);
 
         // get the name of each granules
-        self.pipelineGranules.push({
+        self.pipelineGranules.granules.push({
           name: granule.name,
           files: granule.sourceS3Uris
         });
@@ -106,7 +110,7 @@ Granules.prototype = {
     var self = this;
 
     // create a new data pipeline
-    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.length}_${Date.now()}`;
+    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.granules.length}_${Date.now()}`;
     console.log(`Creating pipeline ${pipelineName}`);
 
     var params = {
