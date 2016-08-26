@@ -1,5 +1,8 @@
 'use strict';
 
+var _ = require('lodash');
+var path = require('path');
+var d = require('./queue');
 var AWS = require('aws-sdk');
 var dynamoose = require('dynamoose');
 
@@ -15,19 +18,20 @@ var datapipeline = new AWS.DataPipeline();
  * @param {Object} dataset a Dataset DyanmodDB record
  * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds
  */
-var Granules = function (dataset, bucketName) {
+var Granules = function (dataset, bucketName, cb) {
   this.dataset = dataset;
   this.pipelineGranules = [];
-  this.bucketName = bucketName || 'cumulus-source';
-  this.keyName = `pipeline-files/${dataset.name}/pipeline_files_${Date.now()}.json`;
-  this.s3UriBase = `s3://${this.bucketName}/`;
-  this.s3Uri = `${this.s3UriBase}/${this.keyName}`;
+  this.bucketName = bucketName || 'cumulus-ghrc-logs';
+  this.keyName = path.join('piplines', dataset.name, `pipeline_files_${Date.now()}.json`);
+  this.s3Uri = 's3://' + path.join(this.bucketName, this.keyName);
   this.pipelineGranules = {
-    granuleSize: dataset.sourceDataBucket.granulesFiles,
     datasetName: dataset.name,
+    sourceDataBucket: dataset.sourceDataBucket,
+    destinationDataBucket: dataset.destinationDataBucket,
     granules: []
   };
   this.granules;
+  this.cb = cb;
 };
 
 Granules.prototype = {
@@ -46,7 +50,7 @@ Granules.prototype = {
   getGranules: function () {
     var self = this;
     var Granules = dynamoose.model(
-      'granules_' + this.dataset.shortName.toLowerCase(),
+      tables.granulesTablePrefix + this.dataset.shortName.toLowerCase(),
       models.granuleSchema,
       {
         create: false,
@@ -59,7 +63,11 @@ Granules.prototype = {
         return console.error(`Error scanning granules for ${self.dataset.name}`, err);
       }
 
-      self.processGranules(granules);
+      if (granules.length > 1) {
+        self.processGranules(granules);
+      } else {
+        return self.cb('no granules to process');
+      }
     });
   },
 
@@ -92,7 +100,9 @@ Granules.prototype = {
       s3.putObject({
         Bucket: self.bucketName,
         Key: self.keyName,
-        Body: JSON.stringify(self.pipelineGranules)
+        Body: JSON.stringify(self.pipelineGranules),
+        ContentType: 'application/json',
+        ACL: 'public-read'
       }, function (err, data) {
         if (err) {
           return console.error(`Error pushing ${self.s3Uri} to S3`, err);
@@ -199,7 +209,7 @@ Granules.prototype = {
   markGranulesAsSent: function () {
     var self = this;
     var Granules = dynamoose.model(
-      'granules_' + this.dataset.shortName.toLowerCase(),
+      'cumulus_granules_' + this.dataset.shortName.toLowerCase(),
       models.granuleSchema,
       {
         create: false,
@@ -208,14 +218,25 @@ Granules.prototype = {
     );
 
     console.log(`Marking granules for ${self.dataset.name} as sent`);
+
+    var q = d.queue();
+
     this.granules.map(function (granule) {
-      Granules.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
-        if (err) {
-          console.error(`Updating granule ${granule.name} failed`, err);
-        } else {
-          console.log(`${granule.name} marked as sent on dynamoDB`);
-        }
-      });
+      var write = function (callback) {
+        Granules.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
+          if (err) {
+            console.error(`Updating granule ${granule.name} failed`, err);
+          } else {
+            console.log(`${granule.name} marked as sent on dynamoDB`);
+          }
+          callback(err);
+        });
+      };
+      q.defer(write);
+    });
+
+    q.awaitAll(function (error) {
+      self.cb(error, 'done');
     });
   }
 };
@@ -224,9 +245,9 @@ Granules.prototype = {
  * Iterate through an array of datasets and get granules for each dataset record
  * @param {Object} datasets an array of DyanmodDB records
  */
-var processDatasets = function (datasets) {
+var processDatasets = function (datasets, cb) {
   datasets.map(function (dataset) {
-    var g = new Granules(dataset);
+    var g = new Granules(dataset, null, cb);
     g.process();
   });
 };
@@ -236,7 +257,7 @@ var processDatasets = function (datasets) {
  * Then look for unprocessed granules in each dataset and
  * send them for processing on AWS datapipeline
  */
-var trigger = function () {
+var trigger = function (cb) {
   // Get the model
   var Dataset = dynamoose.model(
     tables.datasetTableName,
@@ -249,8 +270,8 @@ var trigger = function () {
     if (err) {
       return console.error('Error in scanning dataset table', err);
     }
-    processDatasets(datasets);
+    processDatasets(datasets, cb);
   });
 };
 
-trigger();
+module.exports = trigger;
