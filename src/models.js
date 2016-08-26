@@ -34,6 +34,9 @@ var dataSetSchema = new dynamoose.Schema(
         },
         granulesFiles: {
           type: Number
+        },
+        format: {
+          type: String
         }
       }
     },
@@ -51,6 +54,9 @@ var dataSetSchema = new dynamoose.Schema(
         },
         granulesFiles: {
           type: Number
+        },
+        format: {
+          type: String
         }
       }
     },

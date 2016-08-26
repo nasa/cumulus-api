@@ -10,14 +10,16 @@ var populateDataSets = function () {
     shortName: 'wwlln',
     daacName: 'Global Hydrology Resource Center DAAC',
     sourceDataBucket: {
-      bucketName: 'cumulus-source',
-      prefix: 'wwlln/source/',
-      granulesFiles: 1
+      bucketName: 'cumulus-ghrc-raw',
+      prefix: 'wwlln/',
+      granulesFiles: 1,
+      format: '.loc'
     },
     destinationDataBucket: {
-      bucketName: 'cumulus-source',
-      prefix: 'wwlln/processed/',
-      granulesFiles: 3
+      bucketName: 'cumulus-ghrc-archive',
+      prefix: 'wwlln/',
+      granulesFiles: 1,
+      format: '.loc.nc'
     },
     dataPipeLine: {
       template: {
@@ -30,13 +32,24 @@ var populateDataSets = function () {
           id: 'Default',
           pipelineLogUri: '#{myS3LogsPath}'
         }, {
+          name: 'GetFileList',
+          id: 'GetFileList',
+          runsOn: {
+            ref: 'CumulusEC2Instance'
+          },
+          type: 'ShellCommandActivity',
+          command: 'mkdir -p /tmp/source && mkdir -p /tmp/dst && mkdir -p /tmp/list && aws s3 cp #{myS3FilesList} /tmp/list/files.json'
+        }, {
           name: 'CopySourceData',
           id: 'CopySourceData',
           runsOn: {
             ref: 'CumulusEC2Instance'
           },
+          dependsOn: {
+            ref: 'GetFileList'
+          },
           type: 'ShellCommandActivity',
-          command: 'mkdir -p /tmp/source && mkdir -p /tmp/dst && aws s3 cp #{myS3FilesList} files.json && cat files.json | jq -r \'.files | map(.) | join("\n")\' | while read line ; do aws s3 cp $line /tmp/source/; done'
+          command: 'docker run --rm -v /tmp/source:/tmp/in -v /tmp/list:/tmp/list -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_DEFAULT_REGION=us-east-1" developmentseed/cumulus-test:granule_handler download -f /tmp/list/files.json -p somekey'
         }, {
           name: 'WwllnProcess',
           id: 'WwllnProcess',
@@ -47,7 +60,7 @@ var populateDataSets = function () {
             ref: 'CopySourceData'
           },
           type: 'ShellCommandActivity',
-          command: 'docker pull developmentseed/cumulus-test:wwlln-processing > /dev/null && docker run -v /tmp/source:/ftp/private/hs3/internal/WWLLN/HS3storms -v /tmp/dst:/astage/ops/hs3wwlln --rm developmentseed/cumulus-test:wwlln-processing > /dev/null; curl -k #{mySplunkHECURL}?host=${HOSTNAME} --header \'Authorization: Splunk #{mySplunkHECToken}\' --header \'X-Splunk-Request-Channel: $(uuidgen)\' --data-binary \'$(docker logs -t $(docker ps -q -n=1))\''
+          command: 'docker pull developmentseed/cumulus-test:wwlln-processing && docker run -v /tmp/source:/ftp/private/hs3/internal/WWLLN/HS3storms -v /tmp/dst:/astage/ops/hs3wwlln --rm developmentseed/cumulus-test:wwlln-processing'
         }, {
           name: 'WwllnMetadata',
           id: 'WwllnMetadata',
@@ -58,7 +71,7 @@ var populateDataSets = function () {
             ref: 'WwllnProcess'
           },
           type: 'ShellCommandActivity',
-          command: 'docker pull developmentseed/cumulus-test:wwlln-metadata > /dev/null && docker run -v /tmp/dst:/s3/wwlln --rm developmentseed/cumulus-test:wwlln-metadata > /dev/null; curl -k #{mySplunkHECURL}?host=${HOSTNAME} --header \'Authorization: Splunk #{mySplunkHECToken}\' --header \'X-Splunk-Request-Channel: $(uuidgen)\' --data-binary \'$(docker logs -t $(docker ps -q -n=1))\''
+          command: 'docker pull developmentseed/cumulus-test:wwlln-metadata && docker run -v /tmp/dst:/s3/wwlln --rm developmentseed/cumulus-test:wwlln-metadata'
         }, {
           name: 'CopyProcessedData',
           id: 'CopyProcessedData',
@@ -69,15 +82,15 @@ var populateDataSets = function () {
             ref: 'WwllnMetadata'
           },
           type: 'ShellCommandActivity',
-          command: 'aws s3 sync /tmp/dst #{myUploadBucketPath}'
+          command: 'docker run --rm -v /tmp/dst:/tmp/out -v /tmp/list:/tmp/list -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_DEFAULT_REGION=us-east-1" developmentseed/cumulus-test:granule_handler upload -f /tmp/list/files.json -p somekey'
         }, {
           resourceRole: 'DataPipelineDefaultResourceRole',
           role: 'DataPipelineDefaultRole',
-          imageId: 'ami-64a6c773',
+          imageId: 'ami-e8ed7eff',
           instanceType: 't2.micro',
           name: 'CumulusDataPipeLine',
           keyPair: 'cumulus-scisco',
-          securityGroupIds: ['sg-3e11b044'],
+          securityGroupIds: ['sg-f179698a'],
           id: 'CumulusEC2Instance',
           type: 'Ec2Resource',
           actionOnTaskFailure: 'terminate',
@@ -89,7 +102,7 @@ var populateDataSets = function () {
       },
       parameters: {
         parameters: [{
-          watermark: 's3://cumulus-source/files.json',
+          watermark: 's3://cumulus-ghrc-logs/files.json',
           id: 'myS3FilesList',
           type: 'String',
           description: 'S3 path to the file containing the list of data files'
@@ -97,12 +110,12 @@ var populateDataSets = function () {
           id: 'myUploadBucketPath',
           type: 'String',
           description: 'S3 path to upload processed files',
-          default: 's3://cumulus-source/wwlln/processed'
+          default: 's3://cumulus-ghrc-archive/wwlln/'
         }, {
           id: 'myS3LogsPath',
           type: 'AWS::S3::ObjectKey',
           description: 'S3 folder for logs',
-          default: 's3://cumulus-source/logs'
+          default: 's3://cumulus-ghrc-logs/logs'
         }, {
           id: 'mySplunkHECToken',
           type: 'String',
