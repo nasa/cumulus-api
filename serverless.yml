@@ -44,3 +44,7 @@ functions:
       - http:
           path: datasets
           method: post
+
+  # trigger lambda
+  trigger:
+    handler: handler.trigger
