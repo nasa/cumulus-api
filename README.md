@@ -8,6 +8,12 @@ This is app primarily built to run on AWS Lambda and AWS ApiGateway. It is possi
 
     $ npm install
 
+Make sure to set:
+
+    $ export AWS_ACCESS_KEY_ID="Your AWS Access Key ID"
+    $ export AWS_SECRET_ACCESS_KEY="Your AWS Secret Access Key"
+    $ export AWS_REGION="us-east-1"
+
 For test you need to run a local copy of dynamoDB using docker
 
     $ docker run --rm -p 8000:8000 --name dynamodb peopleperhour/dynamodb
