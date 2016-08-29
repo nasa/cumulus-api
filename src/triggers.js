@@ -1,6 +1,5 @@
 'use strict';
 
-var _ = require('lodash');
 var path = require('path');
 var d = require('./queue');
 var AWS = require('aws-sdk');
@@ -18,20 +17,15 @@ var datapipeline = new AWS.DataPipeline();
  * @param {Object} dataset a Dataset DyanmodDB record
  * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds
  */
-var Granules = function (dataset, bucketName, cb) {
+var Granules = function (dataset, granules, pipelineGranules) {
   this.dataset = dataset;
-  this.pipelineGranules = [];
-  this.bucketName = bucketName || 'cumulus-ghrc-logs';
+  this.pipelineGranules = pipelineGranules;
+  this.bucketName = 'cumulus-ghrc-logs';
   this.keyName = path.join('piplines', dataset.name, `pipeline_files_${Date.now()}.json`);
   this.s3Uri = 's3://' + path.join(this.bucketName, this.keyName);
-  this.pipelineGranules = {
-    datasetName: dataset.name,
-    sourceDataBucket: dataset.sourceDataBucket,
-    destinationDataBucket: dataset.destinationDataBucket,
-    granules: []
-  };
-  this.granules;
-  this.cb = cb;
+  this.granules = granules;
+  this.cb;
+  this.pipelineId;
 };
 
 Granules.prototype = {
@@ -39,36 +33,9 @@ Granules.prototype = {
   /**
    * Start processing the granules for a given dataset
    */
-  process: function () {
-    this.getGranules();
-  },
-
-  /**
-   * Gets all unprocessed granules for a given dataset from DyanomoDB
-   * and send them for processing by AWS datapipeline
-   */
-  getGranules: function () {
-    var self = this;
-    var Granules = dynamoose.model(
-      tables.granulesTablePrefix + this.dataset.shortName.toLowerCase(),
-      models.granuleSchema,
-      {
-        create: false,
-        waitForActive: false
-      }
-    );
-
-    Granules.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {
-      if (err) {
-        return console.error(`Error scanning granules for ${self.dataset.name}`, err);
-      }
-
-      if (granules.length > 1) {
-        self.processGranules(granules);
-      } else {
-        return self.cb('no granules to process');
-      }
-    });
+  process: function (cb) {
+    this.cb = cb;
+    this.processGranules();
   },
 
   /**
@@ -77,40 +44,25 @@ Granules.prototype = {
    * and mark the records on DynamoDB
    * @param {Object} granules a list of all granules that have to be processed by datapipeline
    */
-  processGranules: function (granules) {
+  processGranules: function () {
     var self = this;
-    self.granules = granules;
 
-    if (granules) {
-      console.log(`${granules.length} granules from ${self.dataset.name} are ready to be processed`);
+    console.log('Uploading list of datapipeline files to S3');
+    // upload it to S3
 
-      granules.map(function (granule) {
-        console.log(`Processing ${granule.name}`);
+    s3.putObject({
+      Bucket: self.bucketName,
+      Key: self.keyName,
+      Body: JSON.stringify(self.pipelineGranules),
+      ContentType: 'application/json',
+      ACL: 'public-read'
+    }, function (err, data) {
+      if (err) {
+        return console.error(`Error pushing ${self.s3Uri} to S3`, err);
+      }
 
-        // get the name of each granules
-        self.pipelineGranules.granules.push({
-          name: granule.name,
-          files: granule.sourceS3Uris
-        });
-      });
-
-      console.log('Uploading list of datapipeline files to S3');
-      // upload it to S3
-
-      s3.putObject({
-        Bucket: self.bucketName,
-        Key: self.keyName,
-        Body: JSON.stringify(self.pipelineGranules),
-        ContentType: 'application/json',
-        ACL: 'public-read'
-      }, function (err, data) {
-        if (err) {
-          return console.error(`Error pushing ${self.s3Uri} to S3`, err);
-        }
-
-        self.createPipeline();
-      });
-    }
+      self.createPipeline();
+    });
   },
 
   /**
@@ -120,7 +72,7 @@ Granules.prototype = {
     var self = this;
 
     // create a new data pipeline
-    var pipelineName = `cumulus_${self.dataset.name}_${self.pipelineGranules.granules.length}_${Date.now()}`;
+    var pipelineName = `cumulus_${self.dataset.name}_${self.granules.length}_${Date.now()}`;
     console.log(`Creating pipeline ${pipelineName}`);
 
     var params = {
@@ -137,9 +89,11 @@ Granules.prototype = {
 
     datapipeline.createPipeline(params, function (err, pipeline) {
       if (err) {
-        return console.error(`Creating pipeline ${pipelineName} failed`, err);
+        console.error(`Creating pipeline ${pipelineName} failed`, err);
+        return this.cb(err);
       }
 
+      self.pipelineId = pipeline.pipelineId;
       self.putPipelineDefinition(pipeline.pipelineId);
     });
   },
@@ -166,7 +120,8 @@ Granules.prototype = {
 
     datapipeline.putPipelineDefinition(params, function (err, response) {
       if (err) {
-        return console.error(`putting pipeline ${pipelineId} failed`, err);
+        console.error(`putting pipeline ${pipelineId} failed`, err);
+        return this.cb(err);
       }
 
       if (!response.errored) {
@@ -196,9 +151,11 @@ Granules.prototype = {
     console.log(`Activating pipeline  ${pipelineId}`);
     datapipeline.activatePipeline(params, function (err, data) {
       if (err) {
-        return console.error(`Activating pipeline ${pipelineId} failed`, err);
+        console.error(`Activating pipeline ${pipelineId} failed`, err);
+        this.cb(err);
+      } else {
+        return self.markGranulesAsSent();
       }
-      self.markGranulesAsSent();
     });
   },
 
@@ -208,7 +165,7 @@ Granules.prototype = {
    */
   markGranulesAsSent: function () {
     var self = this;
-    var Granules = dynamoose.model(
+    var GranulesModel = dynamoose.model(
       'cumulus_granules_' + this.dataset.shortName.toLowerCase(),
       models.granuleSchema,
       {
@@ -223,11 +180,11 @@ Granules.prototype = {
 
     this.granules.map(function (granule) {
       var write = function (callback) {
-        Granules.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
+        GranulesModel.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
           if (err) {
             console.error(`Updating granule ${granule.name} failed`, err);
           } else {
-            console.log(`${granule.name} marked as sent on dynamoDB`);
+            // console.log(`${granule.name} marked as sent on dynamoDB`);
           }
           callback(err);
         });
@@ -236,9 +193,87 @@ Granules.prototype = {
     });
 
     q.awaitAll(function (error) {
-      self.cb(error, 'done');
+      self.cb(error, {
+        pipelineId: self.pipelineId
+      });
     });
   }
+};
+
+var batching = function (dataset, cb) {
+  var GranulesModel = dynamoose.model(
+    tables.granulesTablePrefix + dataset.shortName.toLowerCase(),
+    models.granuleSchema,
+    {
+      create: false,
+      waitForActive: false
+    }
+  );
+
+  // GranulesModel.scan('waitForPipelineSince').gt(0).exec(function (err, granules) {
+  GranulesModel.scan().exec(function (err, granules) {
+    if (err) {
+      return console.error(`Error scanning granules for ${dataset.name}`, err);
+    }
+
+    if (granules.length > 0) {
+      var pipelineGranules = {
+        datasetName: dataset.name,
+        sourceDataBucket: dataset.sourceDataBucket,
+        destinationDataBucket: dataset.destinationDataBucket,
+        granules: []
+      };
+
+      var granulesList = [];
+      var q = d.queue();
+
+      granules.map(function (granule) {
+        // console.log(`Processing ${granule.name}`);
+
+        // get the name of each granules
+        pipelineGranules.granules.push({
+          name: granule.name,
+          files: granule.sourceS3Uris
+        });
+
+        granulesList.push(granule);
+
+        if (granulesList.length > dataset.dataPipeLine.batchLimit - 1) {
+          q.defer(function (callback) {
+            var g = new Granules(
+              dataset,
+              granulesList.slice(),
+              Object.assign({}, pipelineGranules)
+            );
+            g.process(callback);
+          });
+
+          granulesList = [];
+          pipelineGranules.granules = [];
+        }
+      });
+
+      // send the remaining granules to a separate pipeline
+      if (granulesList.length > 0) {
+        q.defer(function (callback) {
+          var g = new Granules(
+            dataset,
+            granulesList,
+            Object.assign({}, pipelineGranules)
+          );
+          g.process(callback);
+        });
+      }
+
+      q.awaitAll(function (error, pipelineIds) {
+        cb(error, {
+          pipelineIds: pipelineIds
+        });
+      });
+    } else {
+      return cb('no granules to process');
+    }
+  });
 };
 
 /**
@@ -247,8 +282,7 @@ Granules.prototype = {
  */
 var processDatasets = function (datasets, cb) {
   datasets.map(function (dataset) {
-    var g = new Granules(dataset, null, cb);
-    g.process();
+    batching(dataset, cb);
   });
 };
 
@@ -275,3 +309,8 @@ var trigger = function (cb) {
 };
 
 module.exports = trigger;
+
+trigger(function (err, results) {
+  console.log(err);
+  console.log(results);
+});
