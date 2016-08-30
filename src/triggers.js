@@ -26,6 +26,7 @@ var Granules = function (dataset, granules, pipelineGranules) {
   this.granules = granules;
   this.cb;
   this.pipelineId;
+  this.piplineName;
 };
 
 Granules.prototype = {
@@ -72,12 +73,12 @@ Granules.prototype = {
     var self = this;
 
     // create a new data pipeline
-    var pipelineName = `cumulus_${self.dataset.name}_${self.granules.length}_${Date.now()}`;
-    console.log(`Creating pipeline ${pipelineName}`);
+    this.pipelineName = `cumulus_${self.dataset.name}_${self.granules.length}_${Date.now()}`;
+    console.log(`Creating pipeline ${self.pipelineName}`);
 
     var params = {
-      name: pipelineName,
-      uniqueId: pipelineName,
+      name: self.pipelineName,
+      uniqueId: self.pipelineName,
       description: `Processing pipeline for ${self.dataset.name}`,
       tags: [
         {
@@ -89,12 +90,12 @@ Granules.prototype = {
 
     datapipeline.createPipeline(params, function (err, pipeline) {
       if (err) {
-        console.error(`Creating pipeline ${pipelineName} failed`, err);
+        console.error(`Creating pipeline ${self.pipelineName} failed`, err);
         return this.cb(err);
       }
 
       self.pipelineId = pipeline.pipelineId;
-      self.putPipelineDefinition(pipeline.pipelineId);
+      self.putPipelineDefinition();
     });
   },
 
@@ -102,10 +103,10 @@ Granules.prototype = {
    * Adds pipeline definition to a datapipeline
    * @param {String} pipelineId an AWS Pipeline ID
    */
-  putPipelineDefinition: function (pipelineId) {
+  putPipelineDefinition: function () {
     var self = this;
     var params = {
-      pipelineId: pipelineId,
+      pipelineId: self.pipelineId,
       pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
       parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes'),
       parameterValues: [
@@ -116,19 +117,48 @@ Granules.prototype = {
       ]
     };
 
-    console.log(`Putting definition for  ${pipelineId}`);
+    console.log(`Putting definition for  ${self.pipelineId}`);
 
     datapipeline.putPipelineDefinition(params, function (err, response) {
       if (err) {
-        console.error(`putting pipeline ${pipelineId} failed`, err);
+        console.error(`putting pipeline ${self.pipelineId} failed`, err);
         return this.cb(err);
       }
 
       if (!response.errored) {
-        self.activatePipeline(pipelineId);
+        self.addPipelineToDynamoDB();
       } else {
-        return console.error(`putting pipeline ${pipelineId} failed`, response.validationErrors);
+        return console.error(`putting pipeline ${self.pipelineId} failed`, response.validationErrors);
       }
+    });
+  },
+
+  addPipelineToDynamoDB: function () {
+    var self = this;
+
+    var PipelineModel = dynamoose.model(
+      tables.datapipelineTableName,
+      models.dataPipeLineSchema,
+      {
+        create: true,
+        waitForActive: true
+      }
+    );
+
+    var newPipeline = new PipelineModel({
+      pipelineId: self.pipelineId,
+      pipelineName: self.pipelineName,
+      dataset: self.dataset.name,
+      granules: self.s3Uri,
+      timeStarted: Date.now()
+    });
+
+    newPipeline.save(function (err) {
+      if (err) {
+        return self.cb(err);
+      }
+
+      self.activatePipeline();
     });
   },
 
@@ -136,10 +166,10 @@ Granules.prototype = {
    * Activates an AWS datapipeline
    * @param {String} pipelineId an AWS Pipeline ID
    */
-  activatePipeline: function (pipelineId) {
+  activatePipeline: function () {
     var self = this;
     var params = {
-      pipelineId: pipelineId,
+      pipelineId: self.pipelineId,
       parameterValues: [
         {
           id: 'myS3FilesList',
@@ -148,10 +178,10 @@ Granules.prototype = {
       ]
     };
 
-    console.log(`Activating pipeline  ${pipelineId}`);
+    console.log(`Activating pipeline  ${self.pipelineId}`);
     datapipeline.activatePipeline(params, function (err, data) {
       if (err) {
-        console.error(`Activating pipeline ${pipelineId} failed`, err);
+        console.error(`Activating pipeline ${self.pipelineId} failed`, err);
         this.cb(err);
       } else {
         return self.markGranulesAsSent();
