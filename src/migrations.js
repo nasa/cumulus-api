@@ -11,7 +11,7 @@ console.log('Creating Granules Table for WWLLN');
 dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
 
 console.log('Creating datapipeline Table');
-dynamoose.model(tb.datapipelineTableName, models.granuleSchema, {create: true});
+dynamoose.model(tb.datapipelineTableName, models.dataPipeLineSchema, {create: true});
 
 // Migrations such as updating the throughput or adding new global indexes should go here
 //

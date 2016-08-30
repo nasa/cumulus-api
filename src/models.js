@@ -150,11 +150,11 @@ var granuleSchema = new dynamoose.Schema(
 // Schema for granule datasets
 var dataPipeLineSchema = new dynamoose.Schema(
   {
-    piplineId: {
+    pipelineId: {
       type: String,
       hashKey: true
     },
-    piplineName: {
+    pipelineName: {
       type: String,
       required: true
     },
@@ -163,14 +163,8 @@ var dataPipeLineSchema = new dynamoose.Schema(
       required: true
     },
     granules: {
-      // list of source files on DAAC servers
-      type: 'list',
-      list: [
-        {
-          type: String
-        }
-      ],
-      required: true
+      // link to the list holding all files
+      type: String
     },
     timeStarted: {
       // The time processing started inside the pipeline
@@ -194,4 +188,4 @@ var dataPipeLineSchema = new dynamoose.Schema(
 
 module.exports.dataSetSchema = dataSetSchema;
 module.exports.granuleSchema = granuleSchema;
-module.exports.dataPipeLine = dataPipeLineSchema;
+module.exports.dataPipeLineSchema = dataPipeLineSchema;
