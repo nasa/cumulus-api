@@ -140,7 +140,7 @@ var granuleSchema = new dynamoose.Schema(
   {
     throughput: {
       read: 15,
-      write: 10,
+      write: 10
     },
     timestamps: true,
     useDocumentTypes: true
@@ -174,6 +174,9 @@ var dataPipeLineSchema = new dynamoose.Schema(
     timeFinished: {
       // The time processing finished inside the ec2 instance
       type: Date
+    },
+    deleted: {
+      type: Boolean
     }
   },
   {
