@@ -340,7 +340,7 @@ var trigger = function (cb) {
 
 module.exports = trigger;
 
-trigger(function (err, results) {
-  console.log(err);
-  console.log(results);
-});
+// trigger(function (err, results) {
+//   console.log(err);
+//   console.log(results);
+// });
