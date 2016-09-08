@@ -2,48 +2,71 @@ service: cumulus-workflow-engine # NOTE: update this with your service name
 
 provider:
   name: aws
+  apiKeys:
+    - cumulus-admin
   runtime: nodejs4.3
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - "*"
 
 functions:
 
   # list all granules
   listGranules:
     handler: handler.listGranules
+    timeout: 300
     events:
       - http:
           path: granules/{dataSet}
           method: get
+          private: true
 
   getGranules:
     handler: handler.getGranules
+    timeout: 300
     events:
       - http:
           path: granules/{dataSet}/{granuleName}
           method: get
+          private: true
 
   # list all dataset records
   listDataSet:
     handler: handler.listDataSets
+    timeout: 300
     events:
       - http:
           path: datasets
           method: get
+          private: true
 
   # get a particular dataset
   getDataSet:
     handler: handler.getDataSet
+    timeout: 300
     events:
       - http:
           path: datasets/{short_name}
           method: get
+          private: true
 
   # post a new dataSet record
   postDataSet:
     handler: handler.postDataSet
+    timeout: 300
     events:
       - http:
           path: datasets
           method: post
+          private: true
 
   # trigger lambda
   trigger:
