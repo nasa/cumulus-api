@@ -21,6 +21,8 @@ process.env.GRANULES_PREFIX = granulesTablePrefix;
 var cont = require('../src/controllers');
 var models = require('../src/models');
 var tb = require('../src/tables');
+var wwlln = require('../src/pipeline/wwlln');
+var fixtures = require('../src/fixtures');
 
 describe('Test controllers', function () {
   this.timeout(10000);
@@ -28,25 +30,6 @@ describe('Test controllers', function () {
   var Dataset;
   var GranulesWWLN;
   var testDataSetRecord = 'WWLLN';
-  var sampleRecord = {
-    name: testDataSetRecord,
-    shortName: testDataSetRecord,
-    daacName: 'Global Hydrology Resource Center DAAC',
-    sourceDataBucket: {
-      bucketName: 'cumulus-staging',
-      prefix: 'wwlln/source/',
-      granulesFiles: 1
-    },
-    destinationDataBucket: {
-      bucketName: 'cumulus-staging',
-      prefix: 'wwlln/processed/',
-      granulesFiles: 3
-    },
-    dataPipeLine: {
-      template: 's3://cumulus-staging/wwlln.json',
-      batchLimit: 20
-    }
-  };
 
   var sampleGranule = {
     'lastModified': 1438142400,
@@ -62,29 +45,22 @@ describe('Test controllers', function () {
 
   before(function (done) {
     // Create the tables
-    Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
-    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
-
-    // Add new dataset record for testing
-    var newRecord = new Dataset(sampleRecord);
-
-    // Add granules
-    var newGranule = new GranulesWWLN(sampleGranule);
-
-    // save all
-    newRecord.save()
-             .then(
+    fixtures(null, function (err) {
+      should.not.exist(err);
+      Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
+      GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
+      var newGranule = new GranulesWWLN(sampleGranule);
       newGranule.save(function () {
         done();
-      })
-    );
+      });
+    });
   });
 
   describe('Test dataset controllers', function () {
     it('should list all datasets', function (done) {
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
-        should.equal(datasets.length, 1);
+        should.equal(datasets.length, 2);
         should.equal(datasets[0].name, testDataSetRecord);
         done();
       });
@@ -115,24 +91,24 @@ describe('Test controllers', function () {
     });
 
     it('should add one record', function (done) {
-      sampleRecord.name = 'WWLLN2';
+      wwlln.name = 'WWLLN2';
 
       cont.postDataSet({
-        body: sampleRecord,
+        body: wwlln,
         headers: {
           Token: 'thisisatesttoken'
         }
       }, function (err, dataset) {
         should.not.exist(err);
-        dataset.should.equal(sampleRecord);
+        dataset.should.equal(wwlln);
         done();
       });
     });
 
-    it('should have two records', function (done) {
+    it('should have three records', function (done) {
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
-        should.equal(datasets.length, 2);
+        should.equal(datasets.length, 3);
         done();
       });
     });
