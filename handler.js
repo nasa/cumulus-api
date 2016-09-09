@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config({silent: true});
 var action = require('./src/controllers');
 var trigger = require('./src/triggers');
 
