@@ -92,7 +92,7 @@ Granules.prototype = {
     datapipeline.createPipeline(params, function (err, pipeline) {
       if (err) {
         console.error(`Creating pipeline ${self.pipelineName} failed`, err);
-        return this.cb(err);
+        return self.cb(err);
       }
 
       self.pipelineId = pipeline.pipelineId;
@@ -139,7 +139,7 @@ Granules.prototype = {
     datapipeline.putPipelineDefinition(params, function (err, response) {
       if (err) {
         console.error(`putting pipeline ${self.pipelineId} failed`, err);
-        return this.cb(err);
+        return self.cb(err);
       }
 
       if (!response.errored) {
@@ -199,7 +199,7 @@ Granules.prototype = {
     datapipeline.activatePipeline(params, function (err, data) {
       if (err) {
         console.error(`Activating pipeline ${self.pipelineId} failed`, err);
-        this.cb(err);
+        self.cb(err);
       } else {
         return self.markGranulesAsSent();
       }
@@ -280,7 +280,8 @@ var batching = function (dataset, cb) {
         // get the name of each granules
         pipelineGranules.granules.push({
           name: granule.name,
-          files: granule.sourceS3Uris
+          sourceS3Uris: granule.sourceS3Uris,
+          destinationS3Uris: granule.destinationS3Uris
         });
 
         granulesList.push(granule);
@@ -370,5 +371,3 @@ var trigger = function (dataset, cb) {
 };
 
 module.exports = trigger;
-
-
