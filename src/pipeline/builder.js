@@ -67,7 +67,7 @@ var getDockerStep = function (name, group, dockerImage, dependsOn) {
     id: name,
     workerGroup: group,
     type: 'ShellCommandActivity',
-    command: `docker pull ${dockerImage} && docker run --rm -v /tmp/data:/work/data -t ${dockerImage} data/input data/output`
+    command: `aws ecr get-login --region us-east-1 | source /dev/stdin && docker pull ${dockerImage} && docker run --rm -e "SPLUNK_HOST=#{mySplunkHost}" -e "SPLUNK_USERNAME=#{mySplunkUsername}" -e "SPLUNK_PASSWORD=#{mySplunkPassword}" -e "DATASET_ID=#{myDatasetID}" -e "PIPELINE_ID=@pipelineId" -v /tmp/data:/work/data -t ${dockerImage} data/input data/output`
   };
 
   setDependency(step, dependsOn);
@@ -82,30 +82,30 @@ var parameters = {
     type: 'String',
     description: 'S3 path to the file containing the list of data files'
   }, {
-    id: 'myUploadBucketPath',
-    type: 'String',
-    description: 'S3 path to upload processed files',
-    default: 's3://cumulus-ghrc-archive/wwlln/'
-  }, {
     id: 'myS3LogsPath',
     type: 'AWS::S3::ObjectKey',
     description: 'S3 folder for logs',
     default: 's3://cumulus-ghrc-logs/logs'
   }, {
-    id: 'mySplunkHECToken',
+    id: 'mySplunkHost',
     type: 'String',
-    description: 'Splunk HTTP Event Collector token; in production, this will be a Secret',
-    default: process.env.mySplunkHECToken
+    description: 'Splunk Host address',
+    default: 'HOST'
   }, {
-    id: 'mySplunkHECURL',
+    id: 'mySplunkUsername',
     type: 'String',
-    description: 'Splunk HTTP Event Collector URL',
-    default: 'https://107.21.62.189:8087/services/collector/raw'
+    description: 'Splunk Username',
+    default: 'USERNAME'
   }, {
-    id: 'myEarthDataPass',
+    id: 'mySplunkPassword',
     type: 'String',
-    description: 'EarthData Pass',
-    default: process.env.myEarthDataPass
+    description: 'Splunk PASSWORD',
+    default: 'PASSWORD'
+  }, {
+    id: 'myDatasetID',
+    type: 'String',
+    description: 'DatasetID of the dataset being processed e.g. wwlln',
+    default: 'DATASETID'
   }]
 };
 
