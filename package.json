@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cumulus-nasa/workflow-engine#readme",
   "dependencies": {
     "aws-sdk": "^2.5.1",
+    "dotenv": "^2.0.0",
     "dynamoose": "^0.6.0",
     "lodash": "^4.14.2",
     "node-env-file": "^0.1.8"
