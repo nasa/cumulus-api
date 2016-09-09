@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var path = require('path');
 var d = require('./queue');
 var AWS = require('aws-sdk');
@@ -113,6 +114,22 @@ Granules.prototype = {
         {
           id: 'myS3FilesList',
           stringValue: self.s3Uri
+        },
+        {
+          id: 'mySplunkHost',
+          stringValue: process.env.mySplunkHost
+        },
+        {
+          id: 'mySplunkUsername',
+          stringValue: process.env.mySplunkUsername
+        },
+        {
+          id: 'mySplunkPassword',
+          stringValue: process.env.mySplunkPassword
+        },
+        {
+          id: 'myDatasetID',
+          stringValue: self.dataset.name
         }
       ]
     };
@@ -321,7 +338,7 @@ var processDatasets = function (datasets, cb) {
  * Then look for unprocessed granules in each dataset and
  * send them for processing on AWS datapipeline
  */
-var trigger = function (cb) {
+var trigger = function (dataset, cb) {
   // Get the model
   var Dataset = dynamoose.model(
     tables.datasetTableName,
@@ -329,18 +346,29 @@ var trigger = function (cb) {
     {create: true}
   );
 
+  var search = {};
+
+  if (dataset) {
+    search.name = {
+      eq: dataset
+    };
+  }
+
   // Get the list of all datasets
-  Dataset.scan().exec(function (err, datasets) {
+  Dataset.scan(search).exec(function (err, datasets) {
     if (err) {
-      return console.error('Error in scanning dataset table', err);
+      return cb(err);
     }
-    processDatasets(datasets, cb);
+
+    if (_.has(datasets[0], 'name')) {
+      processDatasets(datasets, cb);
+    } else {
+      cb(`Dataset ${dataset} was not found`);
+    }
+    //
   });
 };
 
 module.exports = trigger;
 
-// trigger(function (err, results) {
-//   console.log(err);
-//   console.log(results);
-// });
+
