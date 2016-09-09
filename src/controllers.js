@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var dynamoose = require('dynamoose');
+var splunkService = require('./splunk');
 var models = require('./models');
 var utils = require('./utils');
 var tb = require('./tables');
@@ -82,5 +83,64 @@ module.exports.getGranules = function (req, cb) {
     }
 
     return cb(err, dataset);
+  });
+};
+
+module.exports.getErrorCounts = function (req, cb) {
+  // This query relies on `is_error` being 0 or 1
+  let query = 'search * | stats sum(is_error) by dataset_id';
+
+  let params = {
+    output_mode: 'JSON',
+    // Setting count to 0 returns _all_ records
+    count: 0
+  };
+  if (req.query.earliestDate) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
+  if (req.query.latestDate) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
+
+  splunkService.oneshotSearch(query, params, (err, results) => {
+    if (err) { return cb(err.message, null); }
+
+    results = results.results;
+    results.forEach(result => {
+      result.count = parseInt(result['sum(is_error)']);
+      delete result['sum(is_error)'];
+    });
+
+    return cb(null, results);
+  });
+};
+
+module.exports.listErrors = function (req, cb) {
+  const FIELDS_TO_RETURN = ['timestamp', 'dataset_id', 'process', 'message'];
+
+  // If no dataset is specified, return all datasets
+  let datasetID = req.path.dataSet || '*';
+
+  // Splunk's query syntax is case-insensitive, including in parameters
+  let query = `search dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
+
+  let params = {
+    output_mode: 'JSON',
+    count: utils.getLimit(req.query)
+  };
+  if (req.query.earliestDate) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
+  if (req.query.latestDate) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
+
+  splunkService.oneshotSearch(query, params, (err, results) => {
+    if (err) { return cb(err.message, null); }
+
+    let fullResults = results.results;
+    results = [];
+
+    fullResults.forEach(fullResult => {
+      let result = {};
+      FIELDS_TO_RETURN.forEach(field => {
+        result[field] = fullResult[field];
+      });
+      results.push(result);
+    });
+
+    return cb(null, results);
   });
 };
