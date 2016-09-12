@@ -88,7 +88,7 @@ module.exports.getGranules = function (req, cb) {
 
 module.exports.getErrorCounts = function (req, cb) {
   // This query relies on `is_error` being 0 or 1
-  let query = 'search * | stats sum(is_error) by dataset_id';
+  let query = 'search index=main | stats sum(is_error) by dataset_id';
 
   let params = {
     output_mode: 'JSON',
@@ -118,7 +118,7 @@ module.exports.listErrors = function (req, cb) {
   let datasetID = req.path.dataSet || '*';
 
   // Splunk's query syntax is case-insensitive, including in parameters
-  let query = `search dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
+  let query = `search index=main AND dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
 
   let params = {
     output_mode: 'JSON',
