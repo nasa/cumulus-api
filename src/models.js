@@ -98,7 +98,7 @@ var granuleSchema = new dynamoose.Schema(
     },
     waitForPipelineSince: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     sourceFiles: {
       // list of source files on DAAC servers
