@@ -39,16 +39,9 @@ module.exports.trigger = function (event, context, cb) {
   triggers.trigger(event.dataset, cb);
 };
 
-// triggers.trigger('WWLLN', function (err, results) {
-//   console.log(err);
-//   console.log(results);
-// });
-
-// action.listGranules({
-//         path: {
-//           dataSet: 'WWLLN'
-//         }
-//       }, function (err, results) {
-//   console.log(JSON.stringify(results));
-//   // return cb(err, results);
-// });
+if (require.main === module) {
+  triggers.trigger('wwlln', function (err, results) {
+    console.log(err);
+    console.log(results);
+  });
+}
