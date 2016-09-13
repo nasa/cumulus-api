@@ -109,29 +109,7 @@ Granules.prototype = {
     var params = {
       pipelineId: self.pipelineId,
       pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
-      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes'),
-      parameterValues: [
-        {
-          id: 'myS3FilesList',
-          stringValue: self.s3Uri
-        },
-        {
-          id: 'mySplunkHost',
-          stringValue: process.env.mySplunkHost
-        },
-        {
-          id: 'mySplunkUsername',
-          stringValue: process.env.mySplunkUsername
-        },
-        {
-          id: 'mySplunkPassword',
-          stringValue: process.env.mySplunkPassword
-        },
-        {
-          id: 'myDatasetID',
-          stringValue: self.dataset.name
-        }
-      ]
+      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes')
     };
 
     console.log(`Putting definition for  ${self.pipelineId}`);
@@ -190,7 +168,23 @@ Granules.prototype = {
       parameterValues: [
         {
           id: 'myS3FilesList',
-          stringValue: self.s3Uri
+          stringValue: this.keyName
+        },
+        {
+          id: 'mySplunkHost',
+          stringValue: process.env.mySplunkHost
+        },
+        {
+          id: 'mySplunkUsername',
+          stringValue: process.env.mySplunkUsername
+        },
+        {
+          id: 'mySplunkPassword',
+          stringValue: process.env.mySplunkPassword
+        },
+        {
+          id: 'myDatasetID',
+          stringValue: self.dataset.name
         }
       ]
     };
