@@ -586,10 +586,12 @@ var populateGranules = function (callback) {
   });
 };
 
-// populateDataSets(null, function (err) {
-//   console.log(err);
-//   console.log('all done');
-// });
+if (require.main === module) {
+  populateDataSets(null, function (err) {
+    console.log(err);
+    console.log('all done');
+  });
+}
 
 module.exports.populateDataSets = populateDataSets;
 module.exports.populateGranules = populateGranules;
