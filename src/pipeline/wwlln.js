@@ -7,15 +7,16 @@ var template = {
   objects: [
     builder.pipelineObj(),
     builder.getDockerArchiver('download', group),
-    builder.getDockerStep('WwllnProcess', group, 'developmentseed/cumulus-test:wwlln-processing', 'GetFileList'),
-    builder.getDockerStep('WwllnMetadata', group, 'developmentseed/cumulus-test:wwlln-metadata', 'WwllnProcess'),
-    builder.getDockerArchiver('upload', group, 'WwllnProcess')
+    builder.getDockerStep('WwllnProcess', group, '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-wwlln:latest', 'Fetch'),
+    builder.metadataStep(group, 'WwllnProcess'),
+    builder.getDockerArchiver('upload', group, 'Metadata'),
+    builder.cleanUpStep(group, 'Push')
   ]
 };
 
 var datasetRecord = {
-  name: 'WWLLN',
-  shortName: 'wwlln',
+  name: 'wwlln',
+  shortName: 'hs3wwlln',
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',

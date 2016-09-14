@@ -183,8 +183,12 @@ Granules.prototype = {
           stringValue: process.env.mySplunkPassword
         },
         {
-          id: 'myDatasetID',
-          stringValue: self.dataset.name
+          id: 'myShortName',
+          stringValue: self.dataset.shortName
+        },
+        {
+          id: 'myCmrPassword',
+          stringValue: process.env.myCmrPassword
         }
       ]
     };
@@ -207,7 +211,7 @@ Granules.prototype = {
   markGranulesAsSent: function () {
     var self = this;
     var GranulesModel = dynamoose.model(
-      'cumulus_granules_' + this.dataset.shortName.toLowerCase(),
+      'cumulus_granules_' + this.dataset.name.toLowerCase(),
       models.granuleSchema,
       {
         create: false,
@@ -272,7 +276,7 @@ var generatePayload = function (dataset, granules) {
 
 var batching = function (dataset, callback) {
   var GranulesModel = dynamoose.model(
-    tables.granulesTablePrefix + dataset.shortName.toLowerCase(),
+    tables.granulesTablePrefix + dataset.name.toLowerCase(),
     models.granuleSchema,
     {
       create: false,

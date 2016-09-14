@@ -46,16 +46,55 @@ var getDockerArchiver = function (type, group, dependsOn) {
     type: 'ShellCommandActivity'
   };
 
+  var dockerImage = '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-archiver:latest';
+
   if (type === 'download') {
-    step.name = 'GetFileList';
+    step.name = 'Fetch';
     step.id = step.name;
-    step.command = 'mkdir -p /tmp/data/input && mkdir -p /tmp/data/output && mkdir -p /tmp/data/list && aws s3 cp #{myS3FilesList} /tmp/data/list/files.json && docker run --rm -v /tmp/data/input:/tmp/in -v /tmp/data/list:/tmp/list -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_DEFAULT_REGION=us-east-1" developmentseed/cumulus-test:granule_handler download -f /tmp/list/files.json -p somekey';
+    step.command = `
+      mkdir -p /tmp/data/input/#{@pipelineId} &&
+      mkdir -p /tmp/data/output/#{@pipelineId} &&
+      mkdir -p /tmp/data/list &&
+      aws s3 cp s3://cumulus-ghrc-logs/#{myS3FilesList} /tmp/data/list/#{myS3FilesList} &&
+      aws ecr get-login --region us-east-1 | source /dev/stdin &&
+      docker pull ${dockerImage} &&
+      docker run
+        --rm
+        -v /tmp/data/input:/tmp/data/input
+        -v /tmp/data/list:/tmp/data/list
+        ${dockerImage} download --payload /tmp/data/list/#{myS3FilesList} --pipelineId #{@pipelineId}`;
   } else if (type === 'upload') {
-    step.name = 'CopyProcessedData';
+    step.name = 'Push';
     step.id = step.name;
-    step.command = 'docker run --rm -v /tmp/data/output:/tmp/out -v /tmp/data/list:/tmp/list -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_DEFAULT_REGION=us-east-1" developmentseed/cumulus-test:granule_handler upload -f /tmp/list/files.json -p somekey';
+    step.command = `
+      aws ecr get-login --region us-east-1 | source /dev/stdin &&
+      docker pull ${dockerImage} &&
+      docker run
+        --rm
+        -v /tmp/data/output:/tmp/data/output
+        -v /tmp/data/list:/tmp/data/list
+        ${dockerImage} upload --payload /tmp/data/list/#{myS3FilesList} --pipelineId #{@pipelineId}`;
   }
 
+  step.command = step.command.replace(/\n/g, ' ').replace(/\s\s/g, '');
+  setDependency(step, dependsOn);
+
+  return step;
+};
+
+var cleanUpStep = function (group, dependsOn) {
+  var step = {
+    name: 'CleanUp',
+    id: 'CleanUp',
+    workerGroup: group,
+    type: 'ShellCommandActivity',
+    command: `
+      rm -rf /tmp/data/list/#{myS3FilesList} &&
+      rm -rf /tmp/data/input/#{@pipelineId} &&
+      rm -rf /tmp/data/output/#{@pipelineId}`
+  };
+
+  step.command = step.command.replace(/\n/g, ' ').replace(/\s\s/g, '');
   setDependency(step, dependsOn);
 
   return step;
@@ -67,9 +106,47 @@ var getDockerStep = function (name, group, dockerImage, dependsOn) {
     id: name,
     workerGroup: group,
     type: 'ShellCommandActivity',
-    command: `aws ecr get-login --region us-east-1 | source /dev/stdin && docker pull ${dockerImage} && docker run --rm -e "SPLUNK_HOST=#{mySplunkHost}" -e "SPLUNK_USERNAME=#{mySplunkUsername}" -e "SPLUNK_PASSWORD=#{mySplunkPassword}" -e "DATASET_ID=#{myDatasetID}" -e "PIPELINE_ID=@pipelineId" -v /tmp/data:/work/data -t ${dockerImage} data/input data/output`
+    command: `
+      aws ecr get-login --region us-east-1 | source /dev/stdin &&
+      docker pull ${dockerImage} &&
+      docker run
+        --rm
+        -e "SPLUNK_HOST=#{mySplunkHost}"
+        -e "SPLUNK_USERNAME=#{mySplunkUsername}"
+        -e "SPLUNK_PASSWORD=#{mySplunkPassword}"
+        -e "SHORT_NAME=#{myShortName}"
+        -v /tmp/data:/tmp/data
+        ${dockerImage} /tmp/data/input/#{@pipelineId} /tmp/data/output/#{@pipelineId}`
   };
 
+  step.command = step.command.replace(/\n/g, ' ').replace(/\s\s/g, '');
+  setDependency(step, dependsOn);
+
+  return step;
+};
+
+var metadataStep = function (group, dependsOn) {
+  var dockerImage = '985962406024.dkr.ecr.us-east-1.amazonaws.com/docker-metadata-push:latest';
+
+  var step = {
+    name: 'Metadata',
+    id: 'Metadata',
+    workerGroup: group,
+    type: 'ShellCommandActivity',
+    command: `
+      aws ecr get-login --region us-east-1 | source /dev/stdin &&
+      docker pull ${dockerImage} &&
+      docker run
+        --rm
+        -e "CMR_PROVIDER=CUMULUS"
+        -e "CMR_USERNAME=devseed"
+        -e "CMR_PASSWORD=#{myCmrPassword}"
+        -e "CMR_CLIENT_ID=Cumulus"
+        -v /tmp/data/output:/tmp/data/output
+        ${dockerImage} /tmp/data/output/#{@pipelineId}`
+  };
+
+  step.command = step.command.replace(/\n/g, ' ').replace(/\s\s/g, '');
   setDependency(step, dependsOn);
 
   return step;
@@ -77,7 +154,7 @@ var getDockerStep = function (name, group, dockerImage, dependsOn) {
 
 var parameters = {
   parameters: [{
-    watermark: 's3://cumulus-ghrc-logs/files.json',
+    default: 's3://cumulus-ghrc-logs/files.json',
     id: 'myS3FilesList',
     type: 'String',
     description: 'S3 path to the file containing the list of data files'
@@ -87,25 +164,30 @@ var parameters = {
     description: 'S3 folder for logs',
     default: 's3://cumulus-ghrc-logs/logs'
   }, {
+    default: 'HOST',
     id: 'mySplunkHost',
     type: 'String',
-    description: 'Splunk Host address',
-    default: 'HOST'
+    description: 'Splunk Host address'
   }, {
+    default: 'USERNAME',
     id: 'mySplunkUsername',
     type: 'String',
-    description: 'Splunk Username',
-    default: 'USERNAME'
+    description: 'Splunk Username'
   }, {
+    default: 'PASSWORD',
     id: 'mySplunkPassword',
     type: 'String',
-    description: 'Splunk PASSWORD',
-    default: 'PASSWORD'
+    description: 'Splunk PASSWORD'
   }, {
-    id: 'myDatasetID',
+    default: 'Collection Short Name',
+    id: 'myShortName',
     type: 'String',
-    description: 'DatasetID of the dataset being processed e.g. wwlln',
-    default: 'DATASETID'
+    description: 'The collection shortname'
+  }, {
+    default: 'CMRPASSWORD',
+    id: 'myCmrPassword',
+    type: 'String',
+    description: 'Password for accesst to CMR'
   }]
 };
 
@@ -114,3 +196,5 @@ module.exports.pipelineObj = pipelineObj;
 module.exports.getDockerArchiver = getDockerArchiver;
 module.exports.getDockerStep = getDockerStep;
 module.exports.parameters = parameters;
+module.exports.cleanUpStep = cleanUpStep;
+module.exports.metadataStep = metadataStep;
