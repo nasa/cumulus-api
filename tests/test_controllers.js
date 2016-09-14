@@ -1,6 +1,7 @@
 'use strict';
 
 var steed = require('steed')();
+var _ = require('lodash');
 var should = require('should');
 var dynamoose = require('dynamoose');
 var proxyquire = require('proxyquire').noPreserveCache();
@@ -18,15 +19,29 @@ var tb = {
   granulesTablePrefix: 'cumulus_test_controllers_granules_'
 };
 
-var mockTable = {
-  './tables': tb
+var stubs = {
+  './tables': tb,
+  './splunk': {
+    oneshotSearch: function (a, b, cb) {
+      cb(null, {
+        preview: false,
+        init_offset: 0,
+        messages: [],
+        fields:
+         [ { name: 'dataset_id', groupby_rank: '0' },
+           { name: 'sum(is_error)' } ],
+        results: [ { dataset_id: 'None', 'sum(is_error)': '0' } ],
+        highlighted: {}
+      });
+    }
+  }
 };
 
-var cont = proxyquire('../src/controllers', mockTable);
+var cont = proxyquire('../src/controllers', stubs);
 var models = require('../src/models');
 
 var wwlln = proxyquire('../src/pipeline/wwlln', {});
-var fixtures = proxyquire('../src/fixtures', mockTable);
+var fixtures = proxyquire('../src/fixtures', stubs);
 
 describe('Test controllers', function () {
   this.timeout(10000);
@@ -164,6 +179,37 @@ describe('Test controllers', function () {
         }
       }, function (err, granule) {
         err.should.be.equal('Record was not found');
+        done();
+      });
+    });
+
+    it('should return an array', done => {
+      cont.getErrorCounts({
+        query: {}
+      }, (err, response) => {
+        should.not.exist(err);
+        (Array.isArray(response)).should.be.true();
+        if (response.length > 0) {
+          let messageKeys = new Set(Object.keys(response[0]));
+          const EXPECTED_KEYS = new Set(['dataset_id', 'count']);
+          _.isEqual(messageKeys, EXPECTED_KEYS).should.be.true();
+        }
+        done();
+      });
+    });
+
+    it('should return an array of messages', done => {
+      cont.listErrors({
+        path: { dataSet: '*' },
+        query: {}
+      }, (err, response) => {
+        should.not.exist(err);
+        (Array.isArray(response)).should.be.true();
+        if (response.length > 0) {
+          let messageKeys = new Set(Object.keys(response[0]));
+          const EXPECTED_KEYS = new Set(['timestamp', 'dataset_id', 'process', 'message']);
+          _.isEqual(messageKeys, EXPECTED_KEYS).should.be.true();
+        }
         done();
       });
     });

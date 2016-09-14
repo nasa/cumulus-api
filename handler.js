@@ -35,6 +35,18 @@ module.exports.getGranules = function (event, context, cb) {
   });
 };
 
+module.exports.getErrorCounts = function (event, context, cb) {
+  action.getErrorCounts(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
+module.exports.listErrors = function (event, context, cb) {
+  action.listErrors(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
 module.exports.trigger = function (event, context, cb) {
   triggers.trigger(event.dataset, cb);
 };
