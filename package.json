@@ -11,7 +11,7 @@
     "url": "git+https://github.com/cumulus-nasa/workflow-engine.git"
   },
   "author": "Development Seed",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/cumulus-nasa/workflow-engine/issues"
   },
@@ -21,7 +21,8 @@
     "dotenv": "^2.0.0",
     "dynamoose": "^0.6.0",
     "lodash": "^4.14.2",
-    "node-env-file": "^0.1.8"
+    "node-env-file": "^0.1.8",
+    "splunk-sdk": "^1.8.0"
   },
   "devDependencies": {
     "mocha": "^3.0.2",

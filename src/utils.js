@@ -15,6 +15,14 @@ var getLimit = function (query) {
   return _.toInteger(_.get(query, 'limit', 100));
 };
 
+var getEarliestDate = function (query) {
+  return _.get(query, 'earliestDate');
+};
+
+var getLatestDate = function (query) {
+  return _.get(query, 'latestDate');
+};
+
 var startAt = function (field, type, query) {
   var start = _.get(query, 'start_at', null);
 
@@ -66,3 +74,5 @@ module.exports.getToken = getToken;
 module.exports.getLimit = getLimit;
 module.exports.startAt = startAt;
 module.exports.pipelineTemplateConverter = pipelineTemplateConverter;
+module.exports.getEarliestDate = getEarliestDate;
+module.exports.getLatestDate = getLatestDate;
