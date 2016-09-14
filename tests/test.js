@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var should = require('should');
 var dynamoose = require('dynamoose');
 
@@ -184,6 +185,37 @@ describe('Test controllers', function () {
         }
       }, function (err, granule) {
         err.should.be.equal('Record was not found');
+        done();
+      });
+    });
+
+    it('should return an array', done => {
+      cont.getErrorCounts({
+        query: {}
+      }, (err, response) => {
+        should.not.exist(err);
+        (Array.isArray(response)).should.be.true();
+        if (response.length > 0) {
+          let messageKeys = new Set(Object.keys(response[0]));
+          const EXPECTED_KEYS = new Set(['dataset_id', 'count']);
+          _.isEqual(messageKeys, EXPECTED_KEYS).should.be.true();
+        }
+        done();
+      });
+    });
+
+    it('should return an array of messages', done => {
+      cont.listErrors({
+        path: { dataSet: '*' },
+        query: {}
+      }, (err, response) => {
+        should.not.exist(err);
+        (Array.isArray(response)).should.be.true();
+        if (response.length > 0) {
+          let messageKeys = new Set(Object.keys(response[0]));
+          const EXPECTED_KEYS = new Set(['timestamp', 'dataset_id', 'process', 'message']);
+          _.isEqual(messageKeys, EXPECTED_KEYS).should.be.true();
+        }
         done();
       });
     });
