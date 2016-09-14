@@ -15,6 +15,10 @@ var dataSetSchema = new dynamoose.Schema(
       type: String,
       required: true
     },
+    versionId: {
+      type: Number,
+      required: true
+    },
     daacName: {
       // Name of the DAAC, e.g. Global Hydrology Resource Center DAAC
       type: String,

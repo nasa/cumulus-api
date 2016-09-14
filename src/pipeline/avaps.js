@@ -16,6 +16,7 @@ var template = {
 var datasetRecord = {
   name: 'avaps',
   shortName: 'avaps',
+  versionId: 1,
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',

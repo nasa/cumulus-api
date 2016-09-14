@@ -17,6 +17,7 @@ var template = {
 var datasetRecord = {
   name: 'wwlln',
   shortName: 'hs3wwlln',
+  versionId: 1,
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',
