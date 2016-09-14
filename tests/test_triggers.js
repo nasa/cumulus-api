@@ -1,6 +1,6 @@
 'use strict';
 
-var _ = require('lodash');
+var proxyquire = require('proxyquire').noPreserveCache();
 var steed = require('steed')();
 var should = require('should');
 var dynamoose = require('dynamoose');
@@ -12,18 +12,20 @@ dynamoose.AWS.config.update({
   region: 'us-east-1'
 });
 
+var tb = {
+  datasetTableName: 'cumulus_test_triggers_datasets',
+  granulesTablePrefix: 'cumulus_test_triggers_granules_'
+};
+
+var mockTable = {
+  './tables': tb
+};
+
 dynamoose.local();
 
-var datasetTableName = 'cumulus_test_datasets';
-var granulesTablePrefix = 'cumulus_test_granules_';
-
-process.env.DATASET_TABLE_NAME = datasetTableName;
-process.env.GRANULES_PREFIX = granulesTablePrefix;
-
-var tb = require('../src/tables');
 var models = require('../src/models');
 var triggers = require('../src/triggers');
-var fixtures = require('../src/fixtures');
+var fixtures = proxyquire('../src/fixtures', mockTable);
 
 describe('Test Triggers', function () {
   this.timeout(10000);
@@ -31,8 +33,8 @@ describe('Test Triggers', function () {
   var GranulesWWLN;
 
   before(function (done) {
-    Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
-    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
+    Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true, waitForActive: true});
+    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true, waitForActive: true});
 
     steed.parallel([
       function (cb) {
@@ -49,7 +51,7 @@ describe('Test Triggers', function () {
   it('test payload generation', function (done) {
     steed.waterfall([
       function (cb) {
-        Dataset.query('name').eq('WWLLN').exec(cb);
+        Dataset.query('name').eq('wwlln').exec(cb);
       },
       function (dataset, cb) {
         GranulesWWLN.scan().exec(function (err, records) {

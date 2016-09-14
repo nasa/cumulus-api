@@ -1,7 +1,9 @@
 'use strict';
 
+var steed = require('steed')();
 var should = require('should');
 var dynamoose = require('dynamoose');
+var proxyquire = require('proxyquire').noPreserveCache();
 
 // Use local instance of dynamodb (must run on port 8000)
 dynamoose.AWS.config.update({
@@ -11,31 +13,33 @@ dynamoose.AWS.config.update({
 });
 dynamoose.local();
 
-// set env variables
-var datasetTableName = 'cumulus_test_datasets';
-var granulesTablePrefix = 'cumulus_test_granules_';
+var tb = {
+  datasetTableName: 'cumulus_test_controllers_datasets',
+  granulesTablePrefix: 'cumulus_test_controllers_granules_'
+};
 
-process.env.DATASET_TABLE_NAME = datasetTableName;
-process.env.GRANULES_PREFIX = granulesTablePrefix;
+var mockTable = {
+  './tables': tb
+};
 
-var cont = require('../src/controllers');
+var cont = proxyquire('../src/controllers', mockTable);
 var models = require('../src/models');
-var tb = require('../src/tables');
-var wwlln = require('../src/pipeline/wwlln');
-var fixtures = require('../src/fixtures');
+
+var wwlln = proxyquire('../src/pipeline/wwlln', {});
+var fixtures = proxyquire('../src/fixtures', mockTable);
 
 describe('Test controllers', function () {
   this.timeout(10000);
 
   var Dataset;
   var GranulesWWLN;
-  var testDataSetRecord = 'WWLLN';
+  var testDataSetRecord = 'wwlln';
 
   var sampleGranule = {
     'lastModified': 1438142400,
     'name': 'AE20140901.Cristobal.loc',
     'sourceFiles': [
-      'ftp://hs3.nsstc.nasa.gov/pub/hs3/WWLLN/data/txt/Cristobal/AE20140901.Cristobal.loc'
+      'ftp://hs3.nsstc.nasa.gov/pub/hs3/wwlln/data/txt/Cristobal/AE20140901.Cristobal.loc'
     ],
     'sourceS3Uris': [
       's3://cumulus-source/source-data/wwlln/AE20140901.Cristobal.loc'
@@ -45,7 +49,7 @@ describe('Test controllers', function () {
 
   before(function (done) {
     // Create the tables
-    fixtures(null, function (err) {
+    fixtures.populateDataSets(null, function (err) {
       should.not.exist(err);
       Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
       GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
@@ -61,7 +65,7 @@ describe('Test controllers', function () {
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
         should.equal(datasets.length, 2);
-        should.equal(datasets[0].name, testDataSetRecord);
+        should.equal(datasets[1].name, testDataSetRecord);
         done();
       });
     });
@@ -91,7 +95,7 @@ describe('Test controllers', function () {
     });
 
     it('should add one record', function (done) {
-      wwlln.name = 'WWLLN2';
+      wwlln.name = 'wwlln2';
 
       cont.postDataSet({
         body: wwlln,
@@ -118,7 +122,7 @@ describe('Test controllers', function () {
     it('should list all datasets', function (done) {
       cont.listGranules({
         path: {
-          dataSet: 'WWLLN'
+          dataSet: 'wwlln'
         }
       }, function (err, granules) {
         should.not.exist(err);
@@ -131,10 +135,10 @@ describe('Test controllers', function () {
     it('should return error if wrong dataset name is provided', function (done) {
       cont.listGranules({
         path: {
-          dataSet: 'WWLLN2222'
+          dataSet: 'wwlln2222'
         }
       }, function (err, granules) {
-        err.should.be.equal('Requested dataset (WWLLN2222) doesn\'t exist');
+        err.should.be.equal('Requested dataset (wwlln2222) doesn\'t exist');
         done();
       });
     });
@@ -142,7 +146,7 @@ describe('Test controllers', function () {
     it('should get a particular granule', function (done) {
       cont.getGranules({
         path: {
-          dataSet: 'WWLLN',
+          dataSet: 'wwlln',
           granuleName: sampleGranule.name
         }
       }, function (err, granule) {
@@ -155,7 +159,7 @@ describe('Test controllers', function () {
     it('should return error when particular granule is not found', function (done) {
       cont.getGranules({
         path: {
-          dataSet: 'WWLLN',
+          dataSet: 'wwlln',
           granuleName: 'something'
         }
       }, function (err, granule) {
@@ -166,9 +170,20 @@ describe('Test controllers', function () {
   });
 
   after(function (done) {
-    Dataset.$__.table.delete(function (err) {
-      should.not.exist(err);
-      done();
+    steed.parallel([
+      function (cb) {
+        Dataset.$__.table.delete(function (err) {
+          should.not.exist(err);
+          cb(err);
+        });
+      }, function (cb) {
+        GranulesWWLN.$__.table.delete(function (err) {
+          should.not.exist(err);
+          cb(err);
+        });
+      }
+    ], function (err) {
+      done(err);
     });
   });
 });
