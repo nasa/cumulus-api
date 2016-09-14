@@ -2,8 +2,8 @@
 
 var _ = require('lodash');
 var path = require('path');
-var d = require('./queue');
 var AWS = require('aws-sdk');
+var steed = require('steed')();
 var dynamoose = require('dynamoose');
 
 var models = require('./models');
@@ -18,13 +18,13 @@ var datapipeline = new AWS.DataPipeline();
  * @param {Object} dataset a Dataset DyanmodDB record
  * @param {String} bucketName name of the AWS S3 bucket for storing pipeline paylosds
  */
-var Granules = function (dataset, granules, pipelineGranules) {
+var Granules = function (dataset, pipelineGranules) {
   this.dataset = dataset;
   this.pipelineGranules = pipelineGranules;
   this.bucketName = 'cumulus-ghrc-logs';
   this.keyName = path.join('piplines', dataset.name, `pipeline_files_${Date.now()}.json`);
   this.s3Uri = 's3://' + path.join(this.bucketName, this.keyName);
-  this.granules = granules;
+  this.granules = pipelineGranules.granules;
   this.cb;
   this.pipelineId;
   this.piplineName;
@@ -92,7 +92,7 @@ Granules.prototype = {
     datapipeline.createPipeline(params, function (err, pipeline) {
       if (err) {
         console.error(`Creating pipeline ${self.pipelineName} failed`, err);
-        return this.cb(err);
+        return self.cb(err);
       }
 
       self.pipelineId = pipeline.pipelineId;
@@ -109,29 +109,7 @@ Granules.prototype = {
     var params = {
       pipelineId: self.pipelineId,
       pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
-      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes'),
-      parameterValues: [
-        {
-          id: 'myS3FilesList',
-          stringValue: self.s3Uri
-        },
-        {
-          id: 'mySplunkHost',
-          stringValue: process.env.mySplunkHost
-        },
-        {
-          id: 'mySplunkUsername',
-          stringValue: process.env.mySplunkUsername
-        },
-        {
-          id: 'mySplunkPassword',
-          stringValue: process.env.mySplunkPassword
-        },
-        {
-          id: 'myDatasetID',
-          stringValue: self.dataset.name
-        }
-      ]
+      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes')
     };
 
     console.log(`Putting definition for  ${self.pipelineId}`);
@@ -139,7 +117,7 @@ Granules.prototype = {
     datapipeline.putPipelineDefinition(params, function (err, response) {
       if (err) {
         console.error(`putting pipeline ${self.pipelineId} failed`, err);
-        return this.cb(err);
+        return self.cb(err);
       }
 
       if (!response.errored) {
@@ -190,7 +168,27 @@ Granules.prototype = {
       parameterValues: [
         {
           id: 'myS3FilesList',
-          stringValue: self.s3Uri
+          stringValue: this.keyName
+        },
+        {
+          id: 'mySplunkHost',
+          stringValue: process.env.mySplunkHost
+        },
+        {
+          id: 'mySplunkUsername',
+          stringValue: process.env.mySplunkUsername
+        },
+        {
+          id: 'mySplunkPassword',
+          stringValue: process.env.mySplunkPassword
+        },
+        {
+          id: 'myShortName',
+          stringValue: self.dataset.shortName
+        },
+        {
+          id: 'myCmrPassword',
+          stringValue: process.env.myCmrPassword
         }
       ]
     };
@@ -199,7 +197,7 @@ Granules.prototype = {
     datapipeline.activatePipeline(params, function (err, data) {
       if (err) {
         console.error(`Activating pipeline ${self.pipelineId} failed`, err);
-        this.cb(err);
+        self.cb(err);
       } else {
         return self.markGranulesAsSent();
       }
@@ -213,7 +211,7 @@ Granules.prototype = {
   markGranulesAsSent: function () {
     var self = this;
     var GranulesModel = dynamoose.model(
-      'cumulus_granules_' + this.dataset.shortName.toLowerCase(),
+      'cumulus_granules_' + this.dataset.name.toLowerCase(),
       models.granuleSchema,
       {
         create: false,
@@ -223,33 +221,62 @@ Granules.prototype = {
 
     console.log(`Marking granules for ${self.dataset.name} as sent`);
 
-    var q = d.queue();
-
-    this.granules.map(function (granule) {
-      var write = function (callback) {
-        GranulesModel.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
-          if (err) {
-            console.error(`Updating granule ${granule.name} failed`, err);
-          } else {
-            // console.log(`${granule.name} marked as sent on dynamoDB`);
-          }
-          callback(err);
-        });
-      };
-      q.defer(write);
-    });
-
-    q.awaitAll(function (error) {
-      self.cb(error, {
+    steed.map(this.granules, function (granule, callback) {
+      GranulesModel.update({name: granule.name}, {waitForPipelineSince: null}, function (err, response) {
+        if (err) {
+          console.error(`Updating granule ${granule.name} failed`, err);
+        } else {
+          // console.log(`${granule.name} marked as sent on dynamoDB`);
+        }
+        callback(err);
+      });
+    }, function (err) {
+      self.cb(err, {
         pipelineId: self.pipelineId
       });
     });
   }
 };
 
-var batching = function (dataset, cb) {
+var generatePayload = function (dataset, granules) {
+  var batchs = [];
+
+  var pipelineGranules = {
+    datasetName: dataset.name,
+    sourceDataBucket: dataset.sourceDataBucket,
+    destinationDataBucket: dataset.destinationDataBucket,
+    granules: []
+  };
+
+  var granulesList = [];
+
+  granules.map(function (granule) {
+    // get the name of each granules
+    pipelineGranules.granules.push({
+      name: granule.name,
+      sourceS3Uris: granule.sourceS3Uris,
+      destinationS3Uris: granule.destinationS3Uris
+    });
+
+    granulesList.push(granule);
+
+    if (granulesList.length > dataset.dataPipeLine.batchLimit - 1) {
+      batchs.push(Object.assign({}, pipelineGranules));
+      granulesList = [];
+      pipelineGranules.granules = [];
+    }
+  });
+
+  if (granulesList.length > 0) {
+    batchs.push(Object.assign({}, pipelineGranules));
+  }
+
+  return batchs;
+};
+
+var batching = function (dataset, callback) {
   var GranulesModel = dynamoose.model(
-    tables.granulesTablePrefix + dataset.shortName.toLowerCase(),
+    tables.granulesTablePrefix + dataset.name.toLowerCase(),
     models.granuleSchema,
     {
       create: false,
@@ -264,61 +291,21 @@ var batching = function (dataset, cb) {
     }
 
     if (granules.length > 0) {
-      var pipelineGranules = {
-        datasetName: dataset.name,
-        sourceDataBucket: dataset.sourceDataBucket,
-        destinationDataBucket: dataset.destinationDataBucket,
-        granules: []
-      };
+      var payloads = generatePayload(dataset, granules);
 
-      var granulesList = [];
-      var q = d.queue();
-
-      granules.map(function (granule) {
-        // console.log(`Processing ${granule.name}`);
-
-        // get the name of each granules
-        pipelineGranules.granules.push({
-          name: granule.name,
-          files: granule.sourceS3Uris
-        });
-
-        granulesList.push(granule);
-
-        if (granulesList.length > dataset.dataPipeLine.batchLimit - 1) {
-          q.defer(function (callback) {
-            var g = new Granules(
-              dataset,
-              granulesList.slice(),
-              Object.assign({}, pipelineGranules)
-            );
-            g.process(callback);
-          });
-
-          granulesList = [];
-          pipelineGranules.granules = [];
-        }
-      });
-
-      // send the remaining granules to a separate pipeline
-      if (granulesList.length > 0) {
-        q.defer(function (callback) {
-          var g = new Granules(
-            dataset,
-            granulesList,
-            Object.assign({}, pipelineGranules)
-          );
-          g.process(callback);
-        });
-      }
-
-      q.awaitAll(function (error, pipelineIds) {
-        cb(error, {
+      steed.map(payloads, function (payload, cb) {
+        var g = new Granules(
+          dataset,
+          payload
+        );
+        g.process(cb);
+      }, function (err, pipelineIds) {
+        callback(err, {
           pipelineIds: pipelineIds
         });
       });
     } else {
-      return cb('no granules to process');
+      return callback('no granules to process');
     }
   });
 };
@@ -369,6 +356,5 @@ var trigger = function (dataset, cb) {
   });
 };
 
-module.exports = trigger;
-
-
+module.exports.trigger = trigger;
+module.exports.generatePayload = generatePayload;
