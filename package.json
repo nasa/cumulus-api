@@ -11,7 +11,7 @@
     "url": "git+https://github.com/cumulus-nasa/workflow-engine.git"
   },
   "author": "Development Seed",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/cumulus-nasa/workflow-engine/issues"
   },
