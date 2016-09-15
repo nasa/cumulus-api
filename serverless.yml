@@ -9,11 +9,9 @@ provider:
     - Effect: "Allow"
       Action:
         - "s3:*"
-      Resource:
-        - "*"
-    - Effect: "Allow"
-      Action:
+        - "datapipeline:*"
         - "dynamodb:*"
+        - "iam:PassRole"
       Resource:
         - "*"
 
