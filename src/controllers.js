@@ -118,7 +118,7 @@ module.exports.listErrors = function (req, cb) {
   let datasetID = req.path.dataSet || '*';
 
   // Splunk's query syntax is case-insensitive, including in parameters
-  let query = `search index=main AND dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
+  let query = `search index=main dataset_id="${datasetID}" is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
 
   let params = {
     output_mode: 'JSON',
