@@ -26,6 +26,7 @@ functions:
           path: stats/summary
           method: get
           private: true
+          cors: true
 
   # list all granules
   listGranules:

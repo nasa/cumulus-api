@@ -107,19 +107,28 @@ module.exports.getErrorCounts = function (req, cb) {
     // Setting count to 0 returns _all_ records
     count: 0
   };
-  if (req.query.earliestDate) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
-  if (req.query.latestDate) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
+
+  if (_.has(req, 'query')) {
+    if (_.has(req.query, 'earliestDate')) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
+    if (_.has(req.query, 'latestDate')) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
+  }
 
   splunkService.oneshotSearch(query, params, (err, results) => {
     if (err) { return cb(err.message, null); }
 
     results = results.results;
-    results.forEach(result => {
-      result.count = parseInt(result['sum(is_error)']);
-      delete result['sum(is_error)'];
+
+    var response = [];
+    results.map(result => {
+      if (result.dataset_id !== 'None') {
+        result.count = parseInt(result['sum(is_error)']);
+        delete result['sum(is_error)'];
+
+        response.push(result);
+      }
     });
 
-    return cb(null, results);
+    return cb(null, response);
   });
 };
 
