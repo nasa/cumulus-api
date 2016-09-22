@@ -17,6 +17,16 @@ provider:
 
 functions:
 
+  # stats summary
+  statsSummary:
+    handler: handler.statsSummary
+    timeout: 300
+    events:
+      - http:
+          path: stats/summary
+          method: get
+          private: true
+
   # list all granules
   listGranules:
     handler: handler.listGranules

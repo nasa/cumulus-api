@@ -7,6 +7,18 @@ var models = require('./models');
 var utils = require('./utils');
 var tb = require('./tables');
 
+module.exports.statsSummary = function (req, cb) {
+  return cb(null, {
+    activeDatasets: 0, // Active Datasets
+    totalUsers: 3000, // Total Users
+    bandwidth: 300000,
+    storageUsed: 3000000, // Storage Used
+    granules: 3000,
+    downloads: 3000000,
+    updatedAt: Date.now()
+  });
+};
+
 module.exports.listDataSets = function (req, cb) {
   var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: false});
 
