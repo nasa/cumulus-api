@@ -15,7 +15,82 @@ module.exports.statsSummary = function (req, cb) {
     storageUsed: 3000000, // Storage Used
     granules: 3000,
     downloads: 3000000,
+    errors: {
+      datasets: 2,
+      total: 10
+    },
     updatedAt: Date.now()
+  });
+};
+
+module.exports.statsSummaryGrouped = function (req, cb) {
+  return cb(null, {
+    granulesPublished: {
+      '2016-09-22': 166,
+      '2016-09-21': 23,
+      '2016-09-20': 48,
+      '2016-09-19': 11,
+      '2016-09-18': 102,
+      '2016-09-17': 73,
+      '2016-09-16': 167,
+      '2016-09-15': 65,
+      '2016-09-14': 113,
+      '2016-09-13': 163
+    },
+    granulesDownloaded: {
+      '2016-09-22': 74,
+      '2016-09-21': 66,
+      '2016-09-20': 99,
+      '2016-09-19': 117,
+      '2016-09-18': 116,
+      '2016-09-17': 118,
+      '2016-09-16': 8,
+      '2016-09-15': 100,
+      '2016-09-14': 18,
+      '2016-09-13': 43
+    },
+    downloadsPerDataSet: {
+      'hs3cpl': 66,
+      'hs3hirad': 99,
+      'hs3hiwrap': 117,
+      'hs3hamsr': 116,
+      'hs3wwlln': 118
+    },
+    totalGranules: {
+      '2016-09-22': 47,
+      '2016-09-21': 67,
+      '2016-09-20': 59,
+      '2016-09-19': 19,
+      '2016-09-18': 108,
+      '2016-09-17': 174,
+      '2016-09-16': 0,
+      '2016-09-15': 52,
+      '2016-09-14': 12,
+      '2016-09-13': 123
+    },
+    topCountries: {
+      'USA': 320,
+      'Germany': 10,
+      'China': 24,
+      'UK': 78,
+      'France': 110,
+      'Brazil': 43,
+      'Chile': 21,
+      'Mexico': 98,
+      'Canada': 45
+    },
+    numberOfUsers: {
+      '2016-09-22': 47,
+      '2016-09-21': 67,
+      '2016-09-20': 59,
+      '2016-09-19': 19,
+      '2016-09-18': 108,
+      '2016-09-17': 174,
+      '2016-09-16': 0,
+      '2016-09-15': 52,
+      '2016-09-14': 12,
+      '2016-09-13': 123
+    }
   });
 };
 
@@ -108,10 +183,8 @@ module.exports.getErrorCounts = function (req, cb) {
     count: 0
   };
 
-  if (_.has(req, 'query')) {
-    if (_.has(req.query, 'earliestDate')) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
-    if (_.has(req.query, 'latestDate')) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
-  }
+  if (_.get(req, ['query', 'earliestDate'])) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
+  if (_.get(req, ['query', 'latestDate'])) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
 
   splunkService.oneshotSearch(query, params, (err, results) => {
     if (err) { return cb(err.message, null); }
@@ -136,7 +209,7 @@ module.exports.listErrors = function (req, cb) {
   const FIELDS_TO_RETURN = ['timestamp', 'dataset_id', 'process', 'message'];
 
   // If no dataset is specified, return all datasets
-  let datasetID = req.path.dataSet || '*';
+  let datasetID = _.hasIn(req, ['path', 'dataSet']) || '*';
 
   // Splunk's query syntax is case-insensitive, including in parameters
   let query = `search index=main AND dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
@@ -145,8 +218,9 @@ module.exports.listErrors = function (req, cb) {
     output_mode: 'JSON',
     count: utils.getLimit(req.query)
   };
-  if (req.query.earliestDate) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
-  if (req.query.latestDate) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
+
+  if (_.get(req, ['query', 'earliestDate'])) { params.earliestDate = `${utils.getEarliestDate(req.query)}T00:00:00.000`; }
+  if (_.get(req, ['query', 'latestDate'])) { params.earliestDate = `${utils.getLatestDate(req.query)}T24:00:00.000`; }
 
   splunkService.oneshotSearch(query, params, (err, results) => {
     if (err) { return cb(err.message, null); }

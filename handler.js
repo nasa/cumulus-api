@@ -10,6 +10,12 @@ module.exports.statsSummary = function (event, context, cb) {
   });
 };
 
+module.exports.statsSummaryGrouped = function (event, context, cb) {
+  action.statsSummaryGrouped(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
 module.exports.listDataSets = function (event, context, cb) {
   action.listDataSets(event, function (err, results) {
     return cb(err, results);
@@ -59,6 +65,12 @@ module.exports.getErrorCounts = function (event, context, cb) {
   });
 };
 
+module.exports.listErrors = function (event, context, cb) {
+  action.listErrors(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
 module.exports.trigger = function (event, context, cb) {
   triggers.trigger(event.dataset, cb);
 };
@@ -69,7 +81,7 @@ if (require.main === module) {
   //   console.log(results);
   // });
 
-  action.getErrorCounts({}, function (err, results) {
+  action.listErrors({}, function (err, results) {
     console.log(err)
     console.log(results)
   })

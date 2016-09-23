@@ -28,6 +28,39 @@ functions:
           private: true
           cors: true
 
+  # stats summary grouped
+  statsSummaryGrouped:
+    handler: handler.statsSummaryGrouped
+    timeout: 300
+    events:
+      - http:
+          path: stats/summary/grouped
+          method: get
+          private: true
+          cors: true
+
+  # get error stats
+  getErrorCounts:
+    handler: handler.getErrorCounts
+    timeout: 300
+    events:
+      - http:
+          path: stats/errors
+          method: get
+          private: true
+          cors: true
+
+  # get list of errors
+  listErrors:
+    handler: handler.listErrors
+    timeout: 300
+    events:
+      - http:
+          path: errors
+          method: get
+          private: true
+          cors: true
+
   # list all granules
   listGranules:
     handler: handler.listGranules
