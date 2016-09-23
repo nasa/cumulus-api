@@ -1,6 +1,7 @@
+'use strict';
+
 var _ = require('lodash');
-var es = require('elasticsearch');
-var awsES = require('http-aws-es');
+const esClient = require('./elasticsearch-client');
 
 // returns token if present in the Authorization section of header
 var getToken = function (header) {
@@ -63,22 +64,6 @@ var pipelineTemplateConverter = function (arr, fieldName) {
 };
 
 var esQuery = function (query, callback) {
-  // Host should be in a format like:
-  // search-cluster-name-aaaa00aaaa0aaa0aaaaaaa0aaa.us-east-1.es.amazonaws.com
-  var esHost = process.env.ES_HOST;
-  var url = `https://${esHost}`;
-
-  // Must have AWS credentials present in environment for this signing function to work
-  var esClient = new es.Client({
-    host: url,
-    connectionClass: awsES,
-    amazonES: {
-      region: process.env.AWS_REGION || 'us-east-1',
-      accessKey: process.env.AWS_ACCESS_KEY_ID,
-      secretKey: process.env.AWS_SECRET_ACCESS_KEY
-    }
-  });
-
   esClient.search(
     { body: query }
   ).then(res => {

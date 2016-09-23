@@ -10,9 +10,7 @@ var tb = require('./tables');
 module.exports.listDataSets = function (req, cb) {
   utils.esQuery({
     query: {
-      match: {
-        _index: tb.datasetTableName
-      }
+      match: { _index: tb.datasetTableName }
     }
   }, (err, res) => {
     return cb(err, res);
@@ -22,9 +20,11 @@ module.exports.listDataSets = function (req, cb) {
 module.exports.getDataSet = function (req, cb) {
   utils.esQuery({
     query: {
-      match: {
-        _index: tb.datasetTableName,
-        name: req.path.short_name
+      bool: {
+        must: [
+          { match: { _index: tb.datasetTableName } },
+          { match: { name: req.path.short_name } }
+        ]
       }
     }
   }, (err, res) => {
@@ -81,9 +81,11 @@ module.exports.getGranules = function (req, cb) {
 
   utils.esQuery({
     query: {
-      match: {
-        _index: tableName,
-        name: req.path.granuleName
+      bool: {
+        must: [
+          { match: { _index: tableName } },
+          { match: { name: req.path.granuleName } }
+        ]
       }
     }
   }, (err, res) => {
