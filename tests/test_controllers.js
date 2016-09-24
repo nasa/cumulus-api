@@ -48,7 +48,7 @@ var wwlln = proxyquire('../src/pipeline/wwlln', {});
 var fixtures = proxyquire('../src/fixtures', stubs);
 
 describe('Test controllers', function () {
-  this.timeout(10000);
+  this.timeout(50000);
 
   var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
   var GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
@@ -123,9 +123,8 @@ describe('Test controllers', function () {
         }
       },
       function (err, granules) {
-        // console.log(granules);
-        // should.not.exist(err);
-        // should.equal(granules.length, fixtures.testRecords.length);
+        should.not.exist(err);
+        should.equal(granules.length, fixtures.testRecords.length);
         done();
       });
     });
