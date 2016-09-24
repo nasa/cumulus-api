@@ -7,7 +7,6 @@ dependencies:
     - docker info
     - docker run -d -p 8000:8000 --name dynamodb peopleperhour/dynamodb
     - docker run -d -p 9200:9200 --name elasticsearch elasticsearch
-    - npm install -g serverless@beta
     - npm install
 
 test:
