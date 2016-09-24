@@ -1,5 +1,7 @@
 'use strict';
 
+process.env.ES_HOST = 'localhost';
+
 var steed = require('steed')();
 var _ = require('lodash');
 var should = require('should');
@@ -21,10 +23,6 @@ var tb = {
   datapipelineTableName: 'cumulus_test_controllers_datapipelines'
 };
 
-var esClient = new es.Client({
-  // Defaults will work for our test instance
-});
-
 var stubs = {
   './tables': tb,
   './splunk': {
@@ -40,8 +38,7 @@ var stubs = {
         highlighted: {}
       });
     }
-  },
-  './utils': { esClient: esClient }
+  }
 };
 
 var cont = proxyquire('../src/controllers', stubs);
@@ -124,7 +121,8 @@ describe('Test controllers', function () {
         path: {
           dataSet: 'wwlln'
         }
-      }, function (err, granules) {
+      },
+      function (err, granules) {
         should.not.exist(err);
         should.equal(granules.length, fixtures.testRecords.length);
         done();
@@ -211,11 +209,6 @@ describe('Test controllers', function () {
           should.not.exist(err);
           cb(err);
         });
-      }, function (cb) {
-        // Wipe the Elasticsearch
-        esClient.indices.delete({
-          index: '_all'
-        }, err => cb(err));
       }
     ], function (err) {
       done(err);
