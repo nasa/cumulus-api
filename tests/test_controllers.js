@@ -123,6 +123,7 @@ describe('Test controllers', function () {
         }
       },
       function (err, granules) {
+        console.log(granules);
         should.not.exist(err);
         should.equal(granules.length, fixtures.testRecords.length);
         done();
