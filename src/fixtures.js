@@ -590,8 +590,6 @@ var populateGranules = function (callback) {
       if (err) {
         return cb(err);
       }
-      console.log(`${record.name} saved!`);
-
       // Post to Elasticsearch if Dynamo post was successful
       esClient.index({
         index: tables.granulesTablePrefix + 'wwlln',
