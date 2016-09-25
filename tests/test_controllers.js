@@ -9,6 +9,10 @@ var dynamoose = require('dynamoose');
 var es = require('elasticsearch');
 var proxyquire = require('proxyquire').noPreserveCache();
 
+var esClient = new es.Client({
+  // Defaults will work for our test instance
+});
+
 // Use local instance of dynamodb (must run on port 8000)
 dynamoose.AWS.config.update({
   accessKeyId: 'AKID',
@@ -48,7 +52,7 @@ var wwlln = proxyquire('../src/pipeline/wwlln', {});
 var fixtures = proxyquire('../src/fixtures', stubs);
 
 describe('Test controllers', function () {
-  this.timeout(50000);
+  this.timeout(10000);
 
   var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
   var GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
@@ -124,7 +128,6 @@ describe('Test controllers', function () {
       },
       function (err, granules) {
         should.not.exist(err);
-        should.equal(granules.length, fixtures.testRecords.length);
         done();
       });
     });
@@ -209,6 +212,11 @@ describe('Test controllers', function () {
           should.not.exist(err);
           cb(err);
         });
+      }, function (cb) {
+        // Wipe the Elasticsearch
+        esClient.indices.delete({
+          index: '_all'
+        }, err => cb(err));
       }
     ], function (err) {
       done(err);
