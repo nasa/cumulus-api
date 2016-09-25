@@ -17,6 +17,7 @@ Make sure to set:
 For test you need to run a local copy of dynamoDB using docker
 
     $ docker run --rm -p 8000:8000 --name dynamodb peopleperhour/dynamodb
+    $ docker run --rm -p 9200:9200 --name elasticsearch elasticsearch
     $ npm run test
 
 ### Deployment

@@ -110,6 +110,24 @@ functions:
           method: post
           private: true
 
+  getErrorCounts:
+    handler: handler.getErrorCounts
+    timeout: 300
+    events:
+      - http:
+        path: errors/counts
+        method: get
+        private: true
+
+  listErrors:
+    handler: handler.listErrors
+    timeout: 300
+    events:
+      - http:
+        path: errors/list/{dataSet}
+        method: get
+        private: true
+
   # trigger lambda
   trigger:
     handler: handler.trigger

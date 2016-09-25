@@ -95,25 +95,34 @@ module.exports.statsSummaryGrouped = function (req, cb) {
 };
 
 module.exports.listDataSets = function (req, cb) {
-  var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: false});
-
-  Dataset
-        .scan()
-        .limit(utils.getLimit(req.query))
-        .startAt(utils.startAt('name', 'S', req.query))
-        .exec(function (err, datasets) {
-          return cb(err, datasets);
-        });
+  utils.esQuery({
+    query: {
+      match: { _index: tb.datasetTableName }
+    }
+  }, (err, res) => {
+    return cb(err, res);
+  });
 };
 
 module.exports.getDataSet = function (req, cb) {
-  var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: false});
-
-  Dataset.get({name: req.path.short_name}, function (err, dataset) {
-    if (!dataset) {
-      err = 'Record was not found';
+  utils.esQuery({
+    query: {
+      bool: {
+        must: [
+          { match: { _index: tb.datasetTableName } },
+          { match: { name: req.path.short_name } }
+        ]
+      }
     }
-    return cb(err, dataset);
+  }, (err, res) => {
+    if (err) { return cb(err); }
+
+    // Cannot have more than 1 document, because `name` is the primary Dynamo key
+    if (res.length === 0) {
+      return cb('Record was not found');
+    } else {
+      return cb(null, res[0]);
+    }
   });
 };
 
@@ -134,42 +143,47 @@ module.exports.postDataSet = function (req, cb) {
 module.exports.listGranules = function (req, cb) {
   // Dataset name
   var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
+  var limit = utils.getLimit(req.query);
+  var start = utils.getStart(req.query);
 
-  // WWLLN granules
-  var Granules = dynamoose.model(tableName, models.granuleSchema, {create: false, waitForActive: false});
+  utils.esQuery({
+    query: {
+      match: {
+        _index: tableName
+      }
+    },
+    size: limit,
+    from: start
+  }, (err, res) => {
+    if (err) { return cb(err); }
 
-  Granules.scan()
-          .limit(utils.getLimit(req.query))
-          .startAt(utils.startAt('name', 'S', req.query))
-          .exec(function (err, records) {
-            if (err) {
-              if (err.message === 'Cannot do operations on a non-existent table') {
-                return cb(`Requested dataset (${req.path.dataSet}) doesn\'t exist`);
-              } else {
-                return cb(err.message, null);
-              }
-            }
-            return cb(null, records);
-          });
+    if (res.length === 0) { return cb(`Requested dataset (${req.path.dataSet}) doesn\'t exist`); }
+    return cb(null, res);
+  });
 };
 
 module.exports.getGranules = function (req, cb) {
   // Dataset name
   var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
 
-  // WWLLN granules
-  var Granules = dynamoose.model(tableName, models.granuleSchema, {create: false, waitForActive: false});
-
-  Granules.get({name: req.path.granuleName}, function (err, dataset) {
-    if (err) {
-      return cb(err.message, null);
+  utils.esQuery({
+    query: {
+      bool: {
+        must: [
+          { match: { _index: tableName } },
+          { match: { name: req.path.granuleName } }
+        ]
+      }
     }
+  }, (err, res) => {
+    if (err) { return cb(err); }
 
-    if (!dataset) {
-      err = 'Record was not found';
+    // Cannot have more than 1 document, because `name` is the primary Dynamo key
+    if (res.length === 0) {
+      return cb('Record was not found');
+    } else {
+      return cb(null, res[0]);
     }
-
-    return cb(err, dataset);
   });
 };
 
@@ -212,7 +226,7 @@ module.exports.listErrors = function (req, cb) {
   let datasetID = _.hasIn(req, ['path', 'dataSet']) || '*';
 
   // Splunk's query syntax is case-insensitive, including in parameters
-  let query = `search index=main AND dataset_id="${datasetID}" AND is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
+  let query = `search index=main dataset_id="${datasetID}" is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
 
   let params = {
     output_mode: 'JSON',
