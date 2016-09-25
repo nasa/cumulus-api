@@ -26,7 +26,7 @@ if (esHost === 'localhost') {
   });
 }
 
-var esQuery = function (query, callback) {
+module.exports.esQuery = function (query, callback) {
   esClient.search(
     { body: query }
   ).then(res => {

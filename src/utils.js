@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash');
-const esClient = require('./elasticsearch-client');
 
 // returns token if present in the Authorization section of header
 var getToken = function (header) {

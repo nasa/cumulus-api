@@ -81,7 +81,11 @@ if (require.main === module) {
   //   console.log(results);
   // });
 
-  action.listErrors({}, function (err, results) {
+  action.listGranules({
+    path: {
+      dataSet: 'avaps'
+    }
+  }, function (err, results) {
     console.log(err)
     console.log(results)
   })

@@ -6,6 +6,7 @@ var splunkService = require('./splunk');
 var models = require('./models');
 var utils = require('./utils');
 var tb = require('./tables');
+var es = require('./es');
 
 module.exports.statsSummary = function (req, cb) {
   return cb(null, {
@@ -95,7 +96,7 @@ module.exports.statsSummaryGrouped = function (req, cb) {
 };
 
 module.exports.listDataSets = function (req, cb) {
-  utils.esQuery({
+  es.esQuery({
     query: {
       match: { _index: tb.datasetTableName }
     }
@@ -105,7 +106,7 @@ module.exports.listDataSets = function (req, cb) {
 };
 
 module.exports.getDataSet = function (req, cb) {
-  utils.esQuery({
+  es.esQuery({
     query: {
       bool: {
         must: [
@@ -146,7 +147,7 @@ module.exports.listGranules = function (req, cb) {
   var limit = utils.getLimit(req.query);
   var start = utils.getStart(req.query);
 
-  utils.esQuery({
+  es.esQuery({
     query: {
       match: {
         _index: tableName
@@ -166,7 +167,7 @@ module.exports.getGranules = function (req, cb) {
   // Dataset name
   var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
 
-  utils.esQuery({
+  es.esQuery({
     query: {
       bool: {
         must: [
