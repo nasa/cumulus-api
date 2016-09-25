@@ -143,19 +143,6 @@ describe('Test controllers', function () {
       });
     });
 
-    it('should get a particular granule', function (done) {
-      cont.getGranules({
-        path: {
-          dataSet: 'wwlln',
-          granuleName: fixtures.testRecords[0].name
-        }
-      }, function (err, granule) {
-        should.not.exist(err);
-        granule.name.should.be.equal(fixtures.testRecords[0].name);
-        done();
-      });
-    });
-
     it('should return error when particular granule is not found', function (done) {
       cont.getGranules({
         path: {
