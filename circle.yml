@@ -4,10 +4,9 @@ machine:
 
 dependencies:
   override:
-    - git push --mirror https://$EARTHDATA_USER:$EARTHDATA_PASS@git.earthdata.nasa.gov/scm/cumulus/workflow-engine.git
     - docker info
     - docker run -d -p 8000:8000 --name dynamodb peopleperhour/dynamodb
-    - npm install -g serverless@beta
+    - docker run -d -p 9200:9200 --name elasticsearch elasticsearch
     - npm install
 
 test:
