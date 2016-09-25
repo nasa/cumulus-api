@@ -10,10 +10,12 @@ var url = `https://${esHost}`;
 
 // Must have AWS credentials present in environment for this signing function to work
 
+var esClient;
+
 if (esHost === 'localhost') {
-  module.exports = new es.Client({});
+  esClient = new es.Client({});
 } else {
-  module.exports = new es.Client({
+  esClient = new es.Client({
     host: url,
     connectionClass: awsES,
     amazonES: {
@@ -23,3 +25,20 @@ if (esHost === 'localhost') {
     }
   });
 }
+
+var esQuery = function (query, callback) {
+  esClient.search(
+    { body: query }
+  ).then(res => {
+    let results = res.hits.hits.map(document => {
+      let item = document._source;
+      item._index = document._index;
+      delete item['@SequenceNumber'];
+      delete item['@timestamp'];
+      return item;
+    });
+    return callback(null, results);
+  }).catch(err => {
+    return callback(err);
+  });
+};
