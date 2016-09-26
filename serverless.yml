@@ -15,6 +15,9 @@ provider:
       Resource:
         - "*"
 
+plugins:
+  - serverless-offline
+
 functions:
 
   # stats summary
@@ -70,6 +73,7 @@ functions:
           path: granules/{dataSet}
           method: get
           private: true
+          cors: true
 
   getGranules:
     handler: handler.getGranules
@@ -79,6 +83,7 @@ functions:
           path: granules/{dataSet}/{granuleName}
           method: get
           private: true
+          cors: true
 
   # list all dataset records
   listDataSet:
@@ -89,6 +94,7 @@ functions:
           path: datasets
           method: get
           private: true
+          cors: true
 
   # get a particular dataset
   getDataSet:
@@ -99,6 +105,7 @@ functions:
           path: datasets/{short_name}
           method: get
           private: true
+          cors: true
 
   # post a new dataSet record
   postDataSet:
@@ -109,24 +116,7 @@ functions:
           path: datasets
           method: post
           private: true
-
-  getErrorCounts:
-    handler: handler.getErrorCounts
-    timeout: 300
-    events:
-      - http:
-        path: errors/counts
-        method: get
-        private: true
-
-  listErrors:
-    handler: handler.listErrors
-    timeout: 300
-    events:
-      - http:
-        path: errors/list/{dataSet}
-        method: get
-        private: true
+          cors: true
 
   # trigger lambda
   trigger:
