@@ -10,6 +10,13 @@ var tb = require('./tables');
 var es = require('./es');
 
 module.exports.statsSummary = function (req, callback) {
+
+  let collectionId;
+
+  if (_.has(req, ['query', 'collection_id'])) {
+    collectionId = req.query.collection_id;
+  }
+
   steed.series({
     activeDatasets: function (cb) {
       es.esCount('cumulus_datasets', null, function (err, data) {
@@ -35,7 +42,13 @@ module.exports.statsSummary = function (req, callback) {
       });
     },
     granules: function (cb) {
-      es.esCount('cumulus_granules_*', null, function (err, data) {
+      let tableName = 'cumulus_granules_*';
+
+      if (collectionId) {
+        tableName = 'cumulus_granules_' + collectionId;
+      }
+
+      es.esCount(tableName, null, function (err, data) {
         if (err) return cb(err);
         cb(null, data.count);
       });
