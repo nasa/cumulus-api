@@ -20,11 +20,12 @@ var recipe = {
     after: 'Process'
   }, {
     type: 'archive',
-    name: 'Fetch',
-    action: 'download',
+    name: 'Upload',
+    action: 'upload',
     after: 'Metadata'
   }, {
-    type: 'cleanup'
+    type: 'cleanup',
+    after: 'Upload'
   }]
 };
 

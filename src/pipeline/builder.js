@@ -24,6 +24,7 @@ var Builder = function (recipe) {
   };
 
   this.recipe = recipe;
+  this.name = recipe.name;
 
   if (recipe.resource === 'ec2') {
     this.ec2Resource = {
@@ -112,7 +113,7 @@ Builder.prototype = {
         ref: this.ec2Resource.id
       };
     } else {
-      step.workerGroup = this.resourceName;
+      step.workerGroup = this.name;
     }
 
     return step;
