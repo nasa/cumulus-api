@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var steed = require('steed');
 var dynamoose = require('dynamoose');
 var splunkService = require('./splunk');
 var models = require('./models');
@@ -8,19 +9,62 @@ var utils = require('./utils');
 var tb = require('./tables');
 var es = require('./es');
 
-module.exports.statsSummary = function (req, cb) {
-  return cb(null, {
-    activeDatasets: 0, // Active Datasets
-    totalUsers: 3000, // Total Users
-    bandwidth: 300000,
-    storageUsed: 3000000, // Storage Used
-    granules: 3000,
-    downloads: 3000000,
-    errors: {
-      datasets: 2,
-      total: 10
+module.exports.statsSummary = function (req, callback) {
+  steed.series({
+    activeDatasets: function (cb) {
+      es.esCount('cumulus_datasets', null, function (err, data) {
+        if (err) return cb(err);
+        cb(null, data.count);
+      });
     },
-    updatedAt: Date.now()
+    totalUsers: function (cb) {
+      let query = {
+        size: 0,
+        aggs: {
+          users: {
+            cardinality: {
+              field: 'user'
+            }
+          }
+        }
+      };
+
+      es.esAggr('cumulus-distribution-testing', query, function (err, data) {
+        if (err) return cb(err);
+        cb(null, data.users.value);
+      });
+    },
+    granules: function (cb) {
+      es.esCount('cumulus_granules_*', null, function (err, data) {
+        if (err) return cb(err);
+        cb(null, data.count);
+      });
+    },
+    downloads: function (cb) {
+      es.esCount('cumulus-distribution-testing', null, function (err, data) {
+        if (err) return cb(err);
+        cb(null, data.count);
+      });
+    },
+    error: function (cb) {
+      cb(null, {
+        errors: {
+          datasets: 2,
+          total: 10
+        }
+      });
+    },
+    updatedAt: function (cb) {
+      cb(null, Date.now());
+    },
+    bandwidth: function (cb) {
+      cb(null, 0);
+    },
+    storageUsed: function (cb) {
+      cb(null, 0);
+    }
+  }, function (err, results) {
+    callback(err, results);
   });
 };
 
