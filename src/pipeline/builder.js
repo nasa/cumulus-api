@@ -110,7 +110,7 @@ Builder.prototype = {
   _setResource: function (step) {
     if (this.ec2Resource) {
       step.runsOn = {
-        ref: this.ec2Resource.id
+        ref: this.name
       };
     } else {
       step.workerGroup = this.name;
@@ -252,6 +252,10 @@ Builder.prototype = {
 
       template.objects.push(obj);
     });
+
+    if (self.ec2Resource) {
+      template.objects.push(self.ec2Resource);
+    }
 
     return template;
   }
