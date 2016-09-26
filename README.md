@@ -25,6 +25,12 @@ For test you need to run a local copy of dynamoDB using docker
     $ npm install -g serverless
     $ serverless deploy
 
+### Local Development
+
+To run the API locally run:
+
+    $ serverless offline start
+
 The master branch is automatically deployed to AWS
 
 ### Architecture
