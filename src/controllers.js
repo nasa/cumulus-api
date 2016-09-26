@@ -10,7 +10,6 @@ var tb = require('./tables');
 var es = require('./es');
 
 module.exports.statsSummary = function (req, callback) {
-
   let collectionId;
 
   if (_.has(req, ['query', 'collection_id'])) {
@@ -59,12 +58,10 @@ module.exports.statsSummary = function (req, callback) {
         cb(null, data.count);
       });
     },
-    error: function (cb) {
+    errors: function (cb) {
       cb(null, {
-        errors: {
-          datasets: 2,
-          total: 10
-        }
+        datasets: 2,
+        total: 10
       });
     },
     updatedAt: function (cb) {
