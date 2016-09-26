@@ -69,8 +69,7 @@ var dataSetSchema = new dynamoose.Schema(
       type: 'map',
       map: {
         template: {
-          type: Object,
-          required: true
+          type: Object
         },
         parameters: {
           type: Object

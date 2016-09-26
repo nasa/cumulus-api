@@ -4,6 +4,18 @@ require('dotenv').config({silent: true});
 var action = require('./src/controllers');
 var triggers = require('./src/triggers');
 
+module.exports.statsSummary = function (event, context, cb) {
+  action.statsSummary(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
+module.exports.statsSummaryGrouped = function (event, context, cb) {
+  action.statsSummaryGrouped(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
 module.exports.listDataSets = function (event, context, cb) {
   action.listDataSets(event, function (err, results) {
     return cb(err, results);
@@ -47,13 +59,34 @@ module.exports.listErrors = function (event, context, cb) {
   });
 };
 
+module.exports.getErrorCounts = function (event, context, cb) {
+  action.getErrorCounts(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
+module.exports.listErrors = function (event, context, cb) {
+  action.listErrors(event, function (err, results) {
+    return cb(err, results);
+  });
+};
+
 module.exports.trigger = function (event, context, cb) {
   triggers.trigger(event.dataset, cb);
 };
 
 if (require.main === module) {
-  triggers.trigger('wwlln', function (err, results) {
-    console.log(err);
-    console.log(results);
-  });
+  // triggers.trigger('avaps', function (err, results) {
+  //   console.log(err);
+  //   console.log(results);
+  // });
+
+  action.listGranules({
+    path: {
+      dataSet: 'avaps'
+    }
+  }, function (err, results) {
+    console.log(err)
+    console.log(results)
+  })
 }

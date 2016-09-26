@@ -12,7 +12,7 @@ var recipe = {
   }, {
     type: 'runner',
     name: 'Process',
-    image: '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-avaps:latest',
+    image: '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-hamsr:latest',
     after: 'Fetch'
   }, {
     type: 'metadata',
@@ -32,26 +32,26 @@ var recipe = {
 var builder = new Builder(recipe);
 
 var datasetRecord = {
-  name: 'avaps',
-  shortName: 'hs3avaps',
+  name: 'hamsr',
+  shortName: 'hs3hamsr',
   versionId: 1,
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',
-    prefix: 'avps/',
+    prefix: 'hamsr/',
     granulesFiles: 1,
-    format: '.QC.eol'
+    format: '.nc'
   },
   destinationDataBucket: {
     bucketName: 'cumulus-ghrc-archive',
-    prefix: 'hs3avaps/',
+    prefix: 'hs3hamsr/',
     granulesFiles: 1,
-    format: '.PresCorrQC.nc'
+    format: '.nc'
   },
   dataPipeLine: {
     template: builder.template,
     parameters: builder.parameters,
-    batchLimit: 100
+    batchLimit: 10
   }
 };
 

@@ -7,12 +7,16 @@ var tables = require('./tables');
 var models = require('./models');
 var avaps = require('./pipeline/avaps');
 var wwlln = require('./pipeline/wwlln');
+var hirad = require('./pipeline/hirad');
+var hiwrap = require('./pipeline/hiwrap');
+var hamsr = require('./pipeline/hamsr');
+var cpl = require('./pipeline/cpl');
 
 var esClient = new es.Client({});
 
 var populateDataSets = function (records, callback) {
   if (!records) {
-    records = [wwlln, avaps];
+    records = [wwlln, avaps, hirad, hiwrap, hamsr, cpl];
   }
 
   var Dataset = dynamoose.model(
@@ -606,7 +610,7 @@ var populateGranules = function (callback) {
 
 if (require.main === module) {
   populateDataSets(null, function (err) {
-    console.log(err);
+    if (err) { console.log(err); }
     console.log('all done');
   });
 }

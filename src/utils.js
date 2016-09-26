@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash');
-const esClient = require('./elasticsearch-client');
 
 // returns token if present in the Authorization section of header
 var getToken = function (header) {
@@ -63,27 +62,9 @@ var pipelineTemplateConverter = function (arr, fieldName) {
   return newTemplate;
 };
 
-var esQuery = function (query, callback) {
-  esClient.search(
-    { body: query }
-  ).then(res => {
-    let results = res.hits.hits.map(document => {
-      let item = document._source;
-      item._index = document._index;
-      delete item['@SequenceNumber'];
-      delete item['@timestamp'];
-      return item;
-    });
-    return callback(null, results);
-  }).catch(err => {
-    return callback(err);
-  });
-};
-
 module.exports.getToken = getToken;
 module.exports.getLimit = getLimit;
 module.exports.getStart = getStart;
 module.exports.pipelineTemplateConverter = pipelineTemplateConverter;
 module.exports.getEarliestDate = getEarliestDate;
 module.exports.getLatestDate = getLatestDate;
-module.exports.esQuery = esQuery;

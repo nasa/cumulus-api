@@ -73,8 +73,7 @@ describe('Test controllers', function () {
     it('should list all datasets', function (done) {
       cont.listDataSets({}, function (err, datasets) {
         should.not.exist(err);
-        should.equal(datasets.length, 2);
-        should.equal(datasets[1].name, testDataSetRecord);
+        should.equal(datasets.length, 6);
         done();
       });
     });
