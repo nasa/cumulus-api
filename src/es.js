@@ -1,7 +1,7 @@
 'use strict';
 
 var es = require('elasticsearch');
-var awsES = require('http-aws-es');
+// var awsES = require('http-aws-es');
 
 // Host should be in a format like:
 // search-cluster-name-aaaa00aaaa0aaa0aaaaaaa0aaa.us-east-1.es.amazonaws.com
@@ -34,5 +34,28 @@ module.exports.esQuery = function (query, callback) {
     return callback(null, results);
   }).catch(err => {
     return callback(err);
+  });
+};
+
+module.exports.esAggr = function (index, query, callback) {
+  esClient.search({
+    index: index,
+    body: query
+  }).then(res => {
+    return callback(null, res.aggregations);
+  }).catch(err => {
+    return callback(err);
+  });
+};
+
+module.exports.esCount = function (index, query, callback) {
+  esClient.count({
+    index: index
+  }, (err, res) => {
+    if (err) {
+      return callback(err);
+    }
+
+    callback(null, res);
   });
 };
