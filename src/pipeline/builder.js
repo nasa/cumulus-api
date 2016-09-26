@@ -31,7 +31,7 @@ var Builder = function (recipe) {
       resourceRole: 'DataPipelineDefaultResourceRole',
       role: 'DataPipelineDefaultRole',
       imageId: 'ami-e8ed7eff',
-      instanceType: 't2.micro',
+      instanceType: 't2.small',
       name: recipe.name,
       keyPair: 'cumulus-scisco',
       securityGroupIds: ['sg-f179698a'],
