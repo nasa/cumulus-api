@@ -2,8 +2,6 @@ service: cumulus-workflow-engine # NOTE: update this with your service name
 
 provider:
   name: aws
-  apiKeys:
-    - cumulus-admin
   runtime: nodejs4.3
   iamRoleStatements:
     - Effect: "Allow"
@@ -28,7 +26,9 @@ functions:
       - http:
           path: stats/summary
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # stats summary grouped
@@ -39,7 +39,9 @@ functions:
       - http:
           path: stats/summary/grouped
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # get error stats
@@ -50,7 +52,9 @@ functions:
       - http:
           path: stats/errors
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # get list of errors
@@ -61,7 +65,9 @@ functions:
       - http:
           path: errors
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # list all granules
@@ -72,7 +78,9 @@ functions:
       - http:
           path: granules/{dataSet}
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   getGranules:
@@ -82,7 +90,9 @@ functions:
       - http:
           path: granules/{dataSet}/{granuleName}
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # list all dataset records
@@ -93,7 +103,9 @@ functions:
       - http:
           path: datasets
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # get a particular dataset
@@ -115,7 +127,9 @@ functions:
       - http:
           path: datasets
           method: post
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: 68s1ev
           cors: true
 
   # trigger lambda
