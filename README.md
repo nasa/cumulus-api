@@ -22,7 +22,7 @@ For test you need to run a local copy of dynamoDB using docker
 
 ### Deployment
 
-    $ npm install -g serverless
+    $ npm install -g github:cumulus-nasa/serverless#cumulus
     $ serverless deploy
 
 ### Local Development
