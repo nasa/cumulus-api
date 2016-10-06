@@ -1,7 +1,7 @@
 'use strict';
 
 var dynamoose = require('dynamoose');
-var models = require('./models');
+var models = require('./schemas');
 var tb = require('./tables');
 
 console.log('Creating Dataset table');

@@ -4,13 +4,13 @@ var steed = require('steed')();
 var dynamoose = require('dynamoose');
 var es = require('elasticsearch');
 var tables = require('./tables');
-var models = require('./models');
-var avaps = require('./pipeline/avaps');
-var wwlln = require('./pipeline/wwlln');
-var hirad = require('./pipeline/hirad');
-var hiwrap = require('./pipeline/hiwrap');
-var hamsr = require('./pipeline/hamsr');
-var cpl = require('./pipeline/cpl');
+var models = require('./schemas');
+var avaps = require('../pipeline/avaps');
+var wwlln = require('../pipeline/wwlln');
+var hirad = require('../pipeline/hirad');
+var hiwrap = require('../pipeline/hiwrap');
+var hamsr = require('../pipeline/hamsr');
+var cpl = require('../pipeline/cpl');
 
 var esClient = new es.Client({});
 
