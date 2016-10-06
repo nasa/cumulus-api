@@ -48,7 +48,7 @@ var stubs = {
 var granules = proxyquire('../src/controllers/granules', stubs);
 var errors = proxyquire('../src/controllers/errors', stubs);
 var collections = proxyquire('../src/controllers/collections', stubs);
-var models = require('../src/models/schemas');
+var schemas = require('../src/models/schemas');
 
 var wwlln = proxyquire('../src/pipeline/wwlln', {});
 var fixtures = proxyquire('../src/models/fixtures', stubs);
@@ -56,8 +56,8 @@ var fixtures = proxyquire('../src/models/fixtures', stubs);
 describe('Test controllers', function () {
   this.timeout(10000);
 
-  var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true});
-  var GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true});
+  var Dataset = dynamoose.model(tb.datasetTableName, schemas.dataSetSchema, {create: true});
+  var GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', schemas.granuleSchema, {create: true});
   var testDataSetRecord = 'wwlln';
 
   before(function (done) {

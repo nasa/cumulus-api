@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var dynamoose = require('dynamoose');
-var models = require('../models/schemas');
+var schemas = require('../models/schemas');
 var tb = require('../models/tables');
 var es = require('../es');
 
@@ -39,7 +39,7 @@ module.exports.get = function (req, cb) {
 };
 
 module.exports.post = function (req, cb) {
-  var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: false});
+  var Dataset = dynamoose.model(tb.datasetTableName, schemas.dataSetSchema, {create: false});
 
   if (_.get(req.headers, 'Token', null) === 'thisisatesttoken') {
     var postedRecord = _.get(req, 'body', {});
