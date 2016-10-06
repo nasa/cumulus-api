@@ -6,6 +6,13 @@ var schemas = require('../models/schemas');
 var tb = require('../models/tables');
 var es = require('../es');
 
+var parseRecipe = function (record) {
+  if (_.has(record, 'dataPipeLine.recipe')) {
+    record.dataPipeLine.recipe = JSON.parse(record.dataPipeLine.recipe);
+  }
+  return record;
+};
+
 module.exports.list = function (req, cb) {
   es.esQuery({
     query: {
@@ -13,10 +20,7 @@ module.exports.list = function (req, cb) {
     }
   }, (err, res) => {
     res = res.map(function (r) {
-      if (_.has(r, 'dataPipeLine.recipe')) {
-        r.dataPipeLine.recipe = JSON.parse(r.dataPipeLine.recipe);
-      }
-      return r;
+      return parseRecipe(r);
     });
 
     return cb(err, res);
@@ -40,7 +44,7 @@ module.exports.get = function (req, cb) {
     if (res.length === 0) {
       return cb('Record was not found');
     } else {
-      return cb(null, res[0]);
+      return cb(null, parseRecipe(res[0]));
     }
   });
 };
