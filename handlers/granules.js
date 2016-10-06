@@ -2,10 +2,10 @@
 
 var granules = require('../src/controllers/granules');
 
-module.exports.listGranules = function (event, context, cb) {
-  granules.listGranules(event, cb);
+module.exports.list = function (event, context, cb) {
+  granules.list(event, cb);
 };
 
-module.exports.getGranules = function (event, context, cb) {
-  granules.getGranules(event, cb);
+module.exports.get = function (event, context, cb) {
+  granules.get(event, cb);
 };

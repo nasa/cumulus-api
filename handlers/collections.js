@@ -2,14 +2,14 @@
 
 var collections = require('../src/controllers/collections');
 
-module.exports.listCollections = function (event, context, cb) {
-  collections.listDataSets(event, cb);
+module.exports.list = function (event, context, cb) {
+  collections.list(event, cb);
 };
 
-module.exports.getCollection = function (event, context, cb) {
-  collections.getDataSet(event, cb);
+module.exports.get = function (event, context, cb) {
+  collections.get(event, cb);
 };
 
-module.exports.postCollection = function (event, context, cb) {
-  collections.postDataSet(event, cb);
+module.exports.post = function (event, context, cb) {
+  collections.post(event, cb);
 };

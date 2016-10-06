@@ -4,7 +4,7 @@ var es = require('../es');
 var tb = require('../tables');
 var utils = require('../utils');
 
-module.exports.listGranules = function (req, cb) {
+module.exports.list = function (req, cb) {
   // Dataset name
   var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
   var limit = utils.getLimit(req.query);
@@ -26,7 +26,7 @@ module.exports.listGranules = function (req, cb) {
   });
 };
 
-module.exports.getGranules = function (req, cb) {
+module.exports.get = function (req, cb) {
   // Dataset name
   var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
 

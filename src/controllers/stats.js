@@ -4,7 +4,7 @@ var _ = require('lodash');
 var steed = require('steed');
 var es = require('../es');
 
-module.exports.statsSummary = function (req, callback) {
+module.exports.summary = function (req, callback) {
   let collectionId;
 
   if (_.has(req, ['query', 'collection_id'])) {
@@ -73,7 +73,7 @@ module.exports.statsSummary = function (req, callback) {
   });
 };
 
-module.exports.statsSummaryGrouped = function (req, cb) {
+module.exports.summaryGrouped = function (req, cb) {
   return cb(null, {
     granulesPublished: {
       '2016-09-22': 166,

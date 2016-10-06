@@ -4,7 +4,7 @@ var _ = require('lodash');
 var utils = require('../utils');
 var splunkService = require('../splunk');
 
-module.exports.getErrorCounts = function (req, cb) {
+module.exports.counts = function (req, cb) {
   // This query relies on `is_error` being 0 or 1
   let query = 'search index=main | stats sum(is_error) by dataset_id';
 
@@ -36,7 +36,7 @@ module.exports.getErrorCounts = function (req, cb) {
   });
 };
 
-module.exports.listErrors = function (req, cb) {
+module.exports.list = function (req, cb) {
   const FIELDS_TO_RETURN = ['timestamp', 'dataset_id', 'process', 'message'];
 
   // If no dataset is specified, return all datasets

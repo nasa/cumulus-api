@@ -6,7 +6,7 @@ var models = require('../models');
 var tb = require('../tables');
 var es = require('../es');
 
-module.exports.listCollections = function (req, cb) {
+module.exports.list = function (req, cb) {
   es.esQuery({
     query: {
       match: { _index: tb.datasetTableName }
@@ -16,7 +16,7 @@ module.exports.listCollections = function (req, cb) {
   });
 };
 
-module.exports.getCollection = function (req, cb) {
+module.exports.get = function (req, cb) {
   es.esQuery({
     query: {
       bool: {
@@ -38,7 +38,7 @@ module.exports.getCollection = function (req, cb) {
   });
 };
 
-module.exports.postCollection = function (req, cb) {
+module.exports.post = function (req, cb) {
   var Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: false});
 
   if (_.get(req.headers, 'Token', null) === 'thisisatesttoken') {
