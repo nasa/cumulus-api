@@ -19,8 +19,28 @@ plugins:
 functions:
 
   # stats summary
+  signup:
+    handler: handlers.auth.signup
+    timeout: 300
+    events:
+      - http:
+          path: signup
+          method: post
+          cors: true
+
+  # stats summary
+  signin:
+    handler: handlers.auth.signin
+    timeout: 300
+    events:
+      - http:
+          path: signin
+          method: post
+          cors: true
+
+  # stats summary
   statsSummary:
-    handler: handler.statsSummary
+    handler: handlers.stats.summary
     timeout: 300
     events:
       - http:
@@ -33,7 +53,7 @@ functions:
 
   # stats summary grouped
   statsSummaryGrouped:
-    handler: handler.statsSummaryGrouped
+    handler: handlers.stats.summaryGrouped
     timeout: 300
     events:
       - http:
@@ -46,7 +66,7 @@ functions:
 
   # get error stats
   getErrorCounts:
-    handler: handler.getErrorCounts
+    handler: handlers.errors.counts
     timeout: 300
     events:
       - http:
@@ -59,7 +79,7 @@ functions:
 
   # get list of errors
   listErrors:
-    handler: handler.listErrors
+    handler: handlers.errors.list
     timeout: 300
     events:
       - http:
@@ -72,7 +92,7 @@ functions:
 
   # list all granules
   listGranules:
-    handler: handler.listGranules
+    handler: handlers.granules.list
     timeout: 300
     events:
       - http:
@@ -84,7 +104,7 @@ functions:
           cors: true
 
   getGranules:
-    handler: handler.getGranules
+    handler: handlers.granules.get
     timeout: 300
     events:
       - http:
@@ -96,8 +116,8 @@ functions:
           cors: true
 
   # list all dataset records
-  listDataSet:
-    handler: handler.listDataSets
+  listCollections:
+    handler: handlers.collections.list
     timeout: 300
     events:
       - http:
@@ -109,8 +129,8 @@ functions:
           cors: true
 
   # get a particular dataset
-  getDataSet:
-    handler: handler.getDataSet
+  getCollection:
+    handler: handlers.collection.get
     timeout: 300
     events:
       - http:
@@ -120,8 +140,8 @@ functions:
           cors: true
 
   # post a new dataSet record
-  postDataSet:
-    handler: handler.postDataSet
+  postCollection:
+    handler: handler.post
     timeout: 300
     events:
       - http:
