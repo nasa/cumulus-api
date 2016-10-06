@@ -6,7 +6,7 @@ var utils = require('../utils');
 
 module.exports.list = function (req, cb) {
   // Dataset name
-  var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
+  var tableName = tb.granulesTablePrefix + req.path.collection.toLowerCase();
   var limit = utils.getLimit(req.query);
   var start = utils.getStart(req.query);
 
@@ -21,14 +21,14 @@ module.exports.list = function (req, cb) {
   }, (err, res) => {
     if (err) { return cb(err); }
 
-    if (res.length === 0) { return cb(`Requested dataset (${req.path.dataSet}) doesn\'t exist`); }
+    if (res.length === 0) { return cb(`Requested dataset (${req.path.collection}) doesn\'t exist`); }
     return cb(null, res);
   });
 };
 
 module.exports.get = function (req, cb) {
   // Dataset name
-  var tableName = tb.granulesTablePrefix + req.path.dataSet.toLowerCase();
+  var tableName = tb.granulesTablePrefix + req.path.collection.toLowerCase();
 
   es.esQuery({
     query: {
