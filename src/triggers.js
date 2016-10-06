@@ -271,7 +271,7 @@ var generatePayload = function (dataset, granules) {
     batchs.push(Object.assign({}, pipelineGranules));
   }
 
-  return [batchs[0]];
+  return batchs;
 };
 
 var batching = function (dataset, callback) {
