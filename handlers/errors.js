@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config({silent: true});
 var errors = require('../src/controllers/errors');
 
 module.exports.counts = function (event, context, cb) {

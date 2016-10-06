@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config({silent: true});
 var collections = require('../src/controllers/collections');
 
 module.exports.list = function (event, context, cb) {
