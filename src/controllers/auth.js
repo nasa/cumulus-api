@@ -67,7 +67,6 @@ var signin = function (username, password, cb) {
   });
   cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: function (result) {
-      console.log(result);
       cb(null, {token: result.getIdToken().getJwtToken()});
     },
 
