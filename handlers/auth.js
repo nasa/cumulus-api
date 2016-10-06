@@ -1,8 +1,13 @@
 'use strict';
 
-require('dotenv').config({silent: true});
+var path = require('path');
+require('dotenv').config({
+  path: path.join(__dirname, '.env'),
+  silent: false
+});
+
 var _ = require('lodash');
-var auth = require('../src/controller/auth');
+var auth = require('../src/controllers/auth');
 
 module.exports.signup = function (event, context, cb) {
   return auth.signup(

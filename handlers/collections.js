@@ -1,6 +1,10 @@
 'use strict';
 
-require('dotenv').config({silent: true});
+var path = require('path');
+require('dotenv').config({
+  path: path.join(__dirname, '.env'),
+  silent: false
+});
 var collections = require('../src/controllers/collections');
 
 module.exports.list = function (event, context, cb) {
