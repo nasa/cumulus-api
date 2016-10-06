@@ -130,7 +130,7 @@ functions:
 
   # get a particular collection
   getCollection:
-    handler: handlers/collection.get
+    handler: handlers/collections.get
     timeout: 300
     events:
       - http:
