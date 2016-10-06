@@ -1,7 +1,5 @@
 'use strict';
 
-var Builder = require('./builder');
-
 var recipe = {
   resource: 'group',
   name: 'WorkerGroup',
@@ -29,8 +27,6 @@ var recipe = {
   }]
 };
 
-var builder = new Builder(recipe);
-
 var datasetRecord = {
   name: 'hirad',
   shortName: 'hs3hirad',
@@ -49,8 +45,7 @@ var datasetRecord = {
     format: '.nc'
   },
   dataPipeLine: {
-    template: builder.template,
-    parameters: builder.parameters,
+    recipe: recipe,
     batchLimit: 100
   }
 };
