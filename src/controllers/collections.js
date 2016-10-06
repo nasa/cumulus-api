@@ -2,8 +2,8 @@
 
 var _ = require('lodash');
 var dynamoose = require('dynamoose');
-var models = require('../models');
-var tb = require('../tables');
+var models = require('../models/schemas');
+var tb = require('../models/tables');
 var es = require('../es');
 
 module.exports.list = function (req, cb) {

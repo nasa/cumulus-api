@@ -6,9 +6,9 @@ var AWS = require('aws-sdk');
 var steed = require('steed')();
 var dynamoose = require('dynamoose');
 
-var models = require('./models');
+var schemas = require('./models/schemas');
 var utils = require('./utils');
-var tables = require('./tables');
+var tables = require('./models/tables');
 
 var s3 = new AWS.S3();
 var datapipeline = new AWS.DataPipeline();
@@ -133,7 +133,7 @@ Granules.prototype = {
 
     var PipelineModel = dynamoose.model(
       tables.datapipelineTableName,
-      models.dataPipeLineSchema,
+      schemas.dataPipeLineSchema,
       {
         create: true,
         waitForActive: true
@@ -212,7 +212,7 @@ Granules.prototype = {
     var self = this;
     var GranulesModel = dynamoose.model(
       'cumulus_granules_' + this.dataset.name.toLowerCase(),
-      models.granuleSchema,
+      schemas.granuleSchema,
       {
         create: false,
         waitForActive: false
@@ -271,13 +271,13 @@ var generatePayload = function (dataset, granules) {
     batchs.push(Object.assign({}, pipelineGranules));
   }
 
-  return batchs;
+  return [batchs[0]];
 };
 
 var batching = function (dataset, callback) {
   var GranulesModel = dynamoose.model(
     tables.granulesTablePrefix + dataset.name.toLowerCase(),
-    models.granuleSchema,
+    schemas.granuleSchema,
     {
       create: false,
       waitForActive: false
@@ -329,7 +329,7 @@ var trigger = function (dataset, cb) {
   // Get the model
   var Dataset = dynamoose.model(
     tables.datasetTableName,
-    models.dataSetSchema,
+    schemas.dataSetSchema,
     {create: true}
   );
 

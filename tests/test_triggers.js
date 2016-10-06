@@ -23,9 +23,9 @@ var mockTable = {
 
 dynamoose.local();
 
-var models = require('../src/models');
+var models = require('../src/models/schemas');
 var triggers = require('../src/triggers');
-var fixtures = proxyquire('../src/fixtures', mockTable);
+var fixtures = proxyquire('../src/models/fixtures', mockTable);
 
 describe('Test Triggers', function () {
   this.timeout(10000);

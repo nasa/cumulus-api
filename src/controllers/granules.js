@@ -1,7 +1,7 @@
 'use strict';
 
 var es = require('../es');
-var tb = require('../tables');
+var tb = require('../models/tables');
 var utils = require('../utils');
 
 module.exports.list = function (req, cb) {

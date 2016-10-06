@@ -45,11 +45,13 @@ var stubs = {
   }
 };
 
-var cont = proxyquire('../src/controllers', stubs);
-var models = require('../src/models');
+var granules = proxyquire('../src/controllers/granules', stubs);
+var errors = proxyquire('../src/controllers/errors', stubs);
+var collections = proxyquire('../src/controllers/collections', stubs);
+var models = require('../src/models/schemas');
 
 var wwlln = proxyquire('../src/pipeline/wwlln', {});
-var fixtures = proxyquire('../src/fixtures', stubs);
+var fixtures = proxyquire('../src/models/fixtures', stubs);
 
 describe('Test controllers', function () {
   this.timeout(10000);
@@ -71,7 +73,7 @@ describe('Test controllers', function () {
 
   describe('Test dataset controllers', function () {
     it('should list all datasets', function (done) {
-      cont.listDataSets({}, function (err, datasets) {
+      collections.list({}, function (err, datasets) {
         should.not.exist(err);
         should.equal(datasets.length, 6);
         done();
@@ -79,7 +81,7 @@ describe('Test controllers', function () {
     });
 
     it('should return a particular dataset', function (done) {
-      cont.getDataSet({
+      collections.get({
         path: {
           short_name: testDataSetRecord
         }
@@ -92,7 +94,7 @@ describe('Test controllers', function () {
     });
 
     it('should return nothing', function (done) {
-      cont.getDataSet({
+      collections.get({
         path: {
           short_name: 'something'
         }
@@ -105,7 +107,7 @@ describe('Test controllers', function () {
     it('should add one record', function (done) {
       wwlln.name = 'wwlln2';
 
-      cont.postDataSet({
+      collections.post({
         body: wwlln,
         headers: {
           Token: 'thisisatesttoken'
@@ -120,7 +122,7 @@ describe('Test controllers', function () {
 
   describe('Test granules controllers', function () {
     it('should list all datasets', function (done) {
-      cont.listGranules({
+      granules.list({
         path: {
           dataSet: 'wwlln'
         }
@@ -132,7 +134,7 @@ describe('Test controllers', function () {
     });
 
     it('should return error if wrong dataset name is provided', function (done) {
-      cont.listGranules({
+      granules.list({
         path: {
           dataSet: 'wwlln2222'
         }
@@ -143,7 +145,7 @@ describe('Test controllers', function () {
     });
 
     it('should return error when particular granule is not found', function (done) {
-      cont.getGranules({
+      granules.get({
         path: {
           dataSet: 'wwlln',
           granuleName: 'something'
@@ -155,7 +157,7 @@ describe('Test controllers', function () {
     });
 
     it('should return an array', done => {
-      cont.getErrorCounts({
+      errors.count({
         query: {}
       }, (err, response) => {
         should.not.exist(err);
@@ -170,7 +172,7 @@ describe('Test controllers', function () {
     });
 
     it('should return an array of messages', done => {
-      cont.listErrors({
+      errors.list({
         path: { dataSet: '*' },
         query: {}
       }, (err, response) => {

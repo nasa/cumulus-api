@@ -51,7 +51,7 @@ var datasetRecord = {
   dataPipeLine: {
     template: builder.template,
     parameters: builder.parameters,
-    batchLimit: 10
+    batchLimit: 100
   }
 };
 
