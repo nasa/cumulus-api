@@ -28,8 +28,8 @@ var tb = {
 };
 
 var stubs = {
-  './tables': tb,
-  './splunk': {
+  '../models/tables': tb,
+  '../splunk': {
     oneshotSearch: function (a, b, cb) {
       cb(null, {
         preview: false,
@@ -51,7 +51,9 @@ var collections = proxyquire('../src/controllers/collections', stubs);
 var schemas = require('../src/models/schemas');
 
 var wwlln = proxyquire('../src/pipeline/wwlln', {});
-var fixtures = proxyquire('../src/models/fixtures', stubs);
+var fixtures = proxyquire('../src/models/fixtures', {
+  './tables': tb
+});
 
 describe('Test controllers', function () {
   this.timeout(10000);
@@ -71,8 +73,8 @@ describe('Test controllers', function () {
     });
   });
 
-  describe('Test dataset controllers', function () {
-    it('should list all datasets', function (done) {
+  describe('Test collection controllers', function () {
+    it('should list all collections', function (done) {
       collections.list({}, function (err, datasets) {
         should.not.exist(err);
         should.equal(datasets.length, 6);
@@ -80,7 +82,7 @@ describe('Test controllers', function () {
       });
     });
 
-    it('should return a particular dataset', function (done) {
+    it('should return a particular collection', function (done) {
       collections.get({
         path: {
           short_name: testDataSetRecord
@@ -124,7 +126,7 @@ describe('Test controllers', function () {
     it('should list all datasets', function (done) {
       granules.list({
         path: {
-          dataSet: 'wwlln'
+          collection: 'wwlln'
         }
       },
       function (err, granules) {
@@ -136,7 +138,7 @@ describe('Test controllers', function () {
     it('should return error if wrong dataset name is provided', function (done) {
       granules.list({
         path: {
-          dataSet: 'wwlln2222'
+          collection: 'wwlln2222'
         }
       }, function (err, granules) {
         err.should.be.equal('Requested dataset (wwlln2222) doesn\'t exist');
@@ -147,7 +149,7 @@ describe('Test controllers', function () {
     it('should return error when particular granule is not found', function (done) {
       granules.get({
         path: {
-          dataSet: 'wwlln',
+          collection: 'wwlln',
           granuleName: 'something'
         }
       }, function (err, granule) {
@@ -157,7 +159,7 @@ describe('Test controllers', function () {
     });
 
     it('should return an array', done => {
-      errors.count({
+      errors.counts({
         query: {}
       }, (err, response) => {
         should.not.exist(err);
