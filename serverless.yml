@@ -20,7 +20,7 @@ functions:
 
   # stats summary
   signup:
-    handler: handlers.auth.signup
+    handler: handlers/auth.signup
     timeout: 300
     events:
       - http:
@@ -30,7 +30,7 @@ functions:
 
   # stats summary
   signin:
-    handler: handlers.auth.signin
+    handler: handlers/auth.signin
     timeout: 300
     events:
       - http:
@@ -40,7 +40,7 @@ functions:
 
   # stats summary
   statsSummary:
-    handler: handlers.stats.summary
+    handler: handlers/stats.summary
     timeout: 300
     events:
       - http:
@@ -53,7 +53,7 @@ functions:
 
   # stats summary grouped
   statsSummaryGrouped:
-    handler: handlers.stats.summaryGrouped
+    handler: handlers/stats.summaryGrouped
     timeout: 300
     events:
       - http:
@@ -66,7 +66,7 @@ functions:
 
   # get error stats
   getErrorCounts:
-    handler: handlers.errors.counts
+    handler: handlers/errors.counts
     timeout: 300
     events:
       - http:
@@ -79,7 +79,7 @@ functions:
 
   # get list of errors
   listErrors:
-    handler: handlers.errors.list
+    handler: handlers/errors.list
     timeout: 300
     events:
       - http:
@@ -92,7 +92,7 @@ functions:
 
   # list all granules
   listGranules:
-    handler: handlers.granules.list
+    handler: handlers/granules.list
     timeout: 300
     events:
       - http:
@@ -104,7 +104,7 @@ functions:
           cors: true
 
   getGranules:
-    handler: handlers.granules.get
+    handler: handlers/granules.get
     timeout: 300
     events:
       - http:
@@ -117,7 +117,7 @@ functions:
 
   # list all collections
   listCollections:
-    handler: handlers.collections.list
+    handler: handlers/collections.list
     timeout: 300
     events:
       - http:
@@ -130,13 +130,15 @@ functions:
 
   # get a particular collection
   getCollection:
-    handler: handlers.collection.get
+    handler: handlers/collection.get
     timeout: 300
     events:
       - http:
           path: collections/{short_name}
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: b961m7
           cors: true
 
   # post a new collection
