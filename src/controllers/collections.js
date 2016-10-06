@@ -12,6 +12,13 @@ module.exports.list = function (req, cb) {
       match: { _index: tb.datasetTableName }
     }
   }, (err, res) => {
+    res = res.map(function (r) {
+      if (_.has(r, 'dataPipeLine.recipe')) {
+        r.dataPipeLine.recipe = JSON.parse(r.dataPipeLine.recipe);
+      }
+      return r;
+    });
+
     return cb(err, res);
   });
 };
