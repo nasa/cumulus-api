@@ -6,6 +6,7 @@ var AWS = require('aws-sdk');
 var steed = require('steed')();
 var dynamoose = require('dynamoose');
 
+var Builder = require('./pipeline/builder');
 var schemas = require('./models/schemas');
 var utils = require('./utils');
 var tables = require('./models/tables');
@@ -106,10 +107,12 @@ Granules.prototype = {
    */
   putPipelineDefinition: function () {
     var self = this;
+
+    var builder = new Builder(self.dataset.dataPipeLine.recipe);
     var params = {
       pipelineId: self.pipelineId,
-      pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
-      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes')
+      pipelineObjects: utils.pipelineTemplateConverter(builder.template.objects, 'fields'),
+      parameterObjects: utils.pipelineTemplateConverter(builder.parameters.parameters, 'attributes')
     };
 
     console.log(`Putting definition for  ${self.pipelineId}`);
