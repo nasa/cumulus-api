@@ -143,12 +143,25 @@ functions:
 
   # post a new collection
   postCollection:
-    handler: handler.post
+    handler: handlers/collections.post
     timeout: 300
     events:
       - http:
           path: collections
           method: post
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: b961m7
+          cors: true
+
+  # put/update an existing collection
+  putCollection:
+    handler: handlers/collections.put
+    timeout: 300
+    events:
+      - http:
+          path: collections
+          method: put
           authorizer:
             type: COGNITO_USER_POOLS
             id: b961m7

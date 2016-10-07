@@ -18,3 +18,7 @@ module.exports.get = function (event, context, cb) {
 module.exports.post = function (event, context, cb) {
   collections.post(event, cb);
 };
+
+module.exports.put = function (event, context, cb) {
+  collections.put(event, cb);
+};
