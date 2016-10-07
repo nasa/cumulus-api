@@ -52,13 +52,46 @@ module.exports.get = function (req, cb) {
 module.exports.post = function (req, cb) {
   var Dataset = dynamoose.model(tb.datasetTableName, schemas.dataSetSchema, {create: false});
 
-  if (_.get(req.headers, 'Token', null) === 'thisisatesttoken') {
-    var postedRecord = _.get(req, 'body', {});
-    var newRecord = new Dataset(postedRecord);
-    newRecord.save(function (err) {
-      return cb(err, postedRecord);
-    });
-  } else {
-    return cb('Invalid Token', null);
-  }
+  var postedRecord = _.get(req, 'body', {});
+
+  Dataset.get({name: postedRecord.name}, function (err, collection) {
+    if (err) {
+      return cb(err);
+    }
+    if (!collection) {
+      var newRecord = new Dataset(postedRecord);
+      newRecord.save(function (err) {
+        return cb(err, postedRecord);
+      });
+    } else {
+      return cb('Record already exists');
+    }
+  });
+};
+
+module.exports.put = function (req, cb) {
+  var Dataset = dynamoose.model(tb.datasetTableName, schemas.dataSetSchema, {create: false});
+
+  var postedRecord = _.get(req, 'body', {});
+  var name = postedRecord.name;
+  var update = _.omit(postedRecord, ['name']);
+
+  Dataset.get(name, function (err, collection) {
+    if (err) {
+      return cb(err);
+    }
+
+    if (collection) {
+      Dataset.update(name, update, function (err, updatedCollection) {
+        if (err) {
+          return cb(err);
+        }
+        cb(err, updatedCollection);
+      });
+    } else {
+      return cb('Record was not found!');
+    }
+  });
+
+
 };
