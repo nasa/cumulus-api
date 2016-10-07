@@ -169,4 +169,5 @@ functions:
 
   # trigger lambda
   trigger:
-    handler: handler.trigger
+    handler: handlers/triggers.trigger
+    timeout: 300
