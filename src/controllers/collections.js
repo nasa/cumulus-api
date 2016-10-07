@@ -92,6 +92,4 @@ module.exports.put = function (req, cb) {
       return cb('Record was not found!');
     }
   });
-
-
 };
