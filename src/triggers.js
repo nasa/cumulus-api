@@ -1,13 +1,7 @@
 'use strict';
 
-var path = require('path');
-require('dotenv').config({
-  path: path.join(__dirname, '.env'),
-  silent: false
-});
-
 var _ = require('lodash');
-// var path = require('path');
+var path = require('path');
 var AWS = require('aws-sdk');
 var steed = require('steed')();
 var dynamoose = require('dynamoose');
@@ -248,7 +242,7 @@ Granules.prototype = {
 };
 
 var generatePayload = function (dataset, granules) {
-  var batchs = [];
+  var batches = [];
 
   var pipelineGranules = {
     datasetName: dataset.name,
@@ -270,17 +264,17 @@ var generatePayload = function (dataset, granules) {
     granulesList.push(granule);
 
     if (granulesList.length > dataset.dataPipeLine.batchLimit - 1) {
-      batchs.push(Object.assign({}, pipelineGranules));
+      batches.push(Object.assign({}, pipelineGranules));
       granulesList = [];
       pipelineGranules.granules = [];
     }
   });
 
   if (granulesList.length > 0) {
-    batchs.push(Object.assign({}, pipelineGranules));
+    batches.push(Object.assign({}, pipelineGranules));
   }
 
-  return [batchs[0]];
+  return batches;
 };
 
 var batching = function (dataset, callback) {
@@ -367,10 +361,3 @@ var trigger = function (dataset, cb) {
 
 module.exports.trigger = trigger;
 module.exports.generatePayload = generatePayload;
-
-if (require.main === module) {
-  trigger('cpl', function (err, results) {
-    console.log(err);
-    console.log(results);
-  });
-}
