@@ -1,7 +1,13 @@
 'use strict';
 
-var _ = require('lodash');
 var path = require('path');
+require('dotenv').config({
+  path: path.join(__dirname, '.env'),
+  silent: false
+});
+
+var _ = require('lodash');
+// var path = require('path');
 var AWS = require('aws-sdk');
 var steed = require('steed')();
 var dynamoose = require('dynamoose');
@@ -274,7 +280,7 @@ var generatePayload = function (dataset, granules) {
     batchs.push(Object.assign({}, pipelineGranules));
   }
 
-  return batchs;
+  return [batchs[0]];
 };
 
 var batching = function (dataset, callback) {
@@ -361,3 +367,10 @@ var trigger = function (dataset, cb) {
 
 module.exports.trigger = trigger;
 module.exports.generatePayload = generatePayload;
+
+if (require.main === module) {
+  trigger('cpl', function (err, results) {
+    console.log(err);
+    console.log(results);
+  });
+}

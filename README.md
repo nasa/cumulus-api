@@ -33,6 +33,29 @@ To run the API locally run:
 
 The master branch is automatically deployed to AWS
 
+### Docs
+
+API documentation is deployed to https://cumulus-nasa.github.io/workflow-engine
+
+#### Installation
+
+To edit the documentation locally first install Doxbox by running:
+
+    $ ./docs.sh install
+
+#### Local Serve
+
+Serve the local documentation by running:
+
+    $ ./docs.sh serve
+
+While the documentation is served locally you can edit Markdown files under `docbox/content`. Your edits are automatically copied to `docs/api/content`.
+
+#### Deploy
+
+    $ ./docs.sh build
+    $ ./docs.sh deploy
+
 ### Architecture
 
 ```
