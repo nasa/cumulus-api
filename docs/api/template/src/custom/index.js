@@ -5,8 +5,8 @@
  * media queries.
  */
 module.exports.brandNames = {
-  desktop: 'Cumulus API Docs',
-  tablet: 'Cumulus API Docs',
+  desktop: 'Cumulus API',
+  tablet: 'Cumulus API',
   mobile: 'API Docs'
 };
 

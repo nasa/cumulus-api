@@ -13,4 +13,12 @@ module.exports =
   '# Introduction\n' +
   fs.readFileSync('./content/intro.md', 'utf8') + '\n' +
   '# Authentication\n' +
-  fs.readFileSync('./content/auth.md', 'utf8') + '\n';
+  fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
+  '# Collections\n' +
+  fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
+  '# Granules\n' +
+  fs.readFileSync('./content/granules.md', 'utf8') + '\n' +
+  '# Stats\n' +
+  fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
+  '# Errors\n' +
+  fs.readFileSync('./content/errors.md', 'utf8') + '\n';
