@@ -29,6 +29,28 @@ cleanup() {
     exit 0
 }
 
+build() {
+    cd docbox
+    rm -rf build
+    mkdir -p build
+    npm run build
+    cp -r css build/
+    cp index.html build/
+    cp bundle.js build/
+}
+
+deploy() {
+    cd docbox/build
+    git init
+    git config user.name "Devseed"
+    git config user.email "info@developmentseed.org"
+    git config commit.gpgsign "false"
+    git add css bundle.js index.html
+    git commit -m "Automated to gh-pages"
+    git push --force --quiet git@github.com:cumulus-nasa/workflow-engine.git master:gh-pages
+    rm -rf .git/
+}
+
 install_docbox() {
     git clone https://github.com/mapbox/docbox.git
     copy_docs
@@ -51,6 +73,14 @@ do
             ;;
         get)
             get_docs
+            exit 0
+            ;;
+        build)
+            build
+            exit 0
+            ;;
+        deploy)
+            deploy
             exit 0
             ;;
         *)
