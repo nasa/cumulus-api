@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 
 // returns token if present in the Authorization section of header
@@ -23,18 +25,8 @@ var getLatestDate = function (query) {
   return _.get(query, 'latestDate');
 };
 
-var startAt = function (field, type, query) {
-  var start = _.get(query, 'start_at', null);
-
-  var obj = {};
-  obj[field] = {};
-  obj[field][type] = start;
-
-  if (start) {
-    return obj;
-  } else {
-    return null;
-  }
+var getStart = function (field, type, query) {
+  return _.toInteger(_.get(query, 'start_at', 0));
 };
 
 // Converts an AWS datapipline template to the format
@@ -72,7 +64,7 @@ var pipelineTemplateConverter = function (arr, fieldName) {
 
 module.exports.getToken = getToken;
 module.exports.getLimit = getLimit;
-module.exports.startAt = startAt;
+module.exports.getStart = getStart;
 module.exports.pipelineTemplateConverter = pipelineTemplateConverter;
 module.exports.getEarliestDate = getEarliestDate;
 module.exports.getLatestDate = getLatestDate;

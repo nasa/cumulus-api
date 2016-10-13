@@ -1,39 +1,52 @@
+'use strict';
 
-var builder = require('./builder');
-
-var group = 'wwllnWorkerGroup';
-
-var template = {
-  objects: [
-    builder.pipelineObj(),
-    builder.getDockerArchiver('download', group),
-    builder.getDockerStep('Process', group, '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-avaps:latest', 'GetFileList'),
-    // builder.getDockerStep('Metadata', group, 'developmentseed/cumulus-test:wwlln-metadata', 'Process'),
-    builder.getDockerArchiver('upload', group, 'Process')
-  ]
+var recipe = {
+  resource: 'group',
+  name: 'WorkerGroup',
+  steps: [{
+    type: 'archive',
+    name: 'Fetch',
+    action: 'download'
+  }, {
+    type: 'runner',
+    name: 'Process',
+    image: '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-avaps:latest',
+    after: 'Fetch'
+  }, {
+    type: 'metadata',
+    name: 'Metadata',
+    after: 'Process'
+  }, {
+    type: 'archive',
+    name: 'Upload',
+    action: 'upload',
+    after: 'Metadata'
+  }, {
+    type: 'cleanup',
+    after: 'Upload'
+  }]
 };
 
 var datasetRecord = {
   name: 'avaps',
-  shortName: 'avaps',
+  shortName: 'hs3avaps',
   versionId: 1,
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',
-    prefix: 'avaps/',
+    prefix: 'avps/',
     granulesFiles: 1,
-    format: '.eol'
+    format: '.QC.eol'
   },
   destinationDataBucket: {
     bucketName: 'cumulus-ghrc-archive',
-    prefix: 'avaps/',
+    prefix: 'hs3avaps/',
     granulesFiles: 1,
-    format: '.nc'
+    format: '.PresCorrQC.nc'
   },
   dataPipeLine: {
-    template: template,
-    parameters: builder.parameters,
-    batchLimit: 500
+    recipe: recipe,
+    batchLimit: 100
   }
 };
 

@@ -6,9 +6,10 @@ var AWS = require('aws-sdk');
 var steed = require('steed')();
 var dynamoose = require('dynamoose');
 
-var models = require('./models');
+var Builder = require('./pipeline/builder');
+var schemas = require('./models/schemas');
 var utils = require('./utils');
-var tables = require('./tables');
+var tables = require('./models/tables');
 
 var s3 = new AWS.S3();
 var datapipeline = new AWS.DataPipeline();
@@ -106,10 +107,12 @@ Granules.prototype = {
    */
   putPipelineDefinition: function () {
     var self = this;
+
+    var builder = new Builder(self.dataset.dataPipeLine.recipe);
     var params = {
       pipelineId: self.pipelineId,
-      pipelineObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.template.objects, 'fields'),
-      parameterObjects: utils.pipelineTemplateConverter(self.dataset.dataPipeLine.parameters.parameters, 'attributes')
+      pipelineObjects: utils.pipelineTemplateConverter(builder.template.objects, 'fields'),
+      parameterObjects: utils.pipelineTemplateConverter(builder.parameters.parameters, 'attributes')
     };
 
     console.log(`Putting definition for  ${self.pipelineId}`);
@@ -133,7 +136,7 @@ Granules.prototype = {
 
     var PipelineModel = dynamoose.model(
       tables.datapipelineTableName,
-      models.dataPipeLineSchema,
+      schemas.dataPipeLineSchema,
       {
         create: true,
         waitForActive: true
@@ -212,7 +215,7 @@ Granules.prototype = {
     var self = this;
     var GranulesModel = dynamoose.model(
       'cumulus_granules_' + this.dataset.name.toLowerCase(),
-      models.granuleSchema,
+      schemas.granuleSchema,
       {
         create: false,
         waitForActive: false
@@ -239,7 +242,7 @@ Granules.prototype = {
 };
 
 var generatePayload = function (dataset, granules) {
-  var batchs = [];
+  var batches = [];
 
   var pipelineGranules = {
     datasetName: dataset.name,
@@ -261,23 +264,23 @@ var generatePayload = function (dataset, granules) {
     granulesList.push(granule);
 
     if (granulesList.length > dataset.dataPipeLine.batchLimit - 1) {
-      batchs.push(Object.assign({}, pipelineGranules));
+      batches.push(Object.assign({}, pipelineGranules));
       granulesList = [];
       pipelineGranules.granules = [];
     }
   });
 
   if (granulesList.length > 0) {
-    batchs.push(Object.assign({}, pipelineGranules));
+    batches.push(Object.assign({}, pipelineGranules));
   }
 
-  return batchs;
+  return batches;
 };
 
 var batching = function (dataset, callback) {
   var GranulesModel = dynamoose.model(
     tables.granulesTablePrefix + dataset.name.toLowerCase(),
-    models.granuleSchema,
+    schemas.granuleSchema,
     {
       create: false,
       waitForActive: false
@@ -329,7 +332,7 @@ var trigger = function (dataset, cb) {
   // Get the model
   var Dataset = dynamoose.model(
     tables.datasetTableName,
-    models.dataSetSchema,
+    schemas.dataSetSchema,
     {create: true}
   );
 

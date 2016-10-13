@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "ec2",
+        "group"
+      ]
+    },
+    "resourceName": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/definitions/archive" },
+          { "$ref": "#/definitions/runner" },
+          { "$ref": "#/definitions/metadata" },
+          { "$ref": "#/definitions/cleanup" }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "archive": {
+      "properties": {
+        "type": {
+          "enum": ["archive"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "download",
+            "upload"
+          ]
+        },
+        "after": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "action"
+      ]
+    },
+    "runner": {
+      "properties": {
+        "type": {
+          "enum": ["runner"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "image"
+      ]
+    },
+    "metadata": {
+      "properties": {
+        "type": {
+          "enum": ["metadata"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "after": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ]
+    },
+    "cleanup": {
+      "properties": {
+        "type": {
+          "enum": ["cleanup"]
+        }
+      },
+      "required": [
+        "type"
+      ]
+    }
+  },
+  "required": [
+    "resource",
+    "name",
+    "steps"
+  ]
+}

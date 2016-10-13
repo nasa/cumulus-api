@@ -10,7 +10,7 @@ var recipe = {
   }, {
     type: 'runner',
     name: 'Process',
-    image: '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-wwlln:latest',
+    image: '985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-hs3-hirad:latest',
     after: 'Fetch'
   }, {
     type: 'metadata',
@@ -28,25 +28,25 @@ var recipe = {
 };
 
 var datasetRecord = {
-  name: 'wwlln',
-  shortName: 'hs3wwlln',
+  name: 'hirad',
+  shortName: 'hs3hirad',
   versionId: 1,
   daacName: 'Global Hydrology Resource Center DAAC',
   sourceDataBucket: {
     bucketName: 'cumulus-ghrc-raw',
-    prefix: 'wwlln/',
+    prefix: 'hirad/',
     granulesFiles: 1,
-    format: '.loc'
+    format: '.nc'
   },
   destinationDataBucket: {
     bucketName: 'cumulus-ghrc-archive',
-    prefix: 'wwlln/',
+    prefix: 'hs3hirad/',
     granulesFiles: 1,
-    format: '.loc.nc'
+    format: '.nc'
   },
   dataPipeLine: {
     recipe: recipe,
-    batchLimit: 50
+    batchLimit: 100
   }
 };
 

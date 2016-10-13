@@ -23,9 +23,9 @@ var mockTable = {
 
 dynamoose.local();
 
-var models = require('../src/models');
+var schemas = require('../src/models/schemas');
 var triggers = require('../src/triggers');
-var fixtures = proxyquire('../src/fixtures', mockTable);
+var fixtures = proxyquire('../src/models/fixtures', mockTable);
 
 describe('Test Triggers', function () {
   this.timeout(10000);
@@ -33,8 +33,8 @@ describe('Test Triggers', function () {
   var GranulesWWLN;
 
   before(function (done) {
-    Dataset = dynamoose.model(tb.datasetTableName, models.dataSetSchema, {create: true, waitForActive: true});
-    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', models.granuleSchema, {create: true, waitForActive: true});
+    Dataset = dynamoose.model(tb.datasetTableName, schemas.dataSetSchema, {create: true, waitForActive: true});
+    GranulesWWLN = dynamoose.model(tb.granulesTablePrefix + 'wwlln', schemas.granuleSchema, {create: true, waitForActive: true});
 
     steed.parallel([
       function (cb) {
