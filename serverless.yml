@@ -19,8 +19,28 @@ plugins:
 functions:
 
   # stats summary
+  signup:
+    handler: handlers/auth.signup
+    timeout: 300
+    events:
+      - http:
+          path: signup
+          method: post
+          cors: true
+
+  # stats summary
+  signin:
+    handler: handlers/auth.signin
+    timeout: 300
+    events:
+      - http:
+          path: signin
+          method: post
+          cors: true
+
+  # stats summary
   statsSummary:
-    handler: handler.statsSummary
+    handler: handlers/stats.summary
     timeout: 300
     events:
       - http:
@@ -28,12 +48,12 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
   # stats summary grouped
   statsSummaryGrouped:
-    handler: handler.statsSummaryGrouped
+    handler: handlers/stats.summaryGrouped
     timeout: 300
     events:
       - http:
@@ -41,12 +61,12 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
   # get error stats
   getErrorCounts:
-    handler: handler.getErrorCounts
+    handler: handlers/errors.counts
     timeout: 300
     events:
       - http:
@@ -54,12 +74,12 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
   # get list of errors
   listErrors:
-    handler: handler.listErrors
+    handler: handlers/errors.list
     timeout: 300
     events:
       - http:
@@ -67,71 +87,87 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
   # list all granules
   listGranules:
-    handler: handler.listGranules
+    handler: handlers/granules.list
     timeout: 300
     events:
       - http:
-          path: granules/{dataSet}
+          path: granules/{collection}
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
   getGranules:
-    handler: handler.getGranules
+    handler: handlers/granules.get
     timeout: 300
     events:
       - http:
-          path: granules/{dataSet}/{granuleName}
+          path: granules/{collection}/{granuleName}
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
-  # list all dataset records
-  listDataSet:
-    handler: handler.listDataSets
+  # list all collections
+  listCollections:
+    handler: handlers/collections.list
     timeout: 300
     events:
       - http:
-          path: datasets
+          path: collections
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
           cors: true
 
-  # get a particular dataset
-  getDataSet:
-    handler: handler.getDataSet
+  # get a particular collection
+  getCollection:
+    handler: handlers/collections.get
     timeout: 300
     events:
       - http:
-          path: datasets/{short_name}
+          path: collections/{short_name}
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: b961m7
           cors: true
 
-  # post a new dataSet record
-  postDataSet:
-    handler: handler.postDataSet
+  # post a new collection
+  postCollection:
+    handler: handlers/collections.post
     timeout: 300
     events:
       - http:
-          path: datasets
+          path: collections
           method: post
           authorizer:
             type: COGNITO_USER_POOLS
-            id: 68s1ev
+            id: b961m7
+          cors: true
+
+  # put/update an existing collection
+  putCollection:
+    handler: handlers/collections.put
+    timeout: 300
+    events:
+      - http:
+          path: collections
+          method: put
+          authorizer:
+            type: COGNITO_USER_POOLS
+            id: b961m7
           cors: true
 
   # trigger lambda
   trigger:
-    handler: handler.trigger
+    handler: handlers/triggers.trigger
+    timeout: 300

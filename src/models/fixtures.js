@@ -4,13 +4,13 @@ var steed = require('steed')();
 var dynamoose = require('dynamoose');
 var es = require('elasticsearch');
 var tables = require('./tables');
-var models = require('./models');
-var avaps = require('./pipeline/avaps');
-var wwlln = require('./pipeline/wwlln');
-var hirad = require('./pipeline/hirad');
-var hiwrap = require('./pipeline/hiwrap');
-var hamsr = require('./pipeline/hamsr');
-var cpl = require('./pipeline/cpl');
+var schemas = require('./schemas');
+var avaps = require('../pipeline/avaps');
+var wwlln = require('../pipeline/wwlln');
+var hirad = require('../pipeline/hirad');
+var hiwrap = require('../pipeline/hiwrap');
+var hamsr = require('../pipeline/hamsr');
+var cpl = require('../pipeline/cpl');
 
 var esClient = new es.Client({});
 
@@ -21,7 +21,7 @@ var populateDataSets = function (records, callback) {
 
   var Dataset = dynamoose.model(
     tables.datasetTableName,
-    models.dataSetSchema,
+    schemas.dataSetSchema,
     {create: true}
   );
 
@@ -584,7 +584,7 @@ var testRecords = [{
 var populateGranules = function (callback) {
   var Granule = dynamoose.model(
     tables.granulesTablePrefix + 'wwlln',
-    models.granuleSchema,
+    schemas.granuleSchema,
     {create: true}
   );
 

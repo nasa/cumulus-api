@@ -68,10 +68,7 @@ var dataSetSchema = new dynamoose.Schema(
       // data pipeline details
       type: 'map',
       map: {
-        template: {
-          type: Object
-        },
-        parameters: {
+        recipe: {
           type: Object
         },
         batchLimit: {

@@ -35,6 +35,29 @@ The `master` branch is automatically deployed to AWS.
 
 Additionally, in order for most of the Dashboard's reporting to function, the DynamoDB tables must be mirrored to Elasticsearch; Elasticsearch's querying capabilities are much richer than DynamoDB's. This mirroring can be done by following [this AWS tutorial](https://aws.amazon.com/blogs/compute/indexing-amazon-dynamodb-content-with-amazon-elasticsearch-service-using-aws-lambda/).
 
+### Docs
+
+API documentation is deployed to https://cumulus-nasa.github.io/workflow-engine
+
+#### Installation
+
+To edit the documentation locally first install Doxbox by running:
+
+    $ ./docs.sh install
+
+#### Local Serve
+
+Serve the local documentation by running:
+
+    $ ./docs.sh serve
+
+While the documentation is served locally you can edit Markdown files under `docbox/content`. Your edits are automatically copied to `docs/api/content`.
+
+#### Deploy
+
+    $ ./docs.sh build
+    $ ./docs.sh deploy
+
 ### Architecture
 
 ```
