@@ -31,7 +31,9 @@ To run the API locally run:
 
     $ serverless offline start
 
-The master branch is automatically deployed to AWS
+The `master` branch is automatically deployed to AWS.
+
+Additionally, in order for most of the Dashboard's reporting to function, the DynamoDB tables must be mirrored to Elasticsearch; Elasticsearch's querying capabilities are much richer than DynamoDB's. This mirroring can be done by following [this AWS tutorial](https://aws.amazon.com/blogs/compute/indexing-amazon-dynamodb-content-with-amazon-elasticsearch-service-using-aws-lambda/).
 
 ### Architecture
 
@@ -62,6 +64,18 @@ The master branch is automatically deployed to AWS
         │                   │                  │                  │
         └───────────────────┴────────┬─────────┴──────────────────┘
                                      │
+                                     │
+                                     │
+                           ┌──────────────────┐
+                           │                  │
+                           │                  │
+                           │                  │
+                           │  Elasticsearch   │
+                           │                  │
+                           │                  │
+                           │                  │
+                           └──────────────────┘
+                                     ▲
                                      │
                                      │
                            ┌──────────────────┐
