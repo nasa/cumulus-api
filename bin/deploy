@@ -1,0 +1,107 @@
+#! /usr/bin/env node
+'use strict';
+
+const _ = require('lodash');
+const yaml = require('js-yaml');
+const program = require('commander');
+const fs = require('fs-extra');
+const exec = require('child_process').execSync;
+
+/**
+ * Zips lambda functions and uploads them to a given S3 location
+ * @param  {string} s3Path  A valid S3 URI for uploading the zip files
+ * @param  {string} profile The profile name used in aws CLI
+ */
+function uploadLambdas(s3Path, profile) {
+  // remove the build folder if exists
+  fs.removeSync('build');
+
+  // create the lambda folder
+  fs.mkdirpSync('build/lambda');
+
+  // zip files dist folders
+  const distFolders = fs.readdirSync('dist');
+  distFolders.forEach((dir) => {
+    exec(`cd dist && zip -r ../build/lambda/$(basename ${dir} .js) ${dir}`);
+  });
+
+  // upload the artifacts to AWS S3
+  // we use the aws cli to make things easier
+  // this fails if the user doesn't have aws-cli installed
+  const stdout = exec(`cd build && \
+                       aws s3 cp --recursive . ${s3Path}}/ \
+                                 --profile ${profile} \
+                                 --exclude=.DS_Store`);
+  console.log(stdout.toString());
+}
+
+/**
+ * Uploads the Cloud Formation template to a given S3 location
+ * @param  {string} s3Path  A valid S3 URI for uploading the zip files
+ * @param  {string} profile The profile name used in aws CLI
+ */
+function uploadCF(s3Path, profile) {
+  // make sure cloudformation template exists
+  try {
+    fs.accessSync('config/cloudformation.yml');
+  }
+  catch (e) {
+    console.log('cloudformation.yml is missing.');
+    process.exit(1);
+  }
+
+  // upload CF template to S3
+  const stdout = exec(`aws s3 cp \
+                       config/cloudformation.yml ${s3Path}}/ \
+                       --profile ${profile}`);
+  console.log(stdout.toString());
+}
+
+/**
+ * Creates a CloudFormation stack
+ * @param  {Object} options The options object should include the profile name (optional)
+ */
+function createStack(options) {
+  // get the configs
+  const config = yaml.safeLoad(fs.readFileSync('config/config.yml', 'utf8'));
+
+  // throw error if dist folder doesn't exist
+  try {
+    fs.accessSync('dist');
+  }
+  catch (e) {
+    console.error('Dist folder is missing. Run npm install first.');
+    process.exit(1);
+  }
+
+  // get the artifact hash
+  // this is used to separate deployments from different machines
+  let artifactHash = exec(`find dist -type f | \
+                           xargs shasum | shasum | awk '{print $1}' ${''}`).toString();
+  artifactHash = _.replace(artifactHash, '\n', '');
+
+  // Make the S3 Path
+  const s3Path = `s3://${config.configBucket}/${config.stackName}-${config.stage}/${artifactHash}`;
+
+  // upload lambdas and the cf template
+  uploadLambdas(s3Path, options.profile);
+  uploadCF(s3Path, options.profile);
+}
+
+// the CLI activation
+program
+  .usage('COMMAND [options]')
+  .option('-p, --profile <profile>', 'AWS profile name to use for authentication')
+  .option('-r, --region', 'AWS region');
+
+program
+  .command('create')
+  .description('create the CF stack')
+  .action(createStack.bind(null, program));
+
+program
+  .command('update')
+  .description('update the CF stack');
+
+program
+  .parse(process.argv);
