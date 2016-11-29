@@ -1,0 +1,2115 @@
+TemplateBody:
+  AWSTemplateFormatVersion: '2010-09-09'
+  Description: The AWS CloudFormation template for this Serverless application
+  Outputs:
+    GetCollectionLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - GetCollectionLambdaFunction
+        - Arn
+    GetErrorCountsLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - GetErrorCountsLambdaFunction
+        - Arn
+    GetGranulesLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - GetGranulesLambdaFunction
+        - Arn
+    ListCollectionsLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - ListCollectionsLambdaFunction
+        - Arn
+    ListErrorsLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - ListErrorsLambdaFunction
+        - Arn
+    ListGranulesLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - ListGranulesLambdaFunction
+        - Arn
+    PostCollectionLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - PostCollectionLambdaFunction
+        - Arn
+    PutCollectionLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - PutCollectionLambdaFunction
+        - Arn
+    ServerlessDeploymentBucketName:
+      Value:
+        Ref: ServerlessDeploymentBucket
+    ServiceEndpoint:
+      Description: URL of the service endpoint
+      Value:
+        Fn::Join:
+        - ''
+        - - https://
+          - Ref: ApiGatewayRestApi
+          - .execute-api.us-east-1.amazonaws.com/dev
+    SigninLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - SigninLambdaFunction
+        - Arn
+    SignupLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - SignupLambdaFunction
+        - Arn
+    StatsSummaryGroupedLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - StatsSummaryGroupedLambdaFunction
+        - Arn
+    StatsSummaryLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - StatsSummaryLambdaFunction
+        - Arn
+    TriggerLambdaFunctionArn:
+      Description: Lambda function info
+      Value:
+        Fn::GetAtt:
+        - TriggerLambdaFunction
+        - Arn
+  Resources:
+    ApiGatewayDeployment1475857601077:
+      DependsOn:
+      - ApiGatewayMethodSignupPost
+      - ApiGatewayMethodSigninPost
+      - ApiGatewayMethodStatsSummaryGet
+      - ApiGatewayMethodStatsSummaryGroupedGet
+      - ApiGatewayMethodStatsErrorsGet
+      - ApiGatewayMethodErrorsGet
+      - ApiGatewayMethodGranulesCollectionVarGet
+      - ApiGatewayMethodGranulesCollectionVarGranulenameVarGet
+      - ApiGatewayMethodCollectionsGet
+      - ApiGatewayMethodCollectionsShortnameVarGet
+      - ApiGatewayMethodCollectionsPost
+      - ApiGatewayMethodCollectionsPut
+      Properties:
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        StageName: dev
+      Type: AWS::ApiGateway::Deployment
+    ApiGatewayMethodCollectionsGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - ListCollectionsLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollections
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodCollectionsOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,PUT,POST,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollections
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodCollectionsPost:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: POST
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - PostCollectionLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollections
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodCollectionsPut:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: PUT
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - PutCollectionLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollections
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodCollectionsShortnameVarGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - GetCollectionLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollectionsShortnameVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodCollectionsShortnameVarOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceCollectionsShortnameVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodErrorsGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - ListErrorsLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceErrors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodErrorsOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceErrors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodGranulesCollectionVarGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - ListGranulesLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceGranulesCollectionVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodGranulesCollectionVarGranulenameVarGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - GetGranulesLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceGranulesCollectionVarGranulenameVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodGranulesCollectionVarGranulenameVarOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceGranulesCollectionVarGranulenameVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodGranulesCollectionVarOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceGranulesCollectionVar
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodSigninOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,POST'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceSignin
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodSigninPost:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: POST
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - SigninLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceSignin
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodSignupOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,POST'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceSignup
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodSignupPost:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: POST
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - SignupLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceSignup
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsErrorsGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - GetErrorCountsLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsErrors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsErrorsOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsErrors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsSummaryGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - StatsSummaryLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsSummary
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsSummaryGroupedGet:
+      Properties:
+        AuthorizationType: COGNITO_USER_POOLS
+        AuthorizerId: b961m7
+        HttpMethod: GET
+        Integration:
+          IntegrationHttpMethod: POST
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates: {}
+            StatusCode: 200
+          - SelectionPattern: .*\[400\].*
+            StatusCode: 400
+          - SelectionPattern: .*\[401\].*
+            StatusCode: 401
+          - SelectionPattern: .*\[403\].*
+            StatusCode: 403
+          - SelectionPattern: .*\[404\].*
+            StatusCode: 404
+          - SelectionPattern: .*\[422\].*
+            StatusCode: 422
+          - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+            StatusCode: 500
+          - SelectionPattern: .*\[502\].*
+            StatusCode: 502
+          - SelectionPattern: .*\[504\].*
+            StatusCode: 504
+          PassthroughBehavior: NEVER
+          RequestTemplates:
+            application/json: "\n            #define( $loop )\n              {\n \
+              \             #foreach($key in $map.keySet())\n                  \"\
+              $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+              \n                    #if( $foreach.hasNext ) , #end\n             \
+              \ #end\n              }\n            #end\n\n            {\n       \
+              \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+              $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+            application/x-www-form-urlencoded: "\n            #define( $body )\n \
+              \             {\n              #foreach( $token in $input.path('$').split('&')\
+              \ )\n                #set( $keyVal = $token.split('=') )\n         \
+              \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+              \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+              \ )\n                  #if( $keyValSize >= 2 )\n                   \
+              \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+              \                    #set( $val = '' )\n                  #end\n   \
+              \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+              \           #end\n              #end\n              }\n            #end\n\
+              \n            #define( $loop )\n              {\n              #foreach($key\
+              \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+              :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+              \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+              \              }\n            #end\n\n            {\n              \"\
+              body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+              \              \"principalId\": \"$context.authorizer.principalId\"\
+              ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+              cognitoPoolClaims\" : {\n                \n                \"sub\":\
+              \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+              \     #set( $map = $input.params().header )\n              \"headers\"\
+              : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+              \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+              \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+              \ )\n              \"identity\": $loop,\n\n              #set( $map\
+              \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+              \         }\n          "
+          Type: AWS
+          Uri:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:apigateway:'
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                - StatsSummaryGroupedLambdaFunction
+                - Arn
+              - /invocations
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+          StatusCode: 200
+        - StatusCode: 400
+        - StatusCode: 401
+        - StatusCode: 403
+        - StatusCode: 404
+        - StatusCode: 422
+        - StatusCode: 500
+        - StatusCode: 502
+        - StatusCode: 504
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsSummaryGrouped
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsSummaryGroupedOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsSummaryGrouped
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayMethodStatsSummaryOptions:
+      Properties:
+        AuthorizationType: NONE
+        HttpMethod: OPTIONS
+        Integration:
+          IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''OPTIONS,GET'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+          RequestTemplates:
+            application/json: '{statusCode:200}'
+          Type: MOCK
+        MethodResponses:
+        - ResponseModels: {}
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+        RequestParameters: {}
+        ResourceId:
+          Ref: ApiGatewayResourceStatsSummary
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Method
+    ApiGatewayResourceCollections:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: collections
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceCollectionsShortnameVar:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceCollections
+        PathPart: '{short_name}'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceErrors:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: errors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceGranules:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: granules
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceGranulesCollectionVar:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceGranules
+        PathPart: '{collection}'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceGranulesCollectionVarGranulenameVar:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceGranulesCollectionVar
+        PathPart: '{granuleName}'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceSignin:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: signin
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceSignup:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: signup
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceStats:
+      Properties:
+        ParentId:
+          Fn::GetAtt:
+          - ApiGatewayRestApi
+          - RootResourceId
+        PathPart: stats
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceStatsErrors:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceStats
+        PathPart: errors
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceStatsSummary:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceStats
+        PathPart: summary
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayResourceStatsSummaryGrouped:
+      Properties:
+        ParentId:
+          Ref: ApiGatewayResourceStatsSummary
+        PathPart: grouped
+        RestApiId:
+          Ref: ApiGatewayRestApi
+      Type: AWS::ApiGateway::Resource
+    ApiGatewayRestApi:
+      Properties:
+        Name: dev-cumulus-workflow-engine
+      Type: AWS::ApiGateway::RestApi
+    GetCollectionLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-getCollection
+        Handler: handlers/collections.get
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    GetCollectionLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - GetCollectionLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    GetErrorCountsLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-getErrorCounts
+        Handler: handlers/errors.counts
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    GetErrorCountsLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - GetErrorCountsLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    GetGranulesLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-getGranules
+        Handler: handlers/granules.get
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    GetGranulesLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - GetGranulesLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    IamPolicyLambdaExecution:
+      Properties:
+        PolicyDocument:
+          Statement:
+          - Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Effect: Allow
+            Resource: arn:aws:logs:us-east-1:*:*
+          - Action:
+            - s3:*
+            - datapipeline:*
+            - dynamodb:*
+            - iam:PassRole
+            Effect: Allow
+            Resource:
+            - '*'
+          Version: '2012-10-17'
+        PolicyName: dev-cumulus-workflow-engine-lambda
+        Roles:
+        - Ref: IamRoleLambdaExecution
+      Type: AWS::IAM::Policy
+    IamRoleLambdaExecution:
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+          - Action:
+            - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+          Version: '2012-10-17'
+        Path: /
+      Type: AWS::IAM::Role
+    ListCollectionsLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-listCollections
+        Handler: handlers/collections.list
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    ListCollectionsLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - ListCollectionsLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    ListErrorsLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-listErrors
+        Handler: handlers/errors.list
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    ListErrorsLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - ListErrorsLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    ListGranulesLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-listGranules
+        Handler: handlers/granules.list
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    ListGranulesLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - ListGranulesLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    PostCollectionLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-postCollection
+        Handler: handlers/collections.post
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    PostCollectionLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - PostCollectionLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    PutCollectionLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-putCollection
+        Handler: handlers/collections.put
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    PutCollectionLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - PutCollectionLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    ServerlessDeploymentBucket:
+      Type: AWS::S3::Bucket
+    SigninLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-signin
+        Handler: handlers/auth.signin
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    SigninLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - SigninLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    SignupLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-signup
+        Handler: handlers/auth.signup
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    SignupLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - SignupLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    StatsSummaryGroupedLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-statsSummaryGrouped
+        Handler: handlers/stats.summaryGrouped
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    StatsSummaryGroupedLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - StatsSummaryGroupedLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    StatsSummaryLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-statsSummary
+        Handler: handlers/stats.summary
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
+    StatsSummaryLambdaPermissionApiGateway:
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Fn::GetAtt:
+          - StatsSummaryLambdaFunction
+          - Arn
+        Principal: apigateway.amazonaws.com
+      Type: AWS::Lambda::Permission
+    TriggerLambdaFunction:
+      Properties:
+        Code:
+          S3Bucket:
+            Ref: ServerlessDeploymentBucket
+          S3Key: 1475857601054-2016-10-07T16:26:41.054Z/cumulus-workflow-engine.zip
+        FunctionName: cumulus-workflow-engine-dev-trigger
+        Handler: handlers/triggers.trigger
+        MemorySize: 1024
+        Role:
+          Fn::GetAtt:
+          - IamRoleLambdaExecution
+          - Arn
+        Runtime: nodejs4.3
+        Timeout: 300
+      Type: AWS::Lambda::Function
