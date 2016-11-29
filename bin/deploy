@@ -74,6 +74,16 @@ function createStack(options) {
     process.exit(1);
   }
 
+  // check if the configBucket exists, if not throw an error
+  try {
+    exec(`aws s3 ls s3://${config.configBucket} --profile ${options.profile}`).toString();
+  }
+  catch (e) {
+    console.error(`${config.configBucket} does not exist or your profile doesn't have access to it.
+Either create the bucket or make sure your credentials have access to it`);
+    process.exit(1);
+  }
+
   // get the artifact hash
   // this is used to separate deployments from different machines
   let artifactHash = exec(`find dist -type f | \
