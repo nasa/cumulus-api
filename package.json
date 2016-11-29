@@ -1,21 +1,21 @@
 {
-  "name": "workflow-engine",
+  "name": "cumulus-api",
   "version": "1.0.0",
-  "description": "Cumulus WorkFlow Engine",
+  "description": "Cumulus API",
   "main": "handler.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha tests/*.js -S"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cumulus-nasa/workflow-engine.git"
+    "url": "git+https://github.com/cumulus-nasa/cumulus-api.git"
   },
   "author": "Development Seed",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/cumulus-nasa/workflow-engine/issues"
+    "url": "https://github.com/cumulus-nasa/cumulus-api/issues"
   },
-  "homepage": "https://github.com/cumulus-nasa/workflow-engine#readme",
+  "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
   "dependencies": {
     "ajv": "^4.7.2",
     "amazon-cognito-identity-js": "^1.5.0",
@@ -30,6 +30,17 @@
     "steed": "^1.1.3"
   },
   "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.2.8",
+    "babel-plugin-transform-async-to-generator": "^6.16.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
+    "commander": "^2.9.0",
+    "eslint": "^3.10.2",
+    "fs-extra": "^1.0.0",
+    "handlebars": "^4.0.6",
+    "js-yaml": "^3.7.0",
     "mocha": "^3.0.2",
     "proxyquire": "^1.7.10",
     "serverless-offline": "github:cumulus-nasa/serverless-offline#serverless_v1",
