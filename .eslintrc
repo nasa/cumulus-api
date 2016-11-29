@@ -6,7 +6,7 @@
     "import/no-extraneous-dependencies": "off",
     "import/newline-after-import": "off",
     "import/prefer-default-export": "off",
-    "no-console": "warn",
+    "no-console": "off",
     "spaced-comment": "off",
     "prefer-template": "warn",
     "no-underscore-dangle": "off",
