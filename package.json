@@ -4,7 +4,9 @@
   "description": "Cumulus API",
   "main": "handler.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha tests/*.js -S"
+    "test": "./node_modules/mocha/bin/mocha tests/*.js -S",
+    "start": "webpack -w --colors",
+    "prepublish": "find . -name package.json -not -path '*/node_modules/*' -not -path './package.json' -execdir npm install \\; && webpack"
   },
   "repository": {
     "type": "git",

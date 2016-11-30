@@ -1,25 +1,25 @@
 'use strict';
 
-var _ = require('lodash');
-var steed = require('steed');
-var es = require('../es');
+import _ from 'lodash';
+import steed from 'steed';
+import { esCount, esAggr } from 'cumulus-common/es';
 
-module.exports.summary = function (req, callback) {
+export function summary(event, context, callback) {
   let collectionId;
 
-  if (_.has(req, ['query', 'collection_id'])) {
-    collectionId = req.query.collection_id;
+  if (_.has(event, ['query', 'collection_id'])) {
+    collectionId = event.query.collection_id;
   }
 
   steed.series({
-    activeDatasets: function (cb) {
-      es.esCount('cumulus_datasets', null, function (err, data) {
+    activeDatasets: cb => {
+      esCount('cumulus_datasets', null, (err, data) => {
         if (err) return cb(err);
         cb(null, data.count);
       });
     },
-    totalUsers: function (cb) {
-      let query = {
+    totalUsers: cb => {
+      const query = {
         size: 0,
         aggs: {
           users: {
@@ -30,50 +30,50 @@ module.exports.summary = function (req, callback) {
         }
       };
 
-      es.esAggr('cumulus-distribution-testing', query, function (err, data) {
+      esAggr('cumulus-distribution-testing', query, (err, data) => {
         if (err) return cb(err);
         cb(null, data.users.value);
       });
     },
-    granules: function (cb) {
+    granules: cb => {
       let tableName = 'cumulus_granules_*';
 
       if (collectionId) {
-        tableName = 'cumulus_granules_' + collectionId;
+        tableName = `cumulus_granules_${collectionId}`;
       }
 
-      es.esCount(tableName, null, function (err, data) {
+      esCount(tableName, null, (err, data) => {
         if (err) return cb(err);
         cb(null, data.count);
       });
     },
-    downloads: function (cb) {
-      es.esCount('cumulus-distribution-testing', null, function (err, data) {
+    downloads: cb => {
+      esCount('cumulus-distribution-testing', null, (err, data) => {
         if (err) return cb(err);
         cb(null, data.count);
       });
     },
-    errors: function (cb) {
+    errors: cb => {
       cb(null, {
         datasets: 2,
         total: 10
       });
     },
-    updatedAt: function (cb) {
+    updatedAt: cb => {
       cb(null, Date.now());
     },
-    bandwidth: function (cb) {
+    bandwidth: cb => {
       cb(null, 0);
     },
-    storageUsed: function (cb) {
+    storageUsed: cb => {
       cb(null, 0);
     }
-  }, function (err, results) {
+  }, (err, results) => {
     callback(err, results);
   });
-};
+}
 
-module.exports.summaryGrouped = function (req, cb) {
+export function summaryGrouped(event, context, cb) {
   return cb(null, {
     granulesPublished: {
       '2016-09-22': 166,
@@ -100,11 +100,11 @@ module.exports.summaryGrouped = function (req, cb) {
       '2016-09-13': 43
     },
     downloadsPerDataSet: {
-      'hs3cpl': 66,
-      'hs3hirad': 99,
-      'hs3hiwrap': 117,
-      'hs3hamsr': 116,
-      'hs3wwlln': 118
+      hs3cpl: 66,
+      hs3hirad: 99,
+      hs3hiwrap: 117,
+      hs3hamsr: 116,
+      hs3wwlln: 118
     },
     totalGranules: {
       '2016-09-22': 47,
@@ -119,15 +119,15 @@ module.exports.summaryGrouped = function (req, cb) {
       '2016-09-13': 123
     },
     topCountries: {
-      'USA': 320,
-      'Germany': 10,
-      'China': 24,
-      'UK': 78,
-      'France': 110,
-      'Brazil': 43,
-      'Chile': 21,
-      'Mexico': 98,
-      'Canada': 45
+      USA: 320,
+      Germany: 10,
+      China: 24,
+      UK: 78,
+      France: 110,
+      Brazil: 43,
+      Chile: 21,
+      Mexico: 98,
+      Canada: 45
     },
     numberOfUsers: {
       '2016-09-22': 47,
@@ -142,4 +142,4 @@ module.exports.summaryGrouped = function (req, cb) {
       '2016-09-13': 123
     }
   });
-};
+}
