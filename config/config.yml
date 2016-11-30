@@ -108,7 +108,7 @@ lambdas:
       cors: true
 
   - name: postCollection
-    handler: handlers/collections.post
+    handler: collections.post
     timeout: 300
     apiGateway:
       path: collections
