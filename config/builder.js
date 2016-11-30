@@ -13,7 +13,6 @@ import Handlebars from 'handlebars';
  */
 const configureApiGateway = (config) => {
   // APIGateway name used in AWS APIGateway Definition
-  const apiName = `${config.stackName}-${config.stage}`;
   const apiMethods = [];
   const apiMethodsOptions = {};
 
@@ -39,17 +38,17 @@ const configureApiGateway = (config) => {
       const segmentNames = [];
 
       segments.forEach((segment, index) => {
-        let name = segment
+        let name = segment;
         let parents = [];
 
         // when a segment includes a variable, e.g. {short_name}
         // we remove the curly braces and underscores and add Var to the name
         if (_.startsWith(segment, '{')) {
-          name = _.replace(_.trim(segment, '{}'), '_', '') + 'Var'
+          name = `${_.replace(_.trim(segment, '{}'), '_', '')}Var`;
         }
 
         name = _.upperFirst(name);
-        segmentNames.push(name)
+        segmentNames.push(name);
 
         // the first segment is always have rootresourceid as parent
         if (index === 0) {
@@ -65,40 +64,40 @@ const configureApiGateway = (config) => {
             'Ref: ApiGateWayResource' + _.join(
               _.slice(segmentNames, 0, index
             ), '')
-          ]
+          ];
 
-          name = _.join(segmentNames.map((x) => x), '')
+          name = _.join(segmentNames.map((x) => x), '');
         }
 
         // We use an object here to catch duplicate resources
         // This ensures if to paths shares a segment, they also
         // share a parent
         apiResources[name] = {
-          name: 'ApiGateWayResource' + name,
+          name: `ApiGateWayResource${name}`,
           pathPart: segment,
           parents: parents
-        }
+        };
       });
 
-      const method = _.capitalize(lambda.apiGateway.method)
+      const method = _.capitalize(lambda.apiGateway.method);
       const name = _.join(segmentNames.map((x) => x), '');
 
       // Build the ApiMethod array
       apiMethods.push({
-        name: 'ApiGatewayMethod' + name + _.capitalize(method),
+        name: `ApiGatewayMethod${name}${_.capitalize(method)}`,
         method: _.upperCase(method),
         cors: lambda.apiGateway.cors || false,
-        resource: 'ApiGateWayResource' + name,
+        resource: `ApiGateWayResource${name}`,
         lambda: lambda.name
-      })
+      });
 
       // Build the ApiMethod Options array. Only needed for resources
       // with cors set to true
       if (lambda.apiGateway.cors) {
         apiMethodsOptions[name] = {
-          name: 'ApiGatewayMethod' + name + 'Options',
-          resource: 'ApiGateWayResource' + name
-        }
+          name: `ApiGatewayMethod${name}Options`,
+          resource: `ApiGateWayResource${name}`
+        };
       }
     }
   }
@@ -107,7 +106,7 @@ const configureApiGateway = (config) => {
     apiMethods,
     apiResources: _.values(apiResources),
     apiMethodsOptions: _.values(apiMethodsOptions)
-  }
+  };
 };
 
 /**
@@ -120,11 +119,11 @@ const configureLambda = (config) => {
   // Add default memory and timeout to all lambdas
   for (const lambda of config.lambdas) {
     if (!_.has(lambda, 'memory')) {
-      lambda.memory = 1024
+      lambda.memory = 1024;
     }
 
     if (!_.has(lambda, 'timeout')) {
-      lambda.timeout = 300
+      lambda.timeout = 300;
     }
 
     // add stackName and stage
@@ -145,23 +144,24 @@ const configureLambda = (config) => {
  */
 const compile = () => {
   let config = yaml.safeLoad(fs.readFileSync('config/config.yml', 'utf8'));
+  config.apiName = _.upperFirst(_.camelCase(`${config.stackName}-${config.stage}`));
 
   config = configureLambda(config);
 
   if (config.buildApiGateway) {
-    config = Object.assign(config, configureApiGateway(config))
+    config = Object.assign(config, configureApiGateway(config));
   }
 
   // add config bucket if not included
   if (!_.has(config, 'configBucket')) {
-    config.configBucket = config.stackName + '-deploy'
+    config.configBucket = `${config.stackName}-deploy`;
   }
 
   const t = fs.readFileSync('config/cloudformation.template.yml', 'utf8');
-  var template = Handlebars.compile(t);
+  const template = Handlebars.compile(t);
 
-  const destPath = 'config/cloudformation.yml'
-  console.log(`CF template saved to ${destPath}`)
+  const destPath = 'config/cloudformation.yml';
+  console.log(`CF template saved to ${destPath}`);
   fs.writeFileSync(destPath, template(config));
 };
 
