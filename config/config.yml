@@ -1,10 +1,10 @@
-stackName: cumulus-api
+stackName: cumulus-api-test
 stage: dev
 configBucket: cumulus-private
 buildApiGateway: true
 lambdas:
   - name: signup
-    handler: handlers/auth.signup
+    handler: auth.signup
     timeout: 300
     apiGateway:
       path: signup
@@ -12,7 +12,7 @@ lambdas:
       cors: trues
 
   - name: signin
-    handler: handlers/auth.signin
+    handler: auth.signin
     timeout: 300
     apiGateway:
       path: signin
@@ -20,7 +20,7 @@ lambdas:
       cors: true
 
   - name: statsSummary
-    handler: handlers/stats.summary
+    handler: stats.summary
     timeout: 300
     apiGateway:
       path: stats/summary
@@ -31,7 +31,7 @@ lambdas:
       cors: true
 
   - name: statsSummaryGrouped
-    handler: handlers/stats.summaryGrouped
+    handler: stats.summaryGrouped
     timeout: 300
     apiGateway:
       path: stats/summary/grouped
@@ -42,7 +42,7 @@ lambdas:
       cors: true
 
   - name: getErrorCounts
-    handler: handlers/errors.counts
+    handler: errors.counts
     timeout: 300
     apiGateway:
       path: stats/errors
@@ -53,7 +53,7 @@ lambdas:
       cors: true
 
   - name: listErrors
-    handler: handlers/errors.list
+    handler: errors.list
     timeout: 300
     apiGateway:
       path: errors
@@ -64,7 +64,7 @@ lambdas:
       cors: true
 
   - name: listGranules
-    handler: handlers/granules.list
+    handler: granules.list
     timeout: 300
     apiGateway:
       path: granules/{collection}
@@ -75,7 +75,7 @@ lambdas:
       cors: true
 
   - name: getGranules
-    handler: handlers/granules.get
+    handler: granules.get
     timeout: 300
     apiGateway:
       path: granules/{collection}/{granuleName}
@@ -86,7 +86,7 @@ lambdas:
       cors: true
 
   - name: listCollections
-    handler: handlers/collections.list
+    handler: collections.list
     timeout: 300
     apiGateway:
       path: collections
@@ -97,7 +97,7 @@ lambdas:
       cors: true
 
   - name: getCollection
-    handler: handlers/collections.get
+    handler: collections.get
     timeout: 300
     apiGateway:
       path: collections/{short_name}
@@ -119,7 +119,7 @@ lambdas:
       cors: true
 
   - name: putCollection
-    handler: handlers/collections.put
+    handler: collections.put
     timeout: 300
     apiGateway:
       path: collections
@@ -128,7 +128,3 @@ lambdas:
         type: COGNITO_USER_POOLS
         id: b961m7
       cors: true
-
-  - name: trigger
-    handler: handlers/triggers.trigger
-    timeout: 300
