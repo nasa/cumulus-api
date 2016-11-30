@@ -129,6 +129,9 @@ const configureLambda = (config) => {
     // add stackName and stage
     lambda.stackName = config.stackName;
     lambda.stage = config.stage;
+
+    // Get Lambda's zip file name
+    lambda.zipFile = _.split(lambda.handler, '.')[0];
   }
 
   return config;
