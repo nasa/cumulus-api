@@ -6,3 +6,4 @@ fake.js
 dist
 build
 config/cloudformation.yml
+test.js
