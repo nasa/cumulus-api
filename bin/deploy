@@ -61,6 +61,7 @@ function uploadCF(s3Path, profile) {
 }
 
 function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile) {
+  // Run the cloudformation cli command
   exec(`aws cloudformation ${op}-stack \
 --profile ${profile} \
 --stack-name ${stackName} \
@@ -69,6 +70,20 @@ function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, 
 "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
 --capabilities CAPABILITY_IAM`
   );
+
+  // await for the response
+  console.log(`Waiting for the stack to be ${op}ed:`);
+  try {
+    exec(`aws cloudformation wait stack-${op}-complete \
+            --stack-name ${stackName} \
+            --profile ${profile}`);
+    console.log(`Stack is successfully ${op}ed`);
+  }
+  catch (e) {
+    console.log('Stack creation failed due to:');
+    console.log(e);
+    process.exit(1);
+  }
 }
 
 /**
@@ -179,7 +194,7 @@ function createStack(options) {
     `${h.url}/cloudformation.yml`,
     c.stackName,
     c.bucket,
-    c.hash,
+    h.hash,
     profile
   );
 }
