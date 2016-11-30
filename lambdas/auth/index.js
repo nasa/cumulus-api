@@ -16,7 +16,7 @@ global.window = {
 
 global.navigator = {};
 
-function signup(event, context, cb) {
+export function signup(event, context, cb) {
   const email = _.get(event, 'body.email', null);
   const password = _.get(event, 'body.password', null);
   const inviteCode = _.get(event, 'body.invite', null);
@@ -61,7 +61,7 @@ function signup(event, context, cb) {
   }
 }
 
-function signin(event, context, cb) {
+export function signin(event, context, cb) {
   const username = _.get(event, 'body.username', null);
   const password = _.get(event, 'body.password', null);
 
