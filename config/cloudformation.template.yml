@@ -111,6 +111,7 @@ Resources:
 {{#each apiMethods}}
   {{name}}:
     Properties:
+      AuthorizationType: NONE
       HttpMethod: {{method}}
       Integration:
         IntegrationHttpMethod: POST
@@ -269,7 +270,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: !Ref ConfigS3Bucket
-        S3Key: !Sub ${ArtifactPath}/lambda/{{name}}.zip
+        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/{{zipFile}}.zip
       FunctionName: {{stackName}}-{{name}}-{{stage}}
       Handler: {{handler}}
       MemorySize: {{memory}}
