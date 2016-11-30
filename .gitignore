@@ -5,3 +5,4 @@ docbox
 fake.js
 dist
 build
+config/cloudformation.yml
