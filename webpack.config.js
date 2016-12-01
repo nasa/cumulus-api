@@ -50,7 +50,9 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'prepend',
         query: {
-          data: "'use strict';\nrequire('babel-polyfill');require('source-map-support').install();"
+          data: "'use strict';\n \
+          if (!global._babelPolyfill) require('babel-polyfill'); \n \
+          ;require('source-map-support').install();"
         }
       },
       {
