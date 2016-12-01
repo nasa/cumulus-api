@@ -48,6 +48,7 @@
     "glob": "^7.1.1",
     "handlebars": "^4.0.6",
     "js-yaml": "^3.7.0",
+    "json-loader": "^0.5.4",
     "mocha": "^3.0.2",
     "prepend-loader": "0.0.2",
     "proxyquire": "^1.7.10",
