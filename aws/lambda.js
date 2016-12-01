@@ -5,6 +5,10 @@ const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const exec = require('./common').exec;
 
+function getLambdaZipFile(handler) {
+  return _.split(handler, '.')[0];
+}
+
 /**
  * Groups the lambdas by their folder name in a js object
  * This is needed because the code for a lambda function could
@@ -20,7 +24,7 @@ function lambdaObject() {
 
   for (const lambda of c.lambdas) {
     // extract the lambda folder name from the handler
-    const funcName = _.split(lambda.handler, '.')[0];
+    const funcName = getLambdaZipFile(lambda.handler);
 
     // create the list
     if (_.has(obj, funcName)) {
@@ -97,3 +101,4 @@ function updateLambda(options, name, webpack) {
 
 module.exports.uploadLambdas = uploadLambdas;
 module.exports.updateLambda = updateLambda;
+module.exports.getLambdaZipFile = getLambdaZipFile;
