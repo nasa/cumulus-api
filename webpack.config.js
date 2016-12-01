@@ -32,7 +32,8 @@ module.exports = {
       }
     },
     noParse: [
-      /graceful-fs\/fs.js/
+      /graceful-fs\/fs.js/,
+      /dynamoose/
     ],
     loaders: [
       {
