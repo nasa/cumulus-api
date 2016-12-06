@@ -1,7 +1,53 @@
-stackName: cumulus-api-test
+stackName: cumulus-api-test2
 stage: dev
 configBucket: cumulus-private
 buildApiGateway: true
+
+dynamos:
+  - name: CollectionsTable
+    read: 5
+    write: 5
+    attributes:
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+
+  - name: GranulesTable
+    read: 5
+    write: 5
+    attributes:
+      - name: granuleId
+        type: S
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+      - name: granuleId
+        type: RANGE
+
+  - name: InvokeTabel
+    read: 5
+    write: 5
+    attributes:
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+
+  - name: PDRsTable
+    read: 5
+    write: 5
+    attributes:
+      - name: pdrName
+        type: S
+    schema:
+      - name: pdrName
+        type: HASH
+
 lambdas:
   - name: signup
     handler: auth.signup
