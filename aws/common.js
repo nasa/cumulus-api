@@ -161,6 +161,14 @@ const configureDynamo = (config) => {
     // add stackName and stage
     tb.stackName = config.stackName;
     tb.stage = config.stage;
+
+    // if the hash is not the first item in the schema
+    // throw error
+    if (_.has(tb, 'schema')) {
+      if (tb.schema[0].type !== 'HASH') {
+        throw Error('The first KeySchemaElement is not a HASH key type');
+      }
+    }
   }
 
   return config;
