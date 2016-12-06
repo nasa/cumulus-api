@@ -1,13 +1,25 @@
 {
-  "extends": ["standard"],
-  "env": {
-    "es6": true,
-    "browser": true,
-    "mocha": true
-  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
   "rules": {
-    "semi": [2, "always"],
-    "no-extra-semi": 2,
-    "semi-spacing": [2, { "before": false, "after": true }]
+    "generator-star-spacing": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/newline-after-import": "off",
+    "import/prefer-default-export": "off",
+    "no-console": "off",
+    "spaced-comment": "off",
+    "prefer-template": "warn",
+    "no-underscore-dangle": "off",
+    "comma-dangle": ["warn", "never"],
+    "strict": "off",
+    "object-shorthand": "off",
+    "space-before-function-paren": ["error", "never"],
+    "brace-style": [2, "stroustrup"],
+    "no-useless-escape": "off",
+    "consistent-return": "off",
+    "max-len": [2, {
+      "code": 100,
+      "ignorePattern": "(https?:|JSON\\.parse|[Uu]rl =)"
+    }]
   }
 }

@@ -3,3 +3,7 @@ node_modules
 .serverless
 docbox
 fake.js
+dist
+build
+config/cloudformation.yml
+test.js

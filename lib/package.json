@@ -1,0 +1,13 @@
+{
+  "name": "cumulus-common",
+  "version": "0.1.0",
+  "description": "Common utilities used across cumulus-api",
+  "scripts": {},
+  "keywords": [
+    "Cumulus"
+  ],
+  "repository": "https://github.com/cumulus-nasa/cumulus-api",
+  "author": "Development Seed",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}
