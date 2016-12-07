@@ -94,6 +94,27 @@ Resources:
             Resource:
             - "*"
 
+{{#each dynamos}}
+  {{name}}DynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+    {{#each attributes}}
+      - AttributeName: {{name}}
+        AttributeType: {{type}}
+    {{/each}}
+      KeySchema:
+    {{#each schema}}
+      - AttributeName: {{name}}
+        KeyType: {{type}}
+    {{/each}}
+      ProvisionedThroughput:
+        ReadCapacityUnits: {{read}}
+        WriteCapacityUnits: {{write}}
+      TableName: {{stackName}}-{{stage}}-{{name}}
+
+{{/each}}
+
   ApiGatewayDeployment{{apiName}}:
     DependsOn:
 {{# if apiMethods}}
