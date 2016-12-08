@@ -25,6 +25,7 @@
     "dynamoose": "^0.6.0",
     "elasticsearch": "^11.0.1",
     "lodash": "^4.14.2",
+    "source-map-support": "^0.4.6",
     "splunk-sdk": "^1.8.0",
     "steed": "^1.1.3"
   },
