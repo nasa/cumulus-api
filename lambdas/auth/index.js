@@ -3,17 +3,6 @@
 import _ from 'lodash';
 import cognito from 'amazon-cognito-identity-js';
 
-// Hack to make cognitor library work outside of the browser
-global.window = {
-  localStorage: {
-    getItem() {
-      return null;
-    },
-    setItem() { },
-    deleteItem() { }
-  }
-};
-
 global.navigator = {};
 
 export function signup(event, context, cb) {
