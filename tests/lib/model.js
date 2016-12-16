@@ -94,5 +94,19 @@ describe('model module', function () {
       should.equal(output.data.children.grandchildren.x, 100, 'sets nested values');
       done();
     });
+
+    it('accepts functions as default values', function (done) {
+      const schema = {
+        _type: 'map',
+        _defaults: {
+          value: () => 15
+        },
+        value: v().number()
+      };
+      const validate = create(schema);
+      let output = validate({});
+      should.equal(output.data.value, 15, 'takes function as default');
+      done();
+    });
   });
 });
