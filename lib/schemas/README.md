@@ -37,7 +37,7 @@ var schema = {
 
 #### `_type`
 
-Specifies the kind of object this schema is. Only supports `map`. It needs to be included and makes it possible to nest schema objects (more on this below). It gives us future flexibility to create different data structures for schemas beyond just simple objects.
+Specifies the kind of object this schema is. Right now it only supports `map`. It needs to be included and makes it possible to nest schema objects (more on this below). It gives us future flexibility to create different data structures for schemas, beyond just simple objects.
 
 #### `_hashkey`
 
@@ -57,7 +57,7 @@ _defaults: {
 }
 ```
 
-#### '_meta'
+#### `_meta`
 
 These data properties will be applied to the validated data after the validation step. This is a good place to stick a `thoroughput` property, for example. `_meta` properties only get added for the root level schema object, and will be ignored on nested objects.
 
@@ -71,6 +71,7 @@ var schema = {
    id: v().string(),
    description: {
       _type: 'map',
+      _required: ['title', 'body'],
       title: v().string(),
       body: v().string()
    },
