@@ -7,3 +7,5 @@ dist
 build
 config/cloudformation.yml
 test.js
+
+npm-debug.log
