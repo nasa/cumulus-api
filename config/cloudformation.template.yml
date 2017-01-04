@@ -94,6 +94,28 @@ Resources:
             Resource:
             - "*"
 
+          # Allow access to the ES instance
+          - Effect: Allow
+            Principal:
+              AWS: "*"
+            Action:
+              - es:*
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${ElasticsearchDomain}-*"
+
+  ElasticsearchDomain:
+    Type: "AWS::Elasticsearch::Domain"
+    Properties:
+      DomainName: {{stackName}}-{{stage}}-es
+      ElasticsearchVersion: 2.3
+      ElasticsearchClusterConfig:
+        InstanceCount: "1"
+        InstanceType: "m3.medium.elasticsearch"
+      SnapshotOptions:
+        AutomatedSnapshotStartHour: "0"
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: "true"
+
 {{#each dynamos}}
   {{name}}DynamoDB:
     Type: AWS::DynamoDB::Table
