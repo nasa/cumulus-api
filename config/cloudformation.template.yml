@@ -74,8 +74,8 @@ Resources:
             - s3:DeleteObject
             - s3:DeleteObjectVersion
             Resource:
-            - !Sub arn:aws:s3:::{{configBucket}}
-            - !Sub arn:aws:s3:::{{configBucket}}/*
+            - !Sub arn:aws:s3:::{{buckets.internal}}
+            - !Sub arn:aws:s3:::{{buckets.internal}}/*
 
           # Allow managing network interfaces (required to run Lambda in VPC)
           - Effect: Allow
@@ -94,15 +94,6 @@ Resources:
             Resource:
             - "*"
 
-          # Allow access to the ES instance
-          - Effect: Allow
-            Principal:
-              AWS: "*"
-            Action:
-              - es:*
-            Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${ElasticsearchDomain}-*"
-
   ElasticsearchDomain:
     Type: "AWS::Elasticsearch::Domain"
     Properties:
@@ -115,6 +106,28 @@ Resources:
         AutomatedSnapshotStartHour: "0"
       AdvancedOptions:
         rest.action.multi.allow_explicit_index: "true"
+      AccessPolicies:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - TaskExecutionRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+          - Effect: "Allow"
+            Principal:
+              AWS: "*"
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+            Condition:
+              IpAddress:
+                aws:SourceIp:
+                  - 96.83.79.65
 
 {{#each dynamos}}
   {{name}}DynamoDB:
@@ -144,15 +157,16 @@ Resources:
     - {{name}}
   {{/each}}
 {{/if}}
+    Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId:
         Ref: ApiGatewayRestApi
       StageName: {{stage}}
-    Type: AWS::ApiGateway::Deployment
 
 {{# if apiMethods}}
 {{#each apiMethods}}
   {{name}}:
+    Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       HttpMethod: {{method}}
@@ -254,11 +268,11 @@ Resources:
         Ref: {{resource}}
       RestApiId:
         Ref: ApiGatewayRestApi
-    Type: AWS::ApiGateway::Method
 {{/each}}
 
 {{#each apiMethodsOptions}}
   {{name}}:
+    Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       HttpMethod: OPTIONS
@@ -286,11 +300,11 @@ Resources:
         Ref: {{resource}}
       RestApiId:
         Ref: ApiGatewayRestApi
-    Type: AWS::ApiGateway::Method
 {{/each}}
 
 {{#each apiResources}}
   {{name}}:
+    Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
       {{#each parents}}
@@ -299,22 +313,31 @@ Resources:
       PathPart: '{{pathPart}}'
       RestApiId:
         Ref: ApiGatewayRestApi
-    Type: AWS::ApiGateway::Resource
 {{/each}}
 
   ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
     Properties:
       Name: {{stackName}}-{{stage}}
-    Type: AWS::ApiGateway::RestApi
 {{/if}}
 
 {{#each lambdas}}
   {{name}}LambdaFunction:
+    Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket: !Ref ConfigS3Bucket
         S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/{{zipFile}}.zip
       FunctionName: {{stackName}}-{{name}}-{{stage}}
+      Environment:
+        Variables:
+          ES_HOST:
+            Fn::GetAtt:
+              - ElasticsearchDomain
+              - DomainEndpoint
+        {{#each envs}}
+          {{key}}: {{value}}
+        {{/each}}
       Handler: {{handler}}
       MemorySize: {{memory}}
       Role:
@@ -323,9 +346,9 @@ Resources:
         - Arn
       Runtime: nodejs4.3
       Timeout: {{timeout}}
-    Type: AWS::Lambda::Function
 {{# if apiGateway }}
   {{name}}LambdaPermissionApiGateway:
+    Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName:
@@ -333,6 +356,5 @@ Resources:
         - {{name}}LambdaFunction
         - Arn
       Principal: apigateway.amazonaws.com
-    Type: AWS::Lambda::Permission
 {{/if}}
 {{/each}}
