@@ -2,7 +2,7 @@
 'use strict';
 
 const program = require('commander');
-const lambda = require('../aws/lambda');
+const lambda = require('../lib/aws/lambda');
 
 // the CLI activation
 program

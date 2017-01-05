@@ -6,8 +6,9 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha-webpack",
     "lint": "./node_modules/.bin/eslint .",
-    "serve": "nodemon bin/serve",
-    "start": "webpack -w --colors",
+    "start": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
+    "serve": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
+    "build": "webpack -w --colors",
     "prepublish": "find . -name package.json -not -path '*/node_modules/*' -not -path './package.json' -execdir npm install \\; && webpack"
   },
   "repository": {
