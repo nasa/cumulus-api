@@ -20,6 +20,7 @@ function serve() {
   server.connection({ port: 3000 });
 
   const c = parseConfig();
+  const endpoints = [];
 
   for (const lambda of c.lambdas) {
     // import the lib
@@ -28,9 +29,10 @@ function serve() {
     const method = _.toUpper(lambda.apiGateway.method);
     const path = `/${lambda.apiGateway.path}`;
 
-    const func = require(`../dist/${lambdaName}`)[funcName];
+    // save the endpoint names here but log them after the server is launched
+    endpoints.push(`Endpoint created: ${method} - ${path}`);
 
-    console.log(`Endpoint created: ${method} - ${path}`);
+    const func = require(`../dist/${lambdaName}`)[funcName];
 
     server.route({
       path: path,
@@ -69,6 +71,10 @@ function serve() {
         throw error;
       }
       console.log(`Server running at: ${server.info.uri}`);
+
+      for (const endpoint of endpoints) {
+        console.log(endpoint);
+      }
     });
   });
 }
