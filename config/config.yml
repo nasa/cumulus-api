@@ -1,7 +1,12 @@
 stackName: cumulus-api-test2
 stage: dev
-configBucket: cumulus-private
 buildApiGateway: true
+
+buckets:
+  private: cumulus-private
+  public: cumulus-public
+  protected: cumulus-protected
+  internal: cumulus-internal
 
 dynamos:
   - name: CollectionsTable
@@ -28,7 +33,7 @@ dynamos:
       - name: granuleId
         type: RANGE
 
-  - name: InvokeTabel
+  - name: InvokeTable
     read: 5
     write: 5
     attributes:
