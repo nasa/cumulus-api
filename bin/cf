@@ -2,7 +2,7 @@
 'use strict';
 
 const program = require('commander');
-const cf = require('../aws/cf');
+const cf = require('../lib/aws/cf');
 
 // the CLI activation
 program
