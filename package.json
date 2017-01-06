@@ -60,7 +60,6 @@
     "mocha-webpack": "^0.7.0",
     "nodemon": "^1.11.0",
     "prepend-loader": "0.0.2",
-    "should": "^11.1.0",
     "webpack": "^1.13.3",
     "webpack-node-externals": "^1.5.4"
   }
