@@ -85,7 +85,9 @@ Resources:
                 - kinesis:DescribeStream
                 - kinesis:ListStreams
                 Resource:
-                - "*"
+                - Fn::GetAtt:
+                  - KinesisCumulus
+                  - Arn
 
               # Allow Lambda logging
               - Effect: Allow
@@ -173,6 +175,14 @@ Resources:
             - lambda:invokeFunction
             Resource:
             - "*"
+
+  KinesisCumulus:
+    Type: "AWS::Kinesis::Stream"
+    Properties:
+      Name: "{{stackName}}-{{stage}}-cumulus-api"
+      ShardCount: 1
+      Tags:
+        - cumulus
 
   ElasticsearchDomain:
     Type: "AWS::Elasticsearch::Domain"
