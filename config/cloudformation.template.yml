@@ -86,6 +86,16 @@ Resources:
             Resource:
             - "*"
 
+          # Allow access to dynamoDB
+          - Effect: Allow
+            Action:
+            - dynamodb:DescribeStream
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:ListStreams
+            Resource:
+            - "*"
+
           # Allow lambdas to call other lambdas
           - Effect: Allow
             Action:
@@ -147,31 +157,6 @@ Resources:
         ReadCapacityUnits: {{read}}
         WriteCapacityUnits: {{write}}
       TableName: {{stackName}}-{{stage}}-{{name}}
-
-  ## add a dynamo-to-es lambda for each dynamo table
-  {{name}}DynamoToEsLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        S3Bucket: !Ref ConfigS3Bucket
-        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/es.zip
-      FunctionName: {{stackName}}-{{name}}-dynamo-to-es-{{stage}}
-      Environment:
-        Variables:
-          ES_HOST:
-            Fn::GetAtt:
-              - ElasticsearchDomain
-              - DomainEndpoint
-          ES_TYPE: {{stackName}}-{{stage}}-{{name}}
-      Handler: es.handler
-      MemorySize: 512
-      Role:
-        Fn::GetAtt:
-        - TaskExecutionRole
-        - Arn
-      Runtime: nodejs4.3
-      Timeout: 300
-
 {{/each}}
 
   ApiGatewayDeployment{{apiName}}:
@@ -370,6 +355,7 @@ Resources:
         - Arn
       Runtime: nodejs4.3
       Timeout: {{timeout}}
+
 {{# if apiGateway }}
   {{name}}LambdaPermissionApiGateway:
     Type: AWS::Lambda::Permission
