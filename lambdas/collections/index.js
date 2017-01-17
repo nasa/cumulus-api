@@ -6,7 +6,7 @@ import { dataSetSchema } from 'cumulus-common/schemas';
 import { datasetTableName } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
 import createModel from 'cumulus-common/model';
-import * as db from 'cumulus-common/db';
+import db from 'cumulus-common/db';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
