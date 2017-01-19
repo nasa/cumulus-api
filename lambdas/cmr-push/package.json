@@ -4,7 +4,8 @@
   "description": "Push granule's metadata to NASA's Common Metadata Repository",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm_config_prefix='../../tmp' npm link ../../lib"
+    "preinstall": "npm_config_prefix='../../tmp' npm link ../../lib",
+    "postinstall": "cd node_modules/cmrjs && npm install && npm run build"
   },
   "keywords": [
     "Cumulus"
@@ -15,5 +16,7 @@
   },
   "author": "Miles Watkins <miles.w.watkins@gmail.com>",
   "license": "Apache-2.0",
-  "dependencies": {}
+  "dependencies": {
+    "cmrjs": "git+ssh://git@github.com/cumulus-nasa/cmrjs.git"
+  }
 }
