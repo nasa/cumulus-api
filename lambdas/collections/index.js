@@ -1,10 +1,12 @@
 'use strict';
 
 import _ from 'lodash';
-import dynamoose from 'dynamoose';
+import { DynamoDB } from 'aws-sdk';
 import { dataSetSchema } from 'cumulus-common/schemas';
 import { datasetTableName } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
+import createModel from 'cumulus-common/model';
+import db from 'cumulus-common/db';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -21,7 +23,7 @@ export function list(event, context, cb) {
     }
   }, (err, res) => {
     const newRes = res.map(r => parseRecipe(r));
-
+Dy
     return cb(err, newRes);
   });
 }
@@ -48,45 +50,30 @@ export function get(event, context, cb) {
   });
 }
 
-export function post(event, context, cb) {
-  const Dataset = dynamoose.model(datasetTableName, dataSetSchema, { create: false });
-
+export function post (event, context, cb) {
   const postedRecord = _.get(event, 'body', {});
-
-  Dataset.get({ name: postedRecord.name }, (err, collection) => {
-    if (err) {
-      return cb(err);
-    }
+  db.get({ name: postedRecord.name }, function (collection) {
     if (!collection) {
-      const newRecord = new Dataset(postedRecord);
-      newRecord.save(error => cb(error, postedRecord));
+      return db.save(postedRecord, function (postedCollection) {
+        cb(null, postedCollection)
+      });
+    } else {
+      return cb('Record already exists');
     }
-
-    return cb('Record already exists');
   });
 }
 
 export function put(event, context, cb) {
-  const Dataset = dynamoose.model(datasetTableName, dataSetSchema, { create: false });
-
   const postedRecord = _.get(event, 'body', {});
   const name = postedRecord.name;
   const update = _.omit(postedRecord, ['name']);
-
-  Dataset.get(name, (err, collection) => {
-    if (err) {
-      return cb(err);
-    }
-
+  db.get({ name }, function (collection) {
     if (collection) {
-      Dataset.update(name, update, (error, updatedCollection) => {
-        if (error) {
-          return cb(error);
-        }
-        cb(error, updatedCollection);
+      return db.update({ name }, update, function (updatedCollection) {
+        cb(null, updatedCollection);
       });
+    } else {
+      return cb('Record was not found!');
     }
-
-    return cb('Record was not found!');
   });
 }
