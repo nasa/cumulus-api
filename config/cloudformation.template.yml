@@ -86,6 +86,16 @@ Resources:
             Resource:
             - "*"
 
+          # Allow access to dynamoDB
+          - Effect: Allow
+            Action:
+            - dynamodb:DescribeStream
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:ListStreams
+            Resource:
+            - "*"
+
           # Allow lambdas to call other lambdas
           - Effect: Allow
             Action:
@@ -147,7 +157,6 @@ Resources:
         ReadCapacityUnits: {{read}}
         WriteCapacityUnits: {{write}}
       TableName: {{stackName}}-{{stage}}-{{name}}
-
 {{/each}}
 
   ApiGatewayDeployment{{apiName}}:
@@ -346,6 +355,7 @@ Resources:
         - Arn
       Runtime: nodejs4.3
       Timeout: {{timeout}}
+
 {{# if apiGateway }}
   {{name}}LambdaPermissionApiGateway:
     Type: AWS::Lambda::Permission
