@@ -1,5 +1,4 @@
 'use strict';
-
 import assert from 'assert';
 import sinon from 'sinon';
 import { list, get, post, put } from '../../lambdas/collections';
@@ -37,8 +36,8 @@ describe('Collections endpoint', () => {
   });
 
   it('posts', (done) => {
-    sinon.stub(db, 'get', (data, cb) => cb(false));
-    sinon.stub(db, 'save', (data, cb) => cb('created'));
+    sinon.stub(db, 'get', (data, cb) => cb(null, false));
+    sinon.stub(db, 'save', (data, cb) => cb(null, 'created'));
 
     post(null, null, (res) => {
       assert.ok(/invalid/.test(res.toLowerCase()), 'returns error message with empty params');
@@ -57,8 +56,8 @@ describe('Collections endpoint', () => {
   });
 
   it('puts', (done) => {
-    sinon.stub(db, 'get', (data, cb) => cb(true));
-    sinon.stub(db, 'update', (existing, data, cb) => cb('updated'));
+    sinon.stub(db, 'get', (data, cb) => cb(null, true));
+    sinon.stub(db, 'save', (data, cb) => cb(null, 'updated'));
 
     put({body: record}, null, (error, res) => {
       sinon.assert.calledOnce(db.get);
@@ -66,7 +65,7 @@ describe('Collections endpoint', () => {
       assert.strictEqual(error, null);
       assert.equal(res, 'updated');
 
-      db.update.restore();
+      db.save.restore();
       db.get.restore();
       done();
     });
