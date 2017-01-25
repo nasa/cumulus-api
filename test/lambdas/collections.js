@@ -57,7 +57,7 @@ describe('Collections endpoint', () => {
 
   it('puts', (done) => {
     sinon.stub(db, 'get', (data, cb) => cb(null, true));
-    sinon.stub(db, 'save', (data, cb) => cb(null, 'updated'));
+    sinon.stub(db, 'update', (data, cb) => cb(null, 'updated'));
 
     put({body: record}, null, (error, res) => {
       sinon.assert.calledOnce(db.get);
@@ -65,7 +65,7 @@ describe('Collections endpoint', () => {
       assert.strictEqual(error, null);
       assert.equal(res, 'updated');
 
-      db.save.restore();
+      db.update.restore();
       db.get.restore();
       done();
     });

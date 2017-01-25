@@ -82,19 +82,23 @@ export function put (event, context, cb) {
     let errors = JSON.stringify(model.errors.map(e => e.message));
     return cb('Invalid POST: ' + errors);
   }
+  const name = data.collectionName;
+  const update = _.omit(data, ['collectionName']);
   const query = {
     key: 'collectionName',
-    value: data.collectionName,
+    value: name,
     table: datasetTableName,
   };
   db.get(query, function (error, collection) {
     if (error) {
       return cb(error);
     } else if (collection) {
-      // Even though putItem is an "update", db#save will
-      // completely replace an item with the same ID if it exists.
-      // This is simpler than an actual update function would be.
-      return db.save({data, table: datasetTableName}, cb);
+      return db.update({
+        key: 'collectionName',
+        value: name,
+        table: datasetTableName,
+        data: update,
+      }, cb);
     } else {
       return cb('Record was not found!');
     }
