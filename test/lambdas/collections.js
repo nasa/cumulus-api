@@ -2,26 +2,71 @@
 
 import assert from 'assert';
 import sinon from 'sinon';
-import { post } from '../../lambdas/collections';
+import { list, get, post, put } from '../../lambdas/collections';
 import record from '../data/collection.json';
-import * as  db from  '../../lib/db';
+import * as db from  '../../lib/db';
+import * as es from '../../lib/es';
 
 describe('Collections endpoint', () => {
-  it('posts', (done) => {
-    sinon.stub(db, 'get', (data, cb) => cb(false));
-    sinon.stub(db, 'save', (data, cb) => cb('saved'));
+  it('lists', (done) => {
+    const mock = [ { x: 'x' }, { y: 'y' } ];
+    sinon.stub(es, 'esQuery', (query, cb) => cb(null, mock));
+    list(null, null, (error, res) => {
+      assert.strictEqual(error, null);
+      assert.deepEqual(res, mock);
+      es.esQuery.restore();
+    });
+    done();
+  });
 
-    post(null, null, (resp) => {
-      assert.ok(/invalid/.test(resp.toLowerCase()), 'returns error message with empty params');
+  it('gets', (done) => {
+    // no records returned
+    sinon.stub(es, 'esQuery', (query, cb) => cb(null, []));
+    get({ path: { short_name: 'x' }}, null, (error, res) => {
+      assert.equal(error, 'Record was not found');
+      es.esQuery.restore();
     });
 
-    post({body: record}, null, (error, resp) => {
+    sinon.stub(es, 'esQuery', (query, cb) => cb(null, [{x: 'x'}]));
+    get({ path: { short_name: 'x' }}, null, (error, res) => {
+      assert.strictEqual(error, null);
+      assert.deepEqual(res, {x: 'x'});
+      es.esQuery.restore();
+      done();
+    });
+  });
+
+  it('posts', (done) => {
+    sinon.stub(db, 'get', (data, cb) => cb(false));
+    sinon.stub(db, 'save', (data, cb) => cb('created'));
+
+    post(null, null, (res) => {
+      assert.ok(/invalid/.test(res.toLowerCase()), 'returns error message with empty params');
+    });
+
+    post({body: record}, null, (error, res) => {
       sinon.assert.calledOnce(db.get);
 
       assert.strictEqual(error, null);
-      assert.equal(resp, 'saved');
+      assert.equal(res, 'created');
 
       db.save.restore();
+      db.get.restore();
+      done();
+    });
+  });
+
+  it('puts', (done) => {
+    sinon.stub(db, 'get', (data, cb) => cb(true));
+    sinon.stub(db, 'update', (existing, data, cb) => cb('updated'));
+
+    put({body: record}, null, (error, res) => {
+      sinon.assert.calledOnce(db.get);
+
+      assert.strictEqual(error, null);
+      assert.equal(res, 'updated');
+
+      db.update.restore();
       db.get.restore();
       done();
     });

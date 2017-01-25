@@ -21,19 +21,22 @@ export function list(event, context, cb) {
       match: { _index: datasetTableName }
     }
   }, (err, res) => {
-    const newRes = res.map(r => parseRecipe(r));
-Dy
-    return cb(err, newRes);
+    const parsed = res.map(r => parseRecipe(r));
+    return cb(err, parsed);
   });
 }
 
 export function get(event, context, cb) {
+  const name = _.get(event, 'path.short_name');
+  if (!name) {
+    return cb('Get requires path.short_name');
+  }
   esQuery({
     query: {
       bool: {
         must: [
           { match: { _index: datasetTableName } },
-          { match: { name: event.path.short_name } }
+          { match: { name } }
         ]
       }
     }
@@ -68,12 +71,17 @@ export function post (event, context, cb) {
 }
 
 export function put(event, context, cb) {
-  const postedRecord = _.get(event, 'body', {});
-  const name = postedRecord.name;
-  const update = _.omit(postedRecord, ['name']);
-  db.get({ name }, function (collection) {
+  const data = _.get(event, 'body', {});
+  const model = validate(data, schema);
+  if (model.errors.length) {
+    let errors = JSON.stringify(model.errors.map(e => e.message));
+    return cb('Invalid POST: ' + errors);
+  }
+  const collectionName = data.collectionName;
+  const update = _.omit(data, ['collectionName']);
+  db.get({ collectionName }, function (collection) {
     if (collection) {
-      return db.update({ name }, update, function (updatedCollection) {
+      return db.update({ collectionName }, update, function (updatedCollection) {
         cb(null, updatedCollection);
       });
     } else {
