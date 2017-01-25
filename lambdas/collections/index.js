@@ -59,31 +59,42 @@ export function post (event, context, cb) {
     let errors = JSON.stringify(model.errors.map(e => e.message));
     return cb('Invalid POST: ' + errors);
   }
-  db.get({ collectionName: data.collectionName }, function (collection) {
-    if (!collection) {
-      return db.save(data, function (postedCollection) {
-        cb(null, postedCollection)
-      });
+  const query = {
+    key: 'collectionName',
+    value: data.collectionName,
+    table: datasetTableName
+  };
+  db.get(query, function (error, collection) {
+    if (error) {
+      return cb(error);
+    } else if (!collection) {
+      return db.save({data, table: datasetTableName}, cb);
     } else {
       return cb('Record already exists');
     }
   });
 }
 
-export function put(event, context, cb) {
+export function put (event, context, cb) {
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
     let errors = JSON.stringify(model.errors.map(e => e.message));
     return cb('Invalid POST: ' + errors);
   }
-  const collectionName = data.collectionName;
-  const update = _.omit(data, ['collectionName']);
-  db.get({ collectionName }, function (collection) {
-    if (collection) {
-      return db.update({ collectionName }, update, function (updatedCollection) {
-        cb(null, updatedCollection);
-      });
+  const query = {
+    key: 'collectionName',
+    value: data.collectionName,
+    table: datasetTableName,
+  };
+  db.get(query, function (error, collection) {
+    if (error) {
+      return cb(error);
+    } else if (collection) {
+      // Even though putItem is an "update", db#save will
+      // completely replace an item with the same ID if it exists.
+      // This is simpler than an actual update function would be.
+      return db.save({data, table: datasetTableName}, cb);
     } else {
       return cb('Record was not found!');
     }
