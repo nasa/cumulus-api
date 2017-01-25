@@ -1,12 +1,11 @@
 'use strict';
 
 import _ from 'lodash';
-import { DynamoDB } from 'aws-sdk';
-import { dataSetSchema } from 'cumulus-common/schemas';
+import { validate } from 'jsonschema';
+import { collection as schema } from 'cumulus-common/schemas';
 import { datasetTableName } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
-import createModel from 'cumulus-common/model';
-import db from 'cumulus-common/db';
+import * as db from 'cumulus-common/db';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -22,19 +21,22 @@ export function list(event, context, cb) {
       match: { _index: datasetTableName }
     }
   }, (err, res) => {
-    const newRes = res.map(r => parseRecipe(r));
-Dy
-    return cb(err, newRes);
+    const parsed = res.map(r => parseRecipe(r));
+    return cb(err, parsed);
   });
 }
 
 export function get(event, context, cb) {
+  const name = _.get(event, 'path.short_name');
+  if (!name) {
+    return cb('Get requires path.short_name');
+  }
   esQuery({
     query: {
       bool: {
         must: [
           { match: { _index: datasetTableName } },
-          { match: { name: event.path.short_name } }
+          { match: { name } }
         ]
       }
     }
@@ -51,27 +53,52 @@ export function get(event, context, cb) {
 }
 
 export function post (event, context, cb) {
-  const postedRecord = _.get(event, 'body', {});
-  db.get({ name: postedRecord.name }, function (collection) {
-    if (!collection) {
-      return db.save(postedRecord, function (postedCollection) {
-        cb(null, postedCollection)
-      });
+  const data = _.get(event, 'body', {});
+  const model = validate(data, schema);
+  if (model.errors.length) {
+    let errors = JSON.stringify(model.errors.map(e => e.message));
+    return cb('Invalid POST: ' + errors);
+  }
+  const query = {
+    key: 'collectionName',
+    value: data.collectionName,
+    table: datasetTableName
+  };
+  db.get(query, function (error, collection) {
+    if (error) {
+      return cb(error);
+    } else if (!collection) {
+      return db.save({data, table: datasetTableName}, cb);
     } else {
       return cb('Record already exists');
     }
   });
 }
 
-export function put(event, context, cb) {
-  const postedRecord = _.get(event, 'body', {});
-  const name = postedRecord.name;
-  const update = _.omit(postedRecord, ['name']);
-  db.get({ name }, function (collection) {
-    if (collection) {
-      return db.update({ name }, update, function (updatedCollection) {
-        cb(null, updatedCollection);
-      });
+export function put (event, context, cb) {
+  const data = _.get(event, 'body', {});
+  const model = validate(data, schema);
+  if (model.errors.length) {
+    let errors = JSON.stringify(model.errors.map(e => e.message));
+    return cb('Invalid POST: ' + errors);
+  }
+  const name = data.collectionName;
+  const update = _.omit(data, ['collectionName']);
+  const query = {
+    key: 'collectionName',
+    value: name,
+    table: datasetTableName,
+  };
+  db.get(query, function (error, collection) {
+    if (error) {
+      return cb(error);
+    } else if (collection) {
+      return db.update({
+        key: 'collectionName',
+        value: name,
+        table: datasetTableName,
+        data: update,
+      }, cb);
     } else {
       return cb('Record was not found!');
     }
