@@ -1,12 +1,11 @@
 'use strict';
 
 import _ from 'lodash';
-import { DynamoDB } from 'aws-sdk';
-import { dataSetSchema } from 'cumulus-common/schemas';
+import { validate } from 'jsonschema';
+import { collection as schema } from 'cumulus-common/schemas';
 import { datasetTableName } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
-import createModel from 'cumulus-common/model';
-import db from 'cumulus-common/db';
+import * as db from 'cumulus-common/db';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -51,10 +50,15 @@ export function get(event, context, cb) {
 }
 
 export function post (event, context, cb) {
-  const postedRecord = _.get(event, 'body', {});
-  db.get({ name: postedRecord.name }, function (collection) {
+  const data = _.get(event, 'body', {});
+  const model = validate(data, schema);
+  if (model.errors.length) {
+    let errors = JSON.stringify(model.errors.map(e => e.message));
+    return cb('Invalid POST: ' + errors);
+  }
+  db.get({ collectionName: data.collectionName }, function (collection) {
     if (!collection) {
-      return db.save(postedRecord, function (postedCollection) {
+      return db.save(data, function (postedCollection) {
         cb(null, postedCollection)
       });
     } else {
