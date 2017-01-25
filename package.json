@@ -4,7 +4,7 @@
   "description": "Cumulus API",
   "main": "handler.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha-webpack",
+    "test": "./node_modules/.bin/mocha-webpack \"test/**/*.js\"",
     "lint": "./node_modules/.bin/eslint .",
     "start": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
     "serve": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
@@ -61,6 +61,7 @@
     "mocha-webpack": "^0.7.0",
     "nodemon": "^1.11.0",
     "prepend-loader": "0.0.2",
+    "sinon": "^1.17.7",
     "webpack": "^1.13.3",
     "webpack-node-externals": "^1.5.4"
   }
