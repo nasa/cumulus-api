@@ -7,6 +7,8 @@ import { collectionsTableName as table } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
 
+const key = 'collectionName';
+
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
   if (_.has(record, 'dataPipeLine.recipe')) {
@@ -25,7 +27,7 @@ export function list (event, context, cb) {
       return cb(error);
     } else {
       const parsed = res.map(r => parseRecipe(r));
-      return cb(parsed);
+      return cb(null, parsed);
     }
   });
 }
@@ -51,7 +53,7 @@ export function get (event, context, cb) {
       return cb('Record was not found');
     } else {
       // Cannot have more than 1 document, because `name` is the primary Dynamo key
-      return cb(parseRecipe(res[0]));
+      return cb(null, parseRecipe(res[0]));
     }
   });
 }
@@ -64,21 +66,15 @@ export function post (event, context, cb) {
     return cb('Invalid POST: ' + errors);
   }
   const query = {
-    key: 'collectionName',
     value: data.collectionName,
+    key,
     table
   };
   db.get(query, function (error, collection) {
     if (error && error.errorType !== 'ResourceNotFoundException') {
       return cb(error);
     } else if (_.isEmpty(collection)) {
-      return db.save({data, table}, (error, saved) => {
-        if (error) {
-          return cb(error);
-        } else {
-          return cb(saved);
-        }
-      });
+      return db.save({data, table}, cb);
     } else {
       return cb('Record already exists');
     }
@@ -93,28 +89,24 @@ export function put (event, context, cb) {
     return cb('Invalid POST: ' + errors);
   }
   const name = data.collectionName;
-  const update = _.omit(data, ['collectionName']);
+  const update = _.omit(data, [key]);
   const query = {
-    key: 'collectionName',
     value: name,
+    key,
     table
   };
   db.get(query, function (error, collection) {
     if (error) {
       return cb(error);
-    } else if (!_.isEmpty(collection)) {
+    } else if (_.isEmpty(collection)) {
+      return cb('Collection not found');
+    } else {
       return db.update({
-        key: 'collectionName',
         value: name,
         data: update,
+        key,
         table
-      }, (error, updated) => {
-        if (error) {
-          return cb(error);
-        } else {
-          return cb(updated);
-        }
-      });
+      }, cb);
     }
   });
 }
