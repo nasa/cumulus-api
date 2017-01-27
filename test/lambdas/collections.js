@@ -11,7 +11,7 @@ describe('Collections endpoint', () => {
     const mock = [ { x: 'x' }, { y: 'y' } ];
     sinon.stub(es, 'esQuery', (query, cb) => cb(null, mock));
     list(null, null, (error, res) => {
-      assert.strictEqual(error, null);
+      assert.equal(error, null);
       assert.deepEqual(res, mock);
       es.esQuery.restore();
     });
@@ -28,7 +28,7 @@ describe('Collections endpoint', () => {
 
     sinon.stub(es, 'esQuery', (query, cb) => cb(null, [{x: 'x'}]));
     get({ path: { short_name: 'x' }}, null, (error, res) => {
-      assert.strictEqual(error, null);
+      assert.equal(error, null);
       assert.deepEqual(res, {x: 'x'});
       es.esQuery.restore();
       done();
@@ -46,7 +46,7 @@ describe('Collections endpoint', () => {
     post({body: record}, null, (error, res) => {
       sinon.assert.calledOnce(db.get);
 
-      assert.strictEqual(error, null);
+      assert.equal(error, null);
       assert.equal(res, 'created');
 
       db.save.restore();
@@ -56,13 +56,13 @@ describe('Collections endpoint', () => {
   });
 
   it('puts', (done) => {
-    sinon.stub(db, 'get', (data, cb) => cb(null, true));
+    sinon.stub(db, 'get', (data, cb) => cb(null, [1]));
     sinon.stub(db, 'update', (data, cb) => cb(null, 'updated'));
 
     put({body: record}, null, (error, res) => {
       sinon.assert.calledOnce(db.get);
 
-      assert.strictEqual(error, null);
+      assert.equal(error, null);
       assert.equal(res, 'updated');
 
       db.update.restore();

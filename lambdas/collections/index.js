@@ -3,9 +3,11 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { datasetTableName } from 'cumulus-common/tables';
+import { collectionsTableName as table } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
+
+const key = 'collectionName';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -15,18 +17,22 @@ function parseRecipe(record) {
   return updatedRecord;
 }
 
-export function list(event, context, cb) {
+export function list (event, context, cb) {
   esQuery({
     query: {
-      match: { _index: datasetTableName }
+      match: { _index: table }
     }
-  }, (err, res) => {
-    const parsed = res.map(r => parseRecipe(r));
-    return cb(err, parsed);
+  }, (error, res) => {
+    if (error) {
+      return cb(error);
+    } else {
+      const parsed = res.map(r => parseRecipe(r));
+      return cb(null, parsed);
+    }
   });
 }
 
-export function get(event, context, cb) {
+export function get (event, context, cb) {
   const name = _.get(event, 'path.short_name');
   if (!name) {
     return cb('Get requires path.short_name');
@@ -35,20 +41,20 @@ export function get(event, context, cb) {
     query: {
       bool: {
         must: [
-          { match: { _index: datasetTableName } },
+          { match: { _index: table } },
           { match: { name } }
         ]
       }
     }
-  }, (err, res) => {
-    if (err) return cb(err);
-
-    // Cannot have more than 1 document, because `name` is the primary Dynamo key
-    if (res.length === 0) {
+  }, (error, res) => {
+    if (error) {
+      return cb(error);
+    } else if (res.length === 0) {
       return cb('Record was not found');
+    } else {
+      // Cannot have more than 1 document, because `name` is the primary Dynamo key
+      return cb(null, parseRecipe(res[0]));
     }
-
-    return cb(null, parseRecipe(res[0]));
   });
 }
 
@@ -60,15 +66,15 @@ export function post (event, context, cb) {
     return cb('Invalid POST: ' + errors);
   }
   const query = {
-    key: 'collectionName',
     value: data.collectionName,
-    table: datasetTableName
+    key,
+    table
   };
   db.get(query, function (error, collection) {
-    if (error) {
+    if (error && error.errorType !== 'ResourceNotFoundException') {
       return cb(error);
-    } else if (!collection) {
-      return db.save({data, table: datasetTableName}, cb);
+    } else if (_.isEmpty(collection)) {
+      return db.save({data, table}, cb);
     } else {
       return cb('Record already exists');
     }
@@ -83,24 +89,24 @@ export function put (event, context, cb) {
     return cb('Invalid POST: ' + errors);
   }
   const name = data.collectionName;
-  const update = _.omit(data, ['collectionName']);
+  const update = _.omit(data, [key]);
   const query = {
-    key: 'collectionName',
     value: name,
-    table: datasetTableName,
+    key,
+    table
   };
   db.get(query, function (error, collection) {
     if (error) {
       return cb(error);
-    } else if (collection) {
-      return db.update({
-        key: 'collectionName',
-        value: name,
-        table: datasetTableName,
-        data: update,
-      }, cb);
+    } else if (_.isEmpty(collection)) {
+      return cb('Collection not found');
     } else {
-      return cb('Record was not found!');
+      return db.update({
+        value: name,
+        data: update,
+        key,
+        table
+      }, cb);
     }
   });
 }
