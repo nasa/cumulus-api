@@ -20,7 +20,46 @@ Outputs:
 
 Resources:
 
-  TaskExecutionRole:
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ECSRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                - s3:AbortMultipartUpload
+                - s3:Get*
+                - s3:Put*
+                - s3:List*
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                Resource:
+                - !Sub arn:aws:s3:::{{buckets.internal}}
+                - !Sub arn:aws:s3:::{{buckets.internal}}/*
+
+              # Allow to call other lambdas
+              - Effect: Allow
+                Action:
+                - lambda:GetFunction
+                - lambda:invokeFunction
+                Resource:
+                - "*"
+
+  ProcessingLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -32,15 +71,79 @@ Resources:
             - lambda.amazonaws.com
           Action:
           - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ProcessingLambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Allow access to kinesis
+              - Effect: Allow
+                Action:
+                - kinesis:GetRecords
+                - kinesis:GetShardIterator
+                - kinesis:DescribeStream
+                - kinesis:ListStreams
+                Resource:
+                - Fn::GetAtt:
+                  - KinesisCumulus
+                  - Arn
+
+              # Allow Lambda logging
+              - Effect: Allow
+                Action:
+                - logs:DescribeLogStreams
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                - s3:AbortMultipartUpload
+                - s3:Get*
+                - s3:Put*
+                - s3:List*
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                Resource:
+                - !Sub arn:aws:s3:::{{buckets.internal}}
+                - !Sub arn:aws:s3:::{{buckets.internal}}/*
+
+              # Allow access to dynamoDB
+              - Effect: Allow
+                Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:ListStreams
+                Resource:
+                - "*"
+
+              # Allow lambdas to call other lambdas
+              - Effect: Allow
+                Action:
+                - lambda:GetFunction
+                - lambda:invokeFunction
+                Resource:
+                - "*"
+
+  LambdaApiGatewayRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
         - Effect: Allow
           Principal:
             Service:
-            - ec2.amazonaws.com
+            - lambda.amazonaws.com
           Action:
           - sts:AssumeRole
       Path: "/"
       Policies:
-      - PolicyName: TaskExecutionRolePolicy
+      - PolicyName: LambdaApiGateway
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -54,45 +157,20 @@ Resources:
             - logs:PutLogEvents
             Resource: arn:aws:logs:*:*:*
 
-          # Allow access to kinesis
-          - Effect: Allow
-            Action:
-            - kinesis:GetRecords
-            - kinesis:GetShardIterator
-            - kinesis:DescribeStream
-            - kinesis:ListStreams
-            Resource:
-            - "*"
-
-          # Allow writing to ingest buckets
-          - Effect: Allow
-            Action:
-            - s3:AbortMultipartUpload
-            - s3:Get*
-            - s3:Put*
-            - s3:List*
-            - s3:DeleteObject
-            - s3:DeleteObjectVersion
-            Resource:
-            - !Sub arn:aws:s3:::{{buckets.internal}}
-            - !Sub arn:aws:s3:::{{buckets.internal}}/*
-
-          # Allow managing network interfaces (required to run Lambda in VPC)
-          - Effect: Allow
-            Action:
-            - ec2:CreateNetworkInterface
-            - ec2:DescribeNetworkInterfaces
-            - ec2:DeleteNetworkInterface
-            Resource:
-            - "*"
 
           # Allow access to dynamoDB
           - Effect: Allow
             Action:
             - dynamodb:DescribeStream
+            - dynamodb:GetItem
             - dynamodb:GetRecords
             - dynamodb:GetShardIterator
             - dynamodb:ListStreams
+            - dynamodb:ListTables
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
             Resource:
             - "*"
 
@@ -103,6 +181,15 @@ Resources:
             - lambda:invokeFunction
             Resource:
             - "*"
+
+  KinesisCumulus:
+    Type: "AWS::Kinesis::Stream"
+    Properties:
+      Name: "{{stackName}}-{{stage}}-cumulus-api"
+      ShardCount: 1
+      Tags:
+        - Key: Project
+          Value: Cumulus
 
   ElasticsearchDomain:
     Type: "AWS::Elasticsearch::Domain"
@@ -123,7 +210,16 @@ Resources:
             Principal:
               AWS:
                 - Fn::GetAtt:
-                  - TaskExecutionRole
+                  - ProcessingLambdaRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - LambdaApiGatewayRole
                   - Arn
             Action: "es:*"
             Resource:
@@ -351,7 +447,11 @@ Resources:
       MemorySize: {{memory}}
       Role:
         Fn::GetAtt:
-        - TaskExecutionRole
+      {{# if apiGateway }}
+        - LambdaApiGatewayRole
+      {{else}}
+        - ProcessingLambdaRole
+      {{/if}}
         - Arn
       Runtime: nodejs4.3
       Timeout: {{timeout}}
