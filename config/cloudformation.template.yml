@@ -162,9 +162,15 @@ Resources:
           - Effect: Allow
             Action:
             - dynamodb:DescribeStream
+            - dynamodb:GetItem
             - dynamodb:GetRecords
             - dynamodb:GetShardIterator
             - dynamodb:ListStreams
+            - dynamodb:ListTables
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
             Resource:
             - "*"
 
