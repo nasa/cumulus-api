@@ -1,0 +1,68 @@
+#! /usr/bin/env node
+'use strict'
+
+var AWS = require('aws-sdk');
+const parseConfig = require('../lib/aws/common').parseConfig;
+
+// use dummy access info
+AWS.config.update({
+  accessKeyId: 'myKeyId',
+  secretAccessKey: 'secretKey',
+  region: 'us-east-1'
+});
+
+var dynamodb = new AWS.DynamoDB({
+  endpoint: new AWS.Endpoint('http://localhost:8000')
+});
+
+
+const config = parseConfig();
+
+// create DynamoDB Table
+config.dynamos.forEach((table) => {
+  var params = {
+    AttributeDefinitions: [],
+    KeySchema: [],
+    ProvisionedThroughput: {
+      ReadCapacityUnits: 5,
+      WriteCapacityUnits: 5
+    },
+    TableName: table.name
+  };
+
+  table.attributes.forEach((attribute) => {
+    params.AttributeDefinitions.push({
+      AttributeName: attribute.name,
+      AttributeType: attribute.type
+    });
+  });
+
+  table.schema.forEach((schem) => {
+    params.KeySchema.push({
+      AttributeName: schem.name,
+      KeyType: schem.type
+    });
+  });
+
+  dynamodb.createTable(params, (err, data) => {
+    if (err.stack.match(/(Cannot create preexisting table)/)) {
+      console.log(`${params.TableName} is already created`);
+    }
+  });
+});
+
+// create SQS queues
+console.log('Creating SQS queues');
+var sqs = new AWS.SQS({
+  endpoint: new AWS.Endpoint('http://localhost:9324')
+});
+
+config.sqs.forEach((queue) => {
+  const params = {
+    QueueName: queue.name
+  };
+  sqs.createQueue(params, (err, data) => {
+   if (err) console.log(err, err.stack); // an error occurred
+   else     console.log(data);           // successful response
+  });
+});
