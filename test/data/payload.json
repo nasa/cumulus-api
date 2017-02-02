@@ -1,51 +1,69 @@
 {
-  "previousStep": "process",
-  "nextStep": "pushToCMR",
-  "granuleRecord": {
-    "granuleId": "D20120907_022056_P",
-    "collectionName": "AVAPS",
-    "granuleShortName": "D20120907_022056_P",
-    "files": {
-      "D20120907_022056_P.QC.PresCorrQC.nc": {
-        "originalFile": "ftp://hs3.nsstc.nasa.gov/pub/hs3/AVAPS/data/2012/txt/0907/D20120907_022056_P.PresCorrQC.nc",
-        "stagingFile": "s3://cumulus-staging/ghrc/avaps/D20120907_022056_P.PresCorrQC.nc",
-        "archivedFile": "s3://cumulus-protected/ghrc/avaps/D20120907_022056_P.PresCorrQC.nc"
-      },
-      "D20120907_022056_P.QC.eol": {
-        "stagingFile": "s3://cumulus-staging/ghrc/avaps/D20120907_022056_P.QC.nc",
-        "archivedFile": "s3://cumulus-protected/ghrc/avaps/D20120907_022056_P.QC.nc"
-      },
-      "D20120907_022056_P.meta": {
-        "stagingFile": "s3://cumulus-staging/ghrc/avaps/D20120907_022056_P.meta",
-        "archivedFile": "s3://cumulus-private/ghrc/avaps/D20120907_022056_P.meta"
-      }
-
-    },
-    "recipe": [
-      {
-        "name": "process",
-        "config": {
-          "steps": [{
-            "description": "Generate NetCDF",
-            "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest",
-            "cmd": "start.sh"
-          }]
-        }
-      },
-      {
-        "name": "pushToCMR",
-        "config": {}
-      },
-      {
-        "name": "archive",
-        "config": {}
-      }
-    ],
-    "readyForProcess": 1480962569,
-    "processedAt": 1480962569,
-    "pushedToCMRAt": 1480962569,
-    "archivedAt": 1480962569,
-    "createdAt": 1480962569,
-    "updatedAt": 1480962569
-  }
+	"granuleRecord": {
+		"archivedAt": 1480962569,
+		"collectionName": "AsterA1"
+		"createdAt": 1480962569,
+		"files": {
+			"origin-hdf5-file": {
+				"archivedFile": null,
+				"sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101225/pg-PR1A0000-2016111001_005_039",
+				"stagingFile": "s3://cumulus-1st-test-private/staging/pg-PR1A0000-2016111001_005_039"
+			},
+			"processed-hdf5-file": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+				"archivedFile": null,
+				"sipFile": null,
+				"stagingFile": null
+			},
+			"thumbnail-file": {
+				"archivedFile": null,
+				"sipFile": null,
+				"stagingFile": null
+			},
+			"meta-xml": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+				"sipFile": null,
+				"archivedFile": null,
+				"stagingFile": null
+			}
+		},
+		"granuleId": "D20120907_022056_P",
+		"granuleShortName": "D20120907_022056_P",
+		"processedAt": 1480962569,
+		"pushedToCMRAt": 1480962569,
+		"readyForProcess": 1480962569,
+		"recipe": {
+			"archive": {
+				"config": {}
+			},
+			"order": [
+				"processStep",
+				"pushtToCMR",
+				"archive"
+			],
+			"processStep": {
+				"config": {
+					"image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest",
+					"inputFiles": [
+						"origin-hdf5-file"
+					],
+					"outputFiles": [
+						"processed-hdf5-file",
+						"meta-xml"
+					],
+                                        "nextQueue": {
+                                          "type": "kinesis",
+                                          "name": "cumulus-api-test2-dev-cumulus-api"
+                                        }
+				},
+				"description": "UpdateHDF5fileandextractthumbnail"
+			},
+			"pushToCMR": {
+				"config": {}
+			}
+		},
+		"updatedAt": 1480962569
+	},
+	"nextStep": 0,
+	"previousStep": 0
 }

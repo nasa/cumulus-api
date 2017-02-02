@@ -54,18 +54,18 @@ export const handler = (event, context, cb) => {
   });
 };
 
-if (require.main === module) {
-  // This should return a validation error from the CMR server when it
-  // tries to post, since the example collection doesn't exist yet
-  // That's a-okay
-  handler({
-    granuleRecord: {
-      collectionName: 'AST_L1A',
-      files: {
-        'foo.xml': {
-          archivedFile: 's3://cumulus-internal/testdata/metadata/test-granule.xml'
-        }
+
+// To run a small test:
+// babel-node index.js local
+const { setupLocalRun } = require('cumulus-common/local');
+
+setupLocalRun(handler, {
+  granuleRecord: {
+    collectionName: 'AST_L1A',
+    files: {
+      'foo.xml': {
+        archivedFile: 's3://cumulus-internal/testdata/metadata/test-granule.xml'
       }
     }
-  }, null, (err, res) => console.log(err, res));
-}
+  }
+}, (e, r) => console.log(e, r));
