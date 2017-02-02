@@ -76,3 +76,10 @@ While the documentation is served locally you can edit Markdown files under `doc
 
     $ bin/docs build
     $ bin/docs deploy
+
+## Local Development with Docker
+
+To make local development with DyanmoDB and SQS you can use docker. Just run:
+
+   $ docker-compose up local
+   $ bin/bootstrap
