@@ -1,9 +1,6 @@
 'use strict';
 import aws from 'aws-sdk';
-import _ from 'lodash';
 import es from 'elasticsearch';
-import connection from 'http-aws-es';
-import moment from 'moment';
 import queue from 'queue-async';
 
 import { config } from 'cumulus-common/es';
