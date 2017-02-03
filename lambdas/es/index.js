@@ -42,7 +42,7 @@ function processRecords (event, context) {
       const id = range === 'NONE' ? hashValue : hashValue + '|' + keys[range];
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
-        q.defer(callback => deleteRecord(params, callback));
+        q.defer((callback) => deleteRecord(params, callback));
       } else {
         const data = unwrap(record.dynamodb.NewImage);
         q.defer((callback) => saveRecord(data, params, context, callback));
@@ -57,17 +57,17 @@ function processRecords (event, context) {
     if (error) {
       context.fail(error);
     } else {
-      context.succeed('Records saved ' + result.length);
+      context.succeed('Records altered: ' + result.length);
     }
   });
 }
 
-function deleteRecord (params) {
+function deleteRecord (params, callback) {
   esClient.delete(params, function (error, response) {
     if (error) {
       throw error;
     } else {
-      callback(response);
+      callback(null, response);
     }
   });
 }
