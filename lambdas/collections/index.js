@@ -3,10 +3,10 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { collectionsTableName as table } from 'cumulus-common/tables';
 import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
 
+const table = process.env.CollectionsTable;
 const key = 'collectionName';
 
 function parseRecipe(record) {
