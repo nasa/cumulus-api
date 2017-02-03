@@ -1,16 +1,17 @@
 'use strict';
-import aws from 'aws-sdk';
-import es from 'elasticsearch';
 import queue from 'queue-async';
+import { AttributeValue } from 'dynamodb-data-types';
+import { get } from 'lodash';
+const unwrap = AttributeValue.unwrap;
 
-import { config } from 'cumulus-common/es';
-const esClient = new es.Client(config);
+import { client as esClient } from 'cumulus-common/es';
+const index = process.env.StackName || 'cumulus-local-test';
 const type = process.env.ES_TYPE || 'type';
+const hash = process.env.DYNAMODB_HASH || 'no-hash-env';
+const range = process.env.DYNAMODB_RANGE || 'NONE';
 
-// TODO include index in env variable
-const index = 'index';
-
-const handler = function(event, context) {
+export const handler = function(event, context) {
+  console.log(JSON.stringify(event));
   esClient.indices.exists({ index }, (error, response, status) => {
     if (status === 404) {
       esClient.indices.create({ index }, (error, response, status) => {
@@ -30,48 +31,70 @@ const handler = function(event, context) {
 
 function processRecords (event, context) {
   const q = queue();
-  event.Records.forEach((record) => {
-    if (record.eventName === 'REMOVE') {
-      // TODO do we remove records?
+  const records = get(event, 'Records');
+  if (!records) {
+    return context.fail('No records found in event');
+  }
+  records.forEach((record) => {
+    const keys = unwrap(get(record, 'dynamodb.Keys'));
+    const hashValue = keys[hash];
+    if (hashValue) {
+      const id = range === 'NONE' ? hashValue : hashValue + '|' + keys[range];
+      const params = { index, type, id };
+      if (record.eventName === 'REMOVE') {
+        q.defer(callback => deleteRecord(params, callback));
+      } else {
+        const data = unwrap(record.dynamodb.NewImage);
+        q.defer((callback) => saveRecord(data, params, context, callback));
+      }
     } else {
-      q.defer((callback) => saveRecord(record, context, callback));
+      q.defer(() => {
+        throw new Error('Could not find hash value for property name ' + hash);
+      });
     }
   });
-  q.awaitAll(() => true);
+  q.awaitAll((error, result) => {
+    if (error) {
+      context.fail(error);
+    } else {
+      context.succeed('Records saved ' + result.length);
+    }
+  });
 }
 
-function saveRecord (record, context, callback) {
-  esClient.get({
-    index,
-    id: 'id',
-    type
-  }, (error, response, status) {
+function deleteRecord (params) {
+  esClient.delete(params, function (error, response) {
+    if (error) {
+      throw error;
+    } else {
+      callback(response);
+    }
+  });
+}
+
+function saveRecord (data, params, context, callback) {
+  esClient.get(params, (error, response, status) => {
     if (status !== 200 && status !== 404) {
       context.fail(error);
     }
     const exists = status === 200;
-    const params = {
-      index,
-      id: 'id'
-      type
-    };
-
-    const handler = (error, response, status) {
+    const handler = (error, response, status) => {
       if (status === 200 || status === 201) {
-        cb(record);
+        callback(null, data);
       } else {
         throw error || new Error('Could not write record');
       }
     };
-
     if (exists) {
-      params.body = { doc: record };
-      esClient.update(params, handler);
+      const update = Object.assign({}, params, {
+        body: { doc: data }
+      });
+      esClient.update(update, handler);
     } else {
-      params.body = record;
-      es.create(params, handler);
+      const create = Object.assign({}, params, {
+        body: data
+      });
+      esClient.create(create, handler);
     }
   });
 }
-
-export default handler;
