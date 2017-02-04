@@ -3,10 +3,11 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { esQuery } from 'cumulus-common/es';
+import { esList, client } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
 
-const table = process.env.CollectionsTable;
+const table = process.env.CollectionsTable || 'table';
+const index = process.env.StackName || 'cumulus-local-test';
 const key = 'collectionName';
 
 function parseRecipe(record) {
@@ -17,12 +18,12 @@ function parseRecipe(record) {
   return updatedRecord;
 }
 
+/**
+ * List all collections.
+ * @return {array} every collection in the database.
+ */
 export function list (event, context, cb) {
-  esQuery({
-    query: {
-      match: { _index: table }
-    }
-  }, (error, res) => {
+  esList(index, table, (error, res) => {
     if (error) {
       return cb(error);
     } else {
@@ -32,16 +33,22 @@ export function list (event, context, cb) {
   });
 }
 
+/**
+ * Query a single collection.
+ * @param {string} name the collectionName property.
+ * @return {object} a single collection object.
+ */
 export function get (event, context, cb) {
-  const name = _.get(event, 'path.short_name');
+  const name = _.get(event, 'name');
   if (!name) {
-    return cb('Get requires path.short_name');
+    return cb('Collection#get requires a name property');
   }
-  esQuery({
+  client.search({
+    index,
+    type: table,
     query: {
       bool: {
         must: [
-          { match: { _index: table } },
           { match: { name } }
         ]
       }
@@ -58,6 +65,11 @@ export function get (event, context, cb) {
   });
 }
 
+/**
+ * Creates a new collection
+ * @param {object} body a collection object to save in the database.
+ * @return {object} returns the collection that was just saved.
+ */
 export function post (event, context, cb) {
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
@@ -81,6 +93,11 @@ export function post (event, context, cb) {
   });
 }
 
+/**
+ * Updates an existing collection
+ * @param {object} body a set of properties to update on an existing collection.
+ * @return {object} a mapping of the updated properties.
+ */
 export function put (event, context, cb) {
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);

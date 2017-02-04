@@ -10,6 +10,12 @@ const type = process.env.ES_TYPE || 'type';
 const hash = process.env.DYNAMODB_HASH || 'no-hash-env';
 const range = process.env.DYNAMODB_RANGE || 'NONE';
 
+/**
+ * Sync changes to dynamodb to an elasticsearch instance.
+ * Sending updates to this lambda is handled by automatically AWS.
+ * @param {array} Records list of records with an eventName property signifying REMOVE or INSERT.
+ * @return {string} response text indicating the number of records altered in elasticsearch.
+ */
 export const handler = function(event, context, done) {
   console.log(JSON.stringify(event));
   esClient.indices.exists({ index }, (error, response, status) => {
