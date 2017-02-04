@@ -1,7 +1,7 @@
 {
 	"granuleRecord": {
 		"archivedAt": 1480962569,
-		"collectionName": "AsterA1"
+		"collectionName": "AsterA1",
 		"createdAt": 1480962569,
 		"files": {
 			"origin-hdf5-file": {
