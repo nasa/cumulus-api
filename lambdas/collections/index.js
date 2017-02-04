@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { esList, client } from 'cumulus-common/es';
+import { esList, esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
 
 const table = process.env.CollectionsTable || 'table';
@@ -43,13 +43,11 @@ export function get (event, context, cb) {
   if (!name) {
     return cb('Collection#get requires a name property');
   }
-  client.search({
-    index,
-    type: table,
+  esQuery(index, table, {
     query: {
       bool: {
         must: [
-          { match: { name } }
+          { match: { [key]: name } }
         ]
       }
     }
