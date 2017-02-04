@@ -9,8 +9,7 @@ buckets:
   internal: cumulus-internal
 
 sqs:
-  - name: testQueue1
-  - name: testQueue2
+  - name: PDRsQueue
 
 dynamos:
   - name: CollectionsTable
