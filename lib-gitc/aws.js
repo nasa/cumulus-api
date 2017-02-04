@@ -149,3 +149,31 @@ exports.getPossiblyRemote = async (obj) => {
   }
   return obj;
 };
+
+/**
+ * fileNotFound
+ *
+ * @param {string} bucket s3 bucket name
+ * @param {string} fileName name of the file
+ * @param {string} [key=''] the s3 key (folder name). default is empty string
+ * @returns {boolean} true if not found / false if found
+ * @example
+ * fileNotFound('myfile', 'myfolder', 'myBucket');
+ */
+export async function fileNotFound(bucket, fileName, key = '') {
+  const s3Client = exports.s3();
+  try {
+    await s3Client.headObject({
+      Key: path.join(key, fileName),
+      Bucket: bucket
+    }).promise();
+    return false;
+  }
+  catch (e) {
+    // if file is not found download it
+    if (e.stack.match(/(NotFound)/)) {
+      return true;
+    }
+    throw e;
+  }
+}
