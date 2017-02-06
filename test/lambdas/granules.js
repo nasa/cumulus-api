@@ -21,8 +21,4 @@ describe('Granules endpoint', () => {
       done();
     });
   });
-
-  it('gets', (done) => {
-    done();
-  });
 });
