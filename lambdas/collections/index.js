@@ -5,6 +5,7 @@ import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
 import { esList, esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
+import { getLimit, getStart } from 'cumulus-common/utils';
 
 const table = process.env.CollectionsTable || 'table';
 const index = process.env.StackName || 'cumulus-local-test';
@@ -20,10 +21,22 @@ function parseRecipe(record) {
 
 /**
  * List all collections.
+ * @param {object} query an optional query object.
+ * @param {number} query.limit maximum number of records to return.
+ * @param {number} query.start_at record to start showing from.
  * @return {array} every collection in the database.
  */
 export function list (event, context, cb) {
-  esList(index, table, (error, res) => {
+  const query = _.get(event, 'query', {});
+  const limit = getLimit(query);
+  const start = getStart(query);
+  esQuery(index, table, {
+    query: {
+      match_all: {}
+    },
+    size: limit,
+    from: start
+  }, (error, res) => {
     if (error) {
       return cb(error);
     } else {
