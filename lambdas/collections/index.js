@@ -35,13 +35,13 @@ export function list (event, context, cb) {
 
 /**
  * Query a single collection.
- * @param {string} name the collectionName property.
+ * @param {string} collectionName the name of the collection.
  * @return {object} a single collection object.
  */
 export function get (event, context, cb) {
-  const name = _.get(event, 'name');
+  const name = _.get(event, 'collectionName');
   if (!name) {
-    return cb('Collection#get requires a name property');
+    return cb('Collection#get requires a collectionName property');
   }
   esQuery(index, table, {
     query: {
@@ -57,7 +57,7 @@ export function get (event, context, cb) {
     } else if (res.length === 0) {
       return cb('Record was not found');
     } else {
-      // Cannot have more than 1 document, because `name` is the primary Dynamo key
+      // Cannot have more than 1 document, because `collectionName` is the primary Dynamo key
       return cb(null, parseRecipe(res[0]));
     }
   });
