@@ -157,7 +157,6 @@ Resources:
             - logs:PutLogEvents
             Resource: arn:aws:logs:*:*:*
 
-
           # Allow access to dynamoDB
           - Effect: Allow
             Action:
@@ -226,14 +225,11 @@ Resources:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
           - Effect: "Allow"
             Principal:
-              AWS: "*"
+              AWS:
+                - arn:aws:iam::985962406024:user/alireza@developmentseed.org
             Action: "es:*"
             Resource:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
-            Condition:
-              IpAddress:
-                aws:SourceIp:
-                  - 96.83.79.65
 
 {{#each dynamos}}
   {{name}}DynamoDB:

@@ -4,7 +4,7 @@
   "description": "Push granule's metadata to NASA's Common Metadata Repository",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm_config_prefix='../../tmp' npm link ../../lib",
+    "preinstall": "npm_config_prefix='../../tmp' npm link ../../lib && npm_config_prefix='../../tmp' npm link ../../lib-gitc",
     "postinstall": "cd node_modules/cmrjs && npm install && npm run build"
   },
   "keywords": [

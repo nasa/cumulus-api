@@ -8,6 +8,9 @@ buckets:
   protected: cumulus-protected
   internal: cumulus-internal
 
+sqs:
+  - name: PDRsQueue
+
 dynamos:
   - name: CollectionsTable
     read: 5
