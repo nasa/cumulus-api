@@ -9,11 +9,11 @@ import * as es from '../../lib/es';
 describe('Collections endpoint', () => {
   it('lists', (done) => {
     const mock = [ { x: 'x' }, { y: 'y' } ];
-    sinon.stub(es, 'esList', (index, table, cb) => cb(null, mock));
+    sinon.stub(es, 'esQuery', (index, table, query, cb) => cb(null, mock));
     list(null, null, (error, res) => {
       assert.equal(error, null);
       assert.deepEqual(res, mock);
-      es.esList.restore();
+      es.esQuery.restore();
     });
     done();
   });
@@ -21,13 +21,13 @@ describe('Collections endpoint', () => {
   it('gets', (done) => {
     // no records returned
     sinon.stub(es, 'esQuery', (index, table, query, cb) => cb(null, []));
-    get({ name: 'x' }, null, (error, res) => {
+    get({ collectionName: 'x' }, null, (error, res) => {
       assert.equal(error, 'Record was not found');
       es.esQuery.restore();
     });
 
     sinon.stub(es, 'esQuery', (index, table, query, cb) => cb(null, [{x: 'x'}]));
-    get({ name: 'x' }, null, (error, res) => {
+    get({ collectionName: 'x' }, null, (error, res) => {
       assert.equal(error, null);
       assert.deepEqual(res, {x: 'x'});
       es.esQuery.restore();
