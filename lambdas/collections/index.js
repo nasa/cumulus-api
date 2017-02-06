@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { esList, esQuery } from 'cumulus-common/es';
+import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
 import { getLimit, getStart } from 'cumulus-common/utils';
 
