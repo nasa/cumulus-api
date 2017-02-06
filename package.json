@@ -5,6 +5,7 @@
   "main": "handler.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha-webpack --webpack-config webpack.config-test.js \"test/**/*.js\"",
+    "test-ci": "PORT=8000 ./node_modules/.bin/nodemon --ext js --watch ./test --exec 'npm run test'",
     "lint": "./node_modules/.bin/eslint .",
     "start": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
     "serve": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
