@@ -1,6 +1,6 @@
 {
   "name": "cmr-push",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Push granule's metadata to NASA's Common Metadata Repository",
   "main": "index.js",
   "scripts": {

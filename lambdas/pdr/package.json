@@ -1,6 +1,6 @@
 {
   "name": "pdr",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "All PDR related stuff are here",
   "main": "index.js",
   "scripts": {
