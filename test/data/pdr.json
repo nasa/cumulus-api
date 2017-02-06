@@ -1,0 +1,10 @@
+{
+  "pdrName": "someuniquename.pdr",
+  "address": "http://example.com/pdrs/someuniquename.pdr",
+  "granules": {
+    "D20120907_022056_P.QC.PresCorrQC.nc": true
+  },
+  "completedAt": 1480962569,
+  "createdAt": 1480962569,
+  "updatedAt": 1480962569
+}

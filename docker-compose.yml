@@ -1,0 +1,12 @@
+version: '2'
+services:
+  local:
+    image: peopleperhour/dynamodb
+    ports:
+      - "8000:8000"
+    depends_on:
+      - sqs
+  sqs:
+    image: vsouza/sqs-local
+    ports:
+      - "9324:9324"

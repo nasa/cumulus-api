@@ -1,0 +1,19 @@
+#! /usr/bin/env node
+'use strict';
+
+const program = require('commander');
+const lambda = require('../lib/aws/lambda');
+
+// the CLI activation
+program
+  .usage('functionName [options]')
+  .option('-p, --profile <profile>', 'AWS profile name to use for authentication')
+  .option('-r, --region', 'AWS region');
+
+program
+  .arguments('<lambda>')
+  .option('-w, --webpack', 'Whether to run the webpack before updating the lambdas')
+  .action(lambda.updateLambda.bind(null, program));
+
+program
+  .parse(process.argv);

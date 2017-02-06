@@ -1,0 +1,466 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: The AWS CloudFormation template for {{stackName}}
+Parameters:
+  ConfigS3Bucket:
+    Type: String
+    Description: S3 bucket that holds deployment artifacts
+  ArtifactPath:
+    Type: String
+    Description: Path within the deployment bucket containing artifacts
+Outputs:
+  # get Lambda's ARNs as output
+{{#each lambdas}}
+  {{name}}FunctionArn:
+    Description: Lambda function info
+    Value:
+      Fn::GetAtt:
+      - {{name}}LambdaFunction
+      - Arn
+{{/each}}
+
+Resources:
+
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ECSRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                - s3:AbortMultipartUpload
+                - s3:Get*
+                - s3:Put*
+                - s3:List*
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                Resource:
+                - !Sub arn:aws:s3:::{{buckets.internal}}
+                - !Sub arn:aws:s3:::{{buckets.internal}}/*
+
+              # Allow to call other lambdas
+              - Effect: Allow
+                Action:
+                - lambda:GetFunction
+                - lambda:invokeFunction
+                Resource:
+                - "*"
+
+  ProcessingLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ProcessingLambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Allow access to kinesis
+              - Effect: Allow
+                Action:
+                - kinesis:GetRecords
+                - kinesis:GetShardIterator
+                - kinesis:DescribeStream
+                - kinesis:ListStreams
+                Resource:
+                - Fn::GetAtt:
+                  - KinesisCumulus
+                  - Arn
+
+              # Allow Lambda logging
+              - Effect: Allow
+                Action:
+                - logs:DescribeLogStreams
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                - s3:AbortMultipartUpload
+                - s3:Get*
+                - s3:Put*
+                - s3:List*
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                Resource:
+                - !Sub arn:aws:s3:::{{buckets.internal}}
+                - !Sub arn:aws:s3:::{{buckets.internal}}/*
+
+              # Allow access to dynamoDB
+              - Effect: Allow
+                Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:ListStreams
+                Resource:
+                - "*"
+
+              # Allow lambdas to call other lambdas
+              - Effect: Allow
+                Action:
+                - lambda:GetFunction
+                - lambda:invokeFunction
+                Resource:
+                - "*"
+
+  LambdaApiGatewayRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: LambdaApiGateway
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+
+          # Allow Lambda logging
+          - Effect: Allow
+            Action:
+            - logs:DescribeLogStreams
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+
+          # Allow access to dynamoDB
+          - Effect: Allow
+            Action:
+            - dynamodb:DescribeStream
+            - dynamodb:GetItem
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:ListStreams
+            - dynamodb:ListTables
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
+            Resource:
+            - "*"
+
+          # Allow lambdas to call other lambdas
+          - Effect: Allow
+            Action:
+            - lambda:GetFunction
+            - lambda:invokeFunction
+            Resource:
+            - "*"
+
+  KinesisCumulus:
+    Type: "AWS::Kinesis::Stream"
+    Properties:
+      Name: "{{stackName}}-{{stage}}-cumulus-api"
+      ShardCount: 1
+      Tags:
+        - Key: Project
+          Value: Cumulus
+
+  ElasticsearchDomain:
+    Type: "AWS::Elasticsearch::Domain"
+    Properties:
+      DomainName: {{stackName}}-{{stage}}-es
+      ElasticsearchVersion: 2.3
+      ElasticsearchClusterConfig:
+        InstanceCount: "1"
+        InstanceType: "m3.medium.elasticsearch"
+      SnapshotOptions:
+        AutomatedSnapshotStartHour: "0"
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: "true"
+      AccessPolicies:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - ProcessingLambdaRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - LambdaApiGatewayRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - arn:aws:iam::985962406024:user/alireza@developmentseed.org
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+
+{{#each dynamos}}
+  {{name}}DynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+    {{#each attributes}}
+      - AttributeName: {{name}}
+        AttributeType: {{type}}
+    {{/each}}
+      KeySchema:
+    {{#each schema}}
+      - AttributeName: {{name}}
+        KeyType: {{type}}
+    {{/each}}
+      ProvisionedThroughput:
+        ReadCapacityUnits: {{read}}
+        WriteCapacityUnits: {{write}}
+      TableName: {{stackName}}-{{stage}}-{{name}}
+{{/each}}
+
+  ApiGatewayDeployment{{apiName}}:
+    DependsOn:
+{{# if apiMethods}}
+  {{#each apiMethods}}
+    - {{name}}
+  {{/each}}
+{{/if}}
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: ApiGatewayRestApi
+      StageName: {{stage}}
+
+{{# if apiMethods}}
+{{#each apiMethods}}
+  {{name}}:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: {{method}}
+      Integration:
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: '''*'''
+          ResponseTemplates: {}
+          StatusCode: 200
+        - SelectionPattern: .*\[400\].*
+          StatusCode: 400
+        - SelectionPattern: .*\[401\].*
+          StatusCode: 401
+        - SelectionPattern: .*\[403\].*
+          StatusCode: 403
+        - SelectionPattern: .*\[404\].*
+          StatusCode: 404
+        - SelectionPattern: .*\[422\].*
+          StatusCode: 422
+        - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
+          StatusCode: 500
+        - SelectionPattern: .*\[502\].*
+          StatusCode: 502
+        - SelectionPattern: .*\[504\].*
+          StatusCode: 504
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: "\n            #define( $loop )\n              {\n \
+            \             #foreach($key in $map.keySet())\n                  \"\
+            $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
+            \n                    #if( $foreach.hasNext ) , #end\n             \
+            \ #end\n              }\n            #end\n\n            {\n       \
+            \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
+            $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
+            ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+            cognitoPoolClaims\" : {\n                \n                \"sub\":\
+            \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+            \     #set( $map = $input.params().header )\n              \"headers\"\
+            : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+            \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+            \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+            \ )\n              \"identity\": $loop,\n\n              #set( $map\
+            \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+            \         }\n          "
+          application/x-www-form-urlencoded: "\n            #define( $body )\n \
+            \             {\n              #foreach( $token in $input.path('$').split('&')\
+            \ )\n                #set( $keyVal = $token.split('=') )\n         \
+            \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
+            \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
+            \ )\n                  #if( $keyValSize >= 2 )\n                   \
+            \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
+            \                    #set( $val = '' )\n                  #end\n   \
+            \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
+            \           #end\n              #end\n              }\n            #end\n\
+            \n            #define( $loop )\n              {\n              #foreach($key\
+            \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
+            :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
+            \                    #if( $foreach.hasNext ) , #end\n              #end\n\
+            \              }\n            #end\n\n            {\n              \"\
+            body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
+            \              \"principalId\": \"$context.authorizer.principalId\"\
+            ,\n              \"stage\": \"$context.stage\",\n\n              \"\
+            cognitoPoolClaims\" : {\n                \n                \"sub\":\
+            \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
+            \     #set( $map = $input.params().header )\n              \"headers\"\
+            : $loop,\n\n              #set( $map = $input.params().querystring )\n\
+            \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
+            \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
+            \ )\n              \"identity\": $loop,\n\n              #set( $map\
+            \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
+            \         }\n          "
+        Type: AWS
+        Uri:
+          Fn::Join:
+          - ''
+          - - 'arn:aws:apigateway:'
+            - Ref: AWS::Region
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+              - {{lambda}}LambdaFunction
+              - Arn
+            - /invocations
+      MethodResponses:
+      - ResponseModels: {}
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
+        StatusCode: 200
+      - StatusCode: 400
+      - StatusCode: 401
+      - StatusCode: 403
+      - StatusCode: 404
+      - StatusCode: 422
+      - StatusCode: 500
+      - StatusCode: 502
+      - StatusCode: 504
+      RequestParameters: {}
+      ResourceId:
+        Ref: {{resource}}
+      RestApiId:
+        Ref: ApiGatewayRestApi
+{{/each}}
+
+{{#each apiMethodsOptions}}
+  {{name}}:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+            method.response.header.Access-Control-Allow-Methods: '''OPTIONS,PUT,POST,GET'''
+            method.response.header.Access-Control-Allow-Origin: '''*'''
+          ResponseTemplates:
+            application/json: ''
+          StatusCode: '200'
+        RequestTemplates:
+          application/json: '{statusCode:200}'
+        Type: MOCK
+      MethodResponses:
+      - ResponseModels: {}
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: true
+          method.response.header.Access-Control-Allow-Methods: true
+          method.response.header.Access-Control-Allow-Origin: true
+        StatusCode: '200'
+      RequestParameters: {}
+      ResourceId:
+        Ref: {{resource}}
+      RestApiId:
+        Ref: ApiGatewayRestApi
+{{/each}}
+
+{{#each apiResources}}
+  {{name}}:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+      {{#each parents}}
+        {{this}}
+      {{/each}}
+      PathPart: '{{pathPart}}'
+      RestApiId:
+        Ref: ApiGatewayRestApi
+{{/each}}
+
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: {{stackName}}-{{stage}}
+{{/if}}
+
+{{#each lambdas}}
+  {{name}}LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref ConfigS3Bucket
+        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/{{zipFile}}.zip
+      FunctionName: {{stackName}}-{{name}}-{{stage}}
+      Environment:
+        Variables:
+          ES_HOST:
+            Fn::GetAtt:
+              - ElasticsearchDomain
+              - DomainEndpoint
+        {{#each envs}}
+          {{key}}: {{value}}
+        {{/each}}
+      Handler: {{handler}}
+      MemorySize: {{memory}}
+      Role:
+        Fn::GetAtt:
+      {{# if apiGateway }}
+        - LambdaApiGatewayRole
+      {{else}}
+        - ProcessingLambdaRole
+      {{/if}}
+        - Arn
+      Runtime: nodejs4.3
+      Timeout: {{timeout}}
+
+{{# if apiGateway }}
+  {{name}}LambdaPermissionApiGateway:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+        - {{name}}LambdaFunction
+        - Arn
+      Principal: apigateway.amazonaws.com
+{{/if}}
+{{/each}}

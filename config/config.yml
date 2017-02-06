@@ -1,0 +1,188 @@
+stackName: cumulus-api-test2
+stage: dev
+buildApiGateway: true
+
+buckets:
+  private: cumulus-private
+  public: cumulus-public
+  protected: cumulus-protected
+  internal: cumulus-internal
+
+sqs:
+  - name: PDRsQueue
+
+dynamos:
+  - name: CollectionsTable
+    read: 5
+    write: 5
+    elasticsearch: true
+    attributes:
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+
+  - name: GranulesTable
+    read: 5
+    write: 5
+    elasticsearch: true
+    attributes:
+      - name: granuleId
+        type: S
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+      - name: granuleId
+        type: RANGE
+
+  - name: InvokeTable
+    read: 5
+    write: 5
+    elasticsearch: true
+    attributes:
+      - name: collectionName
+        type: S
+    schema:
+      - name: collectionName
+        type: HASH
+
+  - name: PDRsTable
+    read: 5
+    write: 5
+    elasticsearch: true
+    attributes:
+      - name: pdrName
+        type: S
+    schema:
+      - name: pdrName
+        type: HASH
+
+lambdas:
+  - name: signup
+    handler: auth.signup
+    timeout: 300
+    apiGateway:
+      path: signup
+      method: post
+      cors: trues
+
+  - name: signin
+    handler: auth.signin
+    timeout: 300
+    apiGateway:
+      path: signin
+      method: post
+      cors: true
+
+  - name: statsSummary
+    handler: stats.summary
+    timeout: 300
+    apiGateway:
+      path: stats/summary
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: statsSummaryGrouped
+    handler: stats.summaryGrouped
+    timeout: 300
+    apiGateway:
+      path: stats/summary/grouped
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: getErrorCounts
+    handler: errors.counts
+    timeout: 300
+    apiGateway:
+      path: stats/errors
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: listErrors
+    handler: errors.list
+    timeout: 300
+    apiGateway:
+      path: errors
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: listGranules
+    handler: granules.list
+    timeout: 300
+    apiGateway:
+      path: granules/{collection}
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: getGranules
+    handler: granules.get
+    timeout: 300
+    apiGateway:
+      path: granules/{collection}/{granuleName}
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: listCollections
+    handler: collections.list
+    timeout: 300
+    apiGateway:
+      path: collections
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: getCollection
+    handler: collections.get
+    timeout: 300
+    apiGateway:
+      path: collections/{short_name}
+      method: get
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: postCollection
+    handler: collections.post
+    timeout: 300
+    apiGateway:
+      path: collections
+      method: post
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true
+
+  - name: putCollection
+    handler: collections.put
+    timeout: 300
+    apiGateway:
+      path: collections
+      method: put
+      authorizer:
+        type: COGNITO_USER_POOLS
+        id: b961m7
+      cors: true

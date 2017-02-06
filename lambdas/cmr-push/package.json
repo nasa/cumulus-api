@@ -1,0 +1,22 @@
+{
+  "name": "cmr-push",
+  "version": "0.1.0",
+  "description": "Push granule's metadata to NASA's Common Metadata Repository",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npm_config_prefix='../../tmp' npm link ../../lib && npm_config_prefix='../../tmp' npm link ../../lib-gitc",
+    "postinstall": "cd node_modules/cmrjs && npm install && npm run build"
+  },
+  "keywords": [
+    "Cumulus"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cumulus-nasa/cumulus-factory.git"
+  },
+  "author": "Miles Watkins <miles.w.watkins@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cmrjs": "git+ssh://git@github.com/cumulus-nasa/cmrjs.git"
+  }
+}

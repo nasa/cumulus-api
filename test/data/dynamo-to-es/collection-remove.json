@@ -1,0 +1,186 @@
+{
+  "Records": [
+  {
+    "eventID": "d425a40c418f0790f10033283e1d5325",
+      "eventName": "REMOVE",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1486072740,
+        "Keys": {
+          "collectionName": {
+            "S": "HS3AVAPS_versionId_1"
+          }
+        },
+        "OldImage": {
+          "createdAt": {
+            "N": "1480962569"
+          },
+          "changedBy": {
+            "S": "user1"
+          },
+          "recipe": {
+            "L": [
+            {
+              "M": {
+                "name": {
+                  "S": "process"
+                },
+                "config": {
+                  "M": {
+                    "steps": {
+                      "L": [
+                      {
+                        "M": {
+                          "image": {
+                            "S": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest"
+                          },
+                          "description": {
+                            "S": "Generate NetCDF"
+                          },
+                          "cmd": {
+                            "S": "start.sh"
+                          }
+                        }
+                      }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "M": {
+                "name": {
+                  "S": "pushToCMR"
+                },
+                "config": {
+                  "M": {}
+                }
+              }
+            },
+            {
+              "M": {
+                "name": {
+                  "S": "archive"
+                },
+                "config": {
+                  "M": {}
+                }
+              }
+            }
+            ]
+          },
+          "collectionName": {
+            "S": "HS3AVAPS_versionId_1"
+          },
+          "granuleDefinition": {
+            "M": {
+              "granuleId": {
+                "S": "D20[0-1][0-9][0-1][0-9][0-3][0-9]_[0-9]{6}_P"
+              },
+              "files": {
+                "M": {
+                  "eol": {
+                    "M": {
+                      "regex": {
+                        "S": "{granuleId}.QC.eol"
+                      },
+                      "access": {
+                        "S": "protected"
+                      },
+                      "source": {
+                        "S": "sips"
+                      }
+                    }
+                  },
+                  "nc": {
+                    "M": {
+                      "regex": {
+                        "S": "{granuleId}.PresCorrQC.nc"
+                      },
+                      "access": {
+                        "S": "protected"
+                      },
+                      "source": {
+                        "S": "cumulus"
+                      }
+                    }
+                  },
+                  "meta": {
+                    "M": {
+                      "regex": {
+                        "S": "{granuleId}.meta"
+                      },
+                      "access": {
+                        "S": "private"
+                      },
+                      "source": {
+                        "S": "cumulus"
+                      }
+                    }
+                  }
+                }
+              },
+              "needForProcessing": {
+                "L": [
+                {
+                  "S": "eol"
+                }
+                ]
+              }
+            }
+          },
+          "ingest": {
+            "M": {
+              "invokingSchedule": {
+                "S": "1 hour"
+              },
+              "type": {
+                "S": "FTP"
+              },
+              "config": {
+                "M": {
+                  "password": {
+                    "S": "anonymous"
+                  },
+                  "root": {
+                    "S": "/pub/hs3/AVAPS/data"
+                  },
+                  "host": {
+                    "S": "hs3.nsstc.nasa.gov"
+                  },
+                  "matches": {
+                    "L": [
+                    {
+                      "M": {
+                        "path": {
+                          "S": "/pub/hs3/AVAPS/data/{201[0-9]}/txt/{[0-1][0-9][0-3][0-9]}"
+                        },
+                        "regex": {
+                          "S": "eol"
+                        }
+                      }
+                    }
+                    ]
+                  },
+                  "username": {
+                    "S": "anonymous"
+                  }
+                }
+              }
+            }
+          },
+          "updatedAt": {
+            "N": "1480962569"
+          }
+        },
+        "SequenceNumber": "262232300000000022271764811",
+        "SizeBytes": 845,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:985962406024:table/cumulus-api-test2-dev-CollectionsTable/stream/2017-01-06T17:43:39.323"
+  }
+  ]
+}
