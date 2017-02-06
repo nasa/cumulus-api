@@ -4,13 +4,9 @@ machine:
 
 dependencies:
   override:
-    # - docker info
-    # - docker run -d -p 8000:8000 --name dynamodb peopleperhour/dynamodb
-    # - docker run -d -p 9200:9200 --name elasticsearch elasticsearch
-    # - npm install
-    - echo 'nothing'
+    - npm install
+    - docker-compose up local
 
 test:
   override:
-    # - npm run test
-    - echo 'nothing'
+  - npm run test
