@@ -8,9 +8,19 @@ buckets:
   protected: cumulus-protected
   internal: cumulus-internal
 
+ecs:
+  maxInstances: 5
+  desiredInstances: 1
+  keyPairName: cumulus-scisco
+  instanceType: t2.micro
+
 sqs:
   - name: PDRsQueue # queue for list of PDRs to be parsed
+    visibilityTimeout: 100
+    retry: 3
   - name: GranulesQueue # queue for Granule files to be ingested
+    visibilityTimeout: 1000
+    retry: 3
 
 dynamos:
   - name: CollectionsTable
@@ -62,6 +72,12 @@ dynamos:
         type: HASH
 
 lambdas:
+  - name: pdrParser
+    handler: pdr.parsePdrsHandler
+    timeout: 300
+    ecs: true # to be deployed as a service on ECS
+    count: 1 # number of service instances running on ECS for this lambda
+
   - name: signup
     handler: auth.signup
     timeout: 300
