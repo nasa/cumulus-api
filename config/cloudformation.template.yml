@@ -181,14 +181,6 @@ Resources:
             Resource:
             - "*"
 
-  KinesisCumulus:
-    Type: "AWS::Kinesis::Stream"
-    Properties:
-      Name: "{{stackName}}-{{stage}}-cumulus-api"
-      ShardCount: 1
-      Tags:
-        - Key: Project
-          Value: Cumulus
 
   ElasticsearchDomain:
     Type: "AWS::Elasticsearch::Domain"
