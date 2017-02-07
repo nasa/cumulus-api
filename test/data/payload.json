@@ -64,6 +64,6 @@
 		},
 		"updatedAt": 1480962569
 	},
-	"nextStep": 0,
-	"previousStep": 0
+	"nextStep": "foo",
+	"previousStep": "foo"
 }

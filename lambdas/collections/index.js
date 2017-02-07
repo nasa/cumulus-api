@@ -3,8 +3,9 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { esList, esQuery } from 'cumulus-common/es';
+import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
+import { getLimit, getStart } from 'cumulus-common/utils';
 
 const table = process.env.CollectionsTable || 'table';
 const index = process.env.StackName || 'cumulus-local-test';
@@ -20,10 +21,22 @@ function parseRecipe(record) {
 
 /**
  * List all collections.
+ * @param {object} query an optional query object.
+ * @param {number} query.limit maximum number of records to return.
+ * @param {number} query.start_at record to start showing from.
  * @return {array} every collection in the database.
  */
 export function list (event, context, cb) {
-  esList(index, table, (error, res) => {
+  const query = _.get(event, 'query', {});
+  const limit = getLimit(query);
+  const start = getStart(query);
+  esQuery(index, table, {
+    query: {
+      match_all: {}
+    },
+    size: limit,
+    from: start
+  }, (error, res) => {
     if (error) {
       return cb(error);
     } else {
@@ -35,13 +48,13 @@ export function list (event, context, cb) {
 
 /**
  * Query a single collection.
- * @param {string} name the collectionName property.
+ * @param {string} collectionName the name of the collection.
  * @return {object} a single collection object.
  */
 export function get (event, context, cb) {
-  const name = _.get(event, 'name');
+  const name = _.get(event, 'collectionName');
   if (!name) {
-    return cb('Collection#get requires a name property');
+    return cb('Collection#get requires a collectionName property');
   }
   esQuery(index, table, {
     query: {
@@ -57,7 +70,7 @@ export function get (event, context, cb) {
     } else if (res.length === 0) {
       return cb('Record was not found');
     } else {
-      // Cannot have more than 1 document, because `name` is the primary Dynamo key
+      // Cannot have more than 1 document, because `collectionName` is the primary Dynamo key
       return cb(null, parseRecipe(res[0]));
     }
   });

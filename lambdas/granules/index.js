@@ -1,50 +1,64 @@
 'use strict';
 
-import { get as safeGet } from 'lodash';
+import _ from 'lodash';
 import { esQuery } from 'cumulus-common/es';
-import { granulesTablePrefix } from 'cumulus-common/tables';
+import { granule as schema } from 'cumulus-common/schemas';
 import { getLimit, getStart } from 'cumulus-common/utils';
 
-export function list(event, context, cb) {
-  const collection = safeGet(event, 'path.collection');
-  if (!collection) {
-    return cb('Must supply path.collection');
-  }
-  const tableName = granulesTablePrefix + collection.toLowerCase();
-  const limit = getLimit(event.query);
-  const start = getStart(event.query);
+const table = process.env.GranulesTable || 'table';
+const index = process.env.StackName || 'cumulus-local-test';
+const hash = 'collectionName';
+const range = 'granuleId';
 
-  esQuery({
+/**
+ * List all granules for a given collection.
+ * @param {string} collectionName the name of the collection.
+ * @param {object} query an optional query object.
+ * @param {number} query.limit maximum number of records to return.
+ * @param {number} query.start_at record to start showing from.
+ * @return {array} every granule in the database.
+ */
+export function list(event, context, cb) {
+  const collection = _.get(event, hash);
+  if (!collection) {
+    return cb('Granule#list requires a collectionName property');
+  }
+  const query = _.get(event, 'query', {});
+  const limit = getLimit(query);
+  const start = getStart(query);
+  esQuery(index, table, {
     query: {
-      match: { _index: tableName }
+      match: { _all: collection }
     },
     size: limit,
     from: start
   }, (error, res) => {
     if (error) {
       return cb(error);
-    } else if (_.isEmpty(res)) {
-      return cb('Requested collection ' + collection + ' not found');
     } else {
       return cb(null, res);
     }
   });
 }
 
+/**
+ * Query a single granule.
+ * @param {string} collectionName the name of the collection.
+ * @param {string} granuleId the id of the granule.
+ * @return {object} a single granule object.
+ */
 export function get(event, context, cb) {
-  const collection = safeGet(event, 'path.collection');
-  const granuleName = safeGet(event, 'path.granuleName');
-  if (!collection || !granuleName) {
-    return cb('Must supply path.collection and path.granuleName');
+  const collection = _.get(event, hash);
+  const granule = _.get(event, range);
+  if (!collection || !granule) {
+    return cb('Must supply path.collection and path.granuleId');
   }
-  const tableName = granulesTablePrefix + collection.toLowerCase();
-
-  esQuery({
+  esQuery(index, table, {
     query: {
       bool: {
         must: [
-          { match: { _index: tableName } },
-          { match: { name: granuleName } }
+          { match: { [hash]: collection } },
+          { match: { [range]: granule } }
         ]
       }
     }
@@ -52,7 +66,6 @@ export function get(event, context, cb) {
     if (error) {
       return cb(error);
     } else if (_.isEmpty(res)) {
-      // Cannot have more than 1 document, because `name` is the primary Dynamo key
       return cb('Record was not found');
     } else {
       return cb(null, res[0]);
