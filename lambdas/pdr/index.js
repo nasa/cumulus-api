@@ -1,9 +1,15 @@
 'use strict';
 
-import { sendMessage, receiveMessage, putItem } from 'cumulus-common/aws-helpers';
+import {
+  sendMessage,
+  receiveMessage,
+  putItem,
+  deleteMessage
+} from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { syncUrl, downloadS3Files, fileNotFound } from 'gitc-common/aws';
 import Crawler from 'simplecrawler';
+import steed from 'steed';
 import url from 'url';
 import log from 'gitc-common/log';
 import pvl from 'pvl';
@@ -136,22 +142,92 @@ async function parsePdr(pdrName) {
     for (const group of fileGroups) {
       // get all the file specs in each group
       const specs = group.objects('FILE_SPEC');
-      //throw 'error';
 
-      // download each file spec
+      // Add the granule to DynamoDB
+
+      // Add eachfile to the Queue to be downloaded
       for (const spec of specs) {
         const directoryId = spec.get('DIRECTORY_ID').value;
         const fileId = spec.get('FILE_ID').value;
         const fileUrl = url.resolve('https://e4ftl01.cr.usgs.gov:40521/', `${directoryId}/${fileId}`);
 
-        // check if the file is already uploaded to S3
-        // if not upload it
-        await uploadIfNotFound(fileUrl, process.env.internal, fileId, 'staging');
+        //log.info(`Adding ${fileId} to GranuleQueue for download`);
+        await sendMessage({
+          fileUrl,
+          fileId,
+          bucket: process.env.internal,
+          key: 'staging'
+        }, process.env.GranulesQueue);
       }
     }
+
+    return true;
   }
   catch (e) {
     log.error(e.message, e.stack);
+    return false;
+  }
+}
+
+async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200) {
+  try {
+    // receive a message
+    const messages = await receiveMessage(
+      process.env.GranulesQueue,
+      concurrency,
+      visibilityTimeout
+    );
+
+    // get message body
+    if (messages.Messages) {
+      // holds list of parallels downloads
+      const downloads = [];
+
+      log.info(`Ingest: ${concurrency} file(s) concurrently`);
+
+      for (const message of messages.Messages) {
+        const body = message.Body;
+        const receiptHandle = message.ReceiptHandle;
+        const file = JSON.parse(body);
+        downloads.push((cb) => {
+          log.info(`Ingesting ${file.fileId}`);
+          uploadIfNotFound(
+            file.fileUrl,
+            file.bucket,
+            file.fileId,
+            file.key
+          ).then((success) => {
+            if (success) {
+              // delete the message from the queue
+              deleteMessage(process.env.GranulesQueue, receiptHandle).then(() => cb(null));
+            }
+            else {
+              cb('Download failed');
+            }
+          }).catch((err) => console.error(err));
+        });
+      }
+
+      // Run the downloads in parallel
+      steed.parallel(downloads, (err) => {
+        if (err) {
+          throw err;
+        }
+        else {
+          // run the poll recursively
+          pollGranulesQueue(concurrency, visibilityTimeout);
+        }
+      });
+    }
+    else {
+      log.info('No new messages in the PDR queue');
+      // fun the poll again
+      pollGranulesQueue(concurrency, visibilityTimeout);
+    }
+  }
+  catch (e) {
+    log.error(e);
+    throw e;
   }
 }
 
@@ -159,9 +235,52 @@ async function parsePdr(pdrName) {
 /**
  * Polls a SQS queue for PDRs that have to be parsed.
  * The function is recursive and calls itself for ever
- *
+ * @param {number} [messageNum=1] Number of messages to be retrieved from the queue
+ * @param {number} [visibilityTimeout=20] How long the message is removed from the queue
  */
-function pollPdrQueue() {
+async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
+  try {
+    // receive a message
+    const messages = await receiveMessage(
+      process.env.PDRsQueue,
+      messageNum,
+      visibilityTimeout
+    );
+
+    // get message body
+    if (messages.Messages) {
+      for (const message of messages.Messages) {
+        const body = message.Body;
+        const receiptHandle = message.ReceiptHandle;
+        const pdr = JSON.parse(body);
+
+        log.info(`Parsing ${pdr.name}`);
+
+        // parse the body
+        const parsed = await parsePdr(pdr.name);
+
+        // detele message if parse successful
+        if (parsed) {
+          log.info(`deleting ${pdr.name} from the Queue`);
+          await deleteMessage(process.env.PDRsQueue, receiptHandle);
+        }
+        else {
+          log.error(`Parsing failed for ${pdr.name}`);
+        }
+      }
+    }
+    else {
+      log.info('No new messages in the PDR queue');
+    }
+  }
+  catch (e) {
+    log.error(e);
+    throw e;
+  }
+  finally {
+    // make the function recursive
+    pollPdrQueue();
+  }
 }
 
 /**
@@ -173,6 +292,7 @@ function pollPdrQueue() {
  * @return {undefined}
  */
 export function parsePdrsHandler(event) {
+  pollPdrQueue();
 }
 
 
@@ -192,6 +312,7 @@ export function parsePdrsHandler(event) {
 export async function discoverPdrHandler(event, context, cb) {
   // get the endpoint from event
   const endpoint = event.endpoint;
+  log.info(`checking ${endpoint}`);
 
   try {
     // first discover the PDRs
@@ -218,8 +339,8 @@ localRun(() => {
   //discoverPDRs('https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/', (list) => console.log(list));
 
   // discover and upload new PDRs to S3
-  //discoverpdrhandler(
-    //{ endpoint: 'https://e4ftl01.cr.usgs.gov:40521/test_b/cumulus/pdr/' },
+  //discoverPdrHandler(
+    //{ endpoint: 'https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/' },
     //null,
     //(err, r) => console.log(err, r)
   //);
@@ -231,8 +352,13 @@ localRun(() => {
 
   //parsePdr('PDN.ID1611071200.PDR').then(() => console.log('done'));
 
-  receiveMessage(process.env.PDRsQueue).then((d) => console.log(d));
+  //receiveMessage(process.env.PDRsQueue).then((d) => console.log(d));
 
+  //parsePdrsHandler();
+  pollGranulesQueue(3);
+
+  //const queue = steed.queue(imageDownloadTask, 2)
+  //queue.push(['this', 'that', 'what', 'sure'], (m) => console.log(m));
 });
 
 
