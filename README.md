@@ -29,6 +29,13 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
     $ bin/lambda collections --profile awsProfileName
     $ bin/lambda granules --profile awsProfileName
 
+### Deploying using differnet config files
+
+To deploy using other config files (there are two others committed in this repo) pass `--config` argument. Examples:
+
+    $ bin/cf update --profile awsProfileName --config config/config-prod.yml
+    $ bin/cf validate --profile awsProfileName --config config/config-ngap.yml
+
 ### Adding a new Lambda function
 
 Create a new folder under `lambdas`. Add `index.js` and `package.json` files.

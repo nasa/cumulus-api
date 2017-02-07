@@ -7,6 +7,7 @@ const lambda = require('../lib/aws/lambda');
 // the CLI activation
 program
   .usage('functionName [options]')
+  .option('-c, --config <config>', 'Path to config file')
   .option('-p, --profile <profile>', 'AWS profile name to use for authentication')
   .option('-r, --region', 'AWS region');
 
