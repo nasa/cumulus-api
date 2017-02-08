@@ -21,6 +21,7 @@
     "brace-style": [2, "stroustrup"],
     "no-useless-escape": "off",
     "no-param-reassign": "off",
+    "no-prototype-builtins": "off",
     "consistent-return": "off",
     "max-len": [2, {
       "code": 100,
