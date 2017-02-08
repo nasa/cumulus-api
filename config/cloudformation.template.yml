@@ -41,12 +41,56 @@ Resources:
                 Resource:
                 - !Sub arn:aws:s3:::{{buckets.internal}}
                 - !Sub arn:aws:s3:::{{buckets.internal}}/*
+                - !Sub arn:aws:s3:::{{buckets.private}}
+                - !Sub arn:aws:s3:::{{buckets.private}}/*
 
               # Allow to call other lambdas
               - Effect: Allow
                 Action:
                 - lambda:GetFunction
                 - lambda:invokeFunction
+                Resource:
+                - "*"
+
+              # Allow access to SQS
+              - Effect: Allow
+                Action:
+                - sqs:SendMessage
+                - sqs:ReceiveMessage
+                - sqs:ChangeMessageVisibility
+                - sqs:DeleteMessage
+                Resource:
+                - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
+
+              # Allow use of dynamo
+              - Effect: Allow
+                Action:
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+                - dynamodb:BatchGetItem
+                - dynamodb:BatchWriteItem
+                - dynamodb:DeleteItem
+                - dynamodb:GetItem
+                - dynamodb:GetRecords
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:UpdateItem
+                Resource:
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
+
+              # Allow running within ECS
+              - Effect: Allow
+                Action:
+                - ecs:DeregisterContainerInstance
+                - ecs:DiscoverPollEndpoint
+                - ecs:Poll
+                - ecs:RegisterContainerInstance
+                - ecs:StartTelemetrySession
+                - ecs:Submit*
+                - ecr:BatchCheckLayerAvailability
+                - ecr:BatchGetImage
+                - ecr:GetDownloadUrlForLayer
+                - ecr:GetAuthorizationToken
                 Resource:
                 - "*"
 
@@ -107,7 +151,7 @@ Resources:
                 - dynamodb:GetShardIterator
                 - dynamodb:ListStreams
                 Resource:
-                - "*"
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
 
               # Allow lambdas to call other lambdas
               - Effect: Allow
