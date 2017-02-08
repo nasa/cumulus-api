@@ -10,14 +10,6 @@ Parameters:
 
 Resources:
 
-  CumulusVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: '10.0.0.0/16'
-      Tags:
-        - Key: Name
-          Value: {{stackName}}-{{stage}}-VPC
-
   # role for EC2/ECS instaces used by Cumulus
   ECSRole:
     Type: AWS::IAM::Role
@@ -240,7 +232,7 @@ Resources:
         FromPort: '22'
         ToPort: '22'
         CidrIp: 0.0.0.0/0
-      VpcId: !Ref CumulusVPC
+      VpcId: {{vpc.id}}
 
   CumulusContainerInstanceLaunch:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -277,6 +269,7 @@ Resources:
                 - "/etc/cfn/cfn-hup.conf"
                 - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
     Properties:
+      AssociatePublicIpAddress: true
       SecurityGroups:
       - !Ref CumulusECSSecurityGroup
       ImageId: !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMIID]
@@ -304,7 +297,9 @@ Resources:
         MinInstancesInService: 0
     Properties:
       AvailabilityZones:
-      - !Sub ${AWS::Region}a
+        - {{vpc.availabilityZones}}
+      VPCZoneIdentifier:
+        - {{vpc.subnetId}}
       LaunchConfigurationName: !Ref CumulusContainerInstanceLaunch
       MinSize: '0'
       MaxSize: {{ ecs.maxInstances }}
