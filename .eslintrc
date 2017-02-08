@@ -20,6 +20,7 @@
     "space-before-function-paren": ["error", "never"],
     "brace-style": [2, "stroustrup"],
     "no-useless-escape": "off",
+    "no-param-reassign": "off",
     "consistent-return": "off",
     "max-len": [2, {
       "code": 100,
