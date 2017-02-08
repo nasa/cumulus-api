@@ -4,7 +4,8 @@ import {
   sendMessage,
   receiveMessage,
   putItem,
-  deleteMessage
+  deleteMessage,
+  query
 } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { syncUrl, downloadS3Files, fileNotFound } from 'gitc-common/aws';
@@ -283,6 +284,20 @@ async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
   }
 }
 
+
+/**
+ * Handler for starting a SQS poll for granules that has to ingested
+ * This function runs pollGranulesQueue indefinitely until cancelled
+ *
+ * @param {object} event AWS Lambda uses this parameter to
+ * pass in event data to the handler
+ * @return {undefined}
+ */
+export function ingestGranulesHandler(event) {
+  pollGranulesQueue();
+}
+
+
 /**
  * Handler for starting a SQS poll for PDRs
  * This function runs pollPdrQueue indefinitely until cancelled
@@ -310,6 +325,15 @@ export function parsePdrsHandler(event) {
  * @return {undefined}
  */
 export async function discoverPdrHandler(event, context, cb) {
+  // get the collectionName
+  if (!event.hasOwnProperty('collectionName')) {
+    return cb('you must provide collectionName in the event obj');
+  }
+  const collectionName = event.collectionName;
+
+  // grab collectionName from the database
+
+
   // get the endpoint from event
   const endpoint = event.endpoint;
   log.info(`checking ${endpoint}`);
