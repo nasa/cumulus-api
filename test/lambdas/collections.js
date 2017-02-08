@@ -1,4 +1,5 @@
 'use strict';
+import "babel-polyfill";
 import assert from 'assert';
 import sinon from 'sinon';
 import { list, get, post, put } from '../../lambdas/collections';
