@@ -324,35 +324,60 @@ export function parsePdrsHandler(event) {
  * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export async function discoverPdrHandler(event, context, cb) {
-  // get the collectionName
-  if (!event.hasOwnProperty('collectionName')) {
-    return cb('you must provide collectionName in the event obj');
-  }
-  const collectionName = event.collectionName;
-
-  // grab collectionName from the database
-
-
-  // get the endpoint from event
-  const endpoint = event.endpoint;
-  log.info(`checking ${endpoint}`);
-
+export async function discoverPdrHandler(event, context = () => {}, cb = () => {}) {
   try {
-    // first discover the PDRs
-    const pdrs = await discoverPDRs(endpoint);
-    for (const pdr of pdrs) {
-      // check if PDR is already on S3
-      // if not upload it, add it to DB and send to the queue
-      const uploaded = await uploadIfNotFound(pdr.url, process.env.internal, pdr.name, 'pdrs');
-      if (uploaded) {
-        await uploadPdr(pdr);
-      }
+    // get the collectionName
+    if (!event.hasOwnProperty('collectionName')) {
+      return cb('you must provide collectionName in the event obj');
     }
-    cb(null, `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`);
+    const collectionName = event.collectionName;
+
+    // grab collectionName from the database
+    const records = await query({
+      TableName: process.env.CollectionsTable,
+      KeyConditionExpression: 'collectionName = :name',
+      ExpressionAttributeValues: {
+        ':name': collectionName
+      }
+    });
+
+    // make sure the record is found
+    if (records.Count > 1) {
+      log.error(records);
+      return cb('More than one record is found');
+    }
+    else if (records.Count === 0) {
+      return cb('No collection with the given name found');
+    }
+    const collection = records.Items[0];
+
+    // get the endpoint from collection
+    if (collection.ingest.type !== 'PDR') {
+      return cb('This handle only support PDR ingest');
+    }
+
+    const endpoint = collection.ingest.config.endpoint;
+    log.info(`checking ${endpoint}`);
+
+    try {
+      // first discover the PDRs
+      const pdrs = await discoverPDRs(endpoint);
+      for (const pdr of pdrs) {
+        // check if PDR is already on S3
+        // if not upload it, add it to DB and send to the queue
+        const uploaded = await uploadIfNotFound(pdr.url, process.env.internal, pdr.name, 'pdrs');
+        if (uploaded) {
+          await uploadPdr(pdr);
+        }
+      }
+      cb(null, `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`);
+    }
+    catch (e) {
+      cb(e);
+    }
   }
   catch (e) {
-    cb(e);
+    log.error(e);
   }
 }
 
@@ -379,10 +404,12 @@ localRun(() => {
   //receiveMessage(process.env.PDRsQueue).then((d) => console.log(d));
 
   //parsePdrsHandler();
-  pollGranulesQueue(3);
+  //pollGranulesQueue(3);
 
   //const queue = steed.queue(imageDownloadTask, 2)
   //queue.push(['this', 'that', 'what', 'sure'], (m) => console.log(m));
+
+  discoverPdrHandler({collectionName: 'ASTER_1A_versionId_1'});
 });
 
 
