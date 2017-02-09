@@ -47,7 +47,8 @@
   "ingest": {
     "type": "PDR",
     "config": {
-      "endpoint": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR"
+      "endpoint": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR",
+      "concurrency": 3
     }
   },
   "recipe": {
