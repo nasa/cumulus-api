@@ -242,18 +242,6 @@ Resources:
   # ECS config BEGIN
   #################################################
 
-  # For the Lambda runner image (for running Lambdas in ECS)
-  CumulusLambdaRunner:
-    Type: "AWS::ECR::Repository"
-    Properties:
-      RepositoryName: {{stackName}}-{{stage}}-lambdarunner
-
-  # All custom processing codes are stored here (e.g. Aster, Modis)
-  CumulusProcessingImages:
-    Type: "AWS::ECR::Repository"
-    Properties:
-      RepositoryName: {{stackName}}-{{stage}}-processingimages
-
   LambdaRunnerLogs:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -654,7 +642,7 @@ Resources:
       Principal: apigateway.amazonaws.com
 {{/if}}
 
-{{# if ecs }}
+{{# if image }}
   # adding TaskDefinition for Lambda/ECS services
   {{name}}TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -670,9 +658,7 @@ Resources:
         - !GetAtt [{{name}}LambdaFunction, Arn]
         Cpu: '10'
         Essential: true
-        Image: !Sub
-          - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${RepositoryName}
-          - { RepositoryName: !Ref CumulusLambdaRunner }
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
         Memory: '256'
         LogConfiguration:
           LogDriver: awslogs
@@ -692,7 +678,7 @@ Resources:
     - {{name}}LambdaFunction
     Properties:
       Cluster: !Ref CumulusECSCluster
-      {{# if count}}DesiredCount: {{count}}{{/if}}
+      DesiredCount:{{# if count}}{{count}}{{ else }} 0 {{/if}}
       TaskDefinition: !Ref {{name}}TaskDefinition
       DeploymentConfiguration:
         MaximumPercent: 100
