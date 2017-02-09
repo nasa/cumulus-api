@@ -45,11 +45,10 @@ function discoverPDRs(endpoint) {
           const name = split[1];
           list.push({
             name: name,
-            url: url.resolve(endpoint, name)
+            url: url.resolve(endpoint + '/', name)
           });
         }
       }
-
       resolve(list);
     });
 
@@ -83,32 +82,28 @@ async function uploadIfNotFound(originalUrl, bucket, fileName, key = '') {
 
 
 /**
- * uploads a given PDR to S3, adds to DynamoDb and sends it to SQS
+ * uploads a given PDR to S3 and adds it to DynamoDb and sends it to SQS
  * @param {pdrObject} pdr pdr object
  * @return {undefined}
  */
-async function uploadPdr(pdr) {
-  log.info(`Uploading ${pdr.name} to S3`);
+async function uploadAddQueuePdr(pdr) {
   await syncUrl(pdr.url, process.env.internal, `pdrs/${pdr.name}`);
+  log.info(`Uploaded ${pdr.name} to S3`);
 
   // add the pdr to the queue
   // (we use queue here because we want to avoid DDOSing
   // providers
-  log.info(`Adding ${pdr.name} to PDR queue`);
   await sendMessage(pdr, process.env.PDRsQueue);
+  log.info(`Added ${pdr.name} to PDR queue`);
 
   // add the PDR to the table
   const params = {
     Item: {
-      pdrName: {
-        S: pdr.name
-      },
-      originalUrl: {
-        S: pdr.url
-      },
-      s3Uri: {
-        S: `s3://${process.env.internal}/pdrs/${pdr.name}`
-      }
+      pdrName: pdr.name,
+      originalUrl: pdr.url,
+      address: `s3://${process.env.internal}/pdrs/${pdr.name}`,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     },
     TableName: process.env.PDRsTable
   };
@@ -317,7 +312,7 @@ export function parsePdrsHandler(event) {
  *
  * The event object (payload) must include the endpoint for the
  * function to check
- * @param {pdrHandlerEvent} event AWS Lambda uses this parameter to
+ * @param {object} event AWS Lambda uses this parameter to
  * pass in event data to the handler
  * @param {object} context
  * {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html|AWS Lambda's context object}
@@ -333,7 +328,7 @@ export async function discoverPdrHandler(event, context = () => {}, cb = () => {
     const collectionName = event.collectionName;
 
     // grab collectionName from the database
-    const records = await query({
+    let records = await query({
       TableName: process.env.CollectionsTable,
       KeyConditionExpression: 'collectionName = :name',
       ExpressionAttributeValues: {
@@ -357,17 +352,30 @@ export async function discoverPdrHandler(event, context = () => {}, cb = () => {
     }
 
     const endpoint = collection.ingest.config.endpoint;
+    const concurrency = collection.ingest.config.concurrency || 1;
     log.info(`checking ${endpoint}`);
 
     try {
       // first discover the PDRs
       const pdrs = await discoverPDRs(endpoint);
       for (const pdr of pdrs) {
-        // check if PDR is already on S3
-        // if not upload it, add it to DB and send to the queue
-        const uploaded = await uploadIfNotFound(pdr.url, process.env.internal, pdr.name, 'pdrs');
-        if (uploaded) {
-          await uploadPdr(pdr);
+        // check if the PDR is in the database, if not add it and download
+        // Note: if a PDR is already download but missing from the database, it will be
+        // redownloaded
+        records = await query({
+          TableName: process.env.PDRsTable,
+          KeyConditionExpression: 'pdrName = :name',
+          ExpressionAttributeValues: {
+            ':name': pdr.name
+          }
+        });
+
+        if (records.Count === 0) {
+          pdr.concurrency = concurrency;
+          await uploadAddQueuePdr(pdr);
+        }
+        else {
+          console.log(`${pdr.name} is already ingested`);
         }
       }
       cb(null, `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`);
