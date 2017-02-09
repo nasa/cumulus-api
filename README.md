@@ -29,6 +29,10 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
     $ bin/lambda collections --profile awsProfileName
     $ bin/lambda granules --profile awsProfileName
 
+### Adding Records to DynamoDB
+
+    $ bin/ddb add -l -t cumulus-api-test2-dev-CollectionsTable -r config/aster.json --profile myProfile
+
 ### Deploying using differnet config files
 
 To deploy using other config files (there are two others committed in this repo) pass `--config` argument. Examples:
