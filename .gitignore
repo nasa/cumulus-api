@@ -6,7 +6,6 @@ fake.js
 dist
 build
 config/cloudformation.yml
-test.js
 .tmp
 npm-debug.log
 .DS_Store
