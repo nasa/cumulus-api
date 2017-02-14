@@ -171,7 +171,7 @@ describe('Test Granule model', () => {
     assert.equal(g.granuleId, granuleRecord.granuleId);
   });
 
-  it('test createDraft method for adding granule record', async () => {
+  it('test buildRecord method for adding granule record', async () => {
     // add granule record to the database
     const c = new Collection();
     await c.create(collectionRecord);
@@ -191,7 +191,7 @@ describe('Test Granule model', () => {
       type: 'sipFile'
     }];
 
-    const record = await Granule.createDraft(
+    const record = await Granule.buildRecord(
       collectionRecord.collectionName,
       granuleId,
       files
