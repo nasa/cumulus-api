@@ -1,62 +1,85 @@
 {
-  "collectionName": "HS3AVAPS_versionId_1",
+  "collectionName": "ASTER_1A_versionId_1",
   "granuleDefinition": {
-    "granuleId": "D20[0-1][0-9][0-1][0-9][0-3][0-9]_[0-9]{6}_P",
+    "granuleId": "^(ASTL1A [0-9]{22})$",
     "files": {
-      "eol": {
-        "regex": "{granuleId}.QC.eol",
-        "access": "protected",
+      "origin-hdf5": {
+        "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "access": "private",
         "source": "sips"
       },
-      "nc": {
-        "regex": "{granuleId}.PresCorrQC.nc",
+      "origin-thumbnail": {
+        "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "access": "private",
+        "source": "sips"
+      },
+      "processed-hdf5": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
         "access": "protected",
         "source": "cumulus"
       },
-      "meta": {
-        "regex": "{granuleId}.meta",
-        "access": "private",
+      "thumbnail-1": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-2": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-3": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "meta-xml": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+        "access": "public",
         "source": "cumulus"
       }
     },
-    "needForProcessing": [
-      "eol"
+    "neededForProcessing": [
+      "origin-hdf5",
+      "origin-thumbnail"
     ]
   },
   "ingest": {
-    "type": "FTP",
+    "type": "PDR",
     "config": {
-      "host": "hs3.nsstc.nasa.gov",
-      "username": "anonymous",
-      "password": "anonymous",
-                        "root": "/pub/hs3/AVAPS/data",
-                         "matches": [{
-                          "path": "/pub/hs3/AVAPS/data/{201[0-9]}/txt/{[0-1][0-9][0-3][0-9]}",
-                                "regex": "eol"
-           }]
-    },
-    "invokingSchedule": "1 hour"
+      "endpoint": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR",
+      "concurrency": 3
+    }
   },
-  "recipe": [
-    {
-      "name": "process",
-      "config": {
-        "steps": [{
-          "description": "Generate NetCDF",
-          "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest",
-          "cmd": "start.sh"
-        }]
-      }
-    },
-    {
-      "name": "pushToCMR",
+  "recipe": {
+    "archive": {
       "config": {}
     },
-    {
-      "name": "archive",
+    "order": [
+      "processStep",
+      "pushtToCMR",
+      "archive"
+    ],
+    "processStep": {
+      "config": {
+        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "inputFiles": [
+          "origin-hdf5"
+        ],
+        "outputFiles": [
+          "processed-hdf5",
+          "thumbnail-1",
+          "thumbnail-2",
+          "thumbnail-3",
+          "meta-xml"
+        ]
+      },
+      "description": "UpdateHDF5fileandextractthumbnail"
+    },
+    "pushToCMR": {
       "config": {}
     }
-  ],
+  },
   "createdAt": 1480962569,
   "updatedAt": 1480962569,
   "changedBy": "user1"

@@ -18,26 +18,35 @@
     }
 
   },
-  "recipe": [
-    {
-      "name": "process",
-      "config": {
-        "steps": [{
-          "description": "Generate NetCDF",
-          "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest",
-          "cmd": "start.sh"
-        }]
-      }
-    },
-    {
-      "name": "pushToCMR",
+  "recipe": {
+    "archive": {
       "config": {}
     },
-    {
-      "name": "archive",
+    "order": [
+      "processStep",
+      "pushtToCMR",
+      "archive"
+    ],
+    "processStep": {
+      "config": {
+        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "inputFiles": [
+          "origin-hdf5"
+        ],
+        "outputFiles": [
+          "processed-hdf5",
+          "thumbnail-1",
+          "thumbnail-2",
+          "thumbnail-3",
+          "meta-xml"
+        ]
+      },
+      "description": "UpdateHDF5fileandextractthumbnail"
+    },
+    "pushToCMR": {
       "config": {}
     }
-  ],
+  },
   "readyForProcess": 1480962569,
   "processedAt": 1480962569,
   "pushedToCMRAt": 1480962569,
