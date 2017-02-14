@@ -1,16 +1,12 @@
 machine:
-  pre:
-    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
   services:
     - docker
 
 dependencies:
-  pre:
-    - sudo apt-get update; sudo apt-get install -y python-dev
-    - sudo pip install --upgrade docker-compose==1.10.1
   override:
+    - docker run -d -p "8000:8000" peopleperhour/dynamodb
+    - docker run -d -p "9324:9324" vsouza/sqs-local
     - npm install
-    - docker-compose up local
 
 test:
   override:
