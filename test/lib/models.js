@@ -7,7 +7,14 @@ import { validate } from 'jsonschema';
 import { granule as granuleSchema } from '../../lib/schemas';
 import collectionRecord from '../data/collection.json';
 import granuleRecord from '../data/granule.json';
-import { Manager, Granule, Collection, RecordDoesNotExist } from '../../lib/models';
+import pdrRecord from '../data/pdr.json';
+import {
+  Manager,
+  Granule,
+  Pdr,
+  Collection,
+  RecordDoesNotExist
+} from '../../lib/models';
 
 const tableName = 'cumulus-models-tests';
 const testRecords = [{
@@ -111,6 +118,34 @@ describe('Test Collection model', () => {
     await Manager.deleteTable(process.env.CollectionsTable);
   });
 });
+
+describe('Test Pdr model', () => {
+  before(async () => {
+    const tableName = 'PdrTableForTesting';
+    // set env variable for GranuleTable
+    process.env.PDRsTable = tableName;
+
+    // create the granule table
+    await Manager.createTable(tableName, { name: 'pdrName', type: 'S' });
+  });
+
+  it('add a record to pdr table', async () => {
+    const pdr = new Pdr();
+
+    await pdr.create(pdrRecord);
+
+    // check if the record is added
+    const c = await pdr.get({ pdrName: pdrRecord.pdrName });
+    assert.equal(c.pdrName, pdrRecord.pdrName);
+  });
+
+  after(async () => {
+    // delete table
+    await Manager.deleteTable(process.env.PDRsTable);
+  });
+});
+
+
 
 describe('Test Granule model', () => {
   before(async () => {
