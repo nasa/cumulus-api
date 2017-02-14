@@ -1,9 +1,9 @@
 'use strict';
 import assert from 'assert';
 import sinon from 'sinon';
-import { list, get } from '../../lambdas/granules';
-import record from '../data/granule.json';
-import * as es from '../../lib/es';
+import record from 'cumulus-common/tests/data/granule.json';
+import * as es from 'cumulus-common/es';
+import { list, get } from '../index';
 
 describe('Granules endpoint', () => {
   it('lists', (done) => {

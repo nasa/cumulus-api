@@ -1,11 +1,11 @@
 'use strict';
-import "babel-polyfill";
+import 'babel-polyfill';
 import assert from 'assert';
 import sinon from 'sinon';
-import { list, get, post, put } from '../../lambdas/collections';
-import record from '../data/collection.json';
-import * as db from  '../../lib/db';
-import * as es from '../../lib/es';
+import record from 'cumulus-common/tests/data/collection.json';
+import * as db from 'cumulus-common/db';
+import * as es from 'cumulus-common/es';
+import { list, get, post, put } from '../index';
 
 describe('Collections endpoint', () => {
   it('lists', (done) => {

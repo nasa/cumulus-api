@@ -94,3 +94,13 @@ To make local development with DyanmoDB and SQS you can use docker. Just run:
 
     $ docker-compose up local
     $ bin/bootstrap
+
+## Tests
+
+Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/collections.js`
+
+Library tests are located at `lib/tests`.
+
+To run the tests:
+
+    $ npm run test
