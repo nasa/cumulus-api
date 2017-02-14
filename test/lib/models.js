@@ -173,7 +173,7 @@ describe('Test Pdr model', () => {
     assert.equal(c.pdrName, pdrRecord.pdrName);
   });
 
-  it('test buildRecord', () => {
+  it('test buildRecord', async () => {
     const record = Pdr.buildRecord('somePDR', 'http://www.example.com');
     const validation = validate(record, pdrSchema);
 
@@ -181,6 +181,17 @@ describe('Test Pdr model', () => {
       console.log(validation);
     }
     assert.ok(validation.valid);
+
+    // add the record to the DB for the next test
+    const p = new Pdr();
+    await p.create(record);
+  });
+
+  it('add granule to existing PDR', async () => {
+    const p = new Pdr();
+
+    const record = await p.addGranule('somePDR', 'myspecialgranule', true);
+    assert.ok(record.granules.myspecialgranule);
   });
 
   after(async () => {
