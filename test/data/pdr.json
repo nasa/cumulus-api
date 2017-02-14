@@ -1,6 +1,7 @@
 {
   "pdrName": "someuniquename.pdr",
   "address": "http://example.com/pdrs/someuniquename.pdr",
+  "originalUrl": "http://example.com/file2",
   "granules": {
     "D20120907_022056_P.QC.PresCorrQC.nc": true
   },
