@@ -81,13 +81,47 @@ describe('Testing Manager', () => {
     assert.equal(list.Items[0].collectionName, testRecords[0].collectionName);
   });
 
-  after(async () => {
+  it('update existing record', async () => {
+    const manager = new Manager(tableName);
+
+    const record = await manager.update(
+      { collectionName: testRecords[0].collectionName },
+      { processedBy: 'a user' }
+    );
+
+    assert.ok(record);
+    assert.ok(record.hasOwnProperty('processedBy'));
+  });
+
+  it('remove a key from the record', async () => {
+    const manager = new Manager(tableName);
+
+    let record = await manager.update(
+      { collectionName: testRecords[0].collectionName },
+      { someKey: 'a user' }
+    );
+
+    assert.ok(record.hasOwnProperty('someKey'));
+
+    // now remove the key
+    record = await manager.update(
+      { collectionName: testRecords[0].collectionName },
+      {},
+      ['someKey']
+    );
+
+    assert.ok(!record.hasOwnProperty('someKey'));
+  });
+
+  it('delete a record', async () => {
     // delete testItem
     const manager = new Manager(tableName);
     for (const record of testRecords) {
       await manager.delete({collectionName: record.collectionName });
     }
+  });
 
+  after(async () => {
     // delete the table
     await Manager.deleteTable(tableName);
   });
