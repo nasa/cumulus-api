@@ -4,7 +4,7 @@
 import "babel-polyfill";
 import assert from 'assert';
 import { validate } from 'jsonschema';
-import { granule as granuleSchema } from '../../lib/schemas';
+import { granule as granuleSchema, pdr as pdrSchema } from '../../lib/schemas';
 import collectionRecord from '../data/collection.json';
 import granuleRecord from '../data/granule.json';
 import pdrRecord from '../data/pdr.json';
@@ -137,6 +137,16 @@ describe('Test Pdr model', () => {
     // check if the record is added
     const c = await pdr.get({ pdrName: pdrRecord.pdrName });
     assert.equal(c.pdrName, pdrRecord.pdrName);
+  });
+
+  it('test buildRecord', () => {
+    const record = Pdr.buildRecord('somePDR', 'http://www.example.com');
+    const validation = validate(record, pdrSchema);
+
+    if (!validation.valid) {
+      console.log(validation);
+    }
+    assert.ok(validation.valid);
   });
 
   after(async () => {
