@@ -9,5 +9,4 @@ config/cloudformation.yml
 .tmp
 npm-debug.log
 .DS_Store
-*.PDR
 .swo
