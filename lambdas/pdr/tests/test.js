@@ -7,16 +7,10 @@ import sinon from 'sinon';
 import { SQS } from 'cumulus-common/aws-helpers';
 import { Manager, Pdr, Granule, Collection } from 'cumulus-common/models';
 import collectionRecord from 'cumulus-common/tests/data/collection.json';
-import {
-  discoverPDRs,
-  uploadIfNotFound,
-  uploadAddQueuePdr,
-  parsePdr
-} from '../index';
+import * as aws from 'gitc-common/aws';
+import * as pdrTest from '../index';
 import { testingServer } from './testServer';
 
-// module to stub out
-import * as aws from 'gitc-common/aws';
 
 describe('Testing PDRs', function() {
   // increase the timeout
@@ -43,8 +37,9 @@ describe('Testing PDRs', function() {
     //await Manager.deleteTable(process.env.CollectionsTable);
     await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
 
-    // add collection record
+    // update ingest endpoint & add collection record
     const c = new Collection();
+    collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
     await c.create(collectionRecord);
 
     // create PDR Queue
@@ -56,25 +51,35 @@ describe('Testing PDRs', function() {
     await SQS.createQueue(process.env.GranulesQueue);
   });
 
-  it('test discover PDRs', (done) => {
-    const testEndpoint = 'http://localhost:3001/';
+  it('test PDR discovery', (done) => {
+    sinon.stub(aws, 'fileNotFound', () => true);
+    const syncUrl = sinon.stub(aws, 'syncUrl');
+
 
     testingServer.start();
 
-    discoverPDRs(testEndpoint).then((pdrs) => {
-      assert.ok(pdrs instanceof Array);
-      assert.equal(pdrs.length, 2);
-      assert.ok(pdrs[0].hasOwnProperty('name'));
-      assert.ok(pdrs[0].hasOwnProperty('url'));
-      testingServer.stop();
-      done();
+    pdrTest.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
+      if (err) done(err);
+      try {
+        assert.ok(syncUrl.callCount, 2);
+
+        aws.fileNotFound.restore();
+        aws.syncUrl.restore();
+
+        testingServer.stop();
+        done();
+      }
+      catch (e) {
+        console.log(e);
+        done(e);
+      }
     });
   });
 
   it('test uploadIfNotFound when file is found', async () => {
     sinon.stub(aws, 'fileNotFound', () => false);
 
-    const result = await uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(!result);
     aws.fileNotFound.restore();
   });
@@ -83,7 +88,7 @@ describe('Testing PDRs', function() {
     sinon.stub(aws, 'fileNotFound', () => true);
     const syncUrl = sinon.stub(aws, 'syncUrl');
 
-    const result = await uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(result);
     assert.ok(syncUrl.calledOnce);
 
@@ -98,7 +103,7 @@ describe('Testing PDRs', function() {
       url: 'example.com/pdr'
     };
 
-    await uploadAddQueuePdr(pdr);
+    await pdrTest.uploadAddQueuePdr(pdr);
 
     assert.ok(syncUrl.calledOnce);
 
@@ -108,15 +113,12 @@ describe('Testing PDRs', function() {
     assert.equal(record.pdrName, pdr.name);
 
     // check if message is added to the queue
-    const messages = await SQS.receiveMessage(process.env.PDRsQueue);
-    assert.equal(messages.length, 1);
-    assert.deepEqual(messages[0].Body, pdr);
-
-    // delete message
-    await SQS.deleteMessage(process.env.PDRsQueue, messages[0].ReceiptHandle);
+    const messages = await SQS.receiveMessage(process.env.PDRsQueue, 3);
+    assert.equal(messages.length, 3);
 
     aws.syncUrl.restore();
   });
+
 
   it('test parsing PDR', async () => {
     // mock download of the PDR from S3
@@ -134,7 +136,7 @@ describe('Testing PDRs', function() {
     const pRecord = Pdr.buildRecord(pdr.name, pdr.url);
     await p.create(pRecord);
 
-    const success = await parsePdr(pdr);
+    const success = await pdrTest.parsePdr(pdr);
 
     assert.ok(success);
     assert.ok(downloadS3Files.calledOnce);
@@ -147,6 +149,47 @@ describe('Testing PDRs', function() {
     // there has to 4 * 2 messages in the granule's queue
     const attr = await SQS.attributes(process.env.GranulesQueue);
     assert.equal(attr.ApproximateNumberOfMessages, 8);
+
+    // the PDR record must have 4 granules associated with it
+    const ps = await p.get({ pdrName: pdr.name });
+    assert.equal(Object.keys(ps.granules).length, 4);
+
+    // all granules must have a false status
+    Object.values(ps.granules).forEach((v) => {
+      assert.ok(!v);
+    });
+
+    aws.downloadS3Files.restore();
+  });
+
+  it('test parsing PDR with invalid argument', async () => {
+    const response = await pdrTest.parsePdr({ name: 'somename' });
+    assert.ok(!response);
+  });
+
+  it('test polling granule queue', async () => {
+    // IMPORTANT: this test depends on the output of 'test parsing PDR'
+    // the test fails if run alone
+
+    sinon.stub(aws, 'fileNotFound', () => true);
+    const syncUrl = sinon.stub(aws, 'syncUrl');
+
+    // count the messages before
+    let attr = await SQS.attributes(process.env.GranulesQueue);
+    assert.equal(attr.ApproximateNumberOfMessages, 8);
+
+    // test with concurrency of 2
+    await pdrTest.pollGranulesQueue(2, 200, 8);
+
+    // count the messages again
+    attr = await SQS.attributes(process.env.GranulesQueue);
+    assert.equal(parseInt(attr.ApproximateNumberOfMessages, 10), 0);
+
+    // make sure syncUrl was called 8 times
+    assert.equal(syncUrl.callCount, 8);
+
+    aws.fileNotFound.restore();
+    aws.syncUrl.restore();
   });
 
   after(async () => {
