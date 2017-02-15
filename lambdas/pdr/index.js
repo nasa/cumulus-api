@@ -3,7 +3,6 @@
 import {
   sendMessage,
   receiveMessage,
-  putItem,
   deleteMessage,
   query
 } from 'cumulus-common/aws-helpers';
@@ -136,6 +135,7 @@ export async function parsePdr(pdr) {
     const pdrFile = fs.readFileSync(pdr.name);
     const parsed = pvl.pvlToJS(pdrFile.toString());
 
+
     // Get all the file groups
     const fileGroups = parsed.objects('FILE_GROUP');
 
@@ -169,7 +169,6 @@ export async function parsePdr(pdr) {
           type: 'sipFile'
         });
 
-        //log.info(`Adding ${fileId} to GranuleQueue for download`);
         await sendMessage(granuleFile, process.env.GranulesQueue);
       }
 
@@ -180,17 +179,18 @@ export async function parsePdr(pdr) {
       const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
 
       // build the granule record and add it to the database
-      const granuleRecord = Granule.buildRecord(
+      const granuleRecord = await Granule.buildRecord(
         pdr.collectionName,
         granuleId,
         granuleFiles
       );
+
       const g = new Granule();
       await g.create(granuleRecord);
 
       // add the granule to the PDR record
       const p = new Pdr();
-      await p.addGranule(pdr.nam, granuleId, false);
+      await p.addGranule(pdr.name, granuleId, false);
     }
 
     return true;
@@ -418,7 +418,7 @@ export async function discoverPdrHandler(event, context = () => {}, cb = () => {
           await uploadAddQueuePdr(pdr);
         }
         else {
-          console.log(`${pdr.name} is already ingested`);
+          log.info(`${pdr.name} is already ingested`);
         }
       }
       cb(null, `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`);

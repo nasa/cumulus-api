@@ -16,45 +16,43 @@ import {
 import { testingServer } from './testServer';
 
 // module to stub out
-import fs from 'fs';
 import * as aws from 'gitc-common/aws';
 
-describe('Testing PDRs', () => {
+describe('Testing PDRs', function() {
+  // increase the timeout
+  this.timeout(10000);
+
   before(async () => {
     process.env.IS_LOCAL = true;
 
-
-
-
-
     // create PDR table for testing
-    const pdrTableName = 'PDRTestTable';
+    const pdrTableName = 'PDRTestTable-pdrs';
     process.env.PDRsTable = pdrTableName;
     //await Manager.deleteTable(process.env.PDRsTable);
-    //await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+    await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
 
     // Granule Table for Testing
-    const granuleTableName = 'GranuleTestTable';
+    const granuleTableName = 'GranuleTestTable-pdrs';
     process.env.GranulesTable = granuleTableName;
     //await Manager.deleteTable(process.env.GranulesTable);
-    //await Manager.createTable(granuleTableName, { name: 'granuleId', type: 'S' });
+    await Manager.createTable(granuleTableName, { name: 'granuleId', type: 'S' });
 
     // Collection table for testing
-    const collectionTableName = 'CollectionTestTable';
+    const collectionTableName = 'CollectionTestTable-pdrs';
     process.env.CollectionsTable = collectionTableName;
     //await Manager.deleteTable(process.env.CollectionsTable);
-    //await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
+    await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
 
     // add collection record
     const c = new Collection();
     await c.create(collectionRecord);
 
     // create PDR Queue
-    process.env.PDRsQueue = 'PDRTestQueue';
+    process.env.PDRsQueue = 'PDRTestQueue-pdr';
     await SQS.createQueue(process.env.PDRsQueue);
 
     // create Granule Queue
-    process.env.GranulesQueue = 'GranuleTestQueue';
+    process.env.GranulesQueue = 'GranuleTestQueue-pdr';
     await SQS.createQueue(process.env.GranulesQueue);
   });
 
@@ -120,26 +118,36 @@ describe('Testing PDRs', () => {
     aws.syncUrl.restore();
   });
 
-  //it('test parsing PDR', async () => {
-    //// mock download of the PDR from S3
-    //const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
+  it('test parsing PDR', async () => {
+    // mock download of the PDR from S3
+    const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
-    //const pdr = {
-      //name: 'PDN.ID1611081200.PDR',
-      //uri: 'example.com/pdr',
-      //collectionName: collectionRecord.collectionName,
-      //concurrency: 1
-    //};
+    const pdr = {
+      name: 'lambdas/pdr/tests/data/PDN.ID1611081200.PDR',
+      url: 'example.com/pdr',
+      collectionName: collectionRecord.collectionName,
+      concurrency: 1
+    };
 
-    //// mock reading the S3 file from a test location
-    //sinon.stub(fs, 'readFileSync', () => {
-      //return fs.readFileSync('./data/PDN.ID1611081200.PDR');
-    //});
+    // add a PDR record
+    const p = new Pdr();
+    const pRecord = Pdr.buildRecord(pdr.name, pdr.url);
+    await p.create(pRecord);
 
-    //const response = await parsePdr(pdr);
+    const success = await parsePdr(pdr);
 
-    //console.log(response);
-  //});
+    assert.ok(success);
+    assert.ok(downloadS3Files.calledOnce);
+
+    // 4 granules should be added to the database
+    const g = new Granule();
+    const gs = await g.scan({});
+    assert.equal(gs.Count, 4);
+
+    // there has to 4 * 2 messages in the granule's queue
+    const attr = await SQS.attributes(process.env.GranulesQueue);
+    assert.equal(attr.ApproximateNumberOfMessages, 8);
+  });
 
   after(async () => {
     // delete Queues
@@ -147,11 +155,8 @@ describe('Testing PDRs', () => {
     await SQS.deleteQueue(process.env.GranulesQueue);
 
     // delete tables
-    console.log(process.env.GranulesTable);
-    console.log(process.env.PDRsTable);
-    console.log(process.env.CollectionsTable);
-    //await Manager.deleteTable(process.env.PDRsTable);
-    //await Manager.deleteTable(process.env.GranulesTable);
-    //await Manager.deleteTable(process.env.CollectionsTable);
+    await Manager.deleteTable(process.env.PDRsTable);
+    await Manager.deleteTable(process.env.GranulesTable);
+    await Manager.deleteTable(process.env.CollectionsTable);
   });
 });
