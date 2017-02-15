@@ -5,7 +5,8 @@ import 'babel-polyfill';
 import assert from 'assert';
 import sinon from 'sinon';
 import { SQS } from 'cumulus-common/aws-helpers';
-import { Manager, Pdr } from 'cumulus-common/models';
+import { Manager, Pdr, Granule, Collection } from 'cumulus-common/models';
+import collectionRecord from 'cumulus-common/tests/data/collection.json';
 import {
   discoverPDRs,
   uploadIfNotFound,
@@ -22,10 +23,31 @@ describe('Testing PDRs', () => {
   before(async () => {
     process.env.IS_LOCAL = true;
 
+
+
+
+
     // create PDR table for testing
     const pdrTableName = 'PDRTestTable';
     process.env.PDRsTable = pdrTableName;
-    await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+    //await Manager.deleteTable(process.env.PDRsTable);
+    //await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+
+    // Granule Table for Testing
+    const granuleTableName = 'GranuleTestTable';
+    process.env.GranulesTable = granuleTableName;
+    //await Manager.deleteTable(process.env.GranulesTable);
+    //await Manager.createTable(granuleTableName, { name: 'granuleId', type: 'S' });
+
+    // Collection table for testing
+    const collectionTableName = 'CollectionTestTable';
+    process.env.CollectionsTable = collectionTableName;
+    //await Manager.deleteTable(process.env.CollectionsTable);
+    //await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
+
+    // add collection record
+    const c = new Collection();
+    await c.create(collectionRecord);
 
     // create PDR Queue
     process.env.PDRsQueue = 'PDRTestQueue';
@@ -98,24 +120,38 @@ describe('Testing PDRs', () => {
     aws.syncUrl.restore();
   });
 
-  it('test parsing PDR', async () => {
-    // mock download of the PDR from S3
-    const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
+  //it('test parsing PDR', async () => {
+    //// mock download of the PDR from S3
+    //const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
-    // mock reading the S3 file from a test location
-    sinon.stub(fs, 'readFileSync', () => {
-      return fs.readFileSync('./data/PDN.ID1611081200.PDR');
-    });
+    //const pdr = {
+      //name: 'PDN.ID1611081200.PDR',
+      //uri: 'example.com/pdr',
+      //collectionName: collectionRecord.collectionName,
+      //concurrency: 1
+    //};
 
+    //// mock reading the S3 file from a test location
+    //sinon.stub(fs, 'readFileSync', () => {
+      //return fs.readFileSync('./data/PDN.ID1611081200.PDR');
+    //});
 
+    //const response = await parsePdr(pdr);
 
-  });
+    //console.log(response);
+  //});
 
   after(async () => {
-    // delete PDR table
-    await Manager.deleteTable(process.env.PDRsTable);
-
-    // delete PDR Queue
+    // delete Queues
     await SQS.deleteQueue(process.env.PDRsQueue);
+    await SQS.deleteQueue(process.env.GranulesQueue);
+
+    // delete tables
+    console.log(process.env.GranulesTable);
+    console.log(process.env.PDRsTable);
+    console.log(process.env.CollectionsTable);
+    //await Manager.deleteTable(process.env.PDRsTable);
+    //await Manager.deleteTable(process.env.GranulesTable);
+    //await Manager.deleteTable(process.env.CollectionsTable);
   });
 });

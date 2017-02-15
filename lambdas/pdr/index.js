@@ -157,7 +157,7 @@ export async function parsePdr(pdr) {
         const granuleFile = {
           fileUrl,
           fileId,
-          concurrency: pdr.concurrency,
+          concurrency: pdr.concurrency || 1,
           bucket: process.env.internal,
           key: 'staging'
         };
