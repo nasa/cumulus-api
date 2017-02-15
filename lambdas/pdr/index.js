@@ -1,16 +1,11 @@
 'use strict';
 
-import {
-  sendMessage,
-  receiveMessage,
-  deleteMessage,
-  query
-} from 'cumulus-common/aws-helpers';
+import { SQS } from 'cumulus-common/aws-helpers';
+import _ from 'lodash';
 import { localRun } from 'cumulus-common/local';
-import { Granule, Collection, Pdr } from 'cumulus-common/models';
+import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/models';
 import { syncUrl, downloadS3Files, fileNotFound } from 'gitc-common/aws';
 import Crawler from 'simplecrawler';
-import steed from 'steed';
 import url from 'url';
 import log from 'gitc-common/log';
 import pvl from 'pvl';
@@ -95,7 +90,7 @@ export async function uploadAddQueuePdr(pdr) {
   // add the pdr to the queue
   // (we use queue here because we want to avoid DDOSing
   // providers
-  await sendMessage(pdr, process.env.PDRsQueue);
+  await SQS.sendMessage(process.env.PDRsQueue, pdr);
   log.info(`Added ${pdr.name} to PDR queue`);
 
   // add the PDR to the table
@@ -125,6 +120,11 @@ export async function uploadAddQueuePdr(pdr) {
  */
 export async function parsePdr(pdr) {
   try {
+    // validate the argument
+    if (!(_.has(pdr, 'name') && _.has(pdr, 'collectionName'))) {
+      throw new Error('The argument must have name and collectionName keys');
+    }
+
     // first download the PDR
     await downloadS3Files(
       [{ Bucket: process.env.internal, Key: `pdrs/${pdr.name}` }],
@@ -169,7 +169,7 @@ export async function parsePdr(pdr) {
           type: 'sipFile'
         });
 
-        await sendMessage(granuleFile, process.env.GranulesQueue);
+        await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
       }
 
       // Find the granuleId
@@ -209,65 +209,61 @@ export async function parsePdr(pdr) {
  *
  * @param {number} concurrency=1
  * @param {number} visibilityTimeout=200
+ * @param {number} [testLoops=-1] number of messages to be processd before quitting (for test)
  */
-async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200) {
+export async function pollGranulesQueue(
+  concurrency = 1,
+  visibilityTimeout = 200,
+  testLoops = -1
+) {
   try {
-    // receive a message
-    const messages = await receiveMessage(
-      process.env.GranulesQueue,
-      concurrency,
-      visibilityTimeout
-    );
+    while (true) {
+      // receive a message
+      const messages = await SQS.receiveMessage(
+        process.env.GranulesQueue,
+        concurrency,
+        visibilityTimeout
+      );
 
-    // get message body
-    if (messages.Messages) {
-      // holds list of parallels downloads
-      const downloads = [];
+      // get message body
+      if (messages.length > 0) {
+        // holds list of parallels downloads
+        const downloads = [];
 
-      log.info(`Ingest: ${concurrency} file(s) concurrently`);
+        log.info(`Ingest: ${concurrency} file(s) concurrently`);
 
-      for (const message of messages.Messages) {
-        const body = message.Body;
-        const receiptHandle = message.ReceiptHandle;
-        const file = JSON.parse(body);
-        downloads.push((cb) => {
+        for (const message of messages) {
+          const file = message.Body;
+          const receiptHandle = message.ReceiptHandle;
           log.info(`Ingesting ${file.fileId}`);
-          uploadIfNotFound(
-            file.fileUrl,
-            file.bucket,
-            file.fileId,
-            file.key
-          ).then((success) => {
-            if (success) {
-              // delete the message from the queue
-              deleteMessage(process.env.GranulesQueue, receiptHandle).then(() => cb(null));
-            }
-            else {
-              cb('Download failed');
-            }
-          }).catch((err) => console.error(err));
-        });
-      }
+          const func = async () => {
+            await uploadIfNotFound(
+              file.fileUrl,
+              file.bucket,
+              file.fileId,
+              file.key
+            );
+            await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
+            return;
+          };
+          downloads.push(func());
+        }
 
-      // Run the downloads in parallel
-      steed.parallel(downloads, (err) => {
-        if (err) {
-          throw err;
-        }
-        else {
-          // run the poll recursively
-          pollGranulesQueue(concurrency, visibilityTimeout);
-        }
-      });
-    }
-    else {
-      log.info('No new messages in the PDR queue');
-      // fun the poll again
-      pollGranulesQueue(concurrency, visibilityTimeout);
+        // wait for concurrent downloads to finish before next loop
+        // this is important to manage the memory usage better
+        await Promise.all(downloads);
+      }
+      else {
+        log.info('No new messages in the PDR queue');
+
+        // this prevents the function from running forever in test mode
+        if (testLoops === 0) return;
+        if (testLoops > 0) testLoops -= 1;
+      }
     }
   }
   catch (e) {
-    log.error(e);
+    log.error(e, e.stack);
     throw e;
   }
 }
@@ -284,31 +280,29 @@ async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200) {
  * @param {number} [messageNum=1] Number of messages to be retrieved from the queue
  * @param {number} [visibilityTimeout=20] How long the message is removed from the queue
  */
-async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
+export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
   try {
     // receive a message
-    const messages = await receiveMessage(
+    const messages = await SQS.receiveMessage(
       process.env.PDRsQueue,
       messageNum,
       visibilityTimeout
     );
 
     // get message body
-    if (messages.Messages) {
-      for (const message of messages.Messages) {
-        const body = message.Body;
+    if (messages.length > 0) {
+      for (const message of messages) {
+        const pdr = message.Body;
         const receiptHandle = message.ReceiptHandle;
-        const pdr = JSON.parse(body);
 
         log.info(`Parsing ${pdr.name}`);
 
-        // parse the body
         const parsed = await parsePdr(pdr.name);
 
         // detele message if parse successful
         if (parsed) {
           log.info(`deleting ${pdr.name} from the Queue`);
-          await deleteMessage(process.env.PDRsQueue, receiptHandle);
+          await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
         }
         else {
           log.error(`Parsing failed for ${pdr.name}`);
@@ -372,101 +366,58 @@ export function parsePdrsHandler(event) {
  * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export async function discoverPdrHandler(event, context = () => {}, cb = () => {}) {
-  try {
+export function discoverPdrHandler(event, context, cb = () => {}) {
+  // get a promise here for use with handler's callback later
+  const func = async () => {
     // get the collectionName
     if (!event.hasOwnProperty('collectionName')) {
-      return cb('you must provide collectionName in the event obj');
+      throw new Error('you must provide collectionName in the event obj');
     }
     const collectionName = event.collectionName;
 
     // grab collectionName from the database
     const c = new Collection();
-    try {
-      let collection = c.get({ collectionName: collectionName });
-    }
-    catch (e) {
-      cb(e);
-    }
-        // get the endpoint from collection
+    const collection = await c.get({ collectionName: collectionName });
+
+    // get the endpoint from collection
     if (collection.ingest.type !== 'PDR') {
-      return cb('This handle only support PDR ingest');
+      throw new Error('This handle only support PDR ingest');
     }
 
     const endpoint = collection.ingest.config.endpoint;
     const concurrency = collection.ingest.config.concurrency || 1;
     log.info(`checking ${endpoint}`);
 
-    try {
-      // first discover the PDRs
-      const pdrs = await discoverPDRs(endpoint);
-      for (const pdr of pdrs) {
-        // check if the PDR is in the database, if not add it and download
-        // Note: if a PDR is already download but missing from the database, it will be
-        // redownloaded
-        records = await query({
-          TableName: process.env.PDRsTable,
-          KeyConditionExpression: 'pdrName = :name',
-          ExpressionAttributeValues: {
-            ':name': pdr.name
-          }
-        });
-
-        if (records.Count === 0) {
+    // discover the PDRs
+    const pdrs = await discoverPDRs(endpoint);
+    for (const pdr of pdrs) {
+      // check if the PDR is in the database, if not add it and download
+      // Note: if a PDR is already download but missing from the database, it will be
+      // redownloaded
+      const p = new Pdr();
+      try {
+        await p.get({ pdrName: pdr.name });
+        log.info(`${pdr.name} is already ingested`);
+      }
+      catch (e) {
+        if (e instanceof RecordDoesNotExist) {
           pdr.concurrency = concurrency;
           pdr.collectionName = collectionName;
           await uploadAddQueuePdr(pdr);
         }
-        else {
-          log.info(`${pdr.name} is already ingested`);
-        }
       }
-      cb(null, `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`);
     }
-    catch (e) {
-      cb(e);
-    }
-  }
-  catch (e) {
-    log.error(e);
-  }
+    return `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`;
+  };
+
+  // use callback with promise
+  func().then(r => cb(null, r)).catch((err) => cb(err));
 }
 
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  // to test discoveringPDRs uncomment here
-  //discoverPDRs('https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/', (list) => console.log(list));
-
-  // discover and upload new PDRs to S3
-  //discoverPdrHandler(
-    //{ endpoint: 'https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/' },
-    //null,
-    //(err, r) => console.log(err, r)
-  //);
-
-  //uploadPdrs([{
-    //name: 'PDN.ID1611071200.PDR',
-    //url: 'https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/PDN.ID1611071200.PDR'
-  //}])
-
-  //parsePdr('PDN.ID1611071200.PDR').then(() => console.log('done'));
-
-  //receiveMessage(process.env.PDRsQueue).then((d) => console.log(d));
-
-  //parsePdrsHandler();
-  //pollGranulesQueue(3);
-
-  //const queue = steed.queue(imageDownloadTask, 2)
-  //queue.push(['this', 'that', 'what', 'sure'], (m) => console.log(m));
-
-  //discoverPdrHandler({collectionName: 'ASTER_1A_versionId_1'});
-  //
-
-  //const pdrFile = fs.readFileSync('PDN.ID1611071200.PDR');
-  //const parsed = pvl.pvlToJS(pdrFile.toString());
-  //const fileGroups = parsed.objects('FILE_GROUP');
-  //console.log(fileGroups[0].objects('XAR_ENTRY')[0].get('GRANULE_ID').value);
+  pollPdrQueue();
 });
 
 
