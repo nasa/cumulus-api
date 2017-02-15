@@ -3,45 +3,45 @@
   "granuleDefinition": {
     "granuleId": "^(ASTL1A [0-9]{22})$",
     "files": {
-	    "origin-hdf5-file": {
+      "origin-hdf5": {
         "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
         "access": "private",
         "source": "sips"
-			},
-			"origin-thumbnail-file": {
-			  "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+      },
+      "origin-thumbnail": {
+        "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
         "access": "private",
         "source": "sips"
-			},
-			"processed-hdf5-file": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-				"access": "protected",
-				"source": "cumulus"
-			},
-			"thumbnail-file-1": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
-				"access": "public",
-				"source": "cumulus"
-			},
-			"thumbnail-file-2": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
-				"access": "public",
-				"source": "cumulus"
-			},
-			"thumbnail-file-3": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
-				"access": "public",
-				"source": "cumulus"
-			},
-			"meta-xml": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
-				"access": "public",
-				"source": "cumulus"
-			}
-		},
+      },
+      "processed-hdf5": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+        "access": "protected",
+        "source": "cumulus"
+      },
+      "thumbnail-1": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-2": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-3": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "meta-xml": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+        "access": "public",
+        "source": "cumulus"
+      }
+    },
     "neededForProcessing": [
-      "origin-hdf5-file",
-      "origin-thumbnail-file"
+      "origin-hdf5",
+      "origin-thumbnail"
     ]
   },
   "ingest": {
@@ -52,35 +52,36 @@
     }
   },
   "recipe": {
-		"archive": {
-  		"config": {}
-  	},
-  	"order": [
-  		"processStep",
-  		"pushtToCMR",
-  		"archive"
-  	],
-  	"processStep": {
-  		"config": {
-  			"image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
-  			"inputFiles": [
-  				"origin-hdf5-file"
-  			],
-  			"outputFiles": [
-  				"processed-hdf5-file",
-  				"thumbnail-file-1",
-  				"thumbnail-file-2",
-  				"thumbnail-file-3",
-  				"meta-xml"
-  			]
+    "archive": {
+      "config": {}
+    },
+    "order": [
+      "processStep",
+      "pushtToCMR",
+      "archive"
+    ],
+    "processStep": {
+      "config": {
+        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "inputFiles": [
+          "origin-hdf5"
+        ],
+        "outputFiles": [
+          "processed-hdf5",
+          "thumbnail-1",
+          "thumbnail-2",
+          "thumbnail-3",
+          "meta-xml"
+        ]
       },
-  		"description": "UpdateHDF5fileandextractthumbnail"
-  	},
-  	"pushToCMR": {
-  		"config": {}
-  	}
+      "description": "UpdateHDF5fileandextractthumbnail"
+    },
+    "pushToCMR": {
+      "config": {}
+    }
   },
   "createdAt": 1480962569,
   "updatedAt": 1480962569,
   "changedBy": "user1"
 }
+
