@@ -1,7 +1,6 @@
 'use strict';
 
 // the import below is needed to run the test
-import 'babel-polyfill';
 import assert from 'assert';
 import sinon from 'sinon';
 import { SQS } from 'cumulus-common/aws-helpers';
