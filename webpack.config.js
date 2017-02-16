@@ -6,7 +6,7 @@ function getEntries() {
   const output = glob.sync('./lambdas/*')
     .map((filename) => {
       const entry = {};
-      entry[path.basename(filename)] = ['babel-polyfill', filename];
+      entry[path.basename(filename)] = filename;
       return entry;
     })
     .reduce((finalObject, entry) => Object.assign(finalObject, entry), {});
@@ -39,6 +39,15 @@ module.exports = {
 
   module: {
     rules: [
+      {
+        include: glob.sync('./lambdas/*/index.js', { realpath: true })
+                     .map((filename) => path.resolve(__dirname, filename)),
+        exclude: /node_modules/,
+        loader: 'prepend-loader',
+        query: {
+          data: "if (!global._babelPolyfill) require('babel-polyfill');"
+        }
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,

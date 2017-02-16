@@ -95,22 +95,6 @@ lambdas:
     handler: pdr.discoverPdrHandler
     timeout: 300
 
-  - name: signup
-    handler: auth.signup
-    timeout: 300
-    apiGateway:
-      path: signup
-      method: post
-      cors: trues
-
-  - name: signin
-    handler: auth.signin
-    timeout: 300
-    apiGateway:
-      path: signin
-      method: post
-      cors: true
-
   - name: statsSummary
     handler: stats.summary
     timeout: 300
