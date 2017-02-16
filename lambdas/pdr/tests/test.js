@@ -13,7 +13,7 @@ import { testingServer } from './testServer';
 
 describe('Testing PDRs', function() {
   // increase the timeout
-  this.timeout(10000);
+  this.timeout(20000);
 
   before(async () => {
     process.env.IS_LOCAL = true;
@@ -191,14 +191,18 @@ describe('Testing PDRs', function() {
     aws.syncUrl.restore();
   });
 
-  after(async () => {
-    // delete Queues
-    await SQS.deleteQueue(process.env.PDRsQueue);
-    await SQS.deleteQueue(process.env.GranulesQueue);
+  after((done) => {
+    setTimeout(async () => {
+      // delete Queues
+      await SQS.deleteQueue(process.env.PDRsQueue);
+      await SQS.deleteQueue(process.env.GranulesQueue);
 
-    // delete tables
-    await Manager.deleteTable(process.env.PDRsTable);
-    await Manager.deleteTable(process.env.GranulesTable);
-    await Manager.deleteTable(process.env.CollectionsTable);
+      // delete tables
+      await Manager.deleteTable(process.env.PDRsTable);
+      await Manager.deleteTable(process.env.GranulesTable);
+      await Manager.deleteTable(process.env.CollectionsTable);
+
+      done();
+    }, 2000);
   });
 });
