@@ -1,7 +1,7 @@
 'use strict';
 
 import aws from 'aws-sdk';
-import { ingestGranule } from 'cmrjs';
+//import { ingestGranule } from 'cmrjs';
 
 const s3 = new aws.S3();
 
@@ -44,7 +44,7 @@ export const formatMetadata = (payload, xml) => {
 };
 
 export const postToCMR = (xml, cb) => {
-  ingestGranule(xml, (err, res) => cb(err, res));
+  //ingestGranule(xml, (err, res) => cb(err, res));
 };
 
 export const handler = (event, context, cb) => {
