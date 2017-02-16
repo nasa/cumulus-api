@@ -146,10 +146,17 @@ Resources:
               # Allow access to dynamoDB
               - Effect: Allow
                 Action:
+                - dynamodb:DeleteItem
                 - dynamodb:DescribeStream
+                - dynamodb:GetItem
                 - dynamodb:GetRecords
                 - dynamodb:GetShardIterator
                 - dynamodb:ListStreams
+                - dynamodb:ListTables
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:UpdateItem
                 Resource:
                 - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
 
@@ -193,6 +200,7 @@ Resources:
           # Allow access to dynamoDB
           - Effect: Allow
             Action:
+            - dynamodb:DeleteItem
             - dynamodb:DescribeStream
             - dynamodb:GetItem
             - dynamodb:GetRecords
@@ -204,7 +212,7 @@ Resources:
             - dynamodb:Scan
             - dynamodb:UpdateItem
             Resource:
-            - "*"
+            - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
 
           # Allow lambdas to call other lambdas
           - Effect: Allow
