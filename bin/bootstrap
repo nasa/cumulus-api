@@ -60,6 +60,10 @@ const sqs = new AWS.SQS({
 config.sqs.forEach((queue) => {
   const queueName = `${config.stackName}-${config.stage}-${queue.name}`;
 
+  const createQueue = () => {
+    return sqs.createQueue({ QueueName: queueName }).promise();
+  }
+
   // get queue url (if any)
   sqs.getQueueUrl({ QueueName: queueName }).promise()
     .then(data => {
@@ -67,13 +71,18 @@ config.sqs.forEach((queue) => {
         // delete the queue
         return sqs.deleteQueue({ QueueUrl: data.QueueUrl }).promise();
       }
-
       return;
     })
     .then((deleted) => {
       if (deleted) console.log(`${queueName} deleted`);
-      return sqs.createQueue({ QueueName: queueName }).promise();
+      return createQueue();
     })
     .then(data => console.log(data))
-    .catch(e => console.log(e));
+    .catch(e => {
+      if (e.code === 'AWS.SimpleQueueService.NonExistentQueue') {
+        return createQueue().then(data => console.log(data)).catch(e => console.log(e));
+      } else {
+        console.log(e);
+      }
+    });
 });
