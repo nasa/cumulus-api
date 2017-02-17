@@ -72,6 +72,14 @@ To make local development with DyanmoDB and SQS you can use docker. Just run:
     $ docker-compose up local
     $ sulu bootstrap
 
+To run a function with local DB run:
+
+    $ node dist/pdr/index.js local
+
+To run the function with aws resources, first add credentials to `.env`, then run:
+
+    $ node dist/pdr/index.js remote
+
 ## Tests
 
 Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/collections.js`
