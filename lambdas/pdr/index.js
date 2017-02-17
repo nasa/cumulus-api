@@ -135,9 +135,19 @@ export async function parsePdr(pdr) {
     const pdrFile = fs.readFileSync(pdr.name);
     const parsed = pvl.pvlToJS(pdrFile.toString());
 
+    // grab the collection
+    const c = new Collection();
+    const collectionRecord = await c.get({ collectionName: pdr.collectionName });
+
 
     // Get all the file groups
     const fileGroups = parsed.objects('FILE_GROUP');
+
+    const promiseList = [];
+
+    const conc = (func) => {
+      return promiseList.push(func());
+    };
 
     // each group represents a Granule record.
     // After adding all the files in the group to the Queue
@@ -169,7 +179,10 @@ export async function parsePdr(pdr) {
           type: 'sipFile'
         });
 
-        await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
+        conc(async () => {
+          await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
+          log.info(`Added ${fileId} to Granule Queue`);
+        });
       }
 
       // Find the granuleId
@@ -179,20 +192,25 @@ export async function parsePdr(pdr) {
       const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
 
       // build the granule record and add it to the database
-      const granuleRecord = await Granule.buildRecord(
-        pdr.collectionName,
-        granuleId,
-        granuleFiles
-      );
+      conc(async () => {
+        const granuleRecord = await Granule.buildRecord(
+          pdr.collectionName,
+          granuleId,
+          granuleFiles,
+          collectionRecord
+        );
 
-      const g = new Granule();
-      await g.create(granuleRecord);
+        const g = new Granule();
+        await g.create(granuleRecord);
 
-      // add the granule to the PDR record
-      const p = new Pdr();
-      await p.addGranule(pdr.name, granuleId, false);
+        // add the granule to the PDR record
+        const p = new Pdr();
+        await p.addGranule(pdr.name, granuleId, false);
+        log.info(`Added a new granule: ${granuleId}`);
+      });
     }
 
+    await Promise.all(promiseList);
     return true;
   }
   catch (e) {
