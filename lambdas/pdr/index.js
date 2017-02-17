@@ -357,7 +357,8 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
  * @return {undefined}
  */
 export function ingestGranulesHandler(event) {
-  pollGranulesQueue();
+  const concurrency = event.concurrency || 1
+  pollGranulesQueue(concurrency);
 }
 
 
