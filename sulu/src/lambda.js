@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const path = require('path');
 const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const exec = require('./common').exec;
@@ -53,10 +54,10 @@ function lambdaObject() {
  */
 function uploadLambdas(s3Path, profile) {
   // remove the build folder if exists
-  fs.removeSync('build');
+  fs.removeSync(path.join(process.cwd(), 'build'));
 
   // create the lambda folder
-  fs.mkdirpSync('build/lambda');
+  fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // zip files dist folders
   const distFolders = fs.readdirSync('dist');
@@ -87,7 +88,7 @@ function updateLambda(options, name, webpack) {
   }
 
   // create the lambda folder if it doesn't already exist
-  fs.mkdirpSync('build/lambda');
+  fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // Update the zip file
   exec(`cd dist && zip -r ../build/lambda/${name} ${name}`);

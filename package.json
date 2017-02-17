@@ -7,9 +7,9 @@
     "test": "./node_modules/.bin/mocha-webpack --webpack-config webpack.config-test.js --recursive lib/tests lambdas/*/tests",
     "test-ci": "PORT=8000 ./node_modules/.bin/nodemon --ext js --watch ./test --watch ./lambdas --watch ./lib --exec 'npm run test'",
     "lint": "./node_modules/.bin/eslint .",
-    "start": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
-    "serve": "bin/parallel 'webpack -w --colors' 'nodemon bin/serve'",
-    "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd lib-gitc && npm link && cd .. && npm link gitc-common",
+    "start": "bin/parallel 'webpack -w --colors' 'sulu serve'",
+    "serve": "bin/parallel 'webpack -w --colors' 'sulu serve'",
+    "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd lib-gitc && npm link && cd .. && npm link gitc-common && cd sulu && npm link && cd .. && npm link sulu",
     "build": "webpack -w --colors"
   },
   "repository": {

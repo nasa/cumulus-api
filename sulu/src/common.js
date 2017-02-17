@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const path = require('path');
 const yaml = require('js-yaml');
 const fs = require('fs-extra');
 const execSync = require('child_process').execSync;
@@ -36,14 +37,14 @@ const configureApiGateway = (config) => {
   // To construct the API resources and methods
   for (const lambda of config.lambdas) {
     // We only care about lambdas that have apigateway config
-    if (_.has(lambda, 'apiGateway')) {
+    if (lambda.hasOwnProperty('apiGateway')) {
       // Because each segment of the URL path gets its own
       // resource and paths with the same segment shares that resource
       // we start by dividing the path segments into an array.
       // For example. /foo, /foo/bar and /foo/column create 3 resources:
       // 1. FooResource 2.FooBarResource 3.FooColumnResource
       // where FooBar and FooColumn are dependents of Foo
-      const segments = _.split(lambda.apiGateway.path, '/');
+      const segments = lambda.apiGateway.path.split('/');;
 
       // this array is used to keep track of names
       // within a given array of segments
@@ -273,7 +274,7 @@ function parseEnvVariables(config) {
  * @return {Object}
  */
 function parseConfig(configPath) {
-  const p = configPath || 'config/config.yml';
+  const p = path.join(process.cwd(), configPath || 'config/config.yml');
   let config = yaml.safeLoad(fs.readFileSync(p, 'utf8'));
 
   config.apiName = _.upperFirst(_.camelCase(`${config.stackName}-${config.stage}`));
