@@ -40,8 +40,8 @@ dynamos:
         type: HASH
 
   - name: GranulesTable
-    read: 5
-    write: 5
+    read: 100
+    write: 100
     elasticsearch: true
     attributes:
       - name: granuleId
