@@ -59,6 +59,8 @@ Resources:
                 - sqs:ReceiveMessage
                 - sqs:ChangeMessageVisibility
                 - sqs:DeleteMessage
+                - sqs:GetQueueUrl
+                - sqs:GetQueueAttributes
                 Resource:
                 - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
 
@@ -167,6 +169,19 @@ Resources:
                 - lambda:invokeFunction
                 Resource:
                 - "*"
+
+              # Allow access to SQS
+              - Effect: Allow
+                Action:
+                - sqs:SendMessage
+                - sqs:ReceiveMessage
+                - sqs:ChangeMessageVisibility
+                - sqs:DeleteMessage
+                - sqs:GetQueueUrl
+                - sqs:GetQueueAttributes
+                Resource:
+                - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
+
 
   # Role for Lambdas that are USED with ApiGateway Service
   LambdaApiGatewayRole:
