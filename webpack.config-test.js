@@ -24,13 +24,12 @@ module.exports = {
   },
   target: 'node',
   externals: [
-    'aws-sdk',
+    'aws-sdk'
   ],
   node: {
     __dirname: false,
     __filename: false
   },
-  devtool: '#inline-source-map',
   resolve: {
     alias: {
       'aws-sdk': 'aws-sdk/dist/aws-sdk'
