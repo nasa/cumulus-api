@@ -96,6 +96,16 @@ Resources:
                 Resource:
                 - "*"
 
+              # Allow Lambda logging
+              - Effect: Allow
+                Action:
+                - logs:DescribeLogStreams
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+
   # needed for EC2 instances
   CumulusInstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -673,12 +683,15 @@ Resources:
       ContainerDefinitions:
       - Name: {{name}}
         Environment:
+          - Name: AWS_DEFAULT_REGION
+            Value: !Sub ${AWS::Region}
         {{#each envs}}
           - Name: {{key}}
             Value: {{value}}
         {{/each}}
         Command:
         - !GetAtt [{{name}}LambdaFunction, Arn]
+        - "--eventJson {}"
         Cpu: '10'
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
