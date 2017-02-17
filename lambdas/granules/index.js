@@ -12,7 +12,7 @@ const range = 'granuleId';
 
 /**
  * List all granules for a given collection.
- * @param {string} collectionName the name of the collection.
+ * @param {string} collectionName the name of the collection to filter by. If omitted, returns all granules.
  * @param {object} query an optional query object.
  * @param {number} query.limit maximum number of records to return.
  * @param {number} query.start_at record to start showing from.
@@ -20,16 +20,17 @@ const range = 'granuleId';
  */
 export function list(event, context, cb) {
   const collection = _.get(event, hash);
-  if (!collection) {
-    return cb('Granule#list requires a collectionName property');
+  let query;
+  if (collection) {
+    query = { match: { _all: collection } };
+  } else {
+    query = { match_all: {} };
   }
-  const query = _.get(event, 'query', {});
-  const limit = getLimit(query);
-  const start = getStart(query);
+  const queryParams = _.get(event, 'query', {});
+  const limit = getLimit(queryParams);
+  const start = getStart(queryParams);
   esQuery(index, table, {
-    query: {
-      match: { _all: collection }
-    },
+    query,
     size: limit,
     from: start
   }, (error, res) => {

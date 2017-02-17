@@ -17,8 +17,11 @@ describe('Granules endpoint', () => {
       assert.ok(spy.calledOnce);
       assert.ok(spy.args[0][2].size === query.limit);
       assert.equal(res.length, 0);
-      es.esQuery.restore();
-      done();
     });
+
+    // accepts no collectionName property
+    assert.doesNotThrow(() => list({}, null, () => true));
+    es.esQuery.restore();
+    done();
   });
 });
