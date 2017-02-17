@@ -90,6 +90,9 @@ lambdas:
     ecs: true
     image: cumulus-docker-dev-lambdarunner
     count: 0
+    commands:
+      - --eventJson
+      - '{ \"concurrency\": 4 }'
 
   - name: pdrDiscoverer
     handler: pdr.discoverPdrHandler

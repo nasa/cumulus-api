@@ -691,8 +691,14 @@ Resources:
         {{/each}}
         Command:
         - !GetAtt [{{name}}LambdaFunction, Arn]
+    {{# if commands }}
+      {{# each commands }}
+        - "{{{ @this }}}"
+      {{/each}}
+    {{ else }}
         - "--eventJson"
         - "{}"
+    {{/if}}
         Cpu: '10'
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
