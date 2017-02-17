@@ -297,7 +297,7 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20) {
 
         log.info(`Parsing ${pdr.name}`);
 
-        const parsed = await parsePdr(pdr.name);
+        const parsed = await parsePdr(pdr);
 
         // detele message if parse successful
         if (parsed) {
