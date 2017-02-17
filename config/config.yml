@@ -40,8 +40,8 @@ dynamos:
         type: HASH
 
   - name: GranulesTable
-    read: 5
-    write: 5
+    read: 100
+    write: 100
     elasticsearch: true
     attributes:
       - name: granuleId
@@ -90,6 +90,9 @@ lambdas:
     ecs: true
     image: cumulus-docker-dev-lambdarunner
     count: 0
+    commands:
+      - --eventJson
+      - '{ \"concurrency\": 4 }'
 
   - name: pdrDiscoverer
     handler: pdr.discoverPdrHandler
