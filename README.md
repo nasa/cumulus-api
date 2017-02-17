@@ -18,27 +18,27 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
 ### Deployment for the first time
 
-    $ bin/cf create --profile awsProfileName
+    $ sulu cf create --profile awsProfileName
 
 ### Updating CF stack
 
-    $ bin/cf update --profile awsProfileName
+    $ sulu cf update --profile awsProfileName
 
 ### Updating Lambda Code
 
-    $ bin/lambda collections --profile awsProfileName
-    $ bin/lambda granules --profile awsProfileName
+    $ sulu lambda collections --profile awsProfileName
+    $ sulu lambda granules --profile awsProfileName
 
 ### Adding Records to DynamoDB
 
-    $ bin/ddb add -l -t cumulus-api-test2-dev-CollectionsTable -r config/aster.json --profile myProfile
+    $ sulu db add -l -t cumulus-api-test2-dev-CollectionsTable -r config/aster.json --profile myProfile
 
 ### Deploying using differnet config files
 
 To deploy using other config files (there are two others committed in this repo) pass `--config` argument. Examples:
 
-    $ bin/cf update --profile awsProfileName --config config/config-prod.yml
-    $ bin/cf validate --profile awsProfileName --config config/config-ngap.yml
+    $ sulu cf update --profile awsProfileName --config config/config-prod.yml
+    $ sulu cf validate --profile awsProfileName --config config/config-ngap.yml
 
 ### Adding a new Lambda function
 
@@ -63,37 +63,14 @@ lambdas:
 
 ### Running the API locally
 
-    $ bin/serve
-
-### Docs
-
-API documentation is deployed to https://cumulus-nasa.github.io/cumulus-api
-
-#### Installation
-
-To edit the documentation locally first install Doxbox by running:
-
-    $ bin/docs install
-
-#### Local Serve
-
-Serve the local documentation by running:
-
-    $ bin/docs serve
-
-While the documentation is served locally you can edit Markdown files under `docbox/content`. Your edits are automatically copied to `docs/api/content`.
-
-#### Deploy
-
-    $ bin/docs build
-    $ bin/docs deploy
+    $ sulu serve
 
 ## Local Development with Docker
 
 To make local development with DyanmoDB and SQS you can use docker. Just run:
 
     $ docker-compose up local
-    $ bin/bootstrap
+    $ sulu bootstrap
 
 ## Tests
 

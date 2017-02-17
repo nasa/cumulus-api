@@ -1,12 +1,15 @@
 'use strict';
 
 const _ = require('lodash');
+const path = require('path');
 const Hapi = require('hapi');
 const Good = require('good');
 const parseConfig = require('./common').parseConfig;
 
 // const collections = require('../dist/collections')
 
+const isLocal = process.argv[2] === 'local';
+const isRemote = process.argv[2] === 'remote';
 
 function serve() {
   const server = new Hapi.Server({
@@ -24,27 +27,28 @@ function serve() {
 
   for (const lambda of c.lambdas) {
     // some lambdas (ie elasticsearch sync) don't have apiGateway props, ignore these
-    if (!_.has(lambda, 'apiGateway')) { continue; }
-    // import the lib
-    const lambdaName = _.split(lambda.handler, '.')[0];
-    const funcName = _.split(lambda.handler, '.')[1];
-    const method = _.toUpper(lambda.apiGateway.method);
-    const path = `/${lambda.apiGateway.path}`;
+    if (_.has(lambda, 'apiGateway')) {
+      // import the lib
+      const lambdaName = _.split(lambda.handler, '.')[0];
+      const funcName = _.split(lambda.handler, '.')[1];
+      const method = _.toUpper(lambda.apiGateway.method);
+      const apPath = `/${lambda.apiGateway.path}`;
 
-    // save the endpoint names here but log them after the server is launched
-    endpoints.push(`Endpoint created: ${method} - ${path}`);
+      // save the endpoint names here but log them after the server is launched
+      endpoints.push(`Endpoint created: ${method} - ${apPath}`);
 
-    const func = require(`../../dist/${lambdaName}`)[funcName];
+      const func = require(path.join(process.cwd(), `dist/${lambdaName}`))[funcName];
 
-    server.route({
-      path: path,
-      method: method,
-      handler: (req, res) => {
-        func({}, null, (err, r) => {
-          res(r);
-        });
-      }
-    });
+      server.route({
+        path: apPath,
+        method: method,
+        handler: (req, res) => {
+          func({}, null, (err, r) => {
+            res(r);
+          });
+        }
+      });
+    }
   }
 
   server.register({

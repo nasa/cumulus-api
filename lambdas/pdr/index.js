@@ -441,9 +441,7 @@ export function discoverPdrHandler(event, context, cb = () => {}) {
         if (e instanceof RecordDoesNotExist) {
           pdr.concurrency = concurrency;
           pdr.collectionName = collectionName;
-          //if (pdr.name === 'PDN.ID1611141200.PDR') {
-            await uploadAddQueuePdr(pdr);
-          //}
+          await uploadAddQueuePdr(pdr);
         }
       }
     }
@@ -457,7 +455,7 @@ export function discoverPdrHandler(event, context, cb = () => {}) {
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  //discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
+  discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
 
   //pollPdrQueue(1, 10000, 15);
 

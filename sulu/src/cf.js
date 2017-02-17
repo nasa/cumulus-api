@@ -1,7 +1,7 @@
 'use strict';
 
-const _ = require('lodash');
 const Handlebars = require('handlebars');
+const path = require('path');
 const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const exec = require('./common').exec;
@@ -23,10 +23,10 @@ const compileCF = (configPath) => {
 
   const config = parseConfig(configPath);
 
-  const t = fs.readFileSync('config/cloudformation.template.yml', 'utf8');
+  const t = fs.readFileSync(path.join(process.cwd(), 'config/cloudformation.template.yml'), 'utf8');
   const template = Handlebars.compile(t);
 
-  const destPath = 'config/cloudformation.yml';
+  const destPath = path.join(process.cwd(), 'config/cloudformation.yml');
   console.log(`CF template saved to ${destPath}`);
   fs.writeFileSync(destPath, template(config));
 };
@@ -42,7 +42,7 @@ function uploadCF(s3Path, profile, configPath) {
 
   // make sure cloudformation template exists
   try {
-    fs.accessSync('config/cloudformation.yml');
+    fs.accessSync(path.join(process.cwd(), 'config/cloudformation.yml'));
   }
   catch (e) {
     console.log('cloudformation.yml is missing.');
@@ -124,7 +124,9 @@ function getHash(c) {
   // this is used to separate deployments from different machines
   let artifactHash = exec(`find dist -type f | \
                            xargs shasum | shasum | awk '{print $1}' ${''}`);
-  artifactHash = _.replace(artifactHash, '\n', '');
+  console.log(typeof artifactHash);
+  console.log(artifactHash);
+  artifactHash = artifactHash.toString().replace(/\n/, '');
 
   // Make the S3 Path
   const s3Path = `s3://${c.buckets.internal}/${c.stackName}-${c.stage}/${artifactHash}`;
