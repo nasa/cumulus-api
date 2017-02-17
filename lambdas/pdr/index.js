@@ -255,13 +255,19 @@ export async function pollGranulesQueue(
           const receiptHandle = message.ReceiptHandle;
           log.info(`Ingesting ${file.fileId}`);
           const func = async () => {
-            await uploadIfNotFound(
-              file.fileUrl,
-              file.bucket,
-              file.fileId,
-              file.key
-            );
-            await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
+            try {
+              await uploadIfNotFound(
+                file.fileUrl,
+                file.bucket,
+                file.fileId,
+                file.key
+              );
+              await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
+            }
+            catch (e) {
+              log.error(e.message);
+              log.error(`Couldn't ingst ${file.fileId}`);
+            }
             return;
           };
           downloads.push(func());
