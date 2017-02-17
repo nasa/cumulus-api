@@ -1,6 +1,6 @@
 ## Cumulus-api
 
-[![CircleCI](https://circleci.com/gh/cumulus-nasa/workflow-engine.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/workflow-engine)
+[![CircleCI](https://circleci.com/gh/cumulus-nasa/cumulus-api.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/cumulus-api)
 
 Cumulus-api is the gateway to the Cumulus platform. Ultimately, everything that needs to be configured on Cumulus would be handled by the cumulus-api. All the metrics and status of the Cumulus as a platform is also accessible through the cumulus-api.
 
@@ -28,6 +28,17 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
     $ bin/lambda collections --profile awsProfileName
     $ bin/lambda granules --profile awsProfileName
+
+### Adding Records to DynamoDB
+
+    $ bin/ddb add -l -t cumulus-api-test2-dev-CollectionsTable -r config/aster.json --profile myProfile
+
+### Deploying using differnet config files
+
+To deploy using other config files (there are two others committed in this repo) pass `--config` argument. Examples:
+
+    $ bin/cf update --profile awsProfileName --config config/config-prod.yml
+    $ bin/cf validate --profile awsProfileName --config config/config-ngap.yml
 
 ### Adding a new Lambda function
 
@@ -83,3 +94,13 @@ To make local development with DyanmoDB and SQS you can use docker. Just run:
 
     $ docker-compose up local
     $ bin/bootstrap
+
+## Tests
+
+Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/collections.js`
+
+Library tests are located at `lib/tests`.
+
+To run the tests:
+
+    $ npm run test

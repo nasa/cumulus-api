@@ -1,51 +1,65 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const glob = require('glob');
-const nodeExternals = require('webpack-node-externals');
+
+function getEntries() {
+  const output = glob.sync('./lambdas/*')
+    .map((filename) => {
+      const entry = {};
+      entry[path.basename(filename)] = ['babel-polyfill', filename];
+      return entry;
+    })
+    .reduce((finalObject, entry) => Object.assign(finalObject, entry), {});
+
+  return output;
+}
 
 module.exports = {
+  entry: getEntries(),
+  output: {
+    path: path.join(__dirname, 'dist'),
+    library: '[name]',
+    libraryTarget: 'commonjs2',
+    filename: '[name]/index.js'
+  },
   target: 'node',
   externals: [
-    nodeExternals(),
-    'aws-sdk'
+    'aws-sdk',
   ],
   node: {
     __dirname: false,
     __filename: false
   },
   devtool: '#inline-source-map',
+  resolve: {
+    alias: {
+      'aws-sdk': 'aws-sdk/dist/aws-sdk'
+    }
+  },
+
   module: {
-    resolve: {
-      alias: {
-        'aws-sdk': 'aws-sdk/dist/aws-sdk'
-      }
-    },
-    noParse: [
-      /graceful-fs\/fs.js/
-    ],
-    loaders: [
+    rules: [
+      {
+        test: /test\.js$/,
+        exclude: /node_modules/,
+        loader: 'prepend-loader',
+        options: {
+          data: "'use strict';\nimport 'babel-polyfill';"
+        }
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel',
-        query: JSON.parse(
+        loader: 'babel-loader',
+        options: JSON.parse(
           fs.readFileSync(path.join(__dirname, '.babelrc'), { encoding: 'utf8' })
         )
       },
       {
-        include: glob.sync('./lambdas/*/index.js',
-                           { realpath: true })
-                     .map((filename) => path.resolve(__dirname, filename)),
-        exclude: /node_modules/,
-        loader: 'prepend',
-        query: {
-          data: "'use strict';\nrequire('babel-polyfill');require('source-map-support').install();"
-        }
-      },
-      {
         test: /\.json$/,
-        loader: 'json'
+        loader: 'json-loader'
       }
     ]
   }
 };
+

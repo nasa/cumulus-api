@@ -7,19 +7,10 @@ Parameters:
   ArtifactPath:
     Type: String
     Description: Path within the deployment bucket containing artifacts
-Outputs:
-  # get Lambda's ARNs as output
-{{#each lambdas}}
-  {{name}}FunctionArn:
-    Description: Lambda function info
-    Value:
-      Fn::GetAtt:
-      - {{name}}LambdaFunction
-      - Arn
-{{/each}}
 
 Resources:
 
+  # role for EC2/ECS instaces used by Cumulus
   ECSRole:
     Type: AWS::IAM::Role
     Properties:
@@ -50,6 +41,8 @@ Resources:
                 Resource:
                 - !Sub arn:aws:s3:::{{buckets.internal}}
                 - !Sub arn:aws:s3:::{{buckets.internal}}/*
+                - !Sub arn:aws:s3:::{{buckets.private}}
+                - !Sub arn:aws:s3:::{{buckets.private}}/*
 
               # Allow to call other lambdas
               - Effect: Allow
@@ -59,6 +52,57 @@ Resources:
                 Resource:
                 - "*"
 
+              # Allow access to SQS
+              - Effect: Allow
+                Action:
+                - sqs:SendMessage
+                - sqs:ReceiveMessage
+                - sqs:ChangeMessageVisibility
+                - sqs:DeleteMessage
+                Resource:
+                - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
+
+              # Allow use of dynamo
+              - Effect: Allow
+                Action:
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+                - dynamodb:BatchGetItem
+                - dynamodb:BatchWriteItem
+                - dynamodb:DeleteItem
+                - dynamodb:GetItem
+                - dynamodb:GetRecords
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:UpdateItem
+                Resource:
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
+
+              # Allow running within ECS
+              - Effect: Allow
+                Action:
+                - ecs:DeregisterContainerInstance
+                - ecs:DiscoverPollEndpoint
+                - ecs:Poll
+                - ecs:RegisterContainerInstance
+                - ecs:StartTelemetrySession
+                - ecs:Submit*
+                - ecr:BatchCheckLayerAvailability
+                - ecr:BatchGetImage
+                - ecr:GetDownloadUrlForLayer
+                - ecr:GetAuthorizationToken
+                Resource:
+                - "*"
+
+  # needed for EC2 instances
+  CumulusInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref ECSRole
+
+  # role for Lambdas that are NOT used with APIGateway
   ProcessingLambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -77,18 +121,6 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              # Allow access to kinesis
-              - Effect: Allow
-                Action:
-                - kinesis:GetRecords
-                - kinesis:GetShardIterator
-                - kinesis:DescribeStream
-                - kinesis:ListStreams
-                Resource:
-                - Fn::GetAtt:
-                  - KinesisCumulus
-                  - Arn
-
               # Allow Lambda logging
               - Effect: Allow
                 Action:
@@ -119,7 +151,7 @@ Resources:
                 - dynamodb:GetShardIterator
                 - dynamodb:ListStreams
                 Resource:
-                - "*"
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{stackName}}-*
 
               # Allow lambdas to call other lambdas
               - Effect: Allow
@@ -129,6 +161,7 @@ Resources:
                 Resource:
                 - "*"
 
+  # Role for Lambdas that are USED with ApiGateway Service
   LambdaApiGatewayRole:
     Type: AWS::IAM::Role
     Properties:
@@ -181,15 +214,142 @@ Resources:
             Resource:
             - "*"
 
-  KinesisCumulus:
-    Type: "AWS::Kinesis::Stream"
+  #################################################
+  # SQS config BEGIN
+  #################################################
+{{#each sqs}}
+  {{name}}SQS:
+    Type: AWS::SQS::Queue
     Properties:
-      Name: "{{stackName}}-{{stage}}-cumulus-api"
-      ShardCount: 1
-      Tags:
-        - Key: Project
-          Value: Cumulus
+      QueueName: {{stackName}}-{{stage}}-{{name}}
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt [{{name}}FailedSQS, Arn]
+        maxReceiveCount: {{retry}}
+      VisibilityTimeout: {{visibilityTimeout}}
 
+  {{name}}FailedSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: {{stackName}}-{{stage}}-{{name}}-failed
+{{/each}}
+  #################################################
+  # SQS config END
+  #################################################
+
+
+  #################################################
+  # ECS config BEGIN
+  #################################################
+
+  LambdaRunnerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: {{stackName}}-{{stage}}-lambdarunner
+
+  CumulusECSCluster:
+    Type: AWS::ECS::Cluster
+
+  CumulusECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for {{stackName}}-{{stage}}
+      SecurityGroupEgress:
+      - IpProtocol: "-1"
+        FromPort: "-1"
+        ToPort: "-1"
+        CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
+      VpcId: {{vpc.id}}
+
+  CumulusContainerInstanceLaunch:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            01_add_instance_to_cluster:
+              command: !Sub |
+                #!/bin/bash
+                echo ECS_CLUSTER=${CumulusECSCluster} >> /etc/ecs/ecs.config
+          files:
+            "/etc/cfn/cfn-hup.conf":
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: '000400'
+              owner: root
+              group: root
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.CumulusContainerInstanceLaunch.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource CumulusContainerInstanceLaunch --region ${AWS::Region}
+                runas=root
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: 'true'
+                ensureRunning: 'true'
+                files:
+                - "/etc/cfn/cfn-hup.conf"
+                - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+    Properties:
+      AssociatePublicIpAddress: true
+      SecurityGroups:
+      - !Ref CumulusECSSecurityGroup
+      ImageId: !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMIID]
+      InstanceType: {{ecs.instanceType}}
+      IamInstanceProfile: !Ref CumulusInstanceProfile
+      BlockDeviceMappings:
+      - DeviceName: "/dev/xvdcz"
+        Ebs:
+          DeleteOnTermination: true
+          VolumeSize: 100
+      KeyName: {{ ecs.keyPairName }}
+      UserData:
+        "Fn::Base64": !Join
+          - ""
+          - - "#cloud-config\n"
+            - "\nruncmd:\n"
+            - " - yum install -y aws-cfn-bootstrap\n"
+            - !Sub " - /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource CumulusContainerInstanceLaunch --region ${AWS::Region}\n"
+            - !Sub " - /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource CumulusECSAutoScalingGroup --region ${AWS::Region}\n"
+
+  CumulusECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: 0
+    Properties:
+      AvailabilityZones:
+        - {{vpc.availabilityZones}}
+      VPCZoneIdentifier:
+        - {{vpc.subnetId}}
+      LaunchConfigurationName: !Ref CumulusContainerInstanceLaunch
+      MinSize: '0'
+      MaxSize: {{ ecs.maxInstances }}
+      DesiredCapacity: {{ ecs.desiredInstances }}
+      Tags:
+      - Key: Name
+        Value: "{{stackName}} ECS"
+        PropagateAtLaunch: true
+
+
+
+  #################################################
+  # ECS config END
+  #################################################
+
+  #################################################
+  # ElasticSearch config BEGIN
+  #################################################
   ElasticsearchDomain:
     Type: "AWS::Elasticsearch::Domain"
     Properties:
@@ -230,7 +390,13 @@ Resources:
             Action: "es:*"
             Resource:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+  #################################################
+  # ElasticSearch config END
+  #################################################
 
+  #################################################
+  # DynamoDB config BEGIN
+  #################################################
 {{#each dynamos}}
   {{name}}DynamoDB:
     Type: AWS::DynamoDB::Table
@@ -250,7 +416,13 @@ Resources:
         WriteCapacityUnits: {{write}}
       TableName: {{stackName}}-{{stage}}-{{name}}
 {{/each}}
+  #################################################
+  # DyanmoDB config END
+  #################################################
 
+  #################################################
+  # APIGateway config BEGIN
+  #################################################
   ApiGatewayDeployment{{apiName}}:
     DependsOn:
 {{# if apiMethods}}
@@ -421,7 +593,13 @@ Resources:
     Properties:
       Name: {{stackName}}-{{stage}}
 {{/if}}
+  #################################################
+  # APIGateway config END
+  #################################################
 
+  #################################################
+  # Lambda config BEGIN
+  #################################################
 {{#each lambdas}}
   {{name}}LambdaFunction:
     Type: AWS::Lambda::Function
@@ -463,4 +641,61 @@ Resources:
         - Arn
       Principal: apigateway.amazonaws.com
 {{/if}}
+
+{{# if image }}
+  # adding TaskDefinition for Lambda/ECS services
+  {{name}}TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+      - Name: {{name}}
+        Environment:
+        {{#each envs}}
+          - Name: {{key}}
+            Value: {{value}}
+        {{/each}}
+        Command:
+        - !GetAtt [{{name}}LambdaFunction, Arn]
+        Cpu: '10'
+        Essential: true
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
+        Memory: '256'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref {{name}}EcsLogs
+            awslogs-region: !Sub ${AWS::Region}
+
+  {{name}}EcsLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: {{name}}EcsLogs
+
+  {{name}}ECSService:
+    Type: AWS::ECS::Service
+    DependsOn:
+    - CumulusECSAutoScalingGroup
+    - {{name}}LambdaFunction
+    Properties:
+      Cluster: !Ref CumulusECSCluster
+      DesiredCount:{{# if count}}{{count}}{{ else }} 0 {{/if}}
+      TaskDefinition: !Ref {{name}}TaskDefinition
+      DeploymentConfiguration:
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
+
+
+{{/if}}
 {{/each}}
+  #################################################
+  # Lambda config END
+  #################################################
+
+Mappings:
+  AWSRegionToAMI:
+    DOCS:
+      LIST: http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+    us-west-2:
+      AMIID: ami-241bd844
+    us-east-1:
+      AMIID: ami-e4c4cbf3

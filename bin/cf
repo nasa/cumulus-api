@@ -8,6 +8,7 @@ const cf = require('../lib/aws/cf');
 program
   .usage('COMMAND [options]')
   .option('-p, --profile <profile>', 'AWS profile name to use for authentication')
+  .option('-c, --config <config>', 'Path to config file')
   .option('-r, --region', 'AWS region');
 
 program

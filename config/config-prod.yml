@@ -1,11 +1,6 @@
-stackName: cumulus-api-test2
-stage: dev
+stackName: cumulus-api
+stage: prod
 buildApiGateway: true
-
-vpc:
-  id: vpc-5aa75d3c
-  availabilityZones: us-east-1e
-  subnetId: subnet-41e23a7d
 
 buckets:
   private: cumulus-private
@@ -13,19 +8,9 @@ buckets:
   protected: cumulus-protected
   internal: cumulus-internal
 
-ecs:
-  maxInstances: 5
-  desiredInstances: 1
-  keyPairName: cumulus-scisco
-  instanceType: t2.micro
-
 sqs:
   - name: PDRsQueue # queue for list of PDRs to be parsed
-    visibilityTimeout: 100
-    retry: 3
   - name: GranulesQueue # queue for Granule files to be ingested
-    visibilityTimeout: 1000
-    retry: 3
 
 dynamos:
   - name: CollectionsTable
@@ -77,23 +62,21 @@ dynamos:
         type: HASH
 
 lambdas:
-  - name: pdrParser
-    handler: pdr.parsePdrsHandler
+  - name: signup
+    handler: auth.signup
     timeout: 300
-    ecs: true # to be deployed as a service on ECS
-    count: 0 # number of service instances running on ECS for this lambda
-    image: cumulus-docker-dev-lambdarunner
+    apiGateway:
+      path: signup
+      method: post
+      cors: trues
 
-  - name: ingestGranules
-    handler: pdr.ingestGranulesHandler
+  - name: signin
+    handler: auth.signin
     timeout: 300
-    ecs: true
-    image: cumulus-docker-dev-lambdarunner
-    count: 0
-
-  - name: pdrDiscoverer
-    handler: pdr.discoverPdrHandler
-    timeout: 300
+    apiGateway:
+      path: signin
+      method: post
+      cors: true
 
   - name: statsSummary
     handler: stats.summary

@@ -7,6 +7,7 @@
   },
   "rules": {
     "generator-star-spacing": "off",
+    "import/imports-first": "off",
     "import/no-extraneous-dependencies": "off",
     "import/newline-after-import": "off",
     "import/prefer-default-export": "off",
@@ -20,6 +21,8 @@
     "space-before-function-paren": ["error", "never"],
     "brace-style": [2, "stroustrup"],
     "no-useless-escape": "off",
+    "no-param-reassign": "off",
+    "no-prototype-builtins": "off",
     "consistent-return": "off",
     "max-len": [2, {
       "code": 100,
