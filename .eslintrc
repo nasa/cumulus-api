@@ -7,6 +7,7 @@
   },
   "rules": {
     "generator-star-spacing": "off",
+    "radix": "off",
     "import/imports-first": "off",
     "import/no-extraneous-dependencies": "off",
     "import/newline-after-import": "off",
