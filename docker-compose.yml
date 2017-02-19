@@ -6,7 +6,15 @@ services:
       - "8000:8000"
     depends_on:
       - sqs
+      - elasticsearch
+
   sqs:
     image: vsouza/sqs-local
     ports:
       - "9324:9324"
+
+  elasticsearch:
+    image: elasticsearch:2.3.5
+    ports:
+      - "9200:9200"
+      - "9300:9200"
