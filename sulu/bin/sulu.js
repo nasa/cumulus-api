@@ -2,12 +2,13 @@
 'use strict';
 
 const program = require('commander');
-const cf = require('../src/cf');
-const dynamo = require('../src/dynamo');
-const lambda = require('../src/lambda');
-const serve = require('../src/offline');
-const bootstrap = require('../src/bootstrap');
+const lib = require('../index');
 
+const cf = lib.cf;
+const dynamo = lib.dynamo;
+const lambda = lib.lambda;
+const serve = lib.offline;
+const bootstrap = lib.bootrstap;
 
 // the CLI activation
 program
