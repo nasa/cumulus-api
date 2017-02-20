@@ -98,6 +98,10 @@ lambdas:
     handler: pdr.discoverPdrHandler
     timeout: 300
 
+  - name: archive
+    handler: archive.handler
+    timeout: 300
+
   - name: statsSummary
     handler: stats.summary
     timeout: 300
