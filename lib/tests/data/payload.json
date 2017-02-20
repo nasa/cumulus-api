@@ -36,7 +36,7 @@
 				"sipFile": null,
 				"name": null,
 				"source": "cumulus",
-				"stagingFile": null,
+				"stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016110701_000_002",
 				"archivedFile": null
 			},
 			"origin-thumbnail": {
@@ -63,7 +63,7 @@
 				"sipFile": null,
 				"name": null,
 				"source": "cumulus",
-				"stagingFile": null,
+				"stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016110701_000_002",
 				"archivedFile": null
 			},
 			"thumbnail-1": {
