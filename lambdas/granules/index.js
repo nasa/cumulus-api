@@ -24,11 +24,11 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const collection = _.get(event.params, 'collection');
-  const granuleId = _.get(event.params, 'granuleId');
+  const collection = _.get(event.path, 'collection');
+  const granuleId = _.get(event.path, 'granuleName');
 
   if (!collection || !granuleId) {
-    return cb('Must supply path.collection and path.granuleId');
+    return cb('Must supply path.collection and path.granuleName');
   }
 
   const search = new Search({}, process.env.GranulesTable);
