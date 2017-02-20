@@ -150,7 +150,7 @@ lambdas:
     handler: granules.get
     timeout: 300
     apiGateway:
-      path: granules/{collection}/{granuleId}
+      path: granules/{collection}/{granuleName}
       method: get
       cors: true
 
