@@ -31,15 +31,9 @@ export function get(event, context, cb) {
     return cb('Must supply path.collection and path.granuleId');
   }
 
-  const search = new Search({
-    collectionName: collection,
-    granuleId: granuleId
-  }, process.env.GranulesTable);
-  search.query().then((response) => {
-    if (response.results.length === 0) {
-      return cb('Must supply path.collection and path.granuleId');
-    }
-    cb(null, response.results[0]);
+  const search = new Search({}, process.env.GranulesTable);
+  search.get(`${collection}|${granuleId}`).then((response) => {
+    cb(null, response);
   }).catch((e) => {
     cb(e);
   });

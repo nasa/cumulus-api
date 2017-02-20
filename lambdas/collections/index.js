@@ -3,13 +3,9 @@
 import _ from 'lodash';
 import { validate } from 'jsonschema';
 import { collection as schema } from 'cumulus-common/schemas';
-import { esQuery } from 'cumulus-common/es';
 import * as db from 'cumulus-common/db';
-import { getLimit, getStart } from 'cumulus-common/utils';
 
-const table = process.env.CollectionsTable || 'table';
-const index = process.env.StackName || 'cumulus-local-test';
-const key = 'collectionName';
+import { Search } from 'cumulus-common/es/search';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -21,58 +17,40 @@ function parseRecipe(record) {
 
 /**
  * List all collections.
- * @param {object} query an optional query object.
- * @param {number} query.limit maximum number of records to return.
- * @param {number} query.start_at record to start showing from.
- * @return {array} every collection in the database.
+ * @param {object} event aws lambda event object.
+ * @param {object} context aws lambda context object
+ * @param {callback} cb aws lambda callback function
+ * @return {undefined}
  */
-export function list (event, context, cb) {
-  const query = _.get(event, 'query', {});
-  const limit = getLimit(query);
-  const start = getStart(query);
-  esQuery(index, table, {
-    query: {
-      match_all: {}
-    },
-    size: limit,
-    from: start
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else {
-      const parsed = res.map(r => parseRecipe(r));
-      return cb(null, parsed);
-    }
+export function list(event, context, cb) {
+  const search = new Search(event, process.env.CollectionsTable);
+  search.query().then((response) => cb(null, response)).catch((e) => {
+    cb(e);
   });
 }
 
 /**
  * Query a single collection.
  * @param {string} collectionName the name of the collection.
- * @return {object} a single collection object.
+ * @param {string} granuleId the id of the granule.
+ * @return {object} a single granule object.
  */
-export function get (event, context, cb) {
-  const name = _.get(event, 'collectionName');
+export function get(event, context, cb) {
+  const name = _.get(event.params, 'short_name');
   if (!name) {
-    return cb('Collection#get requires a collectionName property');
+    return cb('Collection#get requires a short_name property');
   }
-  esQuery(index, table, {
-    query: {
-      bool: {
-        must: [
-          { match: { [key]: name } }
-        ]
-      }
-    }
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else if (res.length === 0) {
-      return cb('Record was not found');
-    } else {
-      // Cannot have more than 1 document, because `collectionName` is the primary Dynamo key
-      return cb(null, parseRecipe(res[0]));
-    }
+
+  console.log(name);
+  const search = new Search({}, process.env.CollectionsTable);
+  search.get(name).then((response) => {
+    //if (response.results.length === 0) {
+      //return cb({ detail: 'Record was not found' });
+    //}
+    console.log(response);
+    cb(null, response);
+  }).catch((e) => {
+    cb(e);
   });
 }
 
