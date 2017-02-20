@@ -7,11 +7,12 @@ import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/mod
 import { syncUrl, downloadS3Files, fileNotFound } from 'gitc-common/aws';
 import Crawler from 'simplecrawler';
 import url from 'url';
-import log from 'gitc-common/log';
+import Logger from 'cumulus-common/log';
 import pvl from 'pvl';
 import path from 'path';
 import fs from 'fs';
 
+const log = new Logger('lambdas/pdr/index.js');
 
 /**
  * discovers PDR names with a given url and returns
@@ -404,8 +405,8 @@ export function parsePdrsHandler(event) {
  * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export function discoverPdrHandler(event, context, cb = () => {}) {
-  // get a promise here for use with handler's callback later
+export async function discoverPdrHandler(event, context, cb = () => {}) {
+  log.debug('discoverPdrHandler invoked');
   const func = async () => {
     // get the collectionName
     if (!event.hasOwnProperty('collectionName')) {
