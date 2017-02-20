@@ -8,7 +8,7 @@ const cf = lib.cf;
 const dynamo = lib.dynamo;
 const lambda = lib.lambda;
 const serve = lib.offline;
-const bootstrap = lib.bootrstap;
+const bootstrap = lib.bootstrap;
 
 // the CLI activation
 program
