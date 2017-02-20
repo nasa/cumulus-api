@@ -1,68 +1,91 @@
 {
 	"granuleRecord": {
-		"archivedAt": 1480962569,
-		"collectionName": "AsterA1",
-		"createdAt": 1480962569,
-		"files": {
-			"origin-hdf5-file": {
-				"archivedFile": null,
-				"sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101225/pg-PR1A0000-2016111001_005_039",
-				"stagingFile": "s3://cumulus-1st-test-private/staging/pg-PR1A0000-2016111001_005_039"
-			},
-			"processed-hdf5-file": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-				"archivedFile": null,
-				"sipFile": null,
-				"stagingFile": null
-			},
-			"thumbnail-file": {
-				"archivedFile": null,
-				"sipFile": null,
-				"stagingFile": null
-			},
-			"meta-xml": {
-				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
-				"sipFile": null,
-				"archivedFile": null,
-				"stagingFile": null
-			}
-		},
-		"granuleId": "D20120907_022056_P",
-		"granuleShortName": "D20120907_022056_P",
-		"processedAt": 1480962569,
-		"pushedToCMRAt": 1480962569,
-		"readyForProcess": 1480962569,
+		"createdAt": 1487297024857,
 		"recipe": {
+			"pushToCMR": {
+				"config": {}
+			},
 			"archive": {
 				"config": {}
 			},
-			"order": [
-				"processStep",
-				"pushtToCMR",
-				"archive"
-			],
 			"processStep": {
+				"description": "UpdateHDF5fileandextractthumbnail",
 				"config": {
-					"image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-data-acquisition:latest",
-					"inputFiles": [
-						"origin-hdf5-file"
-					],
-					"outputFiles": [
-						"processed-hdf5-file",
-						"meta-xml"
-					],
-                                        "nextQueue": {
-                                          "type": "kinesis",
-                                          "name": "cumulus-api-test2-dev-cumulus-api"
-                                        }
-				},
-				"description": "UpdateHDF5fileandextractthumbnail"
+					"image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+					"outputFiles": ["processed-hdf5", "thumbnail-1", "thumbnail-2", "thumbnail-3", "meta-xml"],
+					"inputFiles": ["origin-hdf5"]
+				}
 			},
-			"pushToCMR": {
-				"config": {}
+			"order": ["processStep", "pushtToCMR", "archive"]
+		},
+		"collectionName": "ASTER_1A_versionId_1",
+		"granuleId": "ASTL1A 1611030101111611099000",
+		"files": {
+			"origin-hdf5": {
+				"regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+				"access": "private",
+				"sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101200/pg-PR1A0000-2016111001_000_001",
+				"name": "pg-PR1A0000-2016111001_000_001",
+				"source": "sips",
+				"stagingFile": null,
+				"archivedFile": null
+			},
+			"processed-hdf5": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+				"access": "protected",
+				"sipFile": null,
+				"name": null,
+				"source": "cumulus",
+				"stagingFile": null,
+				"archivedFile": null
+			},
+			"origin-thumbnail": {
+				"regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+				"access": "private",
+				"sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101200/pg-BR1A0000-2016111001_000_001",
+				"name": "pg-BR1A0000-2016111001_000_001",
+				"source": "sips",
+				"stagingFile": null,
+				"archivedFile": null
+			},
+			"meta-xml": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+				"access": "public",
+				"sipFile": null,
+				"name": null,
+				"source": "cumulus",
+				"stagingFile": "s3://cumulus-internal/testdata/metadata/test-granule2.xml",
+				"archivedFile": null
+			},
+			"thumbnail-2": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+				"access": "public",
+				"sipFile": null,
+				"name": null,
+				"source": "cumulus",
+				"stagingFile": null,
+				"archivedFile": null
+			},
+			"thumbnail-1": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+				"access": "public",
+				"sipFile": null,
+				"name": null,
+				"source": "cumulus",
+				"stagingFile": null,
+				"archivedFile": null
+			},
+			"thumbnail-3": {
+				"regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+				"access": "public",
+				"sipFile": null,
+				"name": null,
+				"source": "cumulus",
+				"stagingFile": null,
+				"archivedFile": null
 			}
 		},
-		"updatedAt": 1480962569
+		"updatedAt": 1487297024857
 	},
 	"nextStep": 0,
 	"previousStep": 1
