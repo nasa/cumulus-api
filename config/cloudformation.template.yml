@@ -648,7 +648,7 @@ Resources:
               - ElasticsearchDomain
               - DomainEndpoint
         {{#each envs}}
-          {{key}}: {{value}}
+          {{key}}: !Sub {{value}}
         {{/each}}
       Handler: {{handler}}
       MemorySize: {{memory}}
@@ -687,7 +687,7 @@ Resources:
             Value: !Sub ${AWS::Region}
         {{#each envs}}
           - Name: {{key}}
-            Value: {{value}}
+            Value: !Sub {{value}}
         {{/each}}
         Command:
         - !GetAtt [{{name}}LambdaFunction, Arn]

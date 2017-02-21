@@ -100,14 +100,17 @@ lambdas:
   - name: pdrDiscoverer
     handler: pdr.discoverPdrHandler
     timeout: 300
+    broadcast: true
 
   - name: archive
     handler: archive.handler
     timeout: 300
+    broadcast: true
 
   - name: dispatcher
     handler: dispatcher.handler
     timeout: 300
+    broadcast: true
 
   - name: statsSummary
     handler: stats.summary
