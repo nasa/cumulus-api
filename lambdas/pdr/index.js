@@ -12,7 +12,6 @@ import pvl from 'pvl';
 import path from 'path';
 import fs from 'fs';
 
-//const log = new Logger('lambdas/pdr/index.js');
 
 /**
  * discovers PDR names with a given url and returns
@@ -21,7 +20,7 @@ import fs from 'fs';
  * @return {Promise} on success the promise includes a list {@link pdrObject|pdrObjects}
  */
 export function discoverPDRs(endpoint) {
-  const pattern = /<a href="(PDN.*)">/;
+  const pattern = /<a href="(*.PDR)">/;
   const c = new Crawler(endpoint);
 
   c.interval = 0;
