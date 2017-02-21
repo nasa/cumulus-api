@@ -26,6 +26,9 @@ sqs:
   - name: GranulesQueue # queue for Granule files to be ingested
     visibilityTimeout: 1000
     retry: 3
+  - name: ProcessingQuque # queue for running process ECS tasks
+    visibilityTimeout: 5000
+    retry: 2
 
 dynamos:
   - name: CollectionsTable
@@ -100,6 +103,10 @@ lambdas:
 
   - name: archive
     handler: archive.handler
+    timeout: 300
+
+  - name: dispatcher
+    handler: dispatcher.handler
     timeout: 300
 
   - name: statsSummary
