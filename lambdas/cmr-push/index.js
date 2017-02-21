@@ -1,12 +1,11 @@
 'use strict';
 
 import aws from 'aws-sdk';
-import Logger from 'cumulus-common/log';
+import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
 import { ingestGranule } from 'cumulus-common/cmrjs';
 import payloadExample from 'cumulus-common/tests/data/payload.json';
 
-const log = new Logger('lambdas/cmr-push/index.js');
 const s3 = new aws.S3();
 
 function identifyCollection(payload) {

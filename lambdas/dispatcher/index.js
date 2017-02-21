@@ -1,10 +1,8 @@
 'use strict';
 
-import { Logger } from 'cumulus-common/log';
+import log from 'cumulus-common/log';
 import { Granule } from 'cumulus-common/models';
 import { SQS, invoke, S3 } from 'cumulus-common/aws-helpers';
-
-const log = new Logger('lambdas/dispatcher/index.js');
 
 export function handler(event, context, cb) {
   // recieve the payload

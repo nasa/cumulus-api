@@ -7,12 +7,12 @@ import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/mod
 import { syncUrl, downloadS3Files, fileNotFound } from 'gitc-common/aws';
 import Crawler from 'simplecrawler';
 import url from 'url';
-import Logger from 'cumulus-common/log';
+import log from 'cumulus-common/log';
 import pvl from 'pvl';
 import path from 'path';
 import fs from 'fs';
 
-const log = new Logger('lambdas/pdr/index.js');
+//const log = new Logger('lambdas/pdr/index.js');
 
 /**
  * discovers PDR names with a given url and returns
@@ -84,7 +84,7 @@ export async function uploadIfNotFound(originalUrl, bucket, fileName, key = '') 
  */
 export async function uploadAddQueuePdr(pdr) {
   await syncUrl(pdr.url, process.env.internal, `pdrs/${pdr.name}`);
-  log.info(`Uploaded ${pdr.name} to S3`);
+  log.info(`Uploaded ${pdr.name} to S3`, pdr.collectionName);
 
   pdr.s3Uri = `s3://${process.env.internal}/pdrs/${pdr.name}`;
 
@@ -92,7 +92,7 @@ export async function uploadAddQueuePdr(pdr) {
   // (we use queue here because we want to avoid DDOSing
   // providers
   await SQS.sendMessage(process.env.PDRsQueue, pdr);
-  log.info(`Added ${pdr.name} to PDR queue`);
+  log.info(`Added ${pdr.name} to PDR queue`, pdr.collectionName);
 
   // add the PDR to the table
   const pdrRecord = Pdr.buildRecord(pdr.name, pdr.url);
@@ -101,7 +101,7 @@ export async function uploadAddQueuePdr(pdr) {
   const pdrObj = new Pdr();
   await pdrObj.create(pdrRecord);
 
-  log.info(`Saved ${pdr.name} to PDRsTable`);
+  log.info(`Saved ${pdr.name} to PDRsTable`, pdr.collectionName);
 }
 
 
@@ -126,6 +126,7 @@ export async function parsePdr(pdr, concurrency = 5) {
       throw new Error('The argument must have name and collectionName keys');
     }
 
+    log.info(`${pdr.name} downloaded from S3 to be parsed`, pdr.collectionName);
     // first download the PDR
     await downloadS3Files(
       [{ Bucket: process.env.internal, Key: `pdrs/${pdr.name}` }],
@@ -157,12 +158,44 @@ export async function parsePdr(pdr, concurrency = 5) {
     // each group represents a Granule record.
     // After adding all the files in the group to the Queue
     // we create the granule record (moment of inception)
-    log.info(`There are ${fileGroups.length} granules in this PDR`);
-    log.info(`There are approximately ${approximateFileCount} files in this PDR`);
+    log.info(`There are ${fileGroups.length} granules in ${pdr.name}`, pdr.collectionName);
+    log.info(
+      `There are approximately ${approximateFileCount} files in ${pdr.name}`,
+      pdr.collectionName
+    );
 
     for (const group of fileGroups) {
       // get all the file specs in each group
       const specs = group.objects('FILE_SPEC');
+
+      // Find the granuleId
+      // NOTE: In case of Aster, the filenames don't have the granuleId
+      // For Aster, we temporarily use the granuleId in the XAR_ENTRY
+      // section of the PDR
+      const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
+
+      // check if there is a granule record already created
+      let granuleRecordExists = false;
+      let granuleRecord;
+      const g = new Granule();
+      try {
+        granuleRecord = await g.get({
+          granuleId: granuleId,
+          collectionName: pdr.collectionName
+        });
+
+        log.info(`A record for ${granuleId} exists`, pdr.collectionName);
+        granuleRecordExists = true;
+      }
+      catch (e) {
+        if (e instanceof RecordDoesNotExist) {
+          log.info(`New record for ${granuleId} will be added`, pdr.collectionName);
+        }
+        else {
+          log.info(e, pdr.collectionName);
+          throw e;
+        }
+      }
 
       const granuleFiles = [];
 
@@ -171,6 +204,14 @@ export async function parsePdr(pdr, concurrency = 5) {
         const directoryId = spec.get('DIRECTORY_ID').value;
         const fileId = spec.get('FILE_ID').value;
         const fileUrl = url.resolve('https://e4ftl01.cr.usgs.gov:40521/', `${directoryId}/${fileId}`);
+
+        // if file is already added to the granule, skip
+        if (granuleRecordExists) {
+          if (Granule.fileInRecord(fileUrl, 'sipFile', granuleRecord.files)) {
+            log.info(`${fileId} is already ingested, skipping!`, granuleId);
+            continue;
+          }
+        }
 
         const granuleFile = {
           fileUrl,
@@ -189,37 +230,32 @@ export async function parsePdr(pdr, concurrency = 5) {
 
         conc(async () => {
           await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
-          log.info(`Added ${fileId} to Granule Queue`);
+          log.info(`Added ${fileId} to Granule Queue`, granuleId);
         });
       }
 
-      // Find the granuleId
-      // NOTE: In case of Aster, the filenames don't have the granuleId
-      // For Aster, we temporarily use the granuleId in the XAR_ENTRY
-      // section of the PDR
-      const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
-
       // build the granule record and add it to the database
-      conc(async () => {
-        const granuleRecord = await Granule.buildRecord(
-          pdr.collectionName,
-          granuleId,
-          granuleFiles,
-          collectionRecord
-        );
+      if (!granuleRecordExists) {
+        conc(async () => {
+          granuleRecord = await Granule.buildRecord(
+            pdr.collectionName,
+            granuleId,
+            granuleFiles,
+            collectionRecord
+          );
 
-        const g = new Granule();
-        await g.create(granuleRecord);
+          await g.create(granuleRecord);
 
-        // add the granule to the PDR record
-        const p = new Pdr();
-        await p.addGranule(pdr.name, granuleId, false);
-        log.info(`Added a new granule: ${granuleId}`);
-      });
+          // add the granule to the PDR record
+          const p = new Pdr();
+          await p.addGranule(pdr.name, granuleId, false);
+          log.info(`Added a new granule: ${granuleId}`, pdr.collectionName);
+        });
+      }
 
       if (counter > concurrency) {
         counter = 0;
-        log.info('Waiting to process the queue');
+        log.info('Waiting to process the queue', pdr.collectionName);
         await Promise.all(promiseList);
       }
     }
@@ -279,7 +315,7 @@ export async function pollGranulesQueue(
             }
             catch (e) {
               log.error(e, e.stack);
-              log.error(`Couldn't ingst ${file.fileId}`);
+              log.error(`Couldn't ingest ${file.fileId}`);
             }
             return;
           };
@@ -291,7 +327,7 @@ export async function pollGranulesQueue(
         await Promise.all(downloads);
       }
       else {
-        log.info('No new messages in the PDR queue');
+        log.debug('No new messages in the PDR queue');
 
         // this prevents the function from running forever in test mode
         if (testLoops === 0) return;
@@ -333,22 +369,22 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
         const pdr = message.Body;
         const receiptHandle = message.ReceiptHandle;
 
-        log.info(`Parsing ${pdr.name}`);
+        log.info(`Parsing ${pdr.name}`, pdr.collectionName);
 
         const parsed = await parsePdr(pdr, concurrency);
 
         // detele message if parse successful
         if (parsed) {
-          log.info(`deleting ${pdr.name} from the Queue`);
+          log.info(`deleting ${pdr.name} from the Queue`, pdr.collectionName);
           await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
         }
         else {
-          log.error(`Parsing failed for ${pdr.name}`);
+          log.error(`Parsing failed for ${pdr.name}`, pdr.collectionName);
         }
       }
     }
     else {
-      log.info('No new messages in the PDR queue');
+      log.debug('No new messages in the PDR queue');
     }
   }
   catch (e) {
@@ -406,13 +442,14 @@ export function parsePdrsHandler(event) {
  * @return {undefined}
  */
 export async function discoverPdrHandler(event, context, cb = () => {}) {
-  log.debug('discoverPdrHandler invoked');
   const func = async () => {
     // get the collectionName
     if (!event.hasOwnProperty('collectionName')) {
-      throw new Error('you must provide collectionName in the event obj');
+      const e = new Error('you must provide collectionName in the event obj');
+      throw e;
     }
     const collectionName = event.collectionName;
+    log.info('discoverPdrHandler invoked', collectionName);
 
     // grab collectionName from the database
     const c = new Collection();
@@ -420,15 +457,18 @@ export async function discoverPdrHandler(event, context, cb = () => {}) {
 
     // get the endpoint from collection
     if (collection.ingest.type !== 'PDR') {
-      throw new Error('This handle only support PDR ingest');
+      const e = new Error('This handler only supports PDR ingest');
+      log.error(e, collectionName);
+      throw e;
     }
 
     const endpoint = collection.ingest.config.endpoint;
     const concurrency = collection.ingest.config.concurrency || 1;
-    log.info(`checking ${endpoint}`);
+    log.info(`checking ${endpoint}`, collectionName);
 
     // discover the PDRs
     const pdrs = await discoverPDRs(endpoint);
+    log.info(`Discovered ${pdrs.length} PDRs`, collectionName);
     for (const pdr of pdrs) {
       // check if the PDR is in the database, if not add it and download
       // Note: if a PDR is already download but missing from the database, it will be
@@ -436,30 +476,42 @@ export async function discoverPdrHandler(event, context, cb = () => {}) {
       const p = new Pdr();
       try {
         await p.get({ pdrName: pdr.name });
-        log.info(`${pdr.name} is already ingested`);
+        log.info(`${pdr.name} is already ingested`, collectionName);
       }
       catch (e) {
         if (e instanceof RecordDoesNotExist) {
           pdr.concurrency = concurrency;
           pdr.collectionName = collectionName;
+
+          log.info(`Found new PDR ${pdr.name}`, collectionName);
           await uploadAddQueuePdr(pdr);
         }
       }
     }
-    return `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`;
+    const msg = `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`;
+    log.info(msg, collectionName);
+    return msg;
   };
 
   // use callback with promise
-  func().then(r => cb(null, r)).catch((err) => cb(err));
+  func().then(r => cb(null, r)).catch((err) => {
+    log.info(err, JSON.stringify(event));
+    cb(err);
+  });
 }
 
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
+  //discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
 
   //pollPdrQueue(1, 10000, 15);
 
+  parsePdr({
+    name: 'PDN.ID1701141200.PDR',
+    url: 's3://cumulus-internal/pdrs/PDN.ID1701141200.PDR',
+    collectionName: 'ASTER_1A_versionId_1'
+  });
   //pollGranulesQueue();
 });
 

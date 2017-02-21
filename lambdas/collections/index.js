@@ -41,13 +41,11 @@ export function get(event, context, cb) {
     return cb('Collection#get requires a short_name property');
   }
 
-  console.log(name);
   const search = new Search({}, process.env.CollectionsTable);
   search.get(name).then((response) => {
     //if (response.results.length === 0) {
       //return cb({ detail: 'Record was not found' });
     //}
-    console.log(response);
     cb(null, response);
   }).catch((e) => {
     cb(e);

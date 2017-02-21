@@ -2,12 +2,11 @@
 
 import path from 'path';
 import url from 'url';
-import Logger from 'cumulus-common/log';
+import log from 'cumulus-common/log';
 import payloadExample from 'cumulus-common/tests/data/payload.json';
 import { S3 } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 
-const log = new Logger('lambdas/archive/index.js');
 
 async function archive(file) {
   // only copy public and protected files
