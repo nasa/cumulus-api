@@ -1,8 +1,16 @@
 'use strict';
 
+import splunk from 'splunk-sdk';
 import _ from 'lodash';
 import { getEarliestDate, getLatestDate, getLimit } from 'cumulus-common/utils';
-import splunkService from 'cumulus-common/splunk';
+
+const service = new splunk.Service({
+  username: process.env.SPLUNK_USERNAME,
+  password: process.env.SPLUNK_PASSWORD,
+  host: process.env.SPLUNK_HOST,
+  port: process.env.SPLUNK_PORT || '8089',
+  autologin: true
+});
 
 export function counts(event, context, cb) {
   // This query relies on `is_error` being 0 or 1
@@ -22,7 +30,7 @@ export function counts(event, context, cb) {
     params.earliestDate = `${getLatestDate(event.query)}T24:00:00.000`;
   }
 
-  splunkService.oneshotSearch(query, params, (err, res) => {
+  service.oneshotSearch(query, params, (err, res) => {
     if (err) return cb(err.message, null);
 
     const results = res.results;
@@ -65,7 +73,7 @@ export function list(event, context, cb) {
     params.earliestDate = `${getLatestDate(event.query)}T24:00:00.000`;
   }
 
-  splunkService.oneshotSearch(query, params, (err, results) => {
+  service.oneshotSearch(query, params, (err, results) => {
     if (err) return cb(err.message, null);
 
     const fullResults = results.results;
