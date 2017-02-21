@@ -44,7 +44,7 @@ const configureApiGateway = (config) => {
       // For example. /foo, /foo/bar and /foo/column create 3 resources:
       // 1. FooResource 2.FooBarResource 3.FooColumnResource
       // where FooBar and FooColumn are dependents of Foo
-      const segments = lambda.apiGateway.path.split('/');;
+      const segments = lambda.apiGateway.path.split('/');
 
       // this array is used to keep track of names
       // within a given array of segments
@@ -258,7 +258,7 @@ function parseEnvVariables(config) {
   // add lambda names
   for (const lambda of config.lambdas) {
     if (lambda.broadcast) {
-      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${lambda.name}-${config.stage}`;
+      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${lambda.name}-${config.stage}`; // eslint-disable-line max-len
     }
   }
 
