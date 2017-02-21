@@ -21,6 +21,9 @@
     "js-yaml": "^3.8.1",
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
-    "splunk-sdk": "^1.8.1"
+    "public-ip": "^2.3.3",
+    "request": "^2.79.0",
+    "splunk-sdk": "^1.8.1",
+    "xml2js": "^0.4.17"
   }
 }

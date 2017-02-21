@@ -1,64 +1,38 @@
 'use strict';
 
 import _ from 'lodash';
-import { esQuery } from 'cumulus-common/es';
-import { getLimit, getStart } from 'cumulus-common/utils';
-
-const index = process.env.StackName || 'cumulus-local-test';
-const table = process.env.PDRsTable || 'table';
-const key = 'pdrName';
+import { Search } from 'cumulus-common/es/search';
 
 /**
  * List all PDRs.
- * @param {object} query an optional query object.
- * @param {number} query.limit maximum number of records to return.
- * @param {number} query.start_at record to start showing from.
- * @return {array} every pdr in the database.
+ * @param {object} event aws lambda event object.
+ * @param {object} context aws lambda context object
+ * @param {callback} cb aws lambda callback function
+ * @return {undefined}
  */
-export function list (event, context, cb) {
-  const query = _.get(event, 'query', {});
-  const limit = getLimit(query);
-  const start = getStart(query);
-  esQuery(index, table, {
-    query: {
-      match_all: {}
-    },
-    size: limit,
-    from: start
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else {
-      return cb(null, res);
-    }
+export function list(event, context, cb) {
+  const search = new Search(event, process.env.PDRsTable);
+  search.query().then((response) => cb(null, response)).catch((e) => {
+    cb(e);
   });
 }
 
 /**
  * Query a single PDR.
- * @param {string} pdrName the name of the PDR.
- * @return {object} a single pdr object.
+ * @param {string} collectionName the name of the collection.
+ * @param {string} granuleId the id of the granule.
+ * @return {object} a single granule object.
  */
-export function get (event, context, cb) {
-  const name = _.get(event, 'pdrName');
+export function get(event, context, cb) {
+  const name = _.get(event.params, 'pdrName');
   if (!name) {
-    return cb('Collection#get requires a pdrName property');
+    return cb('PDR#get requires a pdrName property');
   }
-  esQuery(index, table, {
-    query: {
-      bool: {
-        must: [
-          { match: { [key]: name } }
-        ]
-      }
-    }
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else if (res.length === 0) {
-      return cb('Record was not found');
-    } else {
-      return cb(null, res[0]);
-    }
+
+  const search = new Search({}, process.env.PDRsTable);
+  search.get(name).then((response) => {
+    cb(null, response);
+  }).catch((e) => {
+    cb(e);
   });
 }

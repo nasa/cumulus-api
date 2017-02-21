@@ -124,8 +124,6 @@ function getHash(c) {
   // this is used to separate deployments from different machines
   let artifactHash = exec(`find dist -type f | \
                            xargs shasum | shasum | awk '{print $1}' ${''}`);
-  console.log(typeof artifactHash);
-  console.log(artifactHash);
   artifactHash = artifactHash.toString().replace(/\n/, '');
 
   // Make the S3 Path

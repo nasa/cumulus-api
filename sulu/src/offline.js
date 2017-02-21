@@ -4,25 +4,10 @@ const _ = require('lodash');
 const path = require('path');
 const Hapi = require('hapi');
 const Good = require('good');
-const envs = require('./envs');
+
 const parseConfig = require('./common').parseConfig;
 
-// const collections = require('../dist/collections')
-
-const isLocal = process.argv[2] === 'local';
-const isRemote = process.argv[2] === 'remote';
-
 function serve() {
-  if (isLocal || isRemote) {
-    process.env.IS_LOCAL = isLocal;
-
-    // set local env variables
-    envs.setEnvs();
-
-    // Read .env file if it exists
-    envs.loadCredentials();
-  }
-
   const server = new Hapi.Server({
     connections: {
       router: {
@@ -54,7 +39,7 @@ function serve() {
         path: apPath,
         method: method,
         handler: (req, res) => {
-          func({}, null, (err, r) => {
+          func(req, null, (err, r) => {
             res(r);
           });
         }

@@ -26,6 +26,9 @@ sqs:
   - name: GranulesQueue # queue for Granule files to be ingested
     visibilityTimeout: 1000
     retry: 3
+  - name: ProcessingQuque # queue for running process ECS tasks
+    visibilityTimeout: 5000
+    retry: 2
 
 dynamos:
   - name: CollectionsTable
@@ -98,15 +101,20 @@ lambdas:
     handler: pdr.discoverPdrHandler
     timeout: 300
 
+  - name: archive
+    handler: archive.handler
+    timeout: 300
+
+  - name: dispatcher
+    handler: dispatcher.handler
+    timeout: 300
+
   - name: statsSummary
     handler: stats.summary
     timeout: 300
     apiGateway:
       path: stats/summary
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: statsSummaryGrouped
@@ -115,9 +123,6 @@ lambdas:
     apiGateway:
       path: stats/summary/grouped
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: getErrorCounts
@@ -126,9 +131,6 @@ lambdas:
     apiGateway:
       path: stats/errors
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: listErrors
@@ -137,9 +139,6 @@ lambdas:
     apiGateway:
       path: errors
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: listGranules
@@ -148,9 +147,6 @@ lambdas:
     apiGateway:
       path: granules
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: listCollectionGranules
@@ -159,9 +155,6 @@ lambdas:
     apiGateway:
       path: granules/{collection}
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: getGranules
@@ -170,9 +163,6 @@ lambdas:
     apiGateway:
       path: granules/{collection}/{granuleName}
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: listCollections
@@ -181,9 +171,6 @@ lambdas:
     apiGateway:
       path: collections
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: getCollection
@@ -192,9 +179,6 @@ lambdas:
     apiGateway:
       path: collections/{short_name}
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: postCollection
@@ -203,9 +187,6 @@ lambdas:
     apiGateway:
       path: collections
       method: post
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: putCollection
@@ -214,9 +195,6 @@ lambdas:
     apiGateway:
       path: collections
       method: put
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: listPDRs
@@ -225,9 +203,6 @@ lambdas:
     apiGateway:
       path: pdrs
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
 
   - name: getPDRs
@@ -236,7 +211,4 @@ lambdas:
     apiGateway:
       path: pdrs/{pdrName}
       method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
       cors: true
