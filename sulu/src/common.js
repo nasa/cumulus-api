@@ -255,6 +255,13 @@ function parseEnvVariables(config) {
     envs[queue.name] = `${config.stackName}-${config.stage}-${queue.name}`;
   }
 
+  // add lambda names
+  for (const lambda of config.lambdas) {
+    if (lambda.broadcast) {
+      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${lambda.name}-${config.stage}`;
+    }
+  }
+
   // convert the objects to list for the yml template
   const envList = [];
   Object.keys(envs).forEach((env) => {
