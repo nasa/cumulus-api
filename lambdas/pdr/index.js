@@ -20,7 +20,7 @@ import fs from 'fs';
  * @return {Promise} on success the promise includes a list {@link pdrObject|pdrObjects}
  */
 export function discoverPDRs(endpoint) {
-  const pattern = /<a href="(*.PDR)">/;
+  const pattern = /<a href="(.*PDR)">/;
   const c = new Crawler(endpoint);
 
   c.interval = 0;
