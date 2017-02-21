@@ -30,16 +30,16 @@ export function handler(event, context, cb) {
   if (order === 'processStep') {
     // upload the payload to the S3 (needed because payload size)
     const key = `payloads/${Date.now()}.json`;
-    await S3.put(
+    promises.push(S3.put(
       process.env.internal,
       key,
       JSON.stringify(payload)
-    );
+    ));
 
     const msg = {
       payload: `s3://${process.env.internal}/${key}`,
       config: record.recipe[order]
-    }
+    };
     // send messsage to SQS
     log.info('Queueing message for processing step', record.granuleId);
     promises.push(SQS.sendMessage(
