@@ -3,7 +3,7 @@
 import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
 import { pdrHandler } from './discover';
-import { pollPdrQueue } from './parse';
+import { pollPdrQueue, parsePdr } from './parse';
 import { pollGranulesQueue } from './download';
 
 /**
@@ -71,8 +71,16 @@ localRun(() => {
 
   //pollPdrQueue(1, 100, 15);
 
-  ingestGranulesHandler({
-    concurrency: 3
-  });
+  //ingestGranulesHandler({
+    //concurrency: 3
+  //});
   //pollGranulesQueue(3);
+  //
+
+  parsePdr({
+    name: 'PDN.cecc72bd-238d-4a8a-86df-d2306c39f7cb.PDR',
+    //name: 'PDN.ID1611071200.PDR',
+    collectionName: 'MCD43A1.006',
+  });
+
 });
