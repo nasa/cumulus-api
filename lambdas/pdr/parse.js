@@ -70,17 +70,29 @@ export async function parsePdr(pdr, concurrency = 5) {
       pdr.collectionName
     );
 
+    //
+    // Iterate over the PDR
+    //
     for (const group of fileGroups) {
       // get all the file specs in each group
       const specs = group.objects('FILE_SPEC');
+
+      if (specs.length === 0) {
+        continue;
+      }
 
       // Find the granuleId
       // NOTE: In case of Aster, the filenames don't have the granuleId
       // For Aster, we temporarily use the granuleId in the XAR_ENTRY
       // section of the PDR
-      const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
+      const granuleId = Granule.getGranuleId(
+        specs[0].get('FILE_ID').value,
+        collectionRecord.granuleDefinition.granuleIdExtraction
+      );
 
+      //
       // check if there is a granule record already created
+      //
       let granuleRecordExists = false;
       let granuleRecord;
       const g = new Granule();
@@ -89,54 +101,49 @@ export async function parsePdr(pdr, concurrency = 5) {
           granuleId: granuleId
         });
 
-        log.info(`A record for ${granuleId} exists`, pdr.collectionName);
+        log.info(`A record for ${granuleId} exists`, pdr.name, pdr.collectionName);
+
+        //
+        // check if the record is already ingested
+        //
+        if (granuleRecord.status === 'completed') {
+          log.info(`${granuleId} is processed. Skipping!`, pdr.name, pdr.collectionName);
+          continue;
+        }
+
         granuleRecordExists = true;
       }
       catch (e) {
         if (e instanceof RecordDoesNotExist) {
-          log.info(`New record for ${granuleId} will be added`, pdr.collectionName);
+          log.info(`New record for ${granuleId} will be added`, pdr.name, pdr.collectionName);
         }
         else {
-          log.error(e, pdr.collectionName);
-          throw e;
+          log.error(e, pdr.name, pdr.collectionName);
         }
       }
 
       const granuleFiles = [];
 
-      // Add eachfile to the Queue to be downloaded
+      //
+      // Iterate over files
+      //
       for (const spec of specs) {
         const directoryId = spec.get('DIRECTORY_ID').value;
         const fileId = spec.get('FILE_ID').value;
         const fileUrl = url.resolve('https://e4ftl01.cr.usgs.gov:40521/', `${directoryId}/${fileId}`);
 
-        // if file is already added to the granule, skip
-        if (granuleRecordExists) {
-          if (Granule.fileInRecord(fileUrl, 'sipFile', granuleRecord.files)) {
-            log.info(`${fileId} is already ingested, skipping!`, granuleId);
-            continue;
-          }
-        }
-
         const granuleFile = {
-          fileUrl,
-          fileId,
+          file: fileUrl,
+          name: fileId,
+          granuleId: granuleId,
+          collectionName: pdr.collectionName,
           concurrency: pdr.concurrency || 1,
           bucket: process.env.internal,
-          key: 'staging'
+          type: 'staging'
         };
 
         // list of files for Granule class
-        granuleFiles.push({
-          file: fileUrl,
-          name: fileId,
-          type: 'sipFile'
-        });
-
-        conc(async () => {
-          await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
-          log.info(`Added ${fileId} to Granule Queue`, granuleId);
-        });
+        granuleFiles.push(granuleFile);
       }
 
       // build the granule record and add it to the database
@@ -149,18 +156,31 @@ export async function parsePdr(pdr, concurrency = 5) {
             collectionRecord
           );
 
+          granuleRecord.status = 'ingesting';
+          granuleRecord.ingestStarted = Date.now();
           await g.create(granuleRecord);
 
           // add the granule to the PDR record
           const p = new Pdr();
           await p.addGranule(pdr.name, granuleId, false);
-          log.info(`Added a new granule: ${granuleId}`, pdr.collectionName);
+          log.info(`Added a new granule: ${granuleId}`, pdr.name, pdr.collectionName);
         });
       }
 
+      // add the files to the queue to be processaed
+      conc(async () => {
+        await SQS.sendMessage(process.env.GranulesQueue, granuleFiles);
+        log.info(
+          `Files for ${granuleId} added to granule queue for ingestion`,
+          granuleId,
+          pdr.name,
+          pdr.collectionName
+        );
+      });
+
       if (counter > concurrency) {
         counter = 0;
-        log.info('Waiting to process the queue', pdr.collectionName);
+        log.info('Waiting to for the concurrent tasks to compelte', pdr.name, pdr.collectionName);
         await Promise.all(promiseList);
       }
     }
@@ -168,7 +188,7 @@ export async function parsePdr(pdr, concurrency = 5) {
     return true;
   }
   catch (e) {
-    log.error(e.message, e.stack);
+    log.error(e.message, e.stack, pdr.name, pdr.collectionName);
     return false;
   }
 }
@@ -220,8 +240,7 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
     }
   }
   catch (e) {
-    log.error(e);
-    throw e;
+    log.error(e, e.stack, 'pollPdrQueue');
   }
   finally {
     // make the function recursive

@@ -3,6 +3,7 @@
 import path from 'path';
 import log from 'cumulus-common/log';
 import { SQS } from 'cumulus-common/aws-helpers';
+import { Granule } from 'cumulus-common/models';
 import { syncUrl, fileNotFound } from 'gitc-common/aws';
 
 
@@ -46,7 +47,7 @@ export async function pollGranulesQueue(
   testLoops = -1
 ) {
   try {
-    while (true) {
+    while (true) { // eslint-disable-line no-constant-condition
       // receive a message
       const messages = await SQS.receiveMessage(
         process.env.GranulesQueue,
@@ -59,25 +60,41 @@ export async function pollGranulesQueue(
         // holds list of parallels downloads
         const downloads = [];
 
-        log.info(`Ingest: ${concurrency} file(s) concurrently`);
+        log.info(`Ingest: ${concurrency} Granules(s) concurrently`, 'pollGranulesQueue');
 
         for (const message of messages) {
-          const file = message.Body;
+          let granuleId;
+          let collectionName;
+          const files = message.Body;
           const receiptHandle = message.ReceiptHandle;
-          log.info(`Ingesting ${file.fileId}`);
-          const func = async () => {
+          const func = async () => {  // eslint-disable-line no-loop-func
             try {
-              await uploadIfNotFound(
-                file.fileUrl,
-                file.bucket,
-                file.fileId,
-                file.key
-              );
+              for (const file of files) {
+                granuleId = file.granuleId;
+                collectionName = file.collectionName;
+                log.info(`Ingesting ${file.name}`, file.granuleId);
+
+                await uploadIfNotFound(
+                  file.file,
+                  file.bucket,
+                  file.name,
+                  file.type
+                );
+              }
+
+              // update granule record
+              const g = new Granule();
+              await g.ingestCompleted({
+                granuleId: granuleId,
+                collectionName: collectionName
+              }, files);
+
+              // TODO: send the granule for processing
+
               await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
             }
             catch (e) {
-              log.error(e, e.stack);
-              log.error(`Couldn't ingest ${file.fileId}`);
+              log.error(`Couldn't ingest files of ${granuleId}. There was an error`, e, e.stack);
             }
             return;
           };
