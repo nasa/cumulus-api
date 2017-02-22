@@ -62,7 +62,7 @@ export function discoverPdrHandler(event, context, cb = () => {}) {
 localRun(() => {
   //discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
 
-  //pollPdrQueue(1, 10000, 15);
+  //pollPdrQueue(1, 100, 15);
 
-  //pollGranulesQueue();
+  pollGranulesQueue(3);
 });
