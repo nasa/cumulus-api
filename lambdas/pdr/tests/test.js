@@ -145,17 +145,17 @@ describe('Testing PDRs', function() {
     assert.ok(success);
     assert.ok(downloadS3Files.calledOnce);
 
-    // 4 granules should be added to the database
     const gs = await g.scan({});
-    assert.equal(gs.Count, 4);
+    assert.equal(gs.Count, 4, '4 granules should be added to the database');
 
-    // there has to 4 * 2 messages in the granule's queue
+    // there has to 4  messages in the granule's queue
     const attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 8);
+    assert.equal(attr.ApproximateNumberOfMessages, 4, 'number of messages in the queue');
 
     // the PDR record must have 4 granules associated with it
     const ps = await p.get({ pdrName: pdr.name });
-    assert.equal(Object.keys(ps.granules).length, 4);
+    assert.equal(Object.keys(ps.granules).length, 4,
+      'number of granules associated with the pdr record');
 
     // all granules must have a false status
     Object.values(ps.granules).forEach((v) => {
@@ -179,7 +179,7 @@ describe('Testing PDRs', function() {
 
     // count the messages before
     let attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 8);
+    assert.equal(attr.ApproximateNumberOfMessages, 4);
 
     // test with concurrency of 2
     await download.pollGranulesQueue(2, 200, 8);
