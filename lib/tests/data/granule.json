@@ -1,1 +1,100 @@
-{"createdAt":1487317563315,"granuleId":"ASTL1A 1611132231291611149001","recipe":{"pushToCMR":{"config":{}},"archive":{"config":{}},"processStep":{"description":"UpdateHDF5fileandextractthumbnail","config":{"image":"985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster","outputFiles":["processed-hdf5","thumbnail-1","thumbnail-2","thumbnail-3","meta-xml"],"inputFiles":["origin-hdf5"]}},"order":["processStep","pushtToCMR","archive"]},"files":{"origin-hdf5":{"regex":"^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$","access":"private","sipFile":"https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611141200/pg-PR1A0000-2016111401_033_002","name":"pg-PR1A0000-2016111401_033_002","source":"sips","stagingFile":null,"archivedFile":null},"processed-hdf5":{"regex":"^AST_L1A_[\\d]*_[\\d]*\\.hdf$","access":"protected","sipFile":null,"name":null,"source":"cumulus","stagingFile":null,"archivedFile":null},"origin-thumbnail":{"regex":"^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$","access":"private","sipFile":"https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611141200/pg-BR1A0000-2016111401_033_002","name":"pg-BR1A0000-2016111401_033_002","source":"sips","stagingFile":null,"archivedFile":null},"meta-xml":{"regex":"^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$","access":"public","sipFile":null,"name":null,"source":"cumulus","stagingFile":null,"archivedFile":null},"thumbnail-2":{"regex":"^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$","access":"public","sipFile":null,"name":null,"source":"cumulus","stagingFile":null,"archivedFile":null},"thumbnail-1":{"regex":"^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$","access":"public","sipFile":null,"name":null,"source":"cumulus","stagingFile":null,"archivedFile":null},"thumbnail-3":{"regex":"^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$","access":"public","sipFile":null,"name":null,"source":"cumulus","stagingFile":null,"archivedFile":null}},"collectionName":"ASTER_1A_versionId_1","updatedAt":1487317563315}
+{
+    "collectionName": "ASTER_1A_versionId_1",
+    "createdAt": 1487317563315,
+    "files": {
+        "meta-xml": {
+            "access": "public",
+            "archivedFile": null,
+            "name": null,
+            "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+            "sipFile": null,
+            "source": "cumulus",
+            "stagingFile": null
+        },
+        "origin-hdf5": {
+            "access": "private",
+            "archivedFile": null,
+            "name": "pg-PR1A0000-2016111401_033_002",
+            "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+            "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611141200/pg-PR1A0000-2016111401_033_002",
+            "source": "sips",
+            "stagingFile": null
+        },
+        "origin-thumbnail": {
+            "access": "private",
+            "archivedFile": null,
+            "name": "pg-BR1A0000-2016111401_033_002",
+            "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+            "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611141200/pg-BR1A0000-2016111401_033_002",
+            "source": "sips",
+            "stagingFile": null
+        },
+        "processed-hdf5": {
+            "access": "protected",
+            "archivedFile": null,
+            "name": null,
+            "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+            "sipFile": null,
+            "source": "cumulus",
+            "stagingFile": null
+        },
+        "thumbnail-1": {
+            "access": "public",
+            "archivedFile": null,
+            "name": null,
+            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+            "sipFile": null,
+            "source": "cumulus",
+            "stagingFile": null
+        },
+        "thumbnail-2": {
+            "access": "public",
+            "archivedFile": null,
+            "name": null,
+            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+            "sipFile": null,
+            "source": "cumulus",
+            "stagingFile": null
+        },
+        "thumbnail-3": {
+            "access": "public",
+            "archivedFile": null,
+            "name": null,
+            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+            "sipFile": null,
+            "source": "cumulus",
+            "stagingFile": null
+        }
+    },
+    "granuleId": "ASTL1A 1611132231291611149001",
+    "recipe": {
+        "archive": {
+            "config": {}
+        },
+        "order": [
+            "processStep",
+            "pushtToCMR",
+            "archive"
+        ],
+        "processStep": {
+            "config": {
+                "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+                "inputFiles": [
+                    "origin-hdf5"
+                ],
+                "outputFiles": [
+                    "processed-hdf5",
+                    "thumbnail-1",
+                    "thumbnail-2",
+                    "thumbnail-3",
+                    "meta-xml"
+                ]
+            },
+            "description": "UpdateHDF5fileandextractthumbnail"
+        },
+        "pushToCMR": {
+            "config": {}
+        }
+    },
+    "updatedAt": 1487317563315
+}
