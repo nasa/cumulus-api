@@ -16,7 +16,14 @@ import { pollGranulesQueue } from './download';
  */
 export function ingestGranulesHandler(event) {
   const concurrency = event.concurrency || 1;
-  pollGranulesQueue(concurrency);
+  try {
+    pollGranulesQueue(concurrency)
+    .then((r) => console.log(r))
+    .catch((e) => log.error(e, e.stack, 'ingestGranulesHandler'));
+  }
+  catch (e) {
+    console.log(e, e.stack);
+  }
 }
 
 
@@ -64,5 +71,8 @@ localRun(() => {
 
   //pollPdrQueue(1, 100, 15);
 
-  pollGranulesQueue(3);
+  ingestGranulesHandler({
+    concurrency: 3
+  });
+  //pollGranulesQueue(3);
 });
