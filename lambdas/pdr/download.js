@@ -16,17 +16,17 @@ import { syncUrl, fileNotFound } from 'gitc-common/aws';
  * @param {string} [key=''] s3 folder name(s)
  * @returns {boolean} true if uploaded / false if not
  */
-export async function uploadIfNotFound(originalUrl, bucket, fileName, key = '') {
+export async function uploadIfNotFound(originalUrl, bucket, fileName, granuleId, key = '') {
   const fullKey = path.join(key, fileName);
   // check if the file is already uploaded to S3
   const notFound = await fileNotFound(bucket, fileName, key);
   if (notFound) {
-    log.info(`Uploading ${fileName} to S3`);
+    log.info(`Uploading ${fileName} to S3`, granuleId);
     await syncUrl(originalUrl, bucket, fullKey);
-    log.info(`${fileName} uploaded`);
+    log.info(`${fileName} uploaded`, granuleId);
     return true;
   }
-  log.info(`${fileName} is already ingested`);
+  log.info(`${fileName} is already uploaded`, granuleId);
   return false;
 }
 
@@ -78,6 +78,7 @@ export async function pollGranulesQueue(
                   file.file,
                   file.bucket,
                   file.name,
+                  granuleId,
                   file.type
                 );
               }
