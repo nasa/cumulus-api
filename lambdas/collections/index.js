@@ -58,6 +58,8 @@ export function get(event, context, cb) {
  * @return {object} returns the collection that was just saved.
  */
 export function post (event, context, cb) {
+  const key = 'collectionName';
+  const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
@@ -86,6 +88,8 @@ export function post (event, context, cb) {
  * @return {object} a mapping of the updated properties.
  */
 export function put (event, context, cb) {
+  const key = 'collectionName';
+  const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
