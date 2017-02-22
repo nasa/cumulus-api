@@ -3,7 +3,7 @@
   "address": "http://example.com/pdrs/someuniquename.pdr",
   "originalUrl": "http://example.com/file2",
   "granules": {
-    "D20120907_022056_P.QC.PresCorrQC.nc": true
+    "1A0000-2016110801_000_004": true
   },
   "completedAt": 1480962569,
   "createdAt": 1480962569,
