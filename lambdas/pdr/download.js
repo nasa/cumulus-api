@@ -117,7 +117,7 @@ export async function pollGranulesQueue(
   }
   catch (e) {
     log.error(e, e.stack);
-    throw e;
+    pollGranulesQueue(concurrency, visibilityTimeout, testLoops);
   }
 }
 
