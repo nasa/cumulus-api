@@ -6,7 +6,6 @@ import _ from 'lodash';
 import url from 'url';
 import { SQS } from 'cumulus-common/aws-helpers';
 import log from 'cumulus-common/log';
-import { localRun } from 'cumulus-common/local';
 import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/models';
 import { downloadS3Files } from 'gitc-common/aws';
 
@@ -53,6 +52,7 @@ export async function parsePdr(pdr, concurrency = 5) {
 
     const promiseList = [];
     let counter = 0;
+    let total = 0;
 
     const conc = (func) => {
       counter += 1;
@@ -60,11 +60,12 @@ export async function parsePdr(pdr, concurrency = 5) {
     };
 
     const approximateFileCount = fileGroups.length * fileGroups[0].objects('FILE_SPEC').length;
+    const granuleCount = fileGroups.length;
 
     // each group represents a Granule record.
     // After adding all the files in the group to the Queue
     // we create the granule record (moment of inception)
-    log.info(`There are ${fileGroups.length} granules in ${pdr.name}`, pdr.collectionName);
+    log.info(`There are ${granuleCount} granules in ${pdr.name}`, pdr.collectionName);
     log.info(
       `There are approximately ${approximateFileCount} files in ${pdr.name}`,
       pdr.collectionName
@@ -98,7 +99,8 @@ export async function parsePdr(pdr, concurrency = 5) {
       const g = new Granule();
       try {
         granuleRecord = await g.get({
-          granuleId: granuleId
+          granuleId: granuleId,
+          collectionName: pdr.collectionName
         });
 
         log.info(`A record for ${granuleId} exists`, pdr.name, pdr.collectionName);
@@ -178,7 +180,8 @@ export async function parsePdr(pdr, concurrency = 5) {
         );
       });
 
-      if (counter > concurrency) {
+      total += 1;
+      if (counter > concurrency || total === granuleCount) {
         counter = 0;
         log.info('Waiting to for the concurrent tasks to compelte', pdr.name, pdr.collectionName);
         await Promise.all(promiseList);
@@ -248,14 +251,6 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
   }
 }
 
-
-localRun(() => {
-  parsePdr({
-    name: 'PDN.ID1701141200.PDR',
-    url: 's3://cumulus-internal/pdrs/PDN.ID1701141200.PDR',
-    collectionName: 'ASTER_1A_versionId_1'
-  });
-});
 
 /**
  * @typedef {Object} pdrObject
