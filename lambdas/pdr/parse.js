@@ -40,12 +40,19 @@ export async function parsePdr(pdr, concurrency = 5) {
 
     // then read the file and and pass it to parser
     const pdrFile = fs.readFileSync(pdr.name);
-    const parsed = pvl.pvlToJS(pdrFile.toString());
+    let parsed = pvl.pvlToJS(pdrFile.toString());
+
+    // check if the PDR has groups
+    // if so, get the objects inside the first group
+    // TODO: handle cases where there are more than one group
+    const groups = parsed.groups();
+    if (groups.length > 0) {
+      parsed = groups[0];
+    }
 
     // grab the collection
     const c = new Collection();
     const collectionRecord = await c.get({ collectionName: pdr.collectionName });
-
 
     // Get all the file groups
     const fileGroups = parsed.objects('FILE_GROUP');
