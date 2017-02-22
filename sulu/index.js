@@ -6,8 +6,6 @@ const isLocal = process.argv[2] === 'local';
 
 process.env.IS_LOCAL = isLocal;
 
-process.env.IS_LOCAL = isLocal;
-
 if (isLocal) {
   process.env.MODE = 'local';
 }
