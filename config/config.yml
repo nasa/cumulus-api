@@ -17,7 +17,7 @@ ecs:
   maxInstances: 5
   desiredInstances: 1
   keyPairName: cumulus-scisco
-  instanceType: t2.micro
+  instanceType: m4.large
 
 sqs:
   - name: PDRsQueue # queue for list of PDRs to be parsed
@@ -93,6 +93,8 @@ lambdas:
     ecs: true
     image: cumulus-docker-dev-lambdarunner
     count: 0
+    imageMemory: 2048
+    imageCpu: 10
     commands:
       - --eventJson
       - '{ \"concurrency\": 4 }'

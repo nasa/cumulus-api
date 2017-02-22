@@ -699,10 +699,10 @@ Resources:
         - "--eventJson"
         - "{}"
     {{/if}}
-        Cpu: '10'
+        Cpu: {{#if imageCpu }}{{ imageCpu }}{{ else }}10{{/if}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: '256'
+        Memory: {{#if imageMemory }}{{ imageMemory }}{{ else }}256{{/if}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
