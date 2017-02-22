@@ -1,0 +1,245 @@
+'use strict';
+
+import fs from 'fs';
+import pvl from 'pvl';
+import _ from 'lodash';
+import url from 'url';
+import { SQS } from 'cumulus-common/aws-helpers';
+import log from 'cumulus-common/log';
+import { localRun } from 'cumulus-common/local';
+import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/models';
+import { downloadS3Files } from 'gitc-common/aws';
+
+
+/**
+ * This async function parse a PDR stored on S3 and download all the files
+ * in the PDR to a staging S3 bucket. The return is void.
+ *
+ * The function first download the PDR file from an ingest location to local disk.
+ * It thn reads the file content and parse it.
+ *
+ * The function loops through the parsed PDR and identifies granules and associated files
+ * in each object. The files are added to a separate queue for download and new granule records
+ * are added to the GranuleTable on DynamoDB.
+ *
+ * @param {pdrObject} pdr the PDR on s3. The PDR must be on cumulus-internal/pdrs folder
+ * @return {undefined}
+ */
+export async function parsePdr(pdr, concurrency = 5) {
+  try {
+    // validate the argument
+    if (!(_.has(pdr, 'name') && _.has(pdr, 'collectionName'))) {
+      throw new Error('The argument must have name and collectionName keys');
+    }
+
+    log.info(`${pdr.name} downloaded from S3 to be parsed`, pdr.collectionName);
+    // first download the PDR
+    await downloadS3Files(
+      [{ Bucket: process.env.internal, Key: `pdrs/${pdr.name}` }],
+      '.'
+    );
+
+    // then read the file and and pass it to parser
+    const pdrFile = fs.readFileSync(pdr.name);
+    const parsed = pvl.pvlToJS(pdrFile.toString());
+
+    // grab the collection
+    const c = new Collection();
+    const collectionRecord = await c.get({ collectionName: pdr.collectionName });
+
+
+    // Get all the file groups
+    const fileGroups = parsed.objects('FILE_GROUP');
+
+    const promiseList = [];
+    let counter = 0;
+
+    const conc = (func) => {
+      counter += 1;
+      return promiseList.push(func());
+    };
+
+    const approximateFileCount = fileGroups.length * fileGroups[0].objects('FILE_SPEC').length;
+
+    // each group represents a Granule record.
+    // After adding all the files in the group to the Queue
+    // we create the granule record (moment of inception)
+    log.info(`There are ${fileGroups.length} granules in ${pdr.name}`, pdr.collectionName);
+    log.info(
+      `There are approximately ${approximateFileCount} files in ${pdr.name}`,
+      pdr.collectionName
+    );
+
+    for (const group of fileGroups) {
+      // get all the file specs in each group
+      const specs = group.objects('FILE_SPEC');
+
+      // Find the granuleId
+      // NOTE: In case of Aster, the filenames don't have the granuleId
+      // For Aster, we temporarily use the granuleId in the XAR_ENTRY
+      // section of the PDR
+      const granuleId = group.objects('XAR_ENTRY')[0].get('GRANULE_ID').value;
+
+      // check if there is a granule record already created
+      let granuleRecordExists = false;
+      let granuleRecord;
+      const g = new Granule();
+      try {
+        granuleRecord = await g.get({
+          granuleId: granuleId
+        });
+
+        log.info(`A record for ${granuleId} exists`, pdr.collectionName);
+        granuleRecordExists = true;
+      }
+      catch (e) {
+        if (e instanceof RecordDoesNotExist) {
+          log.info(`New record for ${granuleId} will be added`, pdr.collectionName);
+        }
+        else {
+          log.error(e, pdr.collectionName);
+          throw e;
+        }
+      }
+
+      const granuleFiles = [];
+
+      // Add eachfile to the Queue to be downloaded
+      for (const spec of specs) {
+        const directoryId = spec.get('DIRECTORY_ID').value;
+        const fileId = spec.get('FILE_ID').value;
+        const fileUrl = url.resolve('https://e4ftl01.cr.usgs.gov:40521/', `${directoryId}/${fileId}`);
+
+        // if file is already added to the granule, skip
+        if (granuleRecordExists) {
+          if (Granule.fileInRecord(fileUrl, 'sipFile', granuleRecord.files)) {
+            log.info(`${fileId} is already ingested, skipping!`, granuleId);
+            continue;
+          }
+        }
+
+        const granuleFile = {
+          fileUrl,
+          fileId,
+          concurrency: pdr.concurrency || 1,
+          bucket: process.env.internal,
+          key: 'staging'
+        };
+
+        // list of files for Granule class
+        granuleFiles.push({
+          file: fileUrl,
+          name: fileId,
+          type: 'sipFile'
+        });
+
+        conc(async () => {
+          await SQS.sendMessage(process.env.GranulesQueue, granuleFile);
+          log.info(`Added ${fileId} to Granule Queue`, granuleId);
+        });
+      }
+
+      // build the granule record and add it to the database
+      if (!granuleRecordExists) {
+        conc(async () => {
+          granuleRecord = await Granule.buildRecord(
+            pdr.collectionName,
+            granuleId,
+            granuleFiles,
+            collectionRecord
+          );
+
+          await g.create(granuleRecord);
+
+          // add the granule to the PDR record
+          const p = new Pdr();
+          await p.addGranule(pdr.name, granuleId, false);
+          log.info(`Added a new granule: ${granuleId}`, pdr.collectionName);
+        });
+      }
+
+      if (counter > concurrency) {
+        counter = 0;
+        log.info('Waiting to process the queue', pdr.collectionName);
+        await Promise.all(promiseList);
+      }
+    }
+
+    return true;
+  }
+  catch (e) {
+    log.error(e.message, e.stack);
+    return false;
+  }
+}
+
+
+/**
+ * Polls a SQS queue for PDRs that have to be parsed.
+ * The function is recursive and calls itself until terminated
+ *
+ * It receives the message(s) from PDRsQueue and send each message to `parsePdr` for parsing.
+ * After successful execuation of `parsePdr`, the function deletes the message from the queue
+ * and moves to the next message.
+ *
+ * @param {number} [messageNum=1] Number of messages to be retrieved from the queue
+ * @param {number} [visibilityTimeout=20] How long the message is removed from the queue
+ */
+export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concurrency = 5) {
+  try {
+    // receive a message
+    const messages = await SQS.receiveMessage(
+      process.env.PDRsQueue,
+      messageNum,
+      visibilityTimeout
+    );
+
+
+    // get message body
+    if (messages.length > 0) {
+      for (const message of messages) {
+        const pdr = message.Body;
+        const receiptHandle = message.ReceiptHandle;
+
+        log.info(`Parsing ${pdr.name}`, pdr.collectionName);
+
+        const parsed = await parsePdr(pdr, concurrency);
+
+        // detele message if parse successful
+        if (parsed) {
+          log.info(`deleting ${pdr.name} from the Queue`, pdr.collectionName);
+          await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
+        }
+        else {
+          log.error(`Parsing failed for ${pdr.name}`, pdr.collectionName);
+        }
+      }
+    }
+    else {
+      log.debug('No new messages in the PDR queue');
+    }
+  }
+  catch (e) {
+    log.error(e);
+    throw e;
+  }
+  finally {
+    // make the function recursive
+    pollPdrQueue();
+  }
+}
+
+
+localRun(() => {
+  parsePdr({
+    name: 'PDN.ID1701141200.PDR',
+    url: 's3://cumulus-internal/pdrs/PDN.ID1701141200.PDR',
+    collectionName: 'ASTER_1A_versionId_1'
+  });
+});
+
+/**
+ * @typedef {Object} pdrObject
+ * @property {string} name pdr name
+ * @property {string} url pdr url
+ */

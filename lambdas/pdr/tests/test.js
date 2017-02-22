@@ -7,7 +7,10 @@ import { SQS } from 'cumulus-common/aws-helpers';
 import { Manager, Pdr, Granule, Collection } from 'cumulus-common/models';
 import collectionRecord from 'cumulus-common/tests/data/collection.json';
 import * as aws from 'gitc-common/aws';
-import * as pdrTest from '../index';
+import * as main from '../index';
+import * as download from '../download';
+import * as discover from '../discover';
+import * as parse from '../parse';
 import { testingServer } from './testServer';
 
 
@@ -57,7 +60,7 @@ describe('Testing PDRs', function() {
 
     testingServer.start();
 
-    pdrTest.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
+    main.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
       if (err) done(err);
       try {
         assert.ok(syncUrl.callCount, 2);
@@ -78,7 +81,7 @@ describe('Testing PDRs', function() {
   it('test uploadIfNotFound when file is found', async () => {
     sinon.stub(aws, 'fileNotFound', () => false);
 
-    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(!result);
     aws.fileNotFound.restore();
   });
@@ -87,7 +90,7 @@ describe('Testing PDRs', function() {
     sinon.stub(aws, 'fileNotFound', () => true);
     const syncUrl = sinon.stub(aws, 'syncUrl');
 
-    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(result);
     assert.ok(syncUrl.calledOnce);
 
@@ -102,7 +105,7 @@ describe('Testing PDRs', function() {
       url: 'example.com/pdr'
     };
 
-    await pdrTest.uploadAddQueuePdr(pdr);
+    await discover.uploadAddQueuePdr(pdr);
 
     assert.ok(syncUrl.calledOnce);
 
@@ -119,7 +122,7 @@ describe('Testing PDRs', function() {
   });
 
 
-  it('test parsing PDR', async () => {
+  it('parsing should work', async () => {
     // mock download of the PDR from S3
     const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
@@ -135,13 +138,14 @@ describe('Testing PDRs', function() {
     const pRecord = Pdr.buildRecord(pdr.name, pdr.url);
     await p.create(pRecord);
 
-    const success = await pdrTest.parsePdr(pdr);
+    const g = new Granule();
+
+    const success = await parse.parsePdr(pdr);
 
     assert.ok(success);
     assert.ok(downloadS3Files.calledOnce);
 
     // 4 granules should be added to the database
-    const g = new Granule();
     const gs = await g.scan({});
     assert.equal(gs.Count, 4);
 
@@ -162,7 +166,7 @@ describe('Testing PDRs', function() {
   });
 
   it('test parsing PDR with invalid argument', async () => {
-    const response = await pdrTest.parsePdr({ name: 'somename' });
+    const response = await parse.parsePdr({ name: 'somename' });
     assert.ok(!response);
   });
 
@@ -178,7 +182,7 @@ describe('Testing PDRs', function() {
     assert.equal(attr.ApproximateNumberOfMessages, 8);
 
     // test with concurrency of 2
-    await pdrTest.pollGranulesQueue(2, 200, 8);
+    await download.pollGranulesQueue(2, 200, 8);
 
     // count the messages again
     attr = await SQS.attributes(process.env.GranulesQueue);
