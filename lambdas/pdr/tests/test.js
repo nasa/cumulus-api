@@ -21,36 +21,52 @@ describe('Testing PDRs', function() {
   before(async () => {
     process.env.IS_LOCAL = true;
 
-    // create PDR table for testing
-    const pdrTableName = 'PDRTestTable-pdrs';
-    process.env.PDRsTable = pdrTableName;
-    //await Manager.deleteTable(process.env.PDRsTable);
-    await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+    try {
+      // create PDR table for testing
+      const pdrTableName = 'PDRTestTable-pdrs';
+      process.env.PDRsTable = pdrTableName;
+      //await Manager.deleteTable(process.env.PDRsTable);
+      await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
 
-    // Granule Table for Testing
-    const granuleTableName = 'GranuleTestTable-pdrs';
-    process.env.GranulesTable = granuleTableName;
-    //await Manager.deleteTable(process.env.GranulesTable);
-    await Manager.createTable(granuleTableName, { name: 'granuleId', type: 'S' });
+      // Granule Table for Testing
+      const granuleTableName = 'GranuleTestTable-pdrs';
+      process.env.GranulesTable = granuleTableName;
+      //await Manager.deleteTable(process.env.GranulesTable);
+      await Manager.createTable(
+        granuleTableName, {
+          name: 'collectionName', type: 'S'
+        }, {
+          name: 'granuleId', type: 'S'
+        }
+      );
 
-    // Collection table for testing
-    const collectionTableName = 'CollectionTestTable-pdrs';
-    process.env.CollectionsTable = collectionTableName;
-    //await Manager.deleteTable(process.env.CollectionsTable);
-    await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
 
-    // update ingest endpoint & add collection record
-    const c = new Collection();
-    collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
-    await c.create(collectionRecord);
+      // Collection table for testing
+      const collectionTableName = 'CollectionTestTable-pdrs';
+      process.env.CollectionsTable = collectionTableName;
+      //await Manager.deleteTable(process.env.CollectionsTable);
+      await Manager.createTable(
+        collectionTableName, {
+          name: 'collectionName', type: 'S'
+        });
 
-    // create PDR Queue
-    process.env.PDRsQueue = 'PDRTestQueue-pdr';
-    await SQS.createQueue(process.env.PDRsQueue);
+      // update ingest endpoint & add collection record
+      const c = new Collection();
+      collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
+      await c.create(collectionRecord);
 
-    // create Granule Queue
-    process.env.GranulesQueue = 'GranuleTestQueue-pdr';
-    await SQS.createQueue(process.env.GranulesQueue);
+      // create PDR Queue
+      process.env.PDRsQueue = 'PDRTestQueue-pdr';
+      await SQS.createQueue(process.env.PDRsQueue);
+
+      // create Granule Queue
+      process.env.GranulesQueue = 'GranuleTestQueue-pdr';
+      await SQS.createQueue(process.env.GranulesQueue);
+    }
+    catch (e) {
+      console.log(e);
+      throw e;
+    }
   });
 
   it('test PDR discovery', (done) => {
