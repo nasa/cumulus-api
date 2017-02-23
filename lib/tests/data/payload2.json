@@ -1,7 +1,7 @@
 {
     "granuleRecord": {
-        "collectionName": "ASTER_1A_versionId_1",
-        "createdAt": 1487297024857,
+        "collectionName": "AST_L1A__version__003",
+        "createdAt": 1487738592221,
         "files": {
             "meta-xml": {
                 "access": "public",
@@ -10,25 +10,27 @@
                 "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
                 "sipFile": null,
                 "source": "cumulus",
-                "stagingFile": "s3://cumulus-internal/testdata/metadata/test-granule2.xml"
+                "stagingFile": null
             },
             "origin-hdf5": {
                 "access": "private",
                 "archivedFile": null,
-                "name": "pg-PR1A0000-2016111001_000_001",
+                "name": "pg-PR1A0000-2016111101_000_001",
                 "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-                "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101200/pg-PR1A0000-2016111001_000_001",
+                "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611111200/pg-PR1A0000-2016111101_000_001",
                 "source": "sips",
-                "stagingFile": null
+                "staging": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611111200/pg-PR1A0000-2016111101_000_001",
+                "stagingFile": "s3://cumulus-internal/staging/pg-PR1A0000-2016111101_000_001"
             },
             "origin-thumbnail": {
                 "access": "private",
                 "archivedFile": null,
-                "name": "pg-BR1A0000-2016111001_000_001",
+                "name": "pg-BR1A0000-2016111101_000_001",
                 "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-                "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611101200/pg-BR1A0000-2016111001_000_001",
+                "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611111200/pg-BR1A0000-2016111101_000_001",
                 "source": "sips",
-                "stagingFile": null
+                "staging": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1611111200/pg-BR1A0000-2016111101_000_001",
+                "stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016111101_000_001"
             },
             "processed-hdf5": {
                 "access": "protected",
@@ -37,7 +39,7 @@
                 "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
                 "sipFile": null,
                 "source": "cumulus",
-                "stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016110701_000_002"
+                "stagingFile": null
             },
             "thumbnail-1": {
                 "access": "public",
@@ -55,7 +57,7 @@
                 "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
                 "sipFile": null,
                 "source": "cumulus",
-                "stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016110701_000_002"
+                "stagingFile": null
             },
             "thumbnail-3": {
                 "access": "public",
@@ -67,7 +69,9 @@
                 "stagingFile": null
             }
         },
-        "granuleId": "1A0000-2016110801_000_004",
+        "granuleId": "1A0000-2016111101_000_001",
+        "ingestEnded": 1487740549778,
+        "ingestStarted": 1487738592214,
         "recipe": {
             "archive": {
                 "config": {}
@@ -97,8 +101,9 @@
                 "config": {}
             }
         },
-        "updatedAt": 1487297024857
+        "status": "processing",
+        "updatedAt": 1487740549778
     },
-    "nextStep": 0,
-    "previousStep": 1
+    "nextStep": 1,
+    "previousStep": 0
 }

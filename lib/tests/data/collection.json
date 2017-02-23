@@ -1,7 +1,8 @@
 {
   "collectionName": "ASTER_1A_versionId_1",
   "granuleDefinition": {
-    "granuleId": "^(ASTL1A [0-9]{22})$",
+    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
+    "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
     "files": {
       "origin-hdf5": {
         "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",

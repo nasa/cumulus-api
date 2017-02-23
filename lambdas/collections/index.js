@@ -41,13 +41,11 @@ export function get(event, context, cb) {
     return cb('Collection#get requires a short_name property');
   }
 
-  console.log(name);
   const search = new Search({}, process.env.CollectionsTable);
   search.get(name).then((response) => {
     //if (response.results.length === 0) {
       //return cb({ detail: 'Record was not found' });
     //}
-    console.log(response);
     cb(null, response);
   }).catch((e) => {
     cb(e);
@@ -60,6 +58,8 @@ export function get(event, context, cb) {
  * @return {object} returns the collection that was just saved.
  */
 export function post (event, context, cb) {
+  const key = 'collectionName';
+  const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
@@ -88,6 +88,8 @@ export function post (event, context, cb) {
  * @return {object} a mapping of the updated properties.
  */
 export function put (event, context, cb) {
+  const key = 'collectionName';
+  const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {

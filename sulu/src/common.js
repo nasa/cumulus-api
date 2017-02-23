@@ -44,7 +44,7 @@ const configureApiGateway = (config) => {
       // For example. /foo, /foo/bar and /foo/column create 3 resources:
       // 1. FooResource 2.FooBarResource 3.FooColumnResource
       // where FooBar and FooColumn are dependents of Foo
-      const segments = lambda.apiGateway.path.split('/');;
+      const segments = lambda.apiGateway.path.split('/');
 
       // this array is used to keep track of names
       // within a given array of segments
@@ -240,6 +240,19 @@ function parseEnvVariables(config) {
     Stage: config.stage
   };
 
+  // add splunk config if availble on the local machine
+  if (process.env.SPLUNK_PASSWORD) {
+    envs.SPLUNK_PASSWORD = process.env.SPLUNK_PASSWORD;
+  }
+
+  if (process.env.SPLUNK_USERNAME) {
+    envs.SPLUNK_USERNAME = process.env.SPLUNK_USERNAME;
+  }
+
+  if (process.env.SPLUNK_HOST) {
+    envs.SPLUNK_HOST = process.env.SPLUNK_HOST;
+  }
+
   // add buckets
   envs = Object.assign({}, envs, config.buckets);
 
@@ -255,6 +268,13 @@ function parseEnvVariables(config) {
     envs[queue.name] = `${config.stackName}-${config.stage}-${queue.name}`;
   }
 
+  // add lambda names
+  for (const lambda of config.lambdas) {
+    if (lambda.broadcast) {
+      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${lambda.name}-${config.stage}`; // eslint-disable-line max-len
+    }
+  }
+
   // convert the objects to list for the yml template
   const envList = [];
   Object.keys(envs).forEach((env) => {
@@ -265,6 +285,8 @@ function parseEnvVariables(config) {
   for (const lambda of config.lambdas) {
     lambda.envs = lambda.envs.concat(envList);
   }
+
+  config.envsList = envList;
 
   return Object.assign(config, { envs: envs });
 }

@@ -7,7 +7,10 @@ import { SQS } from 'cumulus-common/aws-helpers';
 import { Manager, Pdr, Granule, Collection } from 'cumulus-common/models';
 import collectionRecord from 'cumulus-common/tests/data/collection.json';
 import * as aws from 'gitc-common/aws';
-import * as pdrTest from '../index';
+import * as main from '../index';
+import * as download from '../download';
+import * as discover from '../discover';
+import * as parse from '../parse';
 import { testingServer } from './testServer';
 
 
@@ -18,36 +21,52 @@ describe('Testing PDRs', function() {
   before(async () => {
     process.env.IS_LOCAL = true;
 
-    // create PDR table for testing
-    const pdrTableName = 'PDRTestTable-pdrs';
-    process.env.PDRsTable = pdrTableName;
-    //await Manager.deleteTable(process.env.PDRsTable);
-    await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+    try {
+      // create PDR table for testing
+      const pdrTableName = 'PDRTestTable-pdrs';
+      process.env.PDRsTable = pdrTableName;
+      //await Manager.deleteTable(process.env.PDRsTable);
+      await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
 
-    // Granule Table for Testing
-    const granuleTableName = 'GranuleTestTable-pdrs';
-    process.env.GranulesTable = granuleTableName;
-    //await Manager.deleteTable(process.env.GranulesTable);
-    await Manager.createTable(granuleTableName, { name: 'granuleId', type: 'S' });
+      // Granule Table for Testing
+      const granuleTableName = 'GranuleTestTable-pdrs';
+      process.env.GranulesTable = granuleTableName;
+      //await Manager.deleteTable(process.env.GranulesTable);
+      await Manager.createTable(
+        granuleTableName, {
+          name: 'collectionName', type: 'S'
+        }, {
+          name: 'granuleId', type: 'S'
+        }
+      );
 
-    // Collection table for testing
-    const collectionTableName = 'CollectionTestTable-pdrs';
-    process.env.CollectionsTable = collectionTableName;
-    //await Manager.deleteTable(process.env.CollectionsTable);
-    await Manager.createTable(collectionTableName, { name: 'collectionName', type: 'S' });
 
-    // update ingest endpoint & add collection record
-    const c = new Collection();
-    collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
-    await c.create(collectionRecord);
+      // Collection table for testing
+      const collectionTableName = 'CollectionTestTable-pdrs';
+      process.env.CollectionsTable = collectionTableName;
+      //await Manager.deleteTable(process.env.CollectionsTable);
+      await Manager.createTable(
+        collectionTableName, {
+          name: 'collectionName', type: 'S'
+        });
 
-    // create PDR Queue
-    process.env.PDRsQueue = 'PDRTestQueue-pdr';
-    await SQS.createQueue(process.env.PDRsQueue);
+      // update ingest endpoint & add collection record
+      const c = new Collection();
+      collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
+      await c.create(collectionRecord);
 
-    // create Granule Queue
-    process.env.GranulesQueue = 'GranuleTestQueue-pdr';
-    await SQS.createQueue(process.env.GranulesQueue);
+      // create PDR Queue
+      process.env.PDRsQueue = 'PDRTestQueue-pdr';
+      await SQS.createQueue(process.env.PDRsQueue);
+
+      // create Granule Queue
+      process.env.GranulesQueue = 'GranuleTestQueue-pdr';
+      await SQS.createQueue(process.env.GranulesQueue);
+    }
+    catch (e) {
+      console.log(e);
+      throw e;
+    }
   });
 
   it('test PDR discovery', (done) => {
@@ -57,7 +76,7 @@ describe('Testing PDRs', function() {
 
     testingServer.start();
 
-    pdrTest.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
+    main.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
       if (err) done(err);
       try {
         assert.ok(syncUrl.callCount, 2);
@@ -78,7 +97,7 @@ describe('Testing PDRs', function() {
   it('test uploadIfNotFound when file is found', async () => {
     sinon.stub(aws, 'fileNotFound', () => false);
 
-    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(!result);
     aws.fileNotFound.restore();
   });
@@ -87,7 +106,7 @@ describe('Testing PDRs', function() {
     sinon.stub(aws, 'fileNotFound', () => true);
     const syncUrl = sinon.stub(aws, 'syncUrl');
 
-    const result = await pdrTest.uploadIfNotFound('example.com', 'bucket', 'file');
+    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
     assert.ok(result);
     assert.ok(syncUrl.calledOnce);
 
@@ -102,7 +121,7 @@ describe('Testing PDRs', function() {
       url: 'example.com/pdr'
     };
 
-    await pdrTest.uploadAddQueuePdr(pdr);
+    await discover.uploadAddQueuePdr(pdr);
 
     assert.ok(syncUrl.calledOnce);
 
@@ -119,7 +138,7 @@ describe('Testing PDRs', function() {
   });
 
 
-  it('test parsing PDR', async () => {
+  it('parsing should work', async () => {
     // mock download of the PDR from S3
     const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
@@ -135,23 +154,24 @@ describe('Testing PDRs', function() {
     const pRecord = Pdr.buildRecord(pdr.name, pdr.url);
     await p.create(pRecord);
 
-    const success = await pdrTest.parsePdr(pdr);
+    const g = new Granule();
+
+    const success = await parse.parsePdr(pdr);
 
     assert.ok(success);
     assert.ok(downloadS3Files.calledOnce);
 
-    // 4 granules should be added to the database
-    const g = new Granule();
     const gs = await g.scan({});
-    assert.equal(gs.Count, 4);
+    assert.equal(gs.Count, 4, '4 granules should be added to the database');
 
-    // there has to 4 * 2 messages in the granule's queue
+    // there has to 4  messages in the granule's queue
     const attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 8);
+    assert.equal(attr.ApproximateNumberOfMessages, 4, 'number of messages in the queue');
 
     // the PDR record must have 4 granules associated with it
     const ps = await p.get({ pdrName: pdr.name });
-    assert.equal(Object.keys(ps.granules).length, 4);
+    assert.equal(Object.keys(ps.granules).length, 4,
+      'number of granules associated with the pdr record');
 
     // all granules must have a false status
     Object.values(ps.granules).forEach((v) => {
@@ -162,7 +182,7 @@ describe('Testing PDRs', function() {
   });
 
   it('test parsing PDR with invalid argument', async () => {
-    const response = await pdrTest.parsePdr({ name: 'somename' });
+    const response = await parse.parsePdr({ name: 'somename' });
     assert.ok(!response);
   });
 
@@ -175,10 +195,10 @@ describe('Testing PDRs', function() {
 
     // count the messages before
     let attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 8);
+    assert.equal(attr.ApproximateNumberOfMessages, 4);
 
     // test with concurrency of 2
-    await pdrTest.pollGranulesQueue(2, 200, 8);
+    await download.pollGranulesQueue(2, 200, 8);
 
     // count the messages again
     attr = await SQS.attributes(process.env.GranulesQueue);
