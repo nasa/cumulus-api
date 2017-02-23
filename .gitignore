@@ -10,3 +10,4 @@ config/cloudformation.yml
 npm-debug.log
 .DS_Store
 .swo
+*.meta.xml
