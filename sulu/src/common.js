@@ -286,6 +286,8 @@ function parseEnvVariables(config) {
     lambda.envs = lambda.envs.concat(envList);
   }
 
+  config.envsList = envList;
+
   return Object.assign(config, { envs: envs });
 }
 
@@ -308,6 +310,7 @@ function parseConfig(configPath) {
     config = Object.assign(config, configureApiGateway(config));
   }
 
+  console.log(config);
   return config;
 }
 

@@ -154,6 +154,12 @@ Resources:
                 Resource:
                 - !Sub arn:aws:s3:::{{buckets.internal}}
                 - !Sub arn:aws:s3:::{{buckets.internal}}/*
+                - !Sub arn:aws:s3:::{{buckets.private}}
+                - !Sub arn:aws:s3:::{{buckets.private}}/*
+                - !Sub arn:aws:s3:::{{buckets.protected}}
+                - !Sub arn:aws:s3:::{{buckets.protected}}/*
+                - !Sub arn:aws:s3:::{{buckets.public}}
+                - !Sub arn:aws:s3:::{{buckets.public}}/*
 
               # Allow access to dynamoDB
               - Effect: Allow
@@ -388,50 +394,10 @@ Resources:
       ContainerDefinitions:
       - Name: dockerAster
         Environment:
-          - Name: AWS_DEFAULT_REGION
-            Value: !Sub ${AWS::Region}
-          - Name: CollectionsTable
-            Value: !Sub cumulus-api-test2-dev-CollectionsTable
-          - Name: GranulesTable
-            Value: !Sub cumulus-api-test2-dev-GranulesTable
-          - Name: InvokeTable
-            Value: !Sub cumulus-api-test2-dev-InvokeTable
-          - Name: PDRsTable
-            Value: !Sub cumulus-api-test2-dev-PDRsTable
-          - Name: StackName
-            Value: !Sub cumulus-api-test2
-          - Name: Stage
-            Value: !Sub dev
-          - Name: SPLUNK_PASSWORD
-            Value: !Sub 2u6u5u7!
-          - Name: SPLUNK_USERNAME
-            Value: !Sub admin
-          - Name: SPLUNK_HOST
-            Value: !Sub 107.21.62.189
-          - Name: private
-            Value: !Sub cumulus-private
-          - Name: public
-            Value: !Sub cumulus-public
-          - Name: protected
-            Value: !Sub cumulus-protected
-          - Name: internal
-            Value: !Sub cumulus-internal
-          - Name: PDRsQueue
-            Value: !Sub cumulus-api-test2-dev-PDRsQueue
-          - Name: GranulesQueue
-            Value: !Sub cumulus-api-test2-dev-GranulesQueue
-          - Name: ProcessingQueue
-            Value: !Sub cumulus-api-test2-dev-ProcessingQueue
-          - Name: pdrDiscoverer
-            Value: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cumulus-api-test2-pdrDiscoverer-dev
-          - Name: archive
-            Value: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cumulus-api-test2-archive-dev
-          - Name: dispatcher
-            Value: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cumulus-api-test2-dispatcher-dev
-          - Name: holder
-            Value: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cumulus-api-test2-holder-dev
-          - Name: pushToCMR
-            Value: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cumulus-api-test2-pushToCMR-dev
+        {{#each envsList}}
+          - Name: {{key}}
+            Value: !Sub {{value}}
+        {{/each}}
         Cpu: 10
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cumulus-docker-dev-aster
