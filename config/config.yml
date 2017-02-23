@@ -124,11 +124,6 @@ lambdas:
     timeout: 300
     broadcast: true
 
-  - name: holder
-    handler: holder.handler
-    timeout: 300
-    broadcast: true
-
   - name: pushToCMR
     handler: cmrPush.handler
     timeout: 300
