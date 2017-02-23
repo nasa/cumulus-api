@@ -2,11 +2,18 @@
 
 import aws from 'aws-sdk';
 import log from 'cumulus-common/log';
+import { invoke } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { ingestGranule } from 'cumulus-common/cmrjs';
-import payloadExample from 'cumulus-common/tests/data/payload.json';
+import payloadExample from 'cumulus-common/tests/data/payload4.json';
 
 const s3 = new aws.S3();
+const logDetails = {
+  file: 'lambdas/cmrPush/index.js',
+  source: 'pushToCMR',
+  type: 'processing'
+};
+
 
 function identifyCollection(payload) {
   return payload.granuleRecord.collectionName;
@@ -26,7 +33,7 @@ export async function getMetadata(payload) {
     Key: parts[2]
   }).promise();
 
-  log.debug(`Downloaded meta xml file from ${filepath}`);
+  log.info(`Downloaded meta xml file from ${filepath}`, logDetails);
 
   return obj.Body.toString();
 }
@@ -48,20 +55,47 @@ export function formatMetadata(payload, xml) {
 
 
 export async function postToCMR(xml) {
-  log.debug('Pushing the metadata to CMR');
+  log.info('Pushing the metadata to CMR', logDetails);
   return await ingestGranule(xml);
 }
 
 
 export function handler(event, context, cb) {
-  log.debug(`Received a new payload: ${JSON.stringify(event)}`);
+  event.granuleRecord.timeline = {
+    cmrPush: {}
+  };
+  event.granuleRecord.timeline.cmrPush.started = Date.now();
+
+  logDetails.collectionName = event.granuleRecord.collectionName;
+  logDetails.granuleId = event.granuleRecord.granuleId;
+
+  log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
   getMetadata(event).then(xml => {
     const payload = formatMetadata(event, xml);
     return postToCMR(payload);
   }).then(res => {
-    log.debug(`successfully posted with this message: ${JSON.stringify(res)}`);
-    cb(null, res);
-  }).catch(e => cb(e));
+    log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
+
+    // update payload
+    event.granuleRecord.timeline.cmrPush.ended = Date.now();
+    event.granuleRecord.timeline.cmrPush.duration = (
+      event.granuleRecord.timeline.cmrPush.ended -
+      event.granuleRecord.timeline.cmrPush.started
+    );
+
+    logDetails.duration = event.granuleRecord.timeline.cmrPush.duration;
+    log.info(
+      `cmrPush duration: ${logDetails.duration}`,
+      logDetails
+    );
+
+    event.previousStep = event.nextStep;
+    event.nextStep += 1;
+
+    // invoking dispatcher
+    return invoke(process.env.dispatcher, event);
+  }).then((res) => cb(null, res))
+    .catch(e => cb(e));
 
   // url to check if the CMR is uploaded: https://cmr.uat.earthdata.nasa.gov/search/granules?granule_ur=[granuleUR from xml file]
 }
