@@ -2,7 +2,7 @@
 
 import path from 'path';
 import log from 'cumulus-common/log';
-import { SQS } from 'cumulus-common/aws-helpers';
+import { SQS, invoke } from 'cumulus-common/aws-helpers';
 import { Granule } from 'cumulus-common/models';
 import { syncUrl, fileNotFound } from 'gitc-common/aws';
 
@@ -85,12 +85,17 @@ export async function pollGranulesQueue(
 
               // update granule record
               const g = new Granule();
-              await g.ingestCompleted({
+              const record = await g.ingestCompleted({
                 granuleId: granuleId,
                 collectionName: collectionName
               }, files);
 
               // TODO: send the granule for processing
+              await invoke(process.env.dispatcher, {
+                previousStep: 0,
+                nextStep: 0,
+                granuleRecord: record
+              });
 
               await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
             }
