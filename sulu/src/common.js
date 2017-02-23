@@ -310,7 +310,6 @@ function parseConfig(configPath) {
     config = Object.assign(config, configureApiGateway(config));
   }
 
-  console.log(config);
   return config;
 }
 
