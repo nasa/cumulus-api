@@ -64,14 +64,14 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
               }
             ]
           },
-          startedBy: 'alireza'
-          //startedBy: granuleId
+          startedBy: granuleId
         };
 
         log.info('Attempting to register the task with ECS', logDetails);
         // keep pushing the task until it is registered with ECS
+        let response
         while (true) {
-          const response = await ecs.runTask(params).promise();
+          response = await ecs.runTask(params).promise();
           if (response.tasks.length > 0) {
             console.log(response.tasks);
             log.info(`Task registered: ${response.tasks[0].taskArn}`, logDetails);
@@ -79,7 +79,8 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
           }
           else {
             log.info(
-              `Task did not register: ${response[0].reason}. Trying again in ${wait} seconds`,
+              `Task did not register. Trying again in ${wait} seconds`,
+              response,
               logDetails
             );
 
