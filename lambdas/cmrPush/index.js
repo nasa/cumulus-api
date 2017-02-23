@@ -61,11 +61,6 @@ export async function postToCMR(xml) {
 
 
 export function handler(event, context, cb) {
-  event.granuleRecord.timeline = {
-    cmrPush: {}
-  };
-  event.granuleRecord.timeline.cmrPush.started = Date.now();
-
   logDetails.collectionName = event.granuleRecord.collectionName;
   logDetails.granuleId = event.granuleRecord.granuleId;
 
@@ -75,19 +70,6 @@ export function handler(event, context, cb) {
     return postToCMR(payload);
   }).then(res => {
     log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
-
-    // update payload
-    event.granuleRecord.timeline.cmrPush.ended = Date.now();
-    event.granuleRecord.timeline.cmrPush.duration = (
-      event.granuleRecord.timeline.cmrPush.ended -
-      event.granuleRecord.timeline.cmrPush.started
-    );
-
-    logDetails.duration = event.granuleRecord.timeline.cmrPush.duration;
-    log.info(
-      `cmrPush duration: ${logDetails.duration}`,
-      logDetails
-    );
 
     event.previousStep = event.nextStep;
     event.nextStep += 1;
