@@ -76,7 +76,7 @@
 			"archive": {
 				"config": {}
 			},
-			"order": ["processStep", "pushtToCMR", "archive"],
+			"order": ["processStep", "pushToCMR", "archive"],
 			"processStep": {
 				"config": {
 					"image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
@@ -90,14 +90,8 @@
 			}
 		},
 		"status": "processing",
-		"updatedAt": 1487740549778,
-		"timeline": {
-			"processingStep": {
-				"started": 1487780019443,
-				"ended": 1487780019485,
-				"duration": -42
-			}
-		}
+		"updatedAt": 1487740549778
+
 	},
 	"nextStep": 2,
 	"previousStep": 1
