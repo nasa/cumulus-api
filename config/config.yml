@@ -99,6 +99,16 @@ lambdas:
       - --eventJson
       - '{ \"concurrency\": 4 }'
 
+  - name: runner
+    handler: runner.handler
+    timeout: 300
+    ecs: true
+    image: cumulus-docker-dev-lambdarunner
+    count: 1
+    imageMemory: 256
+    imageCpu: 10
+    broadcast: true
+
   - name: pdrDiscoverer
     handler: pdr.discoverPdrHandler
     timeout: 300
