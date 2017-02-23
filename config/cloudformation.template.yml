@@ -89,6 +89,9 @@ Resources:
                 - ecs:RegisterContainerInstance
                 - ecs:StartTelemetrySession
                 - ecs:Submit*
+                - ecs:ListTasks
+                - ecs:ListTaskDefinitions
+                - ecs:RunTask
                 - ecr:BatchCheckLayerAvailability
                 - ecr:BatchGetImage
                 - ecr:GetDownloadUrlForLayer
@@ -718,6 +721,10 @@ Resources:
         Environment:
           - Name: AWS_DEFAULT_REGION
             Value: !Sub ${AWS::Region}
+          - Name: TaskDefinition
+            Value: !Ref AsterProcessingTaskDefinition
+          - Name: CumulusCluster
+            Value: !Ref CumulusECSCluster
         {{#each envs}}
           - Name: {{key}}
             Value: !Sub {{value}}
