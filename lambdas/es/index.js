@@ -45,7 +45,7 @@ function processRecords (event, done) {
     const keys = unwrap(get(record, 'dynamodb.Keys'));
     const hashValue = keys[hash];
     if (hashValue) {
-      const id = range === 'NONE' ? hashValue : hashValue + '|' + keys[range];
+      const id = range === 'NONE' ? hashValue : hashValue + '_' + keys[range];
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
         q.defer((callback) => deleteRecord(params, callback));
