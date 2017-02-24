@@ -23,6 +23,12 @@ function lambdaObject() {
   const c = parseConfig();
   const obj = {};
 
+  // add distribution
+  c.lambdas.push({
+    handler: 'distribution.handler',
+    name: 'distribution'
+  });
+
   for (const lambda of c.lambdas) {
     // extract the lambda folder name from the handler
     const funcName = getLambdaZipFile(lambda.handler);
