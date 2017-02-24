@@ -499,6 +499,8 @@ Resources:
         ReadCapacityUnits: {{read}}
         WriteCapacityUnits: {{write}}
       TableName: {{stackName}}-{{stage}}-{{name}}
+      StreamSpecification:
+        StreamViewType: "NEW_IMAGE"
 {{/each}}
   #################################################
   # DyanmoDB config END
