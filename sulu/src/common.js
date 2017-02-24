@@ -255,7 +255,7 @@ function parseEnvVariables(config) {
 
   // Match tablenames to env variables name
   for (const dynamo of config.dynamos) {
-    envs[dynamo.name] = `${config.stackName}-${config.stage}-${dynamo.name}`;
+    envs[dynamo.envName] = `${config.stackName}-${config.stage}-${dynamo.name}`;
   }
 
   // add sqs queues and their full names
