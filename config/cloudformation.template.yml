@@ -853,6 +853,23 @@ Resources:
       Runtime: nodejs4.3
       Timeout: {{timeout}}
 
+{{# if streaming}}
+  {{name}}EventSourceMapping:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      EventSourceArn:
+        Fn::GetAtt:
+          - {{streaming}}
+          - "StreamArn"
+      FunctionName:
+        Fn::GetAtt:
+          - {{name}}LambdaFunction
+          - "Arn"
+      BatchSize: 100
+      StartingPosition: "TRIM_HORIZON"
+
+{{/if}}
+
 {{# if apiGateway }}
   {{name}}LambdaPermissionApiGateway:
     Type: AWS::Lambda::Permission

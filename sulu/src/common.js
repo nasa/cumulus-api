@@ -150,7 +150,8 @@ const configureLambda = (config) => {
           }, {
             key: 'DYNAMODB_RANGE',
             value: range.name
-          }]
+          }],
+          streaming: `${dynamo.name}DynamoDB`
         });
       }
     }
