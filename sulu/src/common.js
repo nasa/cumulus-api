@@ -232,10 +232,6 @@ const configureSqs = (config) => {
  */
 function parseEnvVariables(config) {
   let envs = {
-    CollectionsTable: null,
-    GranulesTable: null,
-    InvokeTable: null,
-    PDRsTable: null,
     StackName: config.stackName,
     Stage: config.stage
   };
@@ -258,9 +254,7 @@ function parseEnvVariables(config) {
 
   // Match tablenames to env variables name
   for (const dynamo of config.dynamos) {
-    if (_.has(envs, dynamo.name)) {
-      envs[dynamo.name] = `${config.stackName}-${config.stage}-${dynamo.name}`;
-    }
+    envs[dynamo.name] = `${config.stackName}-${config.stage}-${dynamo.name}`;
   }
 
   // add sqs queues and their full names

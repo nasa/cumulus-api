@@ -256,6 +256,14 @@ Resources:
             Resource:
             - "*"
 
+          # Allow reading from protected bucket
+          - Effect: Allow
+            Action:
+            - s3:Get*
+            Resource:
+            - !Sub arn:aws:s3:::{{buckets.protected}}
+            - !Sub arn:aws:s3:::{{buckets.protected}}/*
+
   #################################################
   # SQS config BEGIN
   #################################################
@@ -397,6 +405,13 @@ Resources:
       ContainerDefinitions:
       - Name: dockerAster
         Environment:
+          - Name: distributionEndpoint
+            Value:
+              Fn::Join:
+                - ''
+                - - 'https://'
+                  - !Ref DistributionRestApi
+                  - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
         {{#each envsList}}
           - Name: {{key}}
             Value: !Sub {{value}}
@@ -488,6 +503,135 @@ Resources:
   #################################################
   # DyanmoDB config END
   #################################################
+
+  #################################################
+  # Distribution config BEGIN
+  #################################################
+
+  DistributionApi:
+    DependsOn:
+    - DistributionApiMethodGet
+    - DistributionApiRedirectMethodGet
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: DistributionRestApi
+      StageName: {{stage}}
+
+  DistributionApiMethodGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref DistributionRestApi
+      ResourceId: !Ref DistributionResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri:
+          Fn::Join:
+          - ''
+          - - 'arn:aws:apigateway:'
+            - Ref: AWS::Region
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+              - DistriubtionLambdaFunction
+              - Arn
+            - /invocations
+
+  DistributionApiRedirectMethodGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref DistributionRestApi
+      ResourceId: !Ref DistributionResourceRedirect
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri:
+          Fn::Join:
+          - ''
+          - - 'arn:aws:apigateway:'
+            - Ref: AWS::Region
+            - :lambda:path/2015-03-31/functions/
+            - Fn::GetAtt:
+              - DistriubtionLambdaFunction
+              - Arn
+            - /invocations
+
+  DistributionResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+        - DistributionRestApi
+        - RootResourceId
+      PathPart: '{granuleId}'
+      RestApiId:
+        Ref: DistributionRestApi
+
+  DistributionResourceRedirect:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+        - DistributionRestApi
+        - RootResourceId
+      PathPart: 'redirect'
+      RestApiId:
+        Ref: DistributionRestApi
+
+  DistributionRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: {{stackName}}-{{stage}}-distribution
+
+  DistriubtionLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref ConfigS3Bucket
+        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/distribution.zip
+      FunctionName: {{stackName}}-distribution-{{stage}}
+      Environment:
+        Variables:
+          distributionEndpoint:
+            Fn::Join:
+              - ''
+              - - 'https://'
+                - !Ref DistributionRestApi
+                - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
+          ES_HOST:
+            Fn::GetAtt:
+              - ElasticsearchDomain
+              - DomainEndpoint
+        {{#each envsList}}
+          {{key}}: !Sub {{value}}
+        {{/each}}
+      Handler: distribution.handler
+      MemorySize: 512
+      Role:
+        Fn::GetAtt:
+        - LambdaApiGatewayRole
+        - Arn
+      Runtime: nodejs4.3
+      Timeout: 300
+
+  DistributionPermissionApiGateway:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+        - DistriubtionLambdaFunction
+        - Arn
+      Principal: apigateway.amazonaws.com
+
+  #################################################
+  # Distribution config END
+  #################################################
+
 
   #################################################
   # APIGateway config BEGIN
@@ -610,6 +754,7 @@ Resources:
         Ref: {{resource}}
       RestApiId:
         Ref: ApiGatewayRestApi
+
 {{/each}}
 
 {{#each apiMethodsOptions}}
@@ -642,6 +787,7 @@ Resources:
         Ref: {{resource}}
       RestApiId:
         Ref: ApiGatewayRestApi
+
 {{/each}}
 
 {{#each apiResources}}
@@ -655,12 +801,14 @@ Resources:
       PathPart: '{{pathPart}}'
       RestApiId:
         Ref: ApiGatewayRestApi
+
 {{/each}}
 
   ApiGatewayRestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: {{stackName}}-{{stage}}
+      Name: {{stackName}}-{{stage}}-backend
+
 {{/if}}
   #################################################
   # APIGateway config END
@@ -679,6 +827,12 @@ Resources:
       FunctionName: {{stackName}}-{{name}}-{{stage}}
       Environment:
         Variables:
+          distributionEndpoint:
+            Fn::Join:
+              - ''
+              - - 'https://'
+                - !Ref DistributionRestApi
+                - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
               - ElasticsearchDomain

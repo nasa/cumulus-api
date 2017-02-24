@@ -43,8 +43,8 @@ dynamos:
         type: HASH
 
   - name: GranulesTable
-    read: 100
-    write: 100
+    read: 300
+    write: 300
     elasticsearch: true
     attributes:
       - name: granuleId
@@ -69,8 +69,8 @@ dynamos:
         type: HASH
 
   - name: PDRsTable
-    read: 5
-    write: 5
+    read: 100
+    write: 100
     elasticsearch: true
     attributes:
       - name: pdrName
@@ -78,6 +78,21 @@ dynamos:
     schema:
       - name: pdrName
         type: HASH
+
+  - name: DistributionTable
+    read: 1
+    write: 20
+    elasticsearch: true
+    attributes:
+      - name: userName
+        type: S
+      - name: accessDate
+        type: N
+    schema:
+      - name: userName
+        type: HASH
+      - name: accessDate
+        type: RANGE
 
 lambdas:
   - name: pdrParser
