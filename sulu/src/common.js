@@ -129,34 +129,6 @@ const configureApiGateway = (config) => {
  * @return {Object}        Returns lambdas updated configruation
  */
 const configureLambda = (config) => {
-  //Add dynamodb to es lambdas
-  if (_.has(config, 'dynamos')) {
-    for (const dynamo of config.dynamos) {
-      if (_.has(dynamo, 'elasticsearch') && dynamo.elasticsearch) {
-        const schema = _.castArray(dynamo.schema);
-        const hash = schema.find(d => d.type === 'HASH');
-        const range = schema.find(d => d.type === 'RANGE') || { name: 'NONE' };
-        config.lambdas.push({
-          name: `${dynamo.name}ToEs`,
-          handler: 'es.handler',
-          memory: 512,
-          timeout: 300,
-          envs: [{
-            key: 'ES_TYPE',
-            value: `${config.stackName}-${config.stage}-${dynamo.name}`
-          }, {
-            key: 'DYNAMODB_HASH',
-            value: hash.name
-          }, {
-            key: 'DYNAMODB_RANGE',
-            value: range.name
-          }],
-          streaming: `${dynamo.name}DynamoDB`
-        });
-      }
-    }
-  }
-
   // Add default memory and timeout to all lambdas
   for (const lambda of config.lambdas) {
     if (!_.has(lambda, 'memory')) {

@@ -29,6 +29,12 @@ function lambdaObject() {
     name: 'distribution'
   });
 
+  // add dynamo to es function
+  c.lambdas.push({
+    handler: 'es.handler',
+    name: 'dynamoToEs'
+  });
+
   for (const lambda of c.lambdas) {
     // extract the lambda folder name from the handler
     const funcName = getLambdaZipFile(lambda.handler);

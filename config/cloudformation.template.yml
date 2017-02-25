@@ -478,6 +478,7 @@ Resources:
             Action: "es:*"
             Resource:
               - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+
   #################################################
   # ElasticSearch config END
   #################################################
@@ -505,7 +506,51 @@ Resources:
       TableName: {{stackName}}-{{stage}}-{{name}}
       StreamSpecification:
         StreamViewType: "NEW_IMAGE"
+
+{{# if elasticsearch}}
+  {{name}}EventSourceMapping:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      EventSourceArn:
+        Fn::GetAtt:
+          - {{name}}DynamoDB
+          - "StreamArn"
+      FunctionName:
+        Fn::GetAtt:
+          - DynamoToElasticSearchLambdaFunction
+          - "Arn"
+      BatchSize: 100
+      StartingPosition: "TRIM_HORIZON"
+{{/if}}
+
 {{/each}}
+
+  DynamoToElasticSearchLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref ConfigS3Bucket
+        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/es.zip
+      FunctionName: {{stackName}}-dynamoToEs-{{stage}}
+      Environment:
+        Variables:
+          ES_HOST:
+            Fn::GetAtt:
+              - Elasticsearch5Domain
+              - DomainEndpoint
+        {{#each envsList}}
+          {{key}}: !Sub {{value}}
+        {{/each}}
+      Handler: es.handler
+      MemorySize: 512
+      Role:
+        Fn::GetAtt:
+        - LambdaApiGatewayRole
+        - Arn
+      Runtime: nodejs4.3
+      Timeout: 300
+
+
   #################################################
   # DyanmoDB config END
   #################################################
@@ -858,23 +903,6 @@ Resources:
         - Arn
       Runtime: nodejs4.3
       Timeout: {{timeout}}
-
-{{# if streaming}}
-  {{name}}EventSourceMapping:
-    Type: "AWS::Lambda::EventSourceMapping"
-    Properties:
-      EventSourceArn:
-        Fn::GetAtt:
-          - {{streaming}}
-          - "StreamArn"
-      FunctionName:
-        Fn::GetAtt:
-          - {{name}}LambdaFunction
-          - "Arn"
-      BatchSize: 100
-      StartingPosition: "TRIM_HORIZON"
-
-{{/if}}
 
 {{# if apiGateway }}
   {{name}}LambdaPermissionApiGateway:

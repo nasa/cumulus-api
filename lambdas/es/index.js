@@ -1,15 +1,12 @@
 'use strict';
 import queue from 'queue-async';
+import { localRun } from 'cumulus-common/local';
 import { client as esClient } from 'cumulus-common/es';
 import { AttributeValue } from 'dynamodb-data-types';
 import { get } from 'lodash';
 const unwrap = AttributeValue.unwrap;
 
 const index = process.env.StackName || 'cumulus-local-test';
-const type = process.env.ES_TYPE || 'type';
-const hash = process.env.DYNAMODB_HASH || 'no-hash-env';
-const range = process.env.DYNAMODB_RANGE || 'NONE';
-
 
 function deleteRecord(params, callback) {
   esClient.get(params, (error, response, status) => {
@@ -61,27 +58,39 @@ function saveRecord(data, params, callback) {
 function processRecords(event, done) {
   const q = queue();
   const records = get(event, 'Records');
+  console.log('Processing records');
   if (!records) {
     return done(null, 'No records found in event');
   }
   records.forEach((record) => {
+    // get table name from the record information
+    // we use table name as the type in ES
+    const tableArn = record.eventSourceARN.match(/table\/(.*)\/stream/);
+    const type = tableArn[1];
+
+    // now get the hash and range (if any) and use them as id key for ES
     const keys = unwrap(get(record, 'dynamodb.Keys'));
-    const hashValue = keys[hash];
-    if (hashValue) {
-      const id = range === 'NONE' ? hashValue : hashValue + '_' + keys[range];
+    const ids = Object.keys(keys).map(k => keys[k]);
+    const id = ids.join('_');
+
+    console.log(`Received ${id} from the stream`);
+
+    if (id) {
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
+        console.log(`Deleting ${id} from ${type}`);
         q.defer((callback) => deleteRecord(params, callback));
       }
       else {
         const data = unwrap(record.dynamodb.NewImage);
+        console.log(`Adding/Updating ${id} to ${type}`);
         q.defer((callback) => saveRecord(data, params, callback));
       }
     }
     else {
       // defer an error'd callback so we can handle it in awaitAll.
       q.defer((callback) =>
-        callback(new Error(`Could not find hash value for property name ${hash}`))
+        callback(new Error(`Could not construct a valid id from ${keys}`))
       );
     }
   });
@@ -103,14 +112,15 @@ function processRecords(event, done) {
  * @return {string} response text indicating the number of records altered in elasticsearch.
  */
 export function handler(event, context, done) {
-  console.log(JSON.stringify(event));
   esClient.indices.exists({ index }, (error, response, status) => {
     if (status === 404) {
+      console.log(`${index} doesn't exist. Creating it`);
       esClient.indices.create({ index }, (e) => {
         if (e) {
           done(null, e.message);
         }
         else {
+          console.log(`Index ${index} created on ES`);
           processRecords(event, done);
         }
       });
@@ -123,3 +133,7 @@ export function handler(event, context, done) {
     }
   });
 }
+
+localRun(() => {
+  handler({}, null, () => {});
+});
