@@ -162,18 +162,18 @@ lambdas:
       cors: true
 
   - name: getErrorCounts
-    handler: errors.counts
+    handler: logs.counts
     timeout: 300
     apiGateway:
       path: stats/errors
       method: get
       cors: true
 
-  - name: listErrors
-    handler: errors.list
+  - name: listLogs
+    handler: logs.list
     timeout: 300
     apiGateway:
-      path: errors
+      path: logs
       method: get
       cors: true
 
