@@ -34,6 +34,7 @@ dynamos:
   - name: CollectionsTable
     read: 5
     write: 5
+    envName: CollectionsTable
     elasticsearch: true
     attributes:
       - name: collectionName
@@ -45,21 +46,19 @@ dynamos:
   - name: GranulesTable
     read: 300
     write: 300
+    envName: GranulesTable
     elasticsearch: true
     attributes:
       - name: granuleId
         type: S
-      - name: collectionName
-        type: S
     schema:
-      - name: collectionName
-        type: HASH
       - name: granuleId
-        type: RANGE
+        type: HASH
 
   - name: InvokeTable
     read: 5
     write: 5
+    envName: InvokeTable
     elasticsearch: true
     attributes:
       - name: collectionName
@@ -71,6 +70,7 @@ dynamos:
   - name: PDRsTable
     read: 100
     write: 100
+    envName: PDRsTable
     elasticsearch: true
     attributes:
       - name: pdrName
@@ -82,6 +82,7 @@ dynamos:
   - name: DistributionTable
     read: 1
     write: 20
+    envName: DistributionTable
     elasticsearch: true
     attributes:
       - name: userName

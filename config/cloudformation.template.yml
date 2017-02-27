@@ -434,16 +434,20 @@ Resources:
   #################################################
   # ElasticSearch config BEGIN
   #################################################
-  ElasticsearchDomain:
+  Elasticsearch5Domain:
     Type: "AWS::Elasticsearch::Domain"
     Properties:
-      DomainName: {{stackName}}-{{stage}}-es
-      ElasticsearchVersion: 2.3
+      DomainName: {{stackName}}-{{stage}}-es-5
+      ElasticsearchVersion: 5.1
       ElasticsearchClusterConfig:
         InstanceCount: "1"
         InstanceType: "m3.medium.elasticsearch"
       SnapshotOptions:
         AutomatedSnapshotStartHour: "0"
+      EBSOptions:
+        EBSEnabled: true
+        VolumeType: gp2
+        VolumeSize: 50
       AdvancedOptions:
         rest.action.multi.allow_explicit_index: "true"
       AccessPolicies:
@@ -457,7 +461,7 @@ Resources:
                   - Arn
             Action: "es:*"
             Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
           - Effect: "Allow"
             Principal:
               AWS:
@@ -466,14 +470,15 @@ Resources:
                   - Arn
             Action: "es:*"
             Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
           - Effect: "Allow"
             Principal:
               AWS:
                 - arn:aws:iam::985962406024:user/alireza@developmentseed.org
             Action: "es:*"
             Resource:
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es/*"
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+
   #################################################
   # ElasticSearch config END
   #################################################
@@ -499,7 +504,53 @@ Resources:
         ReadCapacityUnits: {{read}}
         WriteCapacityUnits: {{write}}
       TableName: {{stackName}}-{{stage}}-{{name}}
+      StreamSpecification:
+        StreamViewType: "NEW_IMAGE"
+
+{{# if elasticsearch}}
+  {{name}}EventSourceMapping:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      EventSourceArn:
+        Fn::GetAtt:
+          - {{name}}DynamoDB
+          - "StreamArn"
+      FunctionName:
+        Fn::GetAtt:
+          - DynamoToElasticSearchLambdaFunction
+          - "Arn"
+      BatchSize: 100
+      StartingPosition: "TRIM_HORIZON"
+{{/if}}
+
 {{/each}}
+
+  DynamoToElasticSearchLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref ConfigS3Bucket
+        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/es.zip
+      FunctionName: {{stackName}}-dynamoToEs-{{stage}}
+      Environment:
+        Variables:
+          ES_HOST:
+            Fn::GetAtt:
+              - Elasticsearch5Domain
+              - DomainEndpoint
+        {{#each envsList}}
+          {{key}}: !Sub {{value}}
+        {{/each}}
+      Handler: es.handler
+      MemorySize: 512
+      Role:
+        Fn::GetAtt:
+        - LambdaApiGatewayRole
+        - Arn
+      Runtime: nodejs4.3
+      Timeout: 300
+
+
   #################################################
   # DyanmoDB config END
   #################################################
@@ -604,7 +655,7 @@ Resources:
                 - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
-              - ElasticsearchDomain
+              - Elasticsearch5Domain
               - DomainEndpoint
         {{#each envsList}}
           {{key}}: !Sub {{value}}
@@ -835,7 +886,7 @@ Resources:
                 - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
-              - ElasticsearchDomain
+              - Elasticsearch5Domain
               - DomainEndpoint
         {{#each envs}}
           {{key}}: !Sub {{value}}
