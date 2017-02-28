@@ -25,7 +25,7 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const name = _.get(event.params, 'pdrName');
+  const name = _.get(event.path, 'pdrName');
   if (!name) {
     return cb('PDR#get requires a pdrName property');
   }
