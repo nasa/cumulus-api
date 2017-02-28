@@ -9,6 +9,12 @@ import log from 'cumulus-common/log';
 import { Granule, Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/models';
 import { downloadS3Files } from 'gitc-common/aws';
 
+const logDetails = {
+  file: 'lambdas/pdr/parse.js',
+  type: 'parsing',
+  source: 'parsePdrs'
+};
+
 
 /**
  * This async function parse a PDR stored on S3 and download all the files
@@ -31,7 +37,9 @@ export async function parsePdr(pdr, concurrency = 5) {
       throw new Error('The argument must have name and collectionName keys');
     }
 
-    log.info(`${pdr.name} downloaded from S3 to be parsed`, pdr.collectionName);
+    logDetails.pdrName = pdr.name;
+
+    log.info(`${pdr.name} downloaded from S3 to be parsed`, logDetails);
     // first download the PDR
     await downloadS3Files(
       [{ Bucket: process.env.internal, Key: `pdrs/${pdr.name}` }],
@@ -72,10 +80,10 @@ export async function parsePdr(pdr, concurrency = 5) {
     // each group represents a Granule record.
     // After adding all the files in the group to the Queue
     // we create the granule record (moment of inception)
-    log.info(`There are ${granuleCount} granules in ${pdr.name}`, pdr.collectionName);
+    log.info(`There are ${granuleCount} granules in ${pdr.name}`, logDetails);
     log.info(
       `There are approximately ${approximateFileCount} files in ${pdr.name}`,
-      pdr.collectionName
+      logDetails
     );
 
     //
@@ -98,6 +106,9 @@ export async function parsePdr(pdr, concurrency = 5) {
         collectionRecord.granuleDefinition.granuleIdExtraction
       );
 
+
+      logDetails.granuleId = granuleId;
+
       //
       // check if there is a granule record already created
       //
@@ -106,17 +117,16 @@ export async function parsePdr(pdr, concurrency = 5) {
       const g = new Granule();
       try {
         granuleRecord = await g.get({
-          granuleId: granuleId,
-          collectionName: pdr.collectionName
+          granuleId: granuleId
         });
 
-        log.info(`A record for ${granuleId} exists`, pdr.name, pdr.collectionName);
+        log.info(`A record for ${granuleId} exists`, logDetails);
 
         //
         // check if the record is already ingested
         //
         if (granuleRecord.status === 'completed') {
-          log.info(`${granuleId} is processed. Skipping!`, pdr.name, pdr.collectionName);
+          log.info(`${granuleId} is processed. Skipping!`, logDetails);
           continue;
         }
 
@@ -124,10 +134,10 @@ export async function parsePdr(pdr, concurrency = 5) {
       }
       catch (e) {
         if (e instanceof RecordDoesNotExist) {
-          log.info(`New record for ${granuleId} will be added`, pdr.name, pdr.collectionName);
+          log.info(`New record for ${granuleId} will be added`, logDetails);
         }
         else {
-          log.error(e, pdr.name, pdr.collectionName);
+          log.error(e, logDetails);
         }
       }
 
@@ -160,19 +170,13 @@ export async function parsePdr(pdr, concurrency = 5) {
         conc(async () => {
           granuleRecord = await Granule.buildRecord(
             pdr.collectionName,
+            pdr.name,
             granuleId,
             granuleFiles,
             collectionRecord
           );
 
-          granuleRecord.status = 'ingesting';
-          granuleRecord.ingestStarted = Date.now();
           await g.create(granuleRecord);
-
-          // add the granule to the PDR record
-          const p = new Pdr();
-          await p.addGranule(pdr.name, granuleId, false);
-          log.info(`Added a new granule: ${granuleId}`, pdr.name, pdr.collectionName);
         });
       }
 
@@ -181,16 +185,17 @@ export async function parsePdr(pdr, concurrency = 5) {
         await SQS.sendMessage(process.env.GranulesQueue, granuleFiles);
         log.info(
           `Files for ${granuleId} added to granule queue for ingestion`,
-          granuleId,
-          pdr.name,
-          pdr.collectionName
+          logDetails
         );
+
+        // remove granuleId from the logging detail
+        delete logDetails.granuleId;
       });
 
       total += 1;
       if (counter > concurrency || total === granuleCount) {
         counter = 0;
-        log.info('Waiting to for the concurrent tasks to compelte', pdr.name, pdr.collectionName);
+        log.info('Waiting to for the concurrent tasks to complete', logDetails);
         await Promise.all(promiseList);
       }
     }
@@ -198,7 +203,7 @@ export async function parsePdr(pdr, concurrency = 5) {
     return true;
   }
   catch (e) {
-    log.error(e.message, e.stack, pdr.name, pdr.collectionName);
+    log.error(e.message, e.stack, logDetails);
     return false;
   }
 }
@@ -231,26 +236,30 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
         const pdr = message.Body;
         const receiptHandle = message.ReceiptHandle;
 
-        log.info(`Parsing ${pdr.name}`, pdr.collectionName);
+        logDetails.collectionName = pdr.collectionName;
+        log.info(`Parsing ${pdr.name}`, logDetails);
 
         const parsed = await parsePdr(pdr, concurrency);
 
         // detele message if parse successful
         if (parsed) {
-          log.info(`deleting ${pdr.name} from the Queue`, pdr.collectionName);
+          log.info(`deleting ${pdr.name} from the Queue`, logDetails);
           await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
+
+          const p = new Pdr();
+          await p.updateStatus({ pdrName: pdr.name }, 'parsed');
         }
         else {
-          log.error(`Parsing failed for ${pdr.name}`, pdr.collectionName);
+          log.error(`Parsing failed for ${pdr.name}`, logDetails);
         }
       }
     }
     else {
-      log.debug('No new messages in the PDR queue');
+      log.debug('No new messages in the PDR queue', logDetails);
     }
   }
   catch (e) {
-    log.error(e, e.stack, 'pollPdrQueue');
+    log.error(e, e.stack, 'pollPdrQueue', logDetails);
   }
   finally {
     // make the function recursive
