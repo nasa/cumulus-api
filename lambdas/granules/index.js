@@ -1,6 +1,8 @@
 'use strict';
 
 import _ from 'lodash';
+import { Granule } from 'cumulus-common/models';
+import { invoke } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -16,6 +18,35 @@ export function list(event, context, cb) {
   search.query().then((response) => cb(null, response)).catch((e) => {
     cb(e);
   });
+}
+
+export function put(event, context, cb) {
+  const action = _.get(event, ['body', 'action'], null);
+
+  if (action && action === 'reprocess') {
+    const granuleId = _.get(event, ['path', 'granuleName']);
+    // TODO: send the granule for processing
+    const g = new Granule();
+
+    g.get({ granuleId: granuleId }).then(record => {
+      record.status = 'processing';
+      record.statusId = Granule.enum('processing');
+
+
+      return invoke(
+        process.env.dispatcher,
+        {
+          previousStep: 0,
+          nextStep: 0,
+          granuleRecord: record
+        }
+      );
+    }).then(r => cb(null, r))
+      .catch(e => cb(e));
+  }
+  else {
+    return cb('action is missing');
+  }
 }
 
 /**

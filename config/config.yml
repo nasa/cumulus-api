@@ -193,6 +193,14 @@ lambdas:
       method: get
       cors: true
 
+  - name: putGranules
+    handler: granules.put
+    timeout: 300
+    apiGateway:
+      path: granules/{granuleName}
+      method: put
+      cors: true
+
   - name: listCollections
     handler: collections.list
     timeout: 300
