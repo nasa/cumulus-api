@@ -165,7 +165,7 @@ lambdas:
     handler: logs.counts
     timeout: 300
     apiGateway:
-      path: stats/errors
+      path: stats/logs
       method: get
       cors: true
 
@@ -184,14 +184,6 @@ lambdas:
       path: granules
       method: get
       cors: true
-
-  #- name: listCollectionGranules
-    #handler: granules.list
-    #timeout: 300
-    #apiGateway:
-      #path: granules/{collection}
-      #method: get
-      #cors: true
 
   - name: getGranules
     handler: granules.get
