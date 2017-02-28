@@ -6,6 +6,11 @@ import { SQS, invoke } from 'cumulus-common/aws-helpers';
 import { Granule } from 'cumulus-common/models';
 import { syncUrl, fileNotFound } from 'gitc-common/aws';
 
+const logDetails = {
+  file: 'lambdas/pdr/download.js',
+  type: 'downloading',
+  source: 'downloadGranules'
+};
 
 /**
  * Uploads a file from a given URL if file is not found on S3
@@ -21,12 +26,12 @@ export async function uploadIfNotFound(originalUrl, bucket, fileName, granuleId,
   // check if the file is already uploaded to S3
   const notFound = await fileNotFound(bucket, fileName, key);
   if (notFound) {
-    log.info(`Uploading ${fileName} to S3`, granuleId);
+    log.info(`Uploading ${fileName} to S3`, logDetails);
     await syncUrl(originalUrl, bucket, fullKey);
-    log.info(`${fileName} uploaded`, granuleId);
+    log.info(`${fileName} uploaded`, logDetails);
     return true;
   }
-  log.info(`${fileName} is already uploaded`, granuleId);
+  log.info(`${fileName} is already uploaded`, logDetails);
   return false;
 }
 
@@ -60,19 +65,22 @@ export async function pollGranulesQueue(
         // holds list of parallels downloads
         const downloads = [];
 
-        log.info(`Ingest: ${concurrency} Granules(s) concurrently`, 'pollGranulesQueue');
+        log.info(
+          `Ingest: ${concurrency} Granules(s) concurrently`,
+          logDetails
+        );
 
         for (const message of messages) {
           let granuleId;
-          let collectionName;
           const files = message.Body;
           const receiptHandle = message.ReceiptHandle;
           const func = async () => {  // eslint-disable-line no-loop-func
             try {
               for (const file of files) {
                 granuleId = file.granuleId;
-                collectionName = file.collectionName;
-                log.info(`Ingesting ${file.name}`, file.granuleId);
+                logDetails.granuleId = granuleId;
+                logDetails.collectionName = file.collectionName;
+                log.info(`Ingesting ${file.name}`, logDetails);
 
                 await uploadIfNotFound(
                   file.file,
@@ -86,8 +94,7 @@ export async function pollGranulesQueue(
               // update granule record
               const g = new Granule();
               const record = await g.ingestCompleted({
-                granuleId: granuleId,
-                collectionName: collectionName
+                granuleId: granuleId
               }, files);
 
               // TODO: send the granule for processing
@@ -100,7 +107,12 @@ export async function pollGranulesQueue(
               await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
             }
             catch (e) {
-              log.error(`Couldn't ingest files of ${granuleId}. There was an error`, e, e.stack);
+              log.error(
+                `Couldn't ingest files of ${granuleId}. There was an error`,
+                e,
+                e.stack,
+                logDetails
+              );
             }
             return;
           };
@@ -112,7 +124,7 @@ export async function pollGranulesQueue(
         await Promise.all(downloads);
       }
       else {
-        log.debug('No new messages in the PDR queue');
+        log.debug('No new messages in the PDR queue', logDetails);
 
         // this prevents the function from running forever in test mode
         if (testLoops === 0) return;
@@ -121,7 +133,7 @@ export async function pollGranulesQueue(
     }
   }
   catch (e) {
-    log.error(e, e.stack);
+    log.error(e, e.stack, logDetails);
     pollGranulesQueue(concurrency, visibilityTimeout, testLoops);
   }
 }
