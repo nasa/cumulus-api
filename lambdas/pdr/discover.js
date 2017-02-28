@@ -8,6 +8,12 @@ import { syncUrl } from 'gitc-common/aws';
 import { Collection, Pdr, RecordDoesNotExist } from 'cumulus-common/models';
 
 
+const logDetails = {
+  file: 'lambdas/pdr/discover.js',
+  type: 'ingesting',
+  source: 'discoverPdr'
+};
+
 /**
  * discovers PDR names with a given url and returns
  * a list of PDRs
@@ -26,7 +32,7 @@ export function discoverPDRs(endpoint) {
 
   return new Promise((resolve) => {
     c.on('fetchcomplete', (queueItem, responseBuffer) => {
-      log.info(`Received the list of PDRs from ${endpoint}`);
+      log.info(`Received the list of PDRs from ${endpoint}`, logDetails);
       const lines = responseBuffer.toString().trim().split('\n');
       const pdrs = [];
       for (const line of lines) {
@@ -54,7 +60,7 @@ export function discoverPDRs(endpoint) {
  */
 export async function uploadAddQueuePdr(pdr) {
   await syncUrl(pdr.url, process.env.internal, `pdrs/${pdr.name}`);
-  log.info(`Uploaded ${pdr.name} to S3`, pdr.collectionName);
+  log.info(`Uploaded ${pdr.name} to S3`, logDetails);
 
   pdr.s3Uri = `s3://${process.env.internal}/pdrs/${pdr.name}`;
 
@@ -62,7 +68,7 @@ export async function uploadAddQueuePdr(pdr) {
   // (we use queue here because we want to avoid DDOSing
   // providers
   await SQS.sendMessage(process.env.PDRsQueue, pdr);
-  log.info(`Added ${pdr.name} to PDR queue`, pdr.collectionName);
+  log.info(`Added ${pdr.name} to PDR queue`, logDetails);
 
   // add the PDR to the table
   const pdrRecord = Pdr.buildRecord(pdr.name, pdr.url);
@@ -71,7 +77,7 @@ export async function uploadAddQueuePdr(pdr) {
   const pdrObj = new Pdr();
   await pdrObj.create(pdrRecord);
 
-  log.info(`Saved ${pdr.name} to PDRsTable`, pdr.collectionName);
+  log.info(`Saved ${pdr.name} to PDRsTable`, logDetails);
 }
 
 
@@ -82,7 +88,8 @@ export async function pdrHandler(event) {
     throw e;
   }
   const collectionName = event.collectionName;
-  log.info('discoverPdrHandler invoked', collectionName);
+  logDetails.collectionName = collectionName;
+  log.info('discoverPdrHandler invoked', logDetails);
 
   // grab collectionName from the database
   const c = new Collection();
@@ -91,17 +98,17 @@ export async function pdrHandler(event) {
   // get the endpoint from collection
   if (collection.ingest.type !== 'PDR') {
     const e = new Error('This handler only supports PDR ingest');
-    log.error(e, collectionName);
+    log.error(e, logDetails);
     throw e;
   }
 
   const endpoint = collection.ingest.config.endpoint;
   const concurrency = collection.ingest.config.concurrency || 1;
-  log.info(`checking ${endpoint}`, collectionName);
+  log.info(`checking ${endpoint}`, logDetails);
 
   // discover the PDRs
   const pdrs = await discoverPDRs(endpoint);
-  log.info(`Discovered ${pdrs.length} PDRs`, collectionName);
+  log.info(`Discovered ${pdrs.length} PDRs`, logDetails);
   for (const pdr of pdrs) {
     // check if the PDR is in the database, if not add it and download
     // Note: if a PDR is already download but missing from the database, it will be
@@ -109,20 +116,20 @@ export async function pdrHandler(event) {
     const p = new Pdr();
     try {
       await p.get({ pdrName: pdr.name });
-      log.info(`${pdr.name} is already ingested`, collectionName);
+      log.info(`${pdr.name} is already ingested`, logDetails);
     }
     catch (e) {
       if (e instanceof RecordDoesNotExist) {
         pdr.concurrency = concurrency;
         pdr.collectionName = collectionName;
 
-        log.info(`Found new PDR ${pdr.name}`, collectionName);
+        log.info(`Found new PDR ${pdr.name}`, logDetails);
         await uploadAddQueuePdr(pdr);
       }
     }
   }
   const msg = `All PDRs ingested on ${Date()} for this endpoint: ${endpoint}`;
-  log.info(msg, collectionName);
+  log.info(msg, logDetails);
   return msg;
 }
 

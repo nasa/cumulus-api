@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 import { validate } from 'jsonschema';
+import { localRun } from 'cumulus-common/local';
 import { collection as schema } from 'cumulus-common/schemas';
 import * as db from 'cumulus-common/db';
 
@@ -24,7 +25,7 @@ function parseRecipe(record) {
  */
 export function list(event, context, cb) {
   const search = new Search(event, process.env.CollectionsTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query(false, true).then((response) => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -36,16 +37,13 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const name = _.get(event.params, 'short_name');
+  const name = _.get(event.path, 'short_name');
   if (!name) {
     return cb('Collection#get requires a short_name property');
   }
 
   const search = new Search({}, process.env.CollectionsTable);
-  search.get(name).then((response) => {
-    //if (response.results.length === 0) {
-      //return cb({ detail: 'Record was not found' });
-    //}
+  search.get(name, false, true).then((response) => {
     cb(null, response);
   }).catch((e) => {
     cb(e);
@@ -57,13 +55,13 @@ export function get(event, context, cb) {
  * @param {object} body a collection object to save in the database.
  * @return {object} returns the collection that was just saved.
  */
-export function post (event, context, cb) {
+export function post(event, context, cb) {
   const key = 'collectionName';
   const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
-    let errors = JSON.stringify(model.errors.map(e => e.message));
+    const errors = JSON.stringify(model.errors.map(e => e.message));
     return cb('Invalid POST: ' + errors);
   }
   const query = {
@@ -71,14 +69,14 @@ export function post (event, context, cb) {
     key,
     table
   };
-  db.get(query, function (error, collection) {
+  db.get(query, (error, collection) => {
     if (error && error.errorType !== 'ResourceNotFoundException') {
       return cb(error);
-    } else if (_.isEmpty(collection)) {
-      return db.save({data, table}, cb);
-    } else {
-      return cb('Record already exists');
     }
+    else if (_.isEmpty(collection)) {
+      return db.save({ data, table }, cb);
+    }
+    return cb('Record already exists');
   });
 }
 
@@ -87,13 +85,13 @@ export function post (event, context, cb) {
  * @param {object} body a set of properties to update on an existing collection.
  * @return {object} a mapping of the updated properties.
  */
-export function put (event, context, cb) {
+export function put(event, context, cb) {
   const key = 'collectionName';
   const table = process.env.CollectionsTable;
   const data = _.get(event, 'body', {});
   const model = validate(data, schema);
   if (model.errors.length) {
-    let errors = JSON.stringify(model.errors.map(e => e.message));
+    const errors = JSON.stringify(model.errors.map(e => e.message));
     return cb('Invalid POST: ' + errors);
   }
   const name = data.collectionName;
@@ -103,18 +101,24 @@ export function put (event, context, cb) {
     key,
     table
   };
-  db.get(query, function (error, collection) {
+  db.get(query, (error, collection) => {
     if (error) {
       return cb(error);
-    } else if (_.isEmpty(collection)) {
-      return cb('Collection not found');
-    } else {
-      return db.update({
-        value: name,
-        data: update,
-        key,
-        table
-      }, cb);
     }
+    else if (_.isEmpty(collection)) {
+      return cb('Collection not found');
+    }
+    return db.update({
+      value: name,
+      data: update,
+      key,
+      table
+    }, cb);
   });
 }
+
+localRun(() => {
+  get({ path: { short_name: 'AST_L1A__version__003' } }, null, (e, r) => {
+    console.log(e, r);
+  });
+});

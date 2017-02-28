@@ -2,134 +2,152 @@
 
 import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
-import payloadExample from 'cumulus-common/tests/data/payload3.json';
+import payloadExample from 'cumulus-common/tests/data/payload.json';
 import { Granule } from 'cumulus-common/models';
-import { SQS, invoke, S3 } from 'cumulus-common/aws-helpers';
+import { SQS, invoke } from 'cumulus-common/aws-helpers';
 
 const logDetails = {
-  file: 'lamgdas/dispatcher/index.js',
+  file: 'lambdas/dispatcher/index.js',
   type: 'processing',
   source: 'dispatcher'
 };
 
-function setDuration(record, previousOrder) {
-  if (previousOrder) {
-    record.timeline[previousOrder].ended = Date.now();
+class Dispatcher {
+  constructor(payload) {
+    this.payload = payload;
+    this.record = payload.granuleRecord;
+    this.nextStep = payload.nextStep;
+    this.previousOrder = this.record.recipe.order[this.nextStep - 1];
+    this.nextOrder = this.record.recipe.order[this.nextStep];
 
-    const duration = (
-      record.timeline[previousOrder].ended -
-      record.timeline[previousOrder].started
-    );
+    logDetails.granuleId = this.record.granuleId;
+    logDetails.collectionName = this.record.collectionName;
 
-    record[`${previousOrder}Duration`] = duration || 0;
+    log.info(`${this.record.granuleId}: Dispatcher launched`, logDetails);
+    log.info(`Dispatcher is at step ${this.nextStep}`, logDetails);
+    log.info(`Next step is ${this.nextOrder}`, logDetails);
+
+    this.status = {
+      processStep: 'processing',
+      archive: 'archiving',
+      pushToCMR: 'CMR'
+    };
   }
 
-  return record;
+  setDuration() {
+    // if there is a previous step, calculate the duration
+    if (this.previousOrder) {
+      const duration = (
+        this.record.timeline[this.previousOrder].endedAt -
+        this.record.timeline[this.previousOrder].startedAt
+      );
+
+      this.record[`${this.previousOrder}Duration`] = duration || 0;
+    }
+
+    // if there is no order, set the duration for the processig
+    // and the total duration
+    if (!this.nextOrder) {
+      const duration = (
+        this.record.processingEndedAt -
+        this.record.processingStartedAt
+      );
+
+      this.record.processingDuration = duration ? duration / 1000 : 0;
+      this.record.duration = this.record.processingDuration + this.record.ingestDuration;
+
+      log.info('Processing finished', logDetails);
+      log.info(`Processing duration: ${this.record.duration}`, logDetails);
+    }
+  }
+
+  setTime() {
+    if (!this.record.hasOwnProperty('timeline')) {
+      this.record.timeline = {};
+      this.record.recipe.order.forEach(o => {
+        this.record.timeline[o] = {};
+      });
+    }
+
+    // if we are at step 0, seat the processing start time
+    // this is for the whole processing portion of cumulus work
+    if (this.nextStep === 0) {
+      this.record.processingStartedAt = Date.now();
+    }
+
+    // if there is a previous order set the endtime for that order
+    if (this.previousOrder) {
+      this.record.timeline[this.previousOrder].endedAt = Date.now();
+    }
+
+    // if there is a nextStep, set starttime for the next step
+    if (this.nextOrder) {
+      // set start time
+      this.record.timeline[this.nextOrder].startedAt = Date.now();
+    }
+    else {
+      // if there is no next order, then we are at the end
+      // of the processing time, so set the time endtime
+      this.record.processingEndedAt = Date.now();
+    }
+  }
+
+  setStatus() {
+    if (this.nextOrder) {
+      this.record.status = this.status[this.nextOrder];
+    }
+    else {
+      this.record.status = 'completed';
+    }
+    this.record.statusId = Granule.enum(this.record.status);
+  }
+
+  async launchNextStep() {
+    this.record.updatedAt = Date.now();
+    this.payload.granuleRecord = this.record;
+
+    if (this.nextOrder) {
+      if (this.nextOrder === 'processStep') {
+        log.info('Sending processing message to ProcessingQueueu', logDetails);
+        return await SQS.sendMessage(process.env.ProcessingQueue, this.payload);
+      }
+      log.info(`Invoking ${process.env[this.nextOrder]}`, logDetails);
+      return await invoke(process.env[this.nextOrder], this.payload);
+    }
+    return 'No next step';
+  }
+
+  async updateRecord() {
+    const g = new Granule();
+    log.info('Granule record updated', logDetails);
+    return await g.create(this.record);
+  }
+
+  dispatch(cb) {
+    this.setTime();
+    this.setDuration();
+    this.setStatus();
+
+    this.launchNextStep()
+      .then(r => {
+        console.log(r);
+        return this.updateRecord();
+      })
+      .then((r) => {
+        log.info('Dispatch completed', logDetails);
+        cb(null, r);
+      })
+      .catch(e => cb(e));
+  }
 }
+
 
 export function handler(event, context, cb) {
   // recieve the payload
   // TODO: validate the payload
 
-  const payload = event;
-  let record = event.granuleRecord;
-  let invokeFunc;
-  logDetails.granuleId = record.granuleId;
-  logDetails.collectionName = record.collectionName;
-
-  log.info(`${record.granuleId}: Dispatcher launched`, logDetails);
-
-  // decide the next step
-  const nextStep = payload.nextStep;
-  const previousOrder = record.recipe.order[nextStep - 1];
-  const nextOrder = record.recipe.order[nextStep];
-
-  if (nextStep === 0) {
-    record.processingStarted = Date.now();
-  }
-
-  //
-  // if record does not have timeline add it
-  //
-  if (record && !record.hasOwnProperty('timeline')) {
-    record.timeline = {};
-    record.recipe.order.forEach(o => {
-      record.timeline[o] = {};
-    });
-  }
-
-  //
-  // add/update status
-  //
-  if (!record.hasOwnProperty('status') || record.status !== 'processing') {
-    record.status = 'processing';
-  }
-
-  // set end time and duration for previous task
-  record = setDuration(record, previousOrder);
-
-  if (nextOrder) {
-    log.info(`Dispatcher is at step ${nextStep}`, logDetails);
-    log.info(`Next step is ${nextOrder}`, logDetails);
-
-    // set start time
-    record.timeline[nextOrder].started = Date.now();
-
-    // if process, send to SQS
-    if (nextOrder === 'processStep') {
-      // if it is a processing step send it to sqs
-      // also because the processing Step doesn't handle adding dates and times
-      // to the payload, do it now.
-      payload.granuleRecord = record;
-
-      // //invokeFunc = invoke(process.env.holder, payload);
-      invokeFunc = SQS.sendMessage(process.env.ProcessingQueue, payload);
-    }
-    else {
-      // if lambda, invoke it
-      invokeFunc = invoke(process.env[nextOrder], payload);
-    }
-
-    invokeFunc.then(() => {
-      // update the granule table
-      const g = new Granule();
-      console.log(record);
-      return g.create(record);
-    }).then(r => {
-      log.info('Granule record updated', logDetails);
-
-      log.info('Dispatch completed', logDetails);
-      cb(null, r);
-    }).catch(e => {
-      log.error(e, e.stack, logDetails);
-      cb(e);
-    });
-  }
-  else {
-    record.status = 'completed';
-    record.processingEnded = Date.now();
-
-    record.duration = (
-      record.processingEnded -
-      record.processingStarted
-    );
-
-    if (!record.duration) record.duration = 0;
-
-    log.info('Processing finished', logDetails);
-    log.info(`Processing duration: ${record.duration}`, logDetails);
-
-    const g = new Granule();
-    console.log(record);
-    g.create(record).then((r) => {
-      log.info('Granule record updated', logDetails);
-      log.info('Dispatch completed', logDetails);
-      cb(null, r);
-    }).catch(e => {
-      log.error(e, e.stack, logDetails);
-      cb(e);
-    });
-  }
+  const d = new Dispatcher(event);
+  d.dispatch(cb);
 }
 
 localRun(() => {

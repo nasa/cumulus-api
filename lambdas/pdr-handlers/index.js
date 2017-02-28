@@ -1,6 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
+import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
 /**
@@ -12,7 +13,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, context, cb) {
   const search = new Search(event, process.env.PDRsTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query(true).then((response) => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -24,15 +25,21 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const name = _.get(event.params, 'pdrName');
+  const name = _.get(event.path, 'pdrName');
   if (!name) {
     return cb('PDR#get requires a pdrName property');
   }
 
   const search = new Search({}, process.env.PDRsTable);
-  search.get(name).then((response) => {
+  search.get(name, true).then((response) => {
     cb(null, response);
   }).catch((e) => {
     cb(e);
   });
 }
+
+localRun(() => {
+  list({}, null, (e, r) => {
+    console.log(e, r);
+  });
+});
