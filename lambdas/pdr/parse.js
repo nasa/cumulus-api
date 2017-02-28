@@ -166,19 +166,21 @@ export async function parsePdr(pdr, concurrency = 5) {
       }
 
       // build the granule record and add it to the database
-      if (!granuleRecordExists) {
-        conc(async () => {
-          granuleRecord = await Granule.buildRecord(
-            pdr.collectionName,
-            pdr.name,
-            granuleId,
-            granuleFiles,
-            collectionRecord
-          );
+      // this will override an existing record
+      // We are here because the granule is not completed
+      // Thus it is ok override an existing unprocessed record
+      conc(async () => {
+        granuleRecord = await Granule.buildRecord(
+          pdr.collectionName,
+          pdr.name,
+          granuleId,
+          granuleFiles,
+          collectionRecord
+        );
 
-          await g.create(granuleRecord);
-        });
-      }
+        await g.create(granuleRecord);
+      });
+
 
       // add the files to the queue to be processaed
       conc(async () => {
