@@ -15,7 +15,7 @@ buckets:
 
 ecs:
   maxInstances: 5
-  desiredInstances: 1
+  desiredInstances: 3
   keyPairName: cumulus-scisco
   instanceType: m4.large
 
@@ -109,7 +109,7 @@ lambdas:
     ecs: true
     image: cumulus-docker-dev-lambdarunner
     count: 3
-    imageMemory: 1024
+    imageMemory: 512
     imageCpu: 10
     commands:
       - --eventJson

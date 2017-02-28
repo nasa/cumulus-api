@@ -419,7 +419,7 @@ Resources:
         Cpu: 10
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cumulus-docker-dev-aster
-        Memory: 512
+        Memory: 312
         LogConfiguration:
           LogDriver: awslogs
           Options:
