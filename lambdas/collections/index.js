@@ -24,7 +24,7 @@ function parseRecipe(record) {
  */
 export function list(event, context, cb) {
   const search = new Search(event, process.env.CollectionsTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query(false, true).then((response) => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -42,7 +42,7 @@ export function get(event, context, cb) {
   }
 
   const search = new Search({}, process.env.CollectionsTable);
-  search.get(name).then((response) => {
+  search.get(name, false, true).then((response) => {
     //if (response.results.length === 0) {
       //return cb({ detail: 'Record was not found' });
     //}
