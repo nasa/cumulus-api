@@ -112,7 +112,6 @@ export async function parsePdr(pdr, concurrency = 5) {
       //
       // check if there is a granule record already created
       //
-      let granuleRecordExists = false;
       let granuleRecord;
       const g = new Granule();
       try {
@@ -129,8 +128,6 @@ export async function parsePdr(pdr, concurrency = 5) {
           log.info(`${granuleId} is processed. Skipping!`, logDetails);
           continue;
         }
-
-        granuleRecordExists = true;
       }
       catch (e) {
         if (e instanceof RecordDoesNotExist) {
