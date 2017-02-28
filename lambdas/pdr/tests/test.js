@@ -34,8 +34,6 @@ describe('Testing PDRs', function() {
       //await Manager.deleteTable(process.env.GranulesTable);
       await Manager.createTable(
         granuleTableName, {
-          name: 'collectionName', type: 'S'
-        }, {
           name: 'granuleId', type: 'S'
         }
       );
