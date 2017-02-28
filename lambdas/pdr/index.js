@@ -67,9 +67,9 @@ export function discoverPdrHandler(event, context, cb = () => {}) {
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  //discoverPdrHandler({ collectionName: 'ASTER_1A_versionId_1' }, null, (d) => console.log(d));
+  //discoverPdrHandler({ collectionName: 'AST_L1A__version__003' }, null, (d) => console.log(d));
 
-  //pollPdrQueue(1, 100, 15);
+  pollPdrQueue(1, 100, 15);
 
   //ingestGranulesHandler({
     //concurrency: 3
@@ -77,10 +77,10 @@ localRun(() => {
   //pollGranulesQueue(3);
   //
 
-  parsePdr({
-    name: 'PDN.cecc72bd-238d-4a8a-86df-d2306c39f7cb.PDR',
-    //name: 'PDN.ID1611071200.PDR',
-    collectionName: 'MCD43A1.006',
-  });
+  //parsePdr({
+    //name: 'PDN.cecc72bd-238d-4a8a-86df-d2306c39f7cb.PDR',
+    ////name: 'PDN.ID1611071200.PDR',
+    //collectionName: 'MCD43A1.006',
+  //});
 
 });
