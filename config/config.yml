@@ -185,19 +185,19 @@ lambdas:
       method: get
       cors: true
 
-  - name: listCollectionGranules
-    handler: granules.list
-    timeout: 300
-    apiGateway:
-      path: granules/{collection}
-      method: get
-      cors: true
+  #- name: listCollectionGranules
+    #handler: granules.list
+    #timeout: 300
+    #apiGateway:
+      #path: granules/{collection}
+      #method: get
+      #cors: true
 
   - name: getGranules
     handler: granules.get
     timeout: 300
     apiGateway:
-      path: granules/{collection}/{granuleName}
+      path: granules/{granuleName}
       method: get
       cors: true
 

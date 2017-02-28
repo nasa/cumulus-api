@@ -25,15 +25,10 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const collection = _.get(event.path, 'collection');
   const granuleId = _.get(event.path, 'granuleName');
 
-  if (!collection || !granuleId) {
-    return cb('Must supply path.collection and path.granuleName');
-  }
-
   const search = new Search({}, process.env.GranulesTable);
-  search.get(`${collection}|${granuleId}`).then((response) => {
+  search.get(granuleId).then((response) => {
     cb(null, response);
   }).catch((e) => {
     cb(e);
