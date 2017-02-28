@@ -1,6 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
+import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
 /**
@@ -38,3 +39,13 @@ export function get(event, context, cb) {
     cb(e);
   });
 }
+
+localRun(() => {
+  list({
+    //query: { granuleId: '1A0000-2017012301_003_061', collectionName: 'AST_L1A__version__003'}
+    query: { sort_by: 'duration', order:'asc' }
+  }, null, (e, r) => {
+    console.log(r)
+    console.log(e)
+  });
+});
