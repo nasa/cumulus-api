@@ -169,13 +169,18 @@ describe('Testing PDRs', function() {
     assert.equal(attr.ApproximateNumberOfMessages, 4, 'number of messages in the queue');
 
     // the PDR record must have 4 granules associated with it
-    const ps = await p.get({ pdrName: pdr.name });
-    assert.equal(Object.keys(ps.granules).length, 4,
-      'number of granules associated with the pdr record');
+    const granules = await g.scan({
+      filter: 'pdrName = :value',
+      values: {
+        ':value': pdr.name
+      }
+    });
 
-    // all granules must have a false status
-    Object.values(ps.granules).forEach((v) => {
-      assert.ok(!v);
+    assert.equal(granules.Items.length, 4);
+
+    // all granules must have ingesting status
+    granules.Items.forEach(item => {
+      assert.equal(item.status, 'ingesting');
     });
 
     aws.downloadS3Files.restore();
