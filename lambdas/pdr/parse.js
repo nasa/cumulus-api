@@ -176,6 +176,12 @@ export async function parsePdr(pdr, concurrency = 5) {
         );
 
         await g.create(granuleRecord);
+
+        // update PDR status
+        const p = new Pdr();
+        await p.updateStatus({
+          pdrName: pdr.name
+        }, 'parsed');
       });
 
 
