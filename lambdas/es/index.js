@@ -1,7 +1,7 @@
 'use strict';
 import queue from 'queue-async';
 import { localRun } from 'cumulus-common/local';
-import { client as esClient } from 'cumulus-common/es';
+import { Search } from 'cumulus-common/es/search';
 import { AttributeValue } from 'dynamodb-data-types';
 import { get } from 'lodash';
 const unwrap = AttributeValue.unwrap;
@@ -9,6 +9,7 @@ const unwrap = AttributeValue.unwrap;
 const index = process.env.StackName || 'cumulus-local-test';
 
 function deleteRecord(params, callback) {
+  const esClient = Search.es();
   esClient.get(params, (error, response, status) => {
     if (status !== 200) {
       return callback(null, null);
@@ -25,6 +26,7 @@ function deleteRecord(params, callback) {
 }
 
 function saveRecord(data, params, callback) {
+  const esClient = Search.es();
   esClient.get(params, (error, response, status) => {
     if (status !== 200 && status !== 404) {
       callback(error);
@@ -112,6 +114,7 @@ function processRecords(event, done) {
  * @return {string} response text indicating the number of records altered in elasticsearch.
  */
 export function handler(event, context, done) {
+  const esClient = Search.es();
   esClient.indices.exists({ index }, (error, response, status) => {
     if (status === 404) {
       console.log(`${index} doesn't exist. Creating it`);
