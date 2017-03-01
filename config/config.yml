@@ -95,6 +95,18 @@ dynamos:
       - name: accessDate
         type: RANGE
 
+  - name: ErrorsTable
+    read: 1
+    write: 30
+    envName: ErrorsTable
+    elasticsearch: true
+    attributes:
+      - name: objName
+        type: S
+    schema:
+      - name: objName
+        type: HASH
+
 lambdas:
   - name: pdrParser
     handler: pdr.parsePdrsHandler
