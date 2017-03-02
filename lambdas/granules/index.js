@@ -30,8 +30,6 @@ export function put(event, context, cb) {
 
     g.get({ granuleId: granuleId }).then(record => {
       record.status = 'processing';
-      record.statusId = Granule.enum('processing');
-
 
       return invoke(
         process.env.dispatcher,

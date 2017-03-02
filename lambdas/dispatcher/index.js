@@ -99,7 +99,6 @@ class Dispatcher {
     else {
       this.record.status = 'completed';
     }
-    this.record.statusId = Granule.enum(this.record.status);
   }
 
   async launchNextStep() {
