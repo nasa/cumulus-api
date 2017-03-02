@@ -19,6 +19,19 @@ ecs:
   keyPairName: cumulus-scisco
   instanceType: m4.large
 
+elasticsearch:
+  # the dynamic template that is included with every type
+  # used with the bootstrap command
+  dynamic_templates:
+    - all_date_fileds:
+        match_mapping_type: long
+        match: '*At'
+        mapping:
+          type: date
+  relations:
+    - CollectionsTable
+    - PDRsTable
+
 sqs:
   - name: PDRsQueue # queue for list of PDRs to be parsed
     visibilityTimeout: 100
