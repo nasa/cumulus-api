@@ -65,11 +65,11 @@ export function get(event, context, cb) {
 }
 
 localRun(() => {
-  list({
-    //query: { granuleId: '1A0000-2017012301_003_061', collectionName: 'AST_L1A__version__003'}
-    query: { sort_by: 'duration', order:'asc' }
-  }, null, (e, r) => {
-    console.log(r)
-    console.log(e)
+  localRun(() => {
+    list({
+      query: {
+        prefix: 'good_25'
+      }
+    }, null, (e, r) => console.log(e, r));
   });
 });
