@@ -7,22 +7,34 @@ import { get } from 'lodash';
 const unwrap = AttributeValue.unwrap;
 
 const index = process.env.StackName || 'cumulus-local-test';
+const granuleRelationTypes = [
+  [`${process.env.CollectionsTable}Granules`, 'collectionName'],
+  [`${process.env.PDRsTable}Granules`, 'pdrName']
+];
 
-function deleteRecord(params, callback) {
+
+async function deleteRecord(params) {
   const esClient = Search.es();
-  esClient.get(params, (error, response, status) => {
-    if (status !== 200) {
-      return callback(null, null);
+  let types = [params.type];
+
+  // we have to delete granule records from granule table
+  // and its related parent/child granule tables
+  if (params.type === process.env.GranulesTable) {
+    types = types.concat(granuleRelationTypes);
+  }
+
+  for (const t of types) {
+    try {
+      params.type = t[0];
+      await esClient.delete(params);
     }
-    esClient.delete(params, (e, r) => {
-      if (e) {
-        callback(e);
+    catch (e) {
+      if (e.status === 404 && e.message === 'Not Found') {
+        console.log('Nothing to delete');
       }
-      else {
-        callback(null, r);
-      }
-    });
-  });
+      throw e;
+    }
+  }
 }
 
 function saveRecord(data, params, callback) {
@@ -31,29 +43,49 @@ function saveRecord(data, params, callback) {
     if (status !== 200 && status !== 404) {
       callback(error);
     }
-    const exists = status === 200;
 
-    const h = (e, r, s) => {
-      if (s === 200 || s === 201) {
-        callback(null, data);
-      }
-      else {
-        callback(e || new Error('Could not write record'));
-      }
-    };
+    const writes = [];
 
-    if (exists) {
-      const update = Object.assign({}, params, {
-        body: { doc: data }
+    // handle Granule parent/child relationships
+    // this is needed to simplify running aggregations on granules
+    // from Collections and PDRs tables
+    if (params.type === process.env.GranulesTable) {
+      // write granule summer to children types
+
+
+      // we only record the fields we need for aggregations
+      const dataSummary = {
+        granuleId: data.granuleId,
+        granuleStatus: data.status,
+        granuleDuration: data.duration
+      };
+
+      granuleRelationTypes.forEach(t => {
+        // make sure granule record has the parnet id
+        if (data.hasOwnProperty(t[1])) {
+          const input = Object.assign({}, params, {
+            body: dataSummary
+          });
+
+          input.type = t[0];
+          input.parent = data[t[1]];
+
+          writes.push(esClient.index(input));
+        }
       });
-      esClient.update(update, h);
     }
-    else {
-      const create = Object.assign({}, params, {
-        body: data
-      });
-      esClient.create(create, h);
-    }
+
+    params.refresh = true;
+
+    const input = Object.assign({}, params, {
+      body: data
+    });
+
+    writes.push(esClient.index(input));
+
+    Promise.all(writes)
+      .then((results) => callback(null, results))
+      .catch(e => callback(e));
   });
 }
 
@@ -81,7 +113,11 @@ function processRecords(event, done) {
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
         console.log(`Deleting ${id} from ${type}`);
-        q.defer((callback) => deleteRecord(params, callback));
+        q.defer((callback) => {
+          deleteRecord(params)
+            .then(r => callback(null, r))
+            .catch(e => callback(e));
+        });
       }
       else {
         const data = unwrap(record.dynamodb.NewImage);
@@ -138,5 +174,4 @@ export function handler(event, context, done) {
 }
 
 localRun(() => {
-  handler({}, null, () => {});
 });
