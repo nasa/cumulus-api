@@ -519,7 +519,7 @@ Resources:
         Fn::GetAtt:
           - DynamoToElasticSearchLambdaFunction
           - "Arn"
-      BatchSize: 100
+      BatchSize: 10
       StartingPosition: "TRIM_HORIZON"
 {{/if}}
 
