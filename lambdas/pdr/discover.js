@@ -20,17 +20,18 @@ const logDetails = {
  * @param {string} endpoint url to the folder where PDRs are listed:
  * @return {Promise} on success the promise includes a list {@link pdrObject|pdrObjects}
  */
-export function discoverPDRs(endpoint) {
+export function discoverPDRs(endpoint, collectionName) {
   const pattern = /<a href="(.*PDR)">/;
   const c = new Crawler(endpoint);
 
+  c.timeout = 2000;
   c.interval = 0;
   c.maxConcurrency = 10;
   c.respectRobotsTxt = false;
   c.userAgent = 'Cumulus';
   c.maxDepth = 1;
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     c.on('fetchcomplete', (queueItem, responseBuffer) => {
       log.info(`Received the list of PDRs from ${endpoint}`, logDetails);
       const lines = responseBuffer.toString().trim().split('\n');
@@ -46,6 +47,14 @@ export function discoverPDRs(endpoint) {
         }
       }
       resolve(pdrs);
+    });
+
+    c.on('fetchtimeout', (err) => {
+      // update collections table
+      // TODO: has to be replaced with a provider table update
+      const collection = new Collection();
+      collection.updateStatus({ collectionName: collectionName }, 'stopped')
+       .then(() => reject(err));
     });
 
     c.start();
@@ -102,12 +111,17 @@ export async function pdrHandler(event) {
     throw e;
   }
 
+  // updating status
+  c.updateStatus({
+    collectionName: collectionName
+  }, 'ingesting');
+
   const endpoint = collection.ingest.config.endpoint;
   const concurrency = collection.ingest.config.concurrency || 1;
   log.info(`checking ${endpoint}`, logDetails);
 
   // discover the PDRs
-  const pdrs = await discoverPDRs(endpoint);
+  const pdrs = await discoverPDRs(endpoint, collectionName);
   log.info(`Discovered ${pdrs.length} PDRs`, logDetails);
   for (const pdr of pdrs) {
     // check if the PDR is in the database, if not add it and download

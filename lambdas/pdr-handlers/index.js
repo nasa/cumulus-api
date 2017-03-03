@@ -39,7 +39,9 @@ export function get(event, context, cb) {
 }
 
 localRun(() => {
-  list({}, null, (e, r) => {
+  list({
+    query: { limit: 2 }
+  }, null, (e, r) => {
     console.log(e, r);
   });
 });

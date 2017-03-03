@@ -1,6 +1,8 @@
 'use strict';
 
 import _ from 'lodash';
+import { Granule } from 'cumulus-common/models';
+import { invoke } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -18,6 +20,33 @@ export function list(event, context, cb) {
   });
 }
 
+export function put(event, context, cb) {
+  const action = _.get(event, ['body', 'action'], null);
+
+  if (action && action === 'reprocess') {
+    const granuleId = _.get(event, ['path', 'granuleName']);
+    // TODO: send the granule for processing
+    const g = new Granule();
+
+    g.get({ granuleId: granuleId }).then(record => {
+      record.status = 'processing';
+
+      return invoke(
+        process.env.dispatcher,
+        {
+          previousStep: 0,
+          nextStep: 0,
+          granuleRecord: record
+        }
+      );
+    }).then(r => cb(null, r))
+      .catch(e => cb(e));
+  }
+  else {
+    return cb('action is missing');
+  }
+}
+
 /**
  * Query a single granule.
  * @param {string} collectionName the name of the collection.
@@ -25,15 +54,10 @@ export function list(event, context, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, context, cb) {
-  const collection = _.get(event.path, 'collection');
   const granuleId = _.get(event.path, 'granuleName');
 
-  if (!collection || !granuleId) {
-    return cb('Must supply path.collection and path.granuleName');
-  }
-
   const search = new Search({}, process.env.GranulesTable);
-  search.get(`${collection}|${granuleId}`).then((response) => {
+  search.get(granuleId).then((response) => {
     cb(null, response);
   }).catch((e) => {
     cb(e);
@@ -41,11 +65,11 @@ export function get(event, context, cb) {
 }
 
 localRun(() => {
-  list({
-    //query: { granuleId: '1A0000-2017012301_003_061', collectionName: 'AST_L1A__version__003'}
-    query: { sort_by: 'duration', order:'asc' }
-  }, null, (e, r) => {
-    console.log(r)
-    console.log(e)
+  localRun(() => {
+    list({
+      query: {
+        prefix: 'good_25'
+      }
+    }, null, (e, r) => console.log(e, r));
   });
 });

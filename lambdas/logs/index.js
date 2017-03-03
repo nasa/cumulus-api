@@ -2,90 +2,128 @@
 
 import splunk from 'splunk-sdk';
 import _ from 'lodash';
+import { localRun } from 'cumulus-common/local';
 import { getEarliestDate, getLatestDate, getLimit } from 'cumulus-common/utils';
 
-const service = new splunk.Service({
-  username: process.env.SPLUNK_USERNAME,
-  password: process.env.SPLUNK_PASSWORD,
-  host: process.env.SPLUNK_HOST,
-  port: process.env.SPLUNK_PORT || '8089',
-  autologin: true
-});
 
-export function counts(event, context, cb) {
-  // This query relies on `is_error` being 0 or 1
-  const query = 'search index=main | stats sum(is_error) by dataset_id';
+function parseQueryParameters(event) {
+  let count = 10;
+  let page = 1;
+  let query = [];
+  query.push('search');
 
   const params = {
     output_mode: 'JSON',
-    // Setting count to 0 returns _all_ records
-    count: 0
+    max_time: 3,
+    count: count
   };
 
-  if (_.get(event, ['query', 'earliestDate'])) {
-    params.earliestDate = `${getEarliestDate(event.query)}T00:00:00.000`;
+  query.push(_.get(event, ['query', 'q'], null));
+  query.push(_.get(event, ['query', 'granuleId'], null));
+  query.push(_.get(event, ['query', 'pdrName'], null));
+  query.push(_.get(event, ['query', 'collectionName'], null));
+
+  if (_.get(event, ['query', 'level'])) {
+    const level = _.get(event, ['query', 'level']);
+    query.push(`level=${level}`);
   }
 
-  if (_.get(event, ['query', 'latestDate'])) {
-    params.earliestDate = `${getLatestDate(event.query)}T24:00:00.000`;
+  if (_.get(event, ['query', 'date_from'])) {
+    const d = new Date(event.query.date_from);
+    params.earliest_time = d.toISOString();
   }
 
-  service.oneshotSearch(query, params, (err, res) => {
+  if (_.get(event, ['query', 'date_to'])) {
+    const d = new Date(event.query.date_to);
+    params.latest_time = d.toISOString();
+  }
+
+  if (_.get(event, ['query', 'limit'])) {
+    count = parseInt(event.query.limit);
+    params.count = count;
+  }
+
+  if (_.get(event, ['query', 'page'])) {
+    page = parseInt(event.query.page);
+    params.offset = (page - 1) * count;
+  }
+
+  query = query.join(' ');
+
+  return {
+    query,
+    params,
+    page,
+    count
+  };
+}
+
+
+export function counts(event, context, cb) {
+  const service = new splunk.Service({
+    username: process.env.SPLUNK_USERNAME,
+    password: process.env.SPLUNK_PASSWORD,
+    host: process.env.SPLUNK_HOST,
+    port: process.env.SPLUNK_PORT || '8089',
+    autologin: true
+  });
+
+  const parsed = parseQueryParameters(event);
+
+  // add stats and groupBy
+  const groupBy = _.get(event, ['query', 'group_by'], 'granuleId');
+  parsed.query += ` | stats count by meta.${groupBy}`;
+
+  service.oneshotSearch(parsed.query, parsed.params, (err, results) => {
     if (err) return cb(err.message, null);
 
-    const results = res.results;
-
-    const response = results.map(result => {
-      if (result.dataset_id !== 'None') {
-        const newResult = Object.assign({}, result);
-        newResult.count = parseInt(result['sum(is_error)'], 10);
-        delete newResult['sum(is_error)'];
-
-        return newResult;
-      }
-
-      return false;
-    });
+    const response = {
+      meta: {
+        name: 'cumulus-api',
+        limit: parsed.count,
+        page: parsed.page,
+        count: results.results.length,
+        fields: results.fields
+      },
+      results: results.results
+    };
 
     return cb(null, response);
   });
 }
 
 export function list(event, context, cb) {
-  const FIELDS_TO_RETURN = ['timestamp', 'dataset_id', 'process', 'message'];
+  const service = new splunk.Service({
+    username: process.env.SPLUNK_USERNAME,
+    password: process.env.SPLUNK_PASSWORD,
+    host: process.env.SPLUNK_HOST,
+    port: process.env.SPLUNK_PORT || '8089',
+    autologin: true
+  });
 
-  // If no dataset is specified, return all datasets
-  const datasetID = _.hasIn(event, ['path', 'dataSet']) || '*';
+  const parsed = parseQueryParameters(event);
 
-  // Splunk's query syntax is case-insensitive, including in parameters
-  const query = `search index=main dataset_id="${datasetID}" \
-  is_error=1 | fields ${FIELDS_TO_RETURN.join(',')}`;
-
-  const params = {
-    output_mode: 'JSON',
-    count: getLimit(event.query)
-  };
-
-  if (_.get(event, ['query', 'earliestDate'])) {
-    params.earliestDate = `${getEarliestDate(event.query)}T00:00:00.000`;
-  }
-  if (_.get(event, ['query', 'latestDate'])) {
-    params.earliestDate = `${getLatestDate(event.query)}T24:00:00.000`;
-  }
-
-  service.oneshotSearch(query, params, (err, results) => {
+  service.oneshotSearch(parsed.query, parsed.params, (err, results) => {
     if (err) return cb(err.message, null);
 
-    const fullResults = results.results;
+    const response = {
+      meta: {
+        name: 'cumulus-api',
+        limit: parsed.count,
+        page: parsed.page,
+        count: results.results.length
+      },
+      results: results.results.map(r => JSON.parse(r._raw))
+    };
 
-    const newResults = fullResults.map(fullResult => {
-      const result = {};
-      FIELDS_TO_RETURN.forEach(field => {
-        result[field] = fullResult[field];
-      });
-      return result;
-    });
-
-    return cb(null, newResults);
+    return cb(null, response);
   });
 }
+
+
+localRun(() => {
+  counts({query: {}}, null, (e, r) => {
+    console.log(e);
+    console.log(r);
+  });
+});

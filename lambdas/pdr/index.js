@@ -59,17 +59,16 @@ export function parsePdrsHandler(event) {
 export function discoverPdrHandler(event, context, cb = () => {}) {
   // use callback with promise
   pdrHandler(event).then(r => cb(null, r)).catch((err) => {
-    log.info(err, JSON.stringify(event));
-    cb(err);
+    log.error(err, err.stack);
   });
 }
 
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  //discoverPdrHandler({ collectionName: 'AST_L1A__version__003' }, null, (d) => console.log(d));
+  discoverPdrHandler({ collectionName: 'AST_L1A__version__003' }, null, (e, d) => console.log(e, d));
 
-  pollPdrQueue(1, 100, 15);
+  //pollPdrQueue(1, 100, 15);
 
   //ingestGranulesHandler({
     //concurrency: 3

@@ -7,22 +7,46 @@ import { get } from 'lodash';
 const unwrap = AttributeValue.unwrap;
 
 const index = process.env.StackName || 'cumulus-local-test';
+const granuleRelationTypes = [
+  [`${process.env.CollectionsTable}Granules`, 'collectionName'],
+  [`${process.env.PDRsTable}Granules`, 'pdrName']
+];
+
 
 function deleteRecord(params, callback) {
   const esClient = Search.es();
-  esClient.get(params, (error, response, status) => {
-    if (status !== 200) {
-      return callback(null, null);
-    }
-    esClient.delete(params, (e, r) => {
-      if (e) {
-        callback(e);
+
+  // if it is a Granule record use delete by query
+  // so granule records in the main type and parent/child
+  // types are deleted at the same. otherwise, use
+  // the regular delete
+  if (params.type === process.env.GranulesTable) {
+    esClient.deleteByQuery({
+      index: params.index,
+      body: {
+        query: {
+          match: {
+            'granuleId.keyword': params.id
+          }
+        }
       }
-      else {
-        callback(null, r);
+    }, callback);
+  }
+  else {
+    esClient.get(params, (error, response, status) => {
+      if (status !== 200) {
+        return callback(null, null);
       }
+      esClient.delete(params, (e, r) => {
+        if (e) {
+          callback(e);
+        }
+        else {
+          callback(null, r);
+        }
+      });
     });
-  });
+  }
 }
 
 function saveRecord(data, params, callback) {
@@ -31,29 +55,49 @@ function saveRecord(data, params, callback) {
     if (status !== 200 && status !== 404) {
       callback(error);
     }
-    const exists = status === 200;
 
-    const h = (e, r, s) => {
-      if (s === 200 || s === 201) {
-        callback(null, data);
-      }
-      else {
-        callback(e || new Error('Could not write record'));
-      }
-    };
+    const writes = [];
 
-    if (exists) {
-      const update = Object.assign({}, params, {
-        body: { doc: data }
+    // handle Granule parent/child relationships
+    // this is needed to simplify running aggregations on granules
+    // from Collections and PDRs tables
+    if (params.type === process.env.GranulesTable) {
+      // write granule summer to children types
+
+
+      // we only record the fields we need for aggregations
+      const dataSummary = {
+        granuleId: data.granuleId,
+        granuleStatus: data.status,
+        granuleDuration: data.duration
+      };
+
+      granuleRelationTypes.forEach(t => {
+        // make sure granule record has the parnet id
+        if (data.hasOwnProperty(t[1])) {
+          const input = Object.assign({}, params, {
+            body: dataSummary
+          });
+
+          input.type = t[0];
+          input.parent = data[t[1]];
+
+          writes.push(esClient.index(input));
+        }
       });
-      esClient.update(update, h);
     }
-    else {
-      const create = Object.assign({}, params, {
-        body: data
-      });
-      esClient.create(create, h);
-    }
+
+    params.refresh = true;
+
+    const input = Object.assign({}, params, {
+      body: data
+    });
+
+    writes.push(esClient.index(input));
+
+    Promise.all(writes)
+      .then((results) => callback(null, results))
+      .catch(e => callback(e));
   });
 }
 
@@ -138,5 +182,4 @@ export function handler(event, context, done) {
 }
 
 localRun(() => {
-  handler({}, null, () => {});
 });
