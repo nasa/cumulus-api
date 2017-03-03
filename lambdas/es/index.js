@@ -4,14 +4,10 @@ import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 import { AttributeValue } from 'dynamodb-data-types';
 import { get } from 'lodash';
+import example from 'cumulus-common/tests/data/dynamo-to-es/granule-insert.json';
 const unwrap = AttributeValue.unwrap;
 
 const index = process.env.StackName || 'cumulus-local-test';
-const granuleRelationTypes = [
-  [`${process.env.CollectionsTable}Granules`, 'collectionName'],
-  [`${process.env.PDRsTable}Granules`, 'pdrName']
-];
-
 
 function deleteRecord(params, callback) {
   const esClient = Search.es();
@@ -55,49 +51,63 @@ function saveRecord(data, params, callback) {
     if (status !== 200 && status !== 404) {
       callback(error);
     }
+    const exists = status === 200;
+    const body = [];
 
-    const writes = [];
+    const h = (e, s) => {
+      if (s === 200 || s === 201) {
+        console.log('Record(s) saved to Elasticsearch');
+        callback(null, data);
+      }
+      else {
+        callback(e || new Error('Could not write record'));
+      }
+    };
 
-    // handle Granule parent/child relationships
+    params = { _index: params.index, _type: params.type, _id: params.id };
+
+    // if it is granule record we use bulk update
+    // this handles Granule parent/child relationships
     // this is needed to simplify running aggregations on granules
     // from Collections and PDRs tables
-    if (params.type === process.env.GranulesTable) {
-      // write granule summer to children types
-
-
+    if (params._type === process.env.GranulesTable) {
+      const granuleRelationTypes = [
+        [`${process.env.CollectionsTable}Granules`, 'collectionName'],
+        [`${process.env.PDRsTable}Granules`, 'pdrName']
+      ];
+      // adding two extra types for granule parent/child relation
       // we only record the fields we need for aggregations
       const dataSummary = {
         granuleId: data.granuleId,
         granuleStatus: data.status,
-        granuleDuration: data.duration
+        granuleDuration: data.duration,
+        createdAt: data.createdAt
       };
 
-      granuleRelationTypes.forEach(t => {
-        // make sure granule record has the parnet id
-        if (data.hasOwnProperty(t[1])) {
-          const input = Object.assign({}, params, {
-            body: dataSummary
-          });
-
-          input.type = t[0];
-          input.parent = data[t[1]];
-
-          writes.push(esClient.index(input));
-        }
+      granuleRelationTypes.forEach(g => {
+        const newParams = Object.assign({}, params);
+        newParams._type = g[0];
+        newParams._parent = data[g[1]];
+        body.push({ index: newParams });
+        body.push(dataSummary);
       });
     }
 
-    params.refresh = true;
+    // use update action if the record already exists
+    // this seems to have some performance
+    let action = 'create';
+    if (exists) {
+      action = 'update';
+      data = { doc: data };
+    }
 
-    const input = Object.assign({}, params, {
-      body: data
-    });
+    body.push({ [action]: params });
+    body.push(data);
 
-    writes.push(esClient.index(input));
-
-    Promise.all(writes)
-      .then((results) => callback(null, results))
-      .catch(e => callback(e));
+    // using bulk updater to update elasticsearch
+    // this is useful for the case of granules where the same
+    // record is put into three different es types (tables)
+    esClient.bulk({ body: body }, h);
   });
 }
 
@@ -182,4 +192,5 @@ export function handler(event, context, done) {
 }
 
 localRun(() => {
+  handler(example, null, (e, r) => console.log(e, r));
 });
