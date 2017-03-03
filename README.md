@@ -20,6 +20,10 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
     $ sulu cf create --profile awsProfileName
 
+To override stack or stage names do:
+
+    $ sulu cf create --stack mySatck --stage prod
+
 ### Updating CF stack
 
     $ sulu cf update --profile awsProfileName
