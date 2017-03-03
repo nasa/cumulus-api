@@ -41,6 +41,10 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
 
         // write payload to s3
         const payloadName = `${granuleId}-${Date.now()}.json`;
+
+        // update process start time
+        payload.granuleRecord.timeline.processStep.startedAt = Date.now();
+
         await S3.put(process.env.internal, `payloads/${payloadName}`, JSON.stringify(payload));
         const payloadUri = `s3://${process.env.internal}/payloads/${payloadName}`;
         log.info(`Pushed payload to S3 ${payloadUri}`, logDetails);
@@ -69,11 +73,11 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
 
         log.info('Attempting to register the task with ECS', logDetails);
         // keep pushing the task until it is registered with ECS
-        let response
+        let response;
         while (true) {
           response = await ecs.runTask(params).promise();
           if (response.tasks.length > 0) {
-            console.log(response.tasks);
+            log.info(response.tasks, logDetails);
             log.info(`Task registered: ${response.tasks[0].taskArn}`, logDetails);
             break;
           }
