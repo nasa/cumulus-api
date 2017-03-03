@@ -61,6 +61,9 @@ export async function postToCMR(xml) {
 
 
 export function handler(event, context, cb) {
+
+  process.env.CMR_PROVIDER = event.granuleRecord.cmrProvider || 'CUMULUS';
+
   try {
     logDetails.collectionName = event.granuleRecord.collectionName;
     logDetails.granuleId = event.granuleRecord.granuleId;
@@ -73,7 +76,8 @@ export function handler(event, context, cb) {
       log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
 
       // add conceptId to the record
-      event.granuleId.cmrConceptId = res.result['concept-id'];
+      event.granuleRecord.cmrLink = 'https://cmr.uat.earthdata.nasa.gov/search/granules.json' +
+        `?concept_id=${res.result['concept-id']}`;
 
       event.previousStep = event.nextStep;
       event.nextStep += 1;
