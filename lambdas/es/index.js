@@ -60,6 +60,7 @@ function saveRecord(data, params, callback) {
         callback(null, data);
       }
       else {
+        console.error(e);
         callback(e || new Error('Could not write record'));
       }
     };
@@ -71,6 +72,7 @@ function saveRecord(data, params, callback) {
     // this is needed to simplify running aggregations on granules
     // from Collections and PDRs tables
     if (params._type === process.env.GranulesTable) {
+      console.log('Handing parent/child relations for the Granule Record');
       const granuleRelationTypes = [
         [`${process.env.CollectionsTable}Granules`, 'collectionName'],
         [`${process.env.PDRsTable}Granules`, 'pdrName']
