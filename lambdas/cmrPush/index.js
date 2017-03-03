@@ -61,24 +61,32 @@ export async function postToCMR(xml) {
 
 
 export function handler(event, context, cb) {
-  logDetails.collectionName = event.granuleRecord.collectionName;
-  logDetails.granuleId = event.granuleRecord.granuleId;
+  try {
+    logDetails.collectionName = event.granuleRecord.collectionName;
+    logDetails.granuleId = event.granuleRecord.granuleId;
 
-  log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
-  getMetadata(event).then(xml => {
-    const payload = formatMetadata(event, xml);
-    return postToCMR(payload);
-  }).then(res => {
-    log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
+    log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
+    getMetadata(event).then(xml => {
+      const payload = formatMetadata(event, xml);
+      return postToCMR(payload);
+    }).then(res => {
+      log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
 
-    event.previousStep = event.nextStep;
-    event.nextStep += 1;
+      // add conceptId to the record
+      event.granuleId.cmrConceptId = res.result['concept-id'];
 
-    // invoking dispatcher
-    return invoke(process.env.dispatcher, event);
-  }).then((res) => cb(null, res))
-    .catch(e => cb(e));
+      event.previousStep = event.nextStep;
+      event.nextStep += 1;
 
+      // invoking dispatcher
+      return invoke(process.env.dispatcher, event);
+    }).then((res) => cb(null, res))
+      .catch(e => cb(e));
+  }
+  catch (e) {
+    log.error(e, logDetails);
+    cb(e);
+  }
   // url to check if the CMR is uploaded: https://cmr.uat.earthdata.nasa.gov/search/granules?granule_ur=[granuleUR from xml file]
 }
 
