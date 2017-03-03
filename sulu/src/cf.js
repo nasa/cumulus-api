@@ -16,12 +16,8 @@ const uploadLambdas = require('./lambda').uploadLambdas;
  * for generating the final CF template
  * @return {null}
  */
-const compileCF = (configPath) => {
-  if (typeof configPath === 'object') {
-    configPath = configPath.config;
-  }
-
-  const config = parseConfig(configPath);
+const compileCF = (options) => {
+  const config = parseConfig(options.config, options.stack, options.stage);
 
   const t = fs.readFileSync(path.join(process.cwd(), 'config/cloudformation.template.yml'), 'utf8');
   const template = Handlebars.compile(t);
@@ -87,9 +83,9 @@ function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, 
  * @param  {String} profile The profile name to use with AWS CLI
  * @return {Object}         The configuration Object
  */
-function getConfig(profile, configPath) {
+function getConfig(options, configPath) {
   // get the configs
-  const config = parseConfig(configPath);
+  const config = parseConfig(configPath, options.stack, options.stage);
 
   // throw error if dist folder doesn't exist
   try {
@@ -102,11 +98,12 @@ function getConfig(profile, configPath) {
 
   // check if the configBucket exists, if not throw an error
   try {
-    exec(`aws s3 ls s3://${config.buckets.internal} --profile ${profile}`);
+    exec(`aws s3 ls s3://${config.buckets.internal} --profile ${options.profile}`);
   }
   catch (e) {
-    console.error(`${config.buckets.internal} does not exist or your profile doesn't have access to it.
-Either create the bucket or make sure your credentials have access to it`);
+    console.error(`${config.buckets.internal} does not exist or ` +
+      'your profile doesn\'t have access to it. Either create the ' +
+      'bucket or make sure your credentials have access to it');
     process.exit(1);
   }
 
@@ -146,7 +143,7 @@ function validateTemplate(options) {
   const configPath = options.config;
 
   // Get the config
-  const c = getConfig(profile, configPath);
+  const c = getConfig(options, configPath);
 
   // Get the checksum hash
   const h = getHash(c);
@@ -172,7 +169,7 @@ function opsStack(options, ops) {
   const configPath = options.config;
 
   // Get the config
-  const c = getConfig(profile, configPath);
+  const c = getConfig(options, configPath);
 
   // Get the checksum hash
   const h = getHash(c);

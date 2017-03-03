@@ -13,9 +13,11 @@ const bootstrap = lib.bootstrap;
 // the CLI activation
 program
   .usage('TYPE COMMAND [options]')
-  .option('-p, --profile <profile>', 'AWS profile name to use for authentication')
+  .option('-p, --profile <profile>', 'AWS profile name to use for authentication', 'default')
   .option('-c, --config <config>', 'Path to config file')
-  .option('-r, --region', 'AWS region');
+  .option('-r, --region', 'AWS region', 'us-east-1')
+  .option('--stack <stack>', 'stack name, defaults to the config value')
+  .option('--stage <stage>', 'stage name, defaults to the config value');
 
 program
   .command('cf [create|update|validate|compile]')

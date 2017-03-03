@@ -188,17 +188,17 @@ function parseEnvVariables(config) {
     Stage: config.stage
   };
 
-  function addCommonSettings(group, envs) {
+  function addCommonSettings(group, envList) {
     // add env list and stack and stage name to all
     // level2 lists
     group.forEach((item, index) => {
       item.stackName = config.StackName;
       item.stage = config.Stage;
       if (item.hasOwnProperty('envs')) {
-        item.envs = item.envs.concat(envs);
+        item.envs = item.envs.concat(envList);
       }
       else {
-        item.envs = envs;
+        item.envs = envList;
       }
       group[index] = item;
     });
@@ -263,9 +263,17 @@ function parseEnvVariables(config) {
  * Parses the config/config.yml to js Object
  * @return {Object}
  */
-function parseConfig(configPath) {
+function parseConfig(configPath, stackName = null, stage = null) {
   const p = path.join(process.cwd(), configPath || 'config/config.yml');
   let config = yaml.safeLoad(fs.readFileSync(p, 'utf8'));
+
+  if (stackName) {
+    config.stackName = stackName;
+  }
+
+  if (stage) {
+    config.stage = stage;
+  }
 
   config.apiName = _.upperFirst(_.camelCase(`${config.stackName}-${config.stage}`));
 

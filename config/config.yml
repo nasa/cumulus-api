@@ -1,6 +1,5 @@
 stackName: cumulus-api-test2
 stage: dev
-buildApiGateway: true
 
 vpc:
   id: vpc-5aa75d3c
