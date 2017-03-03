@@ -13,27 +13,39 @@ const granuleRelationTypes = [
 ];
 
 
-async function deleteRecord(params) {
+function deleteRecord(params, callback) {
   const esClient = Search.es();
-  let types = [params.type];
 
-  // we have to delete granule records from granule table
-  // and its related parent/child granule tables
+  // if it is a Granule record use delete by query
+  // so granule records in the main type and parent/child
+  // types are deleted at the same. otherwise, use
+  // the regular delete
   if (params.type === process.env.GranulesTable) {
-    types = types.concat(granuleRelationTypes);
-  }
-
-  for (const t of types) {
-    try {
-      params.type = t[0];
-      await esClient.delete(params);
-    }
-    catch (e) {
-      if (e.status === 404 && e.message === 'Not Found') {
-        console.log('Nothing to delete');
+    esClient.deleteByQuery({
+      index: params.index,
+      body: {
+        query: {
+          match: {
+            'granuleId.keyword': params.id
+          }
+        }
       }
-      throw e;
-    }
+    }, callback);
+  }
+  else {
+    esClient.get(params, (error, response, status) => {
+      if (status !== 200) {
+        return callback(null, null);
+      }
+      esClient.delete(params, (e, r) => {
+        if (e) {
+          callback(e);
+        }
+        else {
+          callback(null, r);
+        }
+      });
+    });
   }
 }
 
@@ -113,11 +125,7 @@ function processRecords(event, done) {
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
         console.log(`Deleting ${id} from ${type}`);
-        q.defer((callback) => {
-          deleteRecord(params)
-            .then(r => callback(null, r))
-            .catch(e => callback(e));
-        });
+        q.defer((callback) => deleteRecord(params, callback));
       }
       else {
         const data = unwrap(record.dynamodb.NewImage);
