@@ -14,7 +14,7 @@ const bootstrap = lib.bootstrap;
 program
   .usage('TYPE COMMAND [options]')
   .option('-p, --profile <profile>', 'AWS profile name to use for authentication', 'default')
-  .option('-c, --config <config>', 'Path to config file')
+  .option('-c, --config <config>', 'Path to config file', 'config/config.yml')
   .option('-r, --region', 'AWS region', 'us-east-1')
   .option('--stack <stack>', 'stack name, defaults to the config value')
   .option('--stage <stage>', 'stage name, defaults to the config value');

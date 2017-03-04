@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: The AWS CloudFormation template for {{stackName}}
+Description: 'Cumulus-API deployment | stack: {{stackName}} | stage: {{stage}}'
 Parameters:
   ConfigS3Bucket:
     Type: String
@@ -410,7 +410,7 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'https://'
-                  - !Ref DistributionRestApi
+                  - !Ref distributionRestApi
                   - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
         {{#each envsList}}
           - Name: {{key}}
@@ -434,50 +434,50 @@ Resources:
   #################################################
   # ElasticSearch config BEGIN
   #################################################
-  #Elasticsearch5Domain:
-    #Type: "AWS::Elasticsearch::Domain"
-    #Properties:
-      #DomainName: {{stackName}}-{{stage}}-es-5
-      #ElasticsearchVersion: 5.1
-      #ElasticsearchClusterConfig:
-        #InstanceCount: "1"
-        #InstanceType: "m3.medium.elasticsearch"
-      #SnapshotOptions:
-        #AutomatedSnapshotStartHour: "0"
-      #EBSOptions:
-        #EBSEnabled: true
-        #VolumeType: gp2
-        #VolumeSize: 50
-      #AdvancedOptions:
-        #rest.action.multi.allow_explicit_index: "true"
-      #AccessPolicies:
-        #Version: "2012-10-17"
-        #Statement:
-          #- Effect: "Allow"
-            #Principal:
-              #AWS:
-                #- Fn::GetAtt:
-                  #- ProcessingLambdaRole
-                  #- Arn
-            #Action: "es:*"
-            #Resource:
-              #- !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
-          #- Effect: "Allow"
-            #Principal:
-              #AWS:
-                #- Fn::GetAtt:
-                  #- LambdaApiGatewayRole
-                  #- Arn
-            #Action: "es:*"
-            #Resource:
-              #- !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
-          #- Effect: "Allow"
-            #Principal:
-              #AWS:
-                #- arn:aws:iam::985962406024:user/alireza@developmentseed.org
-            #Action: "es:*"
-            #Resource:
-              #- !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+  Elasticsearch5Domain:
+    Type: "AWS::Elasticsearch::Domain"
+    Properties:
+      DomainName: {{stackName}}-{{stage}}-es-5
+      ElasticsearchVersion: 5.1
+      ElasticsearchClusterConfig:
+        InstanceCount: "1"
+        InstanceType: "m3.medium.elasticsearch"
+      SnapshotOptions:
+        AutomatedSnapshotStartHour: "0"
+      EBSOptions:
+        EBSEnabled: true
+        VolumeType: gp2
+        VolumeSize: 50
+      AdvancedOptions:
+        rest.action.multi.allow_explicit_index: "true"
+      AccessPolicies:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - ProcessingLambdaRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - LambdaApiGatewayRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - arn:aws:iam::985962406024:user/alireza@developmentseed.org
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
 
   #################################################
   # ElasticSearch config END
@@ -517,7 +517,7 @@ Resources:
           - "StreamArn"
       FunctionName:
         Fn::GetAtt:
-          - DynamoToElasticSearchLambdaFunction
+          - esLambdaFunction
           - "Arn"
       BatchSize: 10
       StartingPosition: "TRIM_HORIZON"
@@ -559,17 +559,19 @@ Resources:
   # APIGateway config BEGIN
   #################################################
 {{# if apiMethods}}
-  ApiGatewayDeployment{{apiName}}:
+
+{{# each apiDependencies}}
+  ApiGatewayDeployment{{name}}:
     DependsOn:
-  {{#each apiMethods}}
+  {{#each methods}}
     - {{name}}
   {{/each}}
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId:
-        Ref: ApiGatewayRestApi
+        Ref: {{name}}RestApi
       StageName: {{stage}}
-
+{{/each}}
 
 {{#each apiMethods}}
   {{name}}:
@@ -578,7 +580,7 @@ Resources:
       ResourceId:
         Ref: {{resource}}
       RestApiId:
-        Ref: {{api}}
+        Ref: {{api}}RestApi
       HttpMethod: {{method}}
       AuthorizationType: NONE
       Integration:
@@ -640,7 +642,7 @@ Resources:
       {{/each}}
       PathPart: '{{pathPart}}'
       RestApiId:
-        Ref: {{api}}
+        Ref: {{api}}RestApi
 
 {{/each}}
 
@@ -673,7 +675,7 @@ Resources:
             Fn::Join:
               - ''
               - - 'https://'
-                - !Ref DistributionRestApi
+                - !Ref distributionRestApi
                 - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
@@ -749,13 +751,13 @@ Resources:
   {{name}}EcsLogs:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: {{name}}EcsLogs
+      LogGroupName: {{stackName}}-{{stage}}-{{name}}EcsLogs
 
   {{name}}ECSService:
     Type: AWS::ECS::Service
     DependsOn:
     - CumulusECSAutoScalingGroup
-    - {{name}}LambdaFunction
+    - {{lambdaName}}LambdaFunction
     Properties:
       Cluster: !Ref CumulusECSCluster
       DesiredCount: {{# if count}}{{count}}{{ else }} 0 {{/if}}

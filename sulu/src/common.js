@@ -28,6 +28,11 @@ const configureApiGateway = (config) => {
   // APIGateway name used in AWS APIGateway Definition
   const apiMethods = [];
   const apiMethodsOptions = {};
+  const apiDependencies = {};
+
+  config.apis.forEach(api => {
+    apiDependencies[api.name] = [];
+  });
 
   // The array containing all the info
   // needed to define each APIGateway resource
@@ -69,7 +74,7 @@ const configureApiGateway = (config) => {
           if (index === 0) {
             parents = [
               'Fn::GetAtt:',
-              '- ApiGatewayRestApi',
+              `- ${api.api}RestApi`,
               '- RootResourceId'
             ];
           }
@@ -98,15 +103,28 @@ const configureApiGateway = (config) => {
         const method = _.capitalize(api.method);
         const name = _.join(segmentNames.map((x) => x), '');
 
+        const methodName = `ApiGatewayMethod${name}${_.capitalize(method)}`;
+
         // Build the ApiMethod array
         apiMethods.push({
-          name: `ApiGatewayMethod${name}${_.capitalize(method)}`,
+          name: methodName,
           method: _.upperCase(method),
           cors: api.cors || false,
           resource: `ApiGateWayResource${name}`,
           lambda: lambda.name,
           api: api.api
         });
+
+        // populate api dependency list
+        try {
+          apiDependencies[api.api].push({
+            name: methodName
+          });
+        }
+        catch (e) {
+          console.error(`${api.api} is not defined`);
+          throw e;
+        }
 
         // Build the ApiMethod Options array. Only needed for resources
         // with cors set to true
@@ -124,7 +142,12 @@ const configureApiGateway = (config) => {
   return {
     apiMethods,
     apiResources: _.values(apiResources),
-    apiMethodsOptions: _.values(apiMethodsOptions)
+    apiMethodsOptions: _.values(apiMethodsOptions),
+    apiDependencies: Object.keys(apiDependencies).map(k => ({
+      name: k,
+      methods: apiDependencies[k],
+      stage: config.stage
+    }))
   };
 };
 
@@ -143,6 +166,13 @@ const configureLambda = (config) => {
 
     if (!_.has(lambda, 'timeout')) {
       lambda.timeout = 300;
+    }
+
+    // add lambda name to services if any
+    if (lambda.hasOwnProperty('services')) {
+      for (const service of lambda.services) {
+        service.lambdaName = lambda.name;
+      }
     }
 
     // Get Lambda's zip file name
@@ -192,8 +222,8 @@ function parseEnvVariables(config) {
     // add env list and stack and stage name to all
     // level2 lists
     group.forEach((item, index) => {
-      item.stackName = config.StackName;
-      item.stage = config.Stage;
+      item.stackName = config.stackName;
+      item.stage = config.stage;
       if (item.hasOwnProperty('envs')) {
         item.envs = item.envs.concat(envList);
       }
@@ -245,7 +275,9 @@ function parseEnvVariables(config) {
     envList.push({ key: env, value: envs[env] });
   });
 
+  config.apis = addCommonSettings(config.apis);
   config.sqs = addCommonSettings(config.sqs, envList);
+  config.dynamos = addCommonSettings(config.dynamos);
   config.lambdas = addCommonSettings(config.lambdas, envList);
 
   config.lambdas.forEach((lambda, index) => {
@@ -280,10 +312,7 @@ function parseConfig(configPath, stackName = null, stage = null) {
   config = configureDynamo(config);
   config = configureLambda(config);
   config = parseEnvVariables(config);
-
-  if (config.buildApiGateway) {
-    config = Object.assign(config, configureApiGateway(config));
-  }
+  config = Object.assign(config, configureApiGateway(config));
 
   return config;
 }

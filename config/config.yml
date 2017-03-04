@@ -1,4 +1,4 @@
-stackName: cumulus-api-test2
+stackName: cumulus-api-lpdaac
 stage: dev
 
 vpc:
@@ -14,7 +14,7 @@ buckets:
 
 ecs:
   maxInstances: 5
-  desiredInstances: 3
+  desiredInstances: 0
   keyPairName: cumulus-scisco
   instanceType: m4.large
 
@@ -120,8 +120,9 @@ apis:
   - name: backend
 
 lambdas:
-  #- name: es
-    #handler: es.handler
+  - name: es
+    handler: es.handler
+    timeout: 300
 
   - name: ingest
     handler: ingest.handler
@@ -129,11 +130,11 @@ lambdas:
     services:
       - name: parsePdrs
         #handler: ingest.parsePdrHandler
-        count: 1 # number of service instances running on ECS for this lambda
+        count: 0 # number of service instances running on ECS for this lambda
         image: cumulus-docker-dev-lambdarunner
       - name: ingestGranules
         #handler:
-        count: 3
+        count: 0
         memory: 512
         cpu: 10
         commands:
@@ -147,7 +148,7 @@ lambdas:
       - name: runner
         #handler: runner.handler
         image: cumulus-docker-dev-lambdarunner
-        count: 1
+        count: 0
         memory: 256
         cpu: 10
         broadcast: true
@@ -163,7 +164,7 @@ lambdas:
     broadcast: true
 
   - name: cmr
-    handler: cmrPush.handler
+    handler: cmr.handler
     timeout: 300
     broadcast: true
 
@@ -240,7 +241,7 @@ lambdas:
         api: backend
 
   - name: pdrs
-    handler: pdr-handlers.list
+    handler: pdrs.list
     timeout: 300
     apiGateway:
       - path: pdrs
