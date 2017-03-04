@@ -61,7 +61,6 @@ export async function postToCMR(xml) {
 
 
 export function handler(event, context, cb) {
-
   process.env.CMR_PROVIDER = event.granuleRecord.cmrProvider || 'CUMULUS';
 
   try {
