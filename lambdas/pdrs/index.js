@@ -39,8 +39,6 @@ export function get(event, cb) {
 }
 
 export function handler(event, context) {
-  console.log(event);
-
   //bind context to res object
   const cb = res.bind(null, context);
   if (event.httpMethod === 'GET' && event.pathParameters) {
@@ -52,9 +50,8 @@ export function handler(event, context) {
 }
 
 localRun(() => {
-  list({
-    query: { limit: 2 }
-  }, null, (e, r) => {
-    console.log(e, r);
-  });
+  handler(
+    { httpMethod: 'GET', queryStringParameters: { page: 2 }},
+    { succeed: (r) => console.log(r) }
+  );
 });
