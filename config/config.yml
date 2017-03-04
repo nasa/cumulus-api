@@ -241,7 +241,7 @@ lambdas:
         api: backend
 
   - name: pdrs
-    handler: pdrs.list
+    handler: pdrs.handler
     timeout: 300
     apiGateway:
       - path: pdrs
