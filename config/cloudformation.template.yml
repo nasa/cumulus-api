@@ -406,12 +406,7 @@ Resources:
       - Name: dockerAster
         Environment:
           - Name: distributionEndpoint
-            Value:
-              Fn::Join:
-                - ''
-                - - 'https://'
-                  - !Ref distributionRestApi
-                  - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
+            Value: {{distributionEndpoint}}
         {{#each envsList}}
           - Name: {{key}}
             Value: !Sub {{value}}
@@ -671,12 +666,6 @@ Resources:
       FunctionName: {{stackName}}-{{name}}-{{stage}}
       Environment:
         Variables:
-          distributionEndpoint:
-            Fn::Join:
-              - ''
-              - - 'https://'
-                - !Ref distributionRestApi
-                - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
               - Elasticsearch5Domain

@@ -173,6 +173,9 @@ lambdas:
     timeout: 300
     apiGateway:
       - api: distribution
+        path: 'redirect'
+        method: get
+      - api: distribution
         path: '{granuleId}'
         method: get
 
