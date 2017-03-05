@@ -2,15 +2,12 @@
 
 import _ from 'lodash';
 import res from 'cumulus-common/response';
-import { validate } from 'jsonschema';
 import { localRun } from 'cumulus-common/local';
-import { collection as schema } from 'cumulus-common/schemas';
 import {
   Collection,
   RecordDoesNotExist
 } from 'cumulus-common/models';
 import example from 'cumulus-common/tests/data/collection.json';
-import * as db from 'cumulus-common/db';
 
 import { Search } from 'cumulus-common/es/search';
 
@@ -43,17 +40,15 @@ export function list(event, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, cb) {
-  const name = _.get(event.pathParameters, 'short_name');
-  if (!name) {
-    return cb('Collection#get requires a short_name property');
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  if (!collectionName) {
+    return cb('collectionName is missing');
   }
 
   const search = new Search({}, process.env.CollectionsTable);
-  search.get(name, true).then((response) => {
-    cb(null, response);
-  }).catch((e) => {
-    cb(e);
-  });
+  search.get(collectionName, true)
+    .then(response => cb(null, response))
+    .catch((e) => cb(e));
 }
 
 /**
@@ -95,34 +90,25 @@ export function post(event, cb) {
  * @return {object} a mapping of the updated properties.
  */
 export function put(event, cb) {
-  const key = 'collectionName';
-  const table = process.env.CollectionsTable;
-  const data = _.get(event, 'body', {});
-  const model = validate(data, schema);
-  if (model.errors.length) {
-    const errors = JSON.stringify(model.errors.map(e => e.message));
-    return cb('Invalid POST: ' + errors);
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  if (!collectionName) {
+    return cb('collectionName is missing');
   }
-  const name = data.collectionName;
-  const update = _.omit(data, [key]);
-  const query = {
-    value: name,
-    key,
-    table
-  };
-  db.get(query, (error, collection) => {
-    if (error) {
-      return cb(error);
+
+  let data = _.get(event, 'body', '{}');
+  data = JSON.parse(data);
+
+  const c = new Collection();
+
+  // get the record first
+  c.get({ collectionName: collectionName }).then(originalData => {
+    data = Object.assign({}, originalData, data);
+    return c.create(data);
+  }).then(r => cb(null, r)).catch(err => {
+    if (err instanceof RecordDoesNotExist) {
+      return cb('Record does not exist');
     }
-    else if (_.isEmpty(collection)) {
-      return cb('Collection not found');
-    }
-    return db.update({
-      value: name,
-      data: update,
-      key,
-      table
-    }, cb);
+    cb(err);
   });
 }
 
@@ -136,7 +122,7 @@ export function handler(event, context) {
   else if (event.httpMethod === 'POST') {
     post(event, cb);
   }
-  else if (event.httpMethod === 'PUT') {
+  else if (event.httpMethod === 'PUT' && event.pathParameters) {
     put(event, cb);
   }
   else {
@@ -150,7 +136,15 @@ localRun(() => {
   //});
 
   handler(
-    { httpMethod: 'POST', body: JSON.stringify(example) },
+    { httpMethod: 'PUT',
+      pathParameters: {
+        short_name: 'AST_L1A__version__003'
+      },
+      body: JSON.stringify({
+        cmrProvider: 'CUMULUS'
+      })
+    },
+    //{ httpMethod: 'POST', body: JSON.stringify(example) },
     { succeed: (r) => console.log(r) }
   );
 });

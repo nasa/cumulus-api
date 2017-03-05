@@ -190,7 +190,7 @@ lambdas:
         api: backend
 
   - name: logs
-    handler: logs.counts
+    handler: logs.handler
     timeout: 300
     apiGateway:
       - path: stats/logs
@@ -203,7 +203,7 @@ lambdas:
         api: backend
 
   - name: granules
-    handler: granules.list
+    handler: granules.handler
     timeout: 300
     apiGateway:
       - path: granules
@@ -220,7 +220,7 @@ lambdas:
         api: backend
 
   - name: collections
-    handler: collections.list
+    handler: collections.handler
     timeout: 300
     apiGateway:
       - path: collections
@@ -235,7 +235,7 @@ lambdas:
         method: post
         cors: true
         api: backend
-      - path: collections
+      - path: collections/{short_name}
         method: put
         cors: true
         api: backend
