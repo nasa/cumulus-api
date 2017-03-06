@@ -131,33 +131,34 @@ lambdas:
     timeout: 300
     services:
       - name: parsePdrs
-        #handler: ingest.parsePdrHandler
         count: 0 # number of service instances running on ECS for this lambda
         image: cumulus-docker-dev-lambdarunner
+        commands:
+          - --eventJson
+          - '{ \"action\": \"parsePdrs\" }'
       - name: ingestGranules
-        #handler:
         count: 0
         memory: 512
         cpu: 10
         commands:
           - --eventJson
-          - '{ \"concurrency\": 4 }'
+          - '{ \"action\": \"ingestGranules\", \"concurrency\": 4 }'
 
   - name: runner
     handler: runner.handler
     timeout: 300
     services:
       - name: runner
-        #handler: runner.handler
         image: cumulus-docker-dev-lambdarunner
         count: 0
         memory: 256
         cpu: 10
-        broadcast: true
 
   - name: archive
     handler: archive.handler
     timeout: 300
+    # if broadcast is set to true, the lambda ARN is
+    # included as an env variable
     broadcast: true
 
   - name: dispatcher
