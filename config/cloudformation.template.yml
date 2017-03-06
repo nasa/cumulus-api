@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: The AWS CloudFormation template for {{stackName}}
+Description: 'Cumulus-API deployment | stack: {{stackName}} | stage: {{stage}}'
 Parameters:
   ConfigS3Bucket:
     Type: String
@@ -406,12 +406,7 @@ Resources:
       - Name: dockerAster
         Environment:
           - Name: distributionEndpoint
-            Value:
-              Fn::Join:
-                - ''
-                - - 'https://'
-                  - !Ref DistributionRestApi
-                  - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
+            Value: {{distributionEndpoint}}
         {{#each envsList}}
           - Name: {{key}}
             Value: !Sub {{value}}
@@ -517,9 +512,9 @@ Resources:
           - "StreamArn"
       FunctionName:
         Fn::GetAtt:
-          - DynamoToElasticSearchLambdaFunction
+          - esLambdaFunction
           - "Arn"
-      BatchSize: 100
+      BatchSize: 10
       StartingPosition: "TRIM_HORIZON"
 {{/if}}
 
@@ -556,227 +551,36 @@ Resources:
   #################################################
 
   #################################################
-  # Distribution config BEGIN
-  #################################################
-
-  DistributionApi:
-    DependsOn:
-    - DistributionApiMethodGet
-    - DistributionApiRedirectMethodGet
-    Type: AWS::ApiGateway::Deployment
-    Properties:
-      RestApiId:
-        Ref: DistributionRestApi
-      StageName: {{stage}}
-
-  DistributionApiMethodGet:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref DistributionRestApi
-      ResourceId: !Ref DistributionResource
-      HttpMethod: GET
-      AuthorizationType: NONE
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri:
-          Fn::Join:
-          - ''
-          - - 'arn:aws:apigateway:'
-            - Ref: AWS::Region
-            - :lambda:path/2015-03-31/functions/
-            - Fn::GetAtt:
-              - DistriubtionLambdaFunction
-              - Arn
-            - /invocations
-
-  DistributionApiRedirectMethodGet:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref DistributionRestApi
-      ResourceId: !Ref DistributionResourceRedirect
-      HttpMethod: GET
-      AuthorizationType: NONE
-      Integration:
-        Type: AWS_PROXY
-        IntegrationHttpMethod: POST
-        Uri:
-          Fn::Join:
-          - ''
-          - - 'arn:aws:apigateway:'
-            - Ref: AWS::Region
-            - :lambda:path/2015-03-31/functions/
-            - Fn::GetAtt:
-              - DistriubtionLambdaFunction
-              - Arn
-            - /invocations
-
-  DistributionResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Fn::GetAtt:
-        - DistributionRestApi
-        - RootResourceId
-      PathPart: '{granuleId}'
-      RestApiId:
-        Ref: DistributionRestApi
-
-  DistributionResourceRedirect:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Fn::GetAtt:
-        - DistributionRestApi
-        - RootResourceId
-      PathPart: 'redirect'
-      RestApiId:
-        Ref: DistributionRestApi
-
-  DistributionRestApi:
-    Type: AWS::ApiGateway::RestApi
-    Properties:
-      Name: {{stackName}}-{{stage}}-distribution
-
-  DistriubtionLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        S3Bucket: !Ref ConfigS3Bucket
-        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/distribution.zip
-      FunctionName: {{stackName}}-distribution-{{stage}}
-      Environment:
-        Variables:
-          distributionEndpoint:
-            Fn::Join:
-              - ''
-              - - 'https://'
-                - !Ref DistributionRestApi
-                - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
-          ES_HOST:
-            Fn::GetAtt:
-              - Elasticsearch5Domain
-              - DomainEndpoint
-        {{#each envsList}}
-          {{key}}: !Sub {{value}}
-        {{/each}}
-      Handler: distribution.handler
-      MemorySize: 512
-      Role:
-        Fn::GetAtt:
-        - LambdaApiGatewayRole
-        - Arn
-      Runtime: nodejs4.3
-      Timeout: 300
-
-  DistributionPermissionApiGateway:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-        - DistriubtionLambdaFunction
-        - Arn
-      Principal: apigateway.amazonaws.com
-
-  #################################################
-  # Distribution config END
-  #################################################
-
-
-  #################################################
   # APIGateway config BEGIN
   #################################################
-  ApiGatewayDeployment{{apiName}}:
-    DependsOn:
 {{# if apiMethods}}
-  {{#each apiMethods}}
+
+{{# each apiDependencies}}
+  ApiGatewayDeployment{{name}}:
+    DependsOn:
+  {{#each methods}}
     - {{name}}
   {{/each}}
-{{/if}}
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId:
-        Ref: ApiGatewayRestApi
+        Ref: {{name}}RestApi
       StageName: {{stage}}
+{{/each}}
 
-{{# if apiMethods}}
 {{#each apiMethods}}
   {{name}}:
     Type: AWS::ApiGateway::Method
     Properties:
-      AuthorizationType: NONE
+      ResourceId:
+        Ref: {{resource}}
+      RestApiId:
+        Ref: {{api}}RestApi
       HttpMethod: {{method}}
+      AuthorizationType: NONE
       Integration:
+        Type: AWS_PROXY
         IntegrationHttpMethod: POST
-        IntegrationResponses:
-        - ResponseParameters:
-            method.response.header.Access-Control-Allow-Origin: '''*'''
-          ResponseTemplates: {}
-          StatusCode: 200
-        - SelectionPattern: .*\[400\].*
-          StatusCode: 400
-        - SelectionPattern: .*\[401\].*
-          StatusCode: 401
-        - SelectionPattern: .*\[403\].*
-          StatusCode: 403
-        - SelectionPattern: .*\[404\].*
-          StatusCode: 404
-        - SelectionPattern: .*\[422\].*
-          StatusCode: 422
-        - SelectionPattern: .*(Process\s?exited\s?before\s?completing\s?request|Task\s?timed\s?out\s?|\[500\]).*
-          StatusCode: 500
-        - SelectionPattern: .*\[502\].*
-          StatusCode: 502
-        - SelectionPattern: .*\[504\].*
-          StatusCode: 504
-        PassthroughBehavior: NEVER
-        RequestTemplates:
-          application/json: "\n            #define( $loop )\n              {\n \
-            \             #foreach($key in $map.keySet())\n                  \"\
-            $util.escapeJavaScript($key)\":\n                    \"$util.escapeJavaScript($map.get($key))\"\
-            \n                    #if( $foreach.hasNext ) , #end\n             \
-            \ #end\n              }\n            #end\n\n            {\n       \
-            \       \"body\": $input.json(\"$\"),\n              \"method\": \"\
-            $context.httpMethod\",\n              \"principalId\": \"$context.authorizer.principalId\"\
-            ,\n              \"stage\": \"$context.stage\",\n\n              \"\
-            cognitoPoolClaims\" : {\n                \n                \"sub\":\
-            \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
-            \     #set( $map = $input.params().header )\n              \"headers\"\
-            : $loop,\n\n              #set( $map = $input.params().querystring )\n\
-            \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
-            \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
-            \ )\n              \"identity\": $loop,\n\n              #set( $map\
-            \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
-            \         }\n          "
-          application/x-www-form-urlencoded: "\n            #define( $body )\n \
-            \             {\n              #foreach( $token in $input.path('$').split('&')\
-            \ )\n                #set( $keyVal = $token.split('=') )\n         \
-            \       #set( $keyValSize = $keyVal.size() )\n                #if( $keyValSize\
-            \ >= 1 )\n                  #set( $key = $util.urlDecode($keyVal[0])\
-            \ )\n                  #if( $keyValSize >= 2 )\n                   \
-            \ #set( $val = $util.urlDecode($keyVal[1]) )\n                  #else\n\
-            \                    #set( $val = '' )\n                  #end\n   \
-            \               \"$key\": \"$val\"#if($foreach.hasNext),#end\n     \
-            \           #end\n              #end\n              }\n            #end\n\
-            \n            #define( $loop )\n              {\n              #foreach($key\
-            \ in $map.keySet())\n                  \"$util.escapeJavaScript($key)\"\
-            :\n                    \"$util.escapeJavaScript($map.get($key))\"\n\
-            \                    #if( $foreach.hasNext ) , #end\n              #end\n\
-            \              }\n            #end\n\n            {\n              \"\
-            body\": $body,\n              \"method\": \"$context.httpMethod\",\n\
-            \              \"principalId\": \"$context.authorizer.principalId\"\
-            ,\n              \"stage\": \"$context.stage\",\n\n              \"\
-            cognitoPoolClaims\" : {\n                \n                \"sub\":\
-            \ \"$context.authorizer.claims.sub\"\n              },\n\n         \
-            \     #set( $map = $input.params().header )\n              \"headers\"\
-            : $loop,\n\n              #set( $map = $input.params().querystring )\n\
-            \              \"query\": $loop,\n\n              #set( $map = $input.params().path\
-            \ )\n              \"path\": $loop,\n\n              #set( $map = $context.identity\
-            \ )\n              \"identity\": $loop,\n\n              #set( $map\
-            \ = $stageVariables )\n              \"stageVariables\": $loop\n   \
-            \         }\n          "
-        Type: AWS
         Uri:
           Fn::Join:
           - ''
@@ -787,24 +591,6 @@ Resources:
               - {{lambda}}LambdaFunction
               - Arn
             - /invocations
-      MethodResponses:
-      - ResponseModels: {}
-        ResponseParameters:
-          method.response.header.Access-Control-Allow-Origin: method.response.header.Access-Control-Allow-Origin
-        StatusCode: 200
-      - StatusCode: 400
-      - StatusCode: 401
-      - StatusCode: 403
-      - StatusCode: 404
-      - StatusCode: 422
-      - StatusCode: 500
-      - StatusCode: 502
-      - StatusCode: 504
-      RequestParameters: {}
-      ResourceId:
-        Ref: {{resource}}
-      RestApiId:
-        Ref: ApiGatewayRestApi
 
 {{/each}}
 
@@ -837,7 +623,7 @@ Resources:
       ResourceId:
         Ref: {{resource}}
       RestApiId:
-        Ref: ApiGatewayRestApi
+        Ref: {{api}}
 
 {{/each}}
 
@@ -851,15 +637,17 @@ Resources:
       {{/each}}
       PathPart: '{{pathPart}}'
       RestApiId:
-        Ref: ApiGatewayRestApi
+        Ref: {{api}}RestApi
 
 {{/each}}
 
-  ApiGatewayRestApi:
+{{#each apis}}
+  {{name}}RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: {{stackName}}-{{stage}}-backend
+      Name: {{stackName}}-{{stage}}-{{name}}
 
+{{/each}}
 {{/if}}
   #################################################
   # APIGateway config END
@@ -878,12 +666,6 @@ Resources:
       FunctionName: {{stackName}}-{{name}}-{{stage}}
       Environment:
         Variables:
-          distributionEndpoint:
-            Fn::Join:
-              - ''
-              - - 'https://'
-                - !Ref DistributionRestApi
-                - '.execute-api.us-east-1.amazonaws.com/{{stage}}'
           ES_HOST:
             Fn::GetAtt:
               - Elasticsearch5Domain
@@ -916,7 +698,8 @@ Resources:
       Principal: apigateway.amazonaws.com
 {{/if}}
 
-{{# if image }}
+{{# if services }}
+{{#each services}}
   # adding TaskDefinition for Lambda/ECS services
   {{name}}TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -935,7 +718,7 @@ Resources:
             Value: !Sub {{value}}
         {{/each}}
         Command:
-        - !GetAtt [{{name}}LambdaFunction, Arn]
+        - !GetAtt [{{lambdaName}}LambdaFunction, Arn]
     {{# if commands }}
       {{# each commands }}
         - "{{{ @this }}}"
@@ -944,10 +727,10 @@ Resources:
         - "--eventJson"
         - "{}"
     {{/if}}
-        Cpu: {{#if imageCpu }}{{ imageCpu }}{{ else }}10{{/if}}
+        Cpu: {{#if cpu }}{{ cpu }}{{ else }}10{{/if}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: {{#if imageMemory }}{{ imageMemory }}{{ else }}256{{/if}}
+        Memory: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -957,13 +740,13 @@ Resources:
   {{name}}EcsLogs:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: {{name}}EcsLogs
+      LogGroupName: {{stackName}}-{{stage}}-{{name}}EcsLogs
 
   {{name}}ECSService:
     Type: AWS::ECS::Service
     DependsOn:
     - CumulusECSAutoScalingGroup
-    - {{name}}LambdaFunction
+    - {{lambdaName}}LambdaFunction
     Properties:
       Cluster: !Ref CumulusECSCluster
       DesiredCount: {{# if count}}{{count}}{{ else }} 0 {{/if}}
@@ -972,7 +755,7 @@ Resources:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
 
-
+{{/each}}
 {{/if}}
 {{/each}}
   #################################################

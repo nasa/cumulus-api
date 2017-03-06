@@ -18,7 +18,17 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
 ### Deployment for the first time
 
+First make a copy of `config/secrets.json.example`:
+
+    $ cp config/secrets.json.example config/secrets.json
+
+Then update the fields with real value and proceed further.
+
     $ sulu cf create --profile awsProfileName
+
+To override stack or stage names do:
+
+    $ sulu cf create --stack mySatck --stage prod
 
 ### Updating CF stack
 
@@ -29,9 +39,13 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
     $ sulu lambda collections --profile awsProfileName
     $ sulu lambda granules --profile awsProfileName
 
-### Adding Records to DynamoDB
+### Public/Private Key
 
-    $ sulu db add -l -t cumulus-api-test2-dev-CollectionsTable -r config/aster.json --profile myProfile
+Cumulus uses RSA public and private keys to encrypt and decrypt private data. Every time that `sulu cf create/update` is run, a new pair of private and public keys are generated and uploaded to the the deployment bucket on S3. The public key is used to encrypt all the private information in the deployment.
+
+The lambdas will use the private key to decrypt the private data.
+
+This is a temporary measure and has to be replaced with Amazon 'KMS' service.
 
 ### Deploying using differnet config files
 

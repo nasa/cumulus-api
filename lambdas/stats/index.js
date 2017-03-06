@@ -1,14 +1,15 @@
 'use strict';
 
 import moment from 'moment';
+import res from 'cumulus-common/response';
 import { Search } from 'cumulus-common/es/search';
 
-export function summary(event, context, cb) {
+export function summary(event, cb) {
   const search = new Search(event);
   search.count().then((r) => cb(null, r)).catch(e => cb(e));
 }
 
-export function summaryGrouped(event, context, cb) {
+export function summaryGrouped(event, cb) {
   const dateFormat = 'MM/DD/YYYY hh:mm:ss Z';
   const now = moment().format(dateFormat);
   return cb(null, {
@@ -63,3 +64,18 @@ export function summaryGrouped(event, context, cb) {
     }
   });
 }
+
+export function handler(event, context) {
+  //bind context to res object
+  const cb = res.bind(null, context);
+  if (event.httpMethod === 'GET' && event.resource === '/stats/summary') {
+    summary(event, cb);
+  }
+  else if (event.httpMethod === 'GET' && event.resource === '/stats/summary/grouped') {
+    summaryGrouped(event, cb);
+  }
+  else {
+    summary(event, cb);
+  }
+}
+

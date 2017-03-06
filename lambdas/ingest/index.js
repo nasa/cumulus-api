@@ -14,7 +14,7 @@ import { pollGranulesQueue } from './download';
  * pass in event data to the handler
  * @return {undefined}
  */
-export function ingestGranulesHandler(event) {
+export function ingestGranules(event) {
   const concurrency = event.concurrency || 1;
   try {
     pollGranulesQueue(concurrency)
@@ -35,7 +35,7 @@ export function ingestGranulesHandler(event) {
  * pass in event data to the handler
  * @return {undefined}
  */
-export function parsePdrsHandler(event) {
+export function parsePdrs(event) {
   const numOfMessage = event.numOfMessage || 1;
   const visibilityTimeout = event.visibilityTimeout || 20;
 
@@ -56,17 +56,37 @@ export function parsePdrsHandler(event) {
  * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export function discoverPdrHandler(event, context, cb = () => {}) {
+export function discoverPdrs(event, context, cb = () => {}) {
   // use callback with promise
   pdrHandler(event).then(r => cb(null, r)).catch((err) => {
     log.error(err, err.stack);
   });
 }
 
+export function handler(event, context, cb) {
+  const registered = {
+    discoverPdrs,
+    parsePdrs,
+    ingestGranules
+  };
+
+  registered[event.action](event, cb);
+}
+
 
 // for local run: babel-node lambdas/pdr/index.js local
 localRun(() => {
-  discoverPdrHandler({ collectionName: 'AST_L1A__version__003' }, null, (e, d) => console.log(e, d));
+  //handler(
+    //{ action: 'discoverPdrs', collectionName: 'AST_L1A__version__003' },
+    //null,
+    //(e, d) => console.log(e, d)
+  //);
+
+  handler(
+    { action: 'parsePdrs', collectionName: 'AST_L1A__version__003' },
+    null,
+    (e, d) => console.log(e, d)
+  );
 
   //pollPdrQueue(1, 100, 15);
 

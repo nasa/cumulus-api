@@ -1,11 +1,12 @@
-stackName: cumulus-api-test2
+stackName: cumulus-api-lpdaac
 stage: dev
-buildApiGateway: true
 
 vpc:
   id: vpc-5aa75d3c
   availabilityZones: us-east-1e
   subnetId: subnet-41e23a7d
+
+distributionEndpoint: https://cumulus.developmentseed.org/distribution
 
 buckets:
   private: cumulus-private
@@ -15,9 +16,16 @@ buckets:
 
 ecs:
   maxInstances: 5
-  desiredInstances: 3
+  desiredInstances: 2
   keyPairName: cumulus-scisco
   instanceType: m4.large
+
+# processing docker images
+images:
+  - name: asterProcessing
+    image: cumulus-docker-dev-aster
+    cpu: 25
+    memory: 400
 
 elasticsearch:
   # the dynamic template that is included with every type
@@ -108,44 +116,50 @@ dynamos:
       - name: objName
         type: HASH
 
-lambdas:
-  - name: pdrParser
-    handler: pdr.parsePdrsHandler
-    timeout: 300
-    ecs: true # to be deployed as a service on ECS
-    count: 1 # number of service instances running on ECS for this lambda
-    image: cumulus-docker-dev-lambdarunner
+# difining the APIs. Each item will include a separate endpoint
+apis:
+  - name: distribution
+  - name: backend
 
-  - name: ingestGranules
-    handler: pdr.ingestGranulesHandler
+lambdas:
+  - name: es
+    handler: es.handler
     timeout: 300
-    ecs: true
-    image: cumulus-docker-dev-lambdarunner
-    count: 3
-    imageMemory: 512
-    imageCpu: 10
-    commands:
-      - --eventJson
-      - '{ \"concurrency\": 4 }'
+
+  - name: ingest
+    handler: ingest.handler
+    timeout: 300
+    services:
+      - name: parsePdrs
+        count: 1 # number of service instances running on ECS for this lambda
+        image: cumulus-docker-dev-lambdarunner
+        commands:
+          - --eventJson
+          - '{ \"action\": \"parsePdrs\" }'
+      - name: ingestGranules
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
+        memory: 512
+        cpu: 10
+        commands:
+          - --eventJson
+          - '{ \"action\": \"ingestGranules\", \"concurrency\": 4 }'
 
   - name: runner
     handler: runner.handler
     timeout: 300
-    ecs: true
-    image: cumulus-docker-dev-lambdarunner
-    count: 1
-    imageMemory: 256
-    imageCpu: 10
-    broadcast: true
-
-  - name: pdrDiscoverer
-    handler: pdr.discoverPdrHandler
-    timeout: 300
-    broadcast: true
+    services:
+      - name: runner
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
+        memory: 256
+        cpu: 10
 
   - name: archive
     handler: archive.handler
     timeout: 300
+    # if broadcast is set to true, the lambda ARN is
+    # included as an env variable
     broadcast: true
 
   - name: dispatcher
@@ -153,111 +167,95 @@ lambdas:
     timeout: 300
     broadcast: true
 
-  - name: pushToCMR
-    handler: cmrPush.handler
+  - name: cmr
+    handler: cmr.handler
     timeout: 300
     broadcast: true
 
-  - name: statsSummary
-    handler: stats.summary
+  - name: distribution
+    handler: distribution.handler
     timeout: 300
     apiGateway:
-      path: stats/summary
-      method: get
-      cors: true
+      - api: distribution
+        path: 'redirect'
+        method: get
+      - api: distribution
+        path: '{granuleId}'
+        method: get
 
-  - name: statsSummaryGrouped
-    handler: stats.summaryGrouped
+  - name: stats
+    handler: stats.handler
     timeout: 300
     apiGateway:
-      path: stats/summary/grouped
-      method: get
-      cors: true
+      - path: stats/summary
+        method: get
+        cors: true
+        api: backend
+      - path: stats/summary/grouped
+        method: get
+        cors: true
+        api: backend
 
-  - name: getErrorCounts
-    handler: logs.counts
+  - name: logs
+    handler: logs.handler
     timeout: 300
     apiGateway:
-      path: stats/logs
-      method: get
-      cors: true
+      - path: stats/logs
+        method: get
+        cors: true
+        api: backend
+      - path: logs
+        method: get
+        cors: true
+        api: backend
 
-  - name: listLogs
-    handler: logs.list
+  - name: granules
+    handler: granules.handler
     timeout: 300
     apiGateway:
-      path: logs
-      method: get
-      cors: true
+      - path: granules
+        method: get
+        cors: true
+        api: backend
+      - path: granules/{granuleName}
+        method: get
+        cors: true
+        api: backend
+      - path: granules/{granuleName}
+        method: put
+        cors: true
+        api: backend
 
-  - name: listGranules
-    handler: granules.list
+  - name: collections
+    handler: collections.handler
     timeout: 300
     apiGateway:
-      path: granules
-      method: get
-      cors: true
+      - path: collections
+        method: get
+        cors: true
+        api: backend
+      - path: collections/{short_name}
+        method: get
+        cors: true
+        api: backend
+      - path: collections
+        method: post
+        cors: true
+        api: backend
+      - path: collections/{short_name}
+        method: put
+        cors: true
+        api: backend
 
-  - name: getGranules
-    handler: granules.get
+  - name: pdrs
+    handler: pdrs.handler
     timeout: 300
     apiGateway:
-      path: granules/{granuleName}
-      method: get
-      cors: true
-
-  - name: putGranules
-    handler: granules.put
-    timeout: 300
-    apiGateway:
-      path: granules/{granuleName}
-      method: put
-      cors: true
-
-  - name: listCollections
-    handler: collections.list
-    timeout: 300
-    apiGateway:
-      path: collections
-      method: get
-      cors: true
-
-  - name: getCollection
-    handler: collections.get
-    timeout: 300
-    apiGateway:
-      path: collections/{short_name}
-      method: get
-      cors: true
-
-  - name: postCollection
-    handler: collections.post
-    timeout: 300
-    apiGateway:
-      path: collections
-      method: post
-      cors: true
-
-  - name: putCollection
-    handler: collections.put
-    timeout: 300
-    apiGateway:
-      path: collections
-      method: put
-      cors: true
-
-  - name: listPDRs
-    handler: pdr-handlers.list
-    timeout: 300
-    apiGateway:
-      path: pdrs
-      method: get
-      cors: true
-
-  - name: getPDRs
-    handler: pdr-handlers.get
-    timeout: 300
-    apiGateway:
-      path: pdrs/{pdrName}
-      method: get
-      cors: true
+      - path: pdrs
+        method: get
+        cors: true
+        api: backend
+      - path: pdrs/{pdrName}
+        method: get
+        cors: true
+        api: backend
