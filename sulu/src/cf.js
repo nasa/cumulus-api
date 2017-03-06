@@ -198,7 +198,7 @@ function opsStack(options, ops) {
 function createStack(options) {
   // generating private/public keys first
   const c = getConfig(options, options.config);
-  uploadKeyPair(c.buckets.internal, c.stackName, options.profile, (e) => {
+  uploadKeyPair(c.buckets.internal, c.stackName, c.stage, options.profile, (e) => {
     if (e) {
       console.log(e);
       process.exit(1);

@@ -12,7 +12,7 @@ function generateKeyPair() {
   return rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
 }
 
-function uploadKeyPair(bucket, stack, profile, cb) {
+function uploadKeyPair(bucket, stack, stage, profile, cb) {
   profile = profile || 'default';
   const credentials = new AWS.SharedIniFileCredentials({ profile: profile });
   AWS.config.credentials = credentials;
@@ -27,7 +27,7 @@ function uploadKeyPair(bucket, stack, profile, cb) {
   const privateKey = pki.privateKeyToPem(keyPair.privateKey);
   const params1 = {
     Bucket: bucket,
-    Key: `${stack}/crypto/private.pem`,
+    Key: `${stack}-${stage}/crypto/private.pem`,
     ACL: 'private',
     Body: privateKey
   };
@@ -36,7 +36,7 @@ function uploadKeyPair(bucket, stack, profile, cb) {
   const publicKey = pki.publicKeyToPem(keyPair.publicKey);
   const params2 = {
     Bucket: bucket,
-    Key: path.join(stack, '/crypto/public.pub'),
+    Key: path.join(`${stack}-${stage}`, `/crypto/public.pub`),
     ACL: 'private',
     Body: publicKey
   };
@@ -47,7 +47,7 @@ function uploadKeyPair(bucket, stack, profile, cb) {
       console.log('keys uploaded to S3');
 
       // save public key to local folder
-      const p = path.join(process.cwd(), `config/${stack}.pub`);
+      const p = path.join(process.cwd(), `config/${stack}-${stage}.pub`);
       fs.writeFileSync(p, publicKey);
       console.log(`Public key saved to ${p}`);
       return cb(null, keyPair.publicKey);
