@@ -16,7 +16,7 @@ export const testingServer = {
     hostname: 'localhost',
     port: 3001,
     logsEnabled: 0,
-    root: './lambdas/pdr/tests/data/'
+    root: './lambdas/ingest/tests/data/'
   },
 
   server: http.createServer((req, res) => {

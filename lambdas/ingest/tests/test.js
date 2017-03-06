@@ -74,7 +74,7 @@ describe('Testing PDRs', function() {
 
     testingServer.start();
 
-    main.discoverPdrHandler({ collectionName: collectionRecord.collectionName }, null, (err) => {
+    main.discoverPdrs({ collectionName: collectionRecord.collectionName }, null, (err) => {
       if (err) done(err);
       try {
         assert.ok(syncUrl.callCount, 2);
@@ -141,7 +141,7 @@ describe('Testing PDRs', function() {
     const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
     const pdr = {
-      name: 'lambdas/pdr/tests/data/PDN.ID1611081200.PDR',
+      name: 'lambdas/ingest/tests/data/PDN.ID1611081200.PDR',
       url: 'example.com/pdr',
       collectionName: collectionRecord.collectionName,
       concurrency: 1

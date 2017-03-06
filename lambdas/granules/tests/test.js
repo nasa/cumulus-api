@@ -19,8 +19,10 @@ describe('Granules endpoint', () => {
 
     // add record
     try {
+      // add timestamp
+      record.timestamp = Date.now();
       await client.index({
-        index: process.env.StackName,
+        index: `${process.env.StackName}-${process.env.Stage}`,
         type: process.env.GranulesTable,
         id: record.granuleId,
         body: record,
@@ -34,7 +36,7 @@ describe('Granules endpoint', () => {
   });
 
   it('lists', (done) => {
-    list({}, null, (error, res) => {
+    list({}, (error, res) => {
       assert.equal(res.meta.count, 1);
       done();
     });
