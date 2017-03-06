@@ -16,7 +16,7 @@ buckets:
 
 ecs:
   maxInstances: 5
-  desiredInstances: 0
+  desiredInstances: 2
   keyPairName: cumulus-scisco
   instanceType: m4.large
 
@@ -131,13 +131,14 @@ lambdas:
     timeout: 300
     services:
       - name: parsePdrs
-        count: 0 # number of service instances running on ECS for this lambda
+        count: 1 # number of service instances running on ECS for this lambda
         image: cumulus-docker-dev-lambdarunner
         commands:
           - --eventJson
           - '{ \"action\": \"parsePdrs\" }'
       - name: ingestGranules
-        count: 0
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
         memory: 512
         cpu: 10
         commands:
@@ -150,7 +151,7 @@ lambdas:
     services:
       - name: runner
         image: cumulus-docker-dev-lambdarunner
-        count: 0
+        count: 1
         memory: 256
         cpu: 10
 
