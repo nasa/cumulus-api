@@ -47,7 +47,7 @@ function uploadKeyPair(bucket, stack, profile, cb) {
       console.log('keys uploaded to S3');
 
       // save public key to local folder
-      const p = path.join(process.cwd(), 'config/public.pub');
+      const p = path.join(process.cwd(), `config/${stack}.pub`);
       fs.writeFileSync(p, publicKey);
       console.log(`Public key saved to ${p}`);
       return cb(null, keyPair.publicKey);
