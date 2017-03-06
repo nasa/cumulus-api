@@ -113,7 +113,6 @@ export function put(event, cb) {
 }
 
 export function handler(event, context) {
-  console.log(event);
   //bind context to res object
   const cb = res.bind(null, context);
   if (event.httpMethod === 'GET' && event.pathParameters) {
@@ -136,14 +135,7 @@ localRun(() => {
   //});
 
   handler(
-    { httpMethod: 'PUT',
-      pathParameters: {
-        short_name: 'AST_L1A__version__003'
-      },
-      body: JSON.stringify({
-        cmrProvider: 'CUMULUS'
-      })
-    },
+    { httpMethod: 'GET' },
     //{ httpMethod: 'POST', body: JSON.stringify(example) },
     { succeed: (r) => console.log(r) }
   );
