@@ -51,6 +51,11 @@ function saveRecord(data, params, callback) {
     if (status !== 200 && status !== 404) {
       callback(error);
     }
+
+    // add timestamp
+    const now = new Date();
+    data.timestamp = now.toISOString();
+
     const exists = status === 200;
     const body = [];
 
