@@ -11,3 +11,4 @@ npm-debug.log
 .DS_Store
 .swo
 *.meta.xml
+secrets.json

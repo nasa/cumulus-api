@@ -1,18 +1,16 @@
 'use strict';
 
+import AWS from 'aws-sdk';
+import request from 'request';
+import querystring from 'querystring';
 import { localRun } from 'cumulus-common/local';
 import { Distribution } from 'cumulus-common/models';
-import querystring from 'querystring';
-import request from 'request';
-// To speed up Lambda, delete all DATs in this package's `data` directory
-// besides country-level ones; it has to load all DATs into memory at launch time
-//const geoip = require('geoip-lite');
-const AWS = require('aws-sdk');
+import secrets from '../../config/secrets.json';
 
 
-const EARTHDATA_CLIENT_ID = 'xxx';
-const EARTHDATA_CLIENT_PASSWORD = 'xxx';
-const DEPLOYMENT_ENDPOINT = `${process.env.distributionEndpoint}/redirect`;
+const EARTHDATA_CLIENT_ID = secrets.EARTHDATA_CLIENT_ID;
+const EARTHDATA_CLIENT_PASSWORD = secrets.EARTHDATA_CLIENT_PASSWORD;
+const DEPLOYMENT_ENDPOINT = 'https://cumulus.developmentseed.org/distribution/redirect';
 
 const EARTHDATA_BASE_URL = 'https://urs.earthdata.nasa.gov';
 const EARTHDATA_GET_CODE_URL = `${EARTHDATA_BASE_URL}/oauth/authorize`;
@@ -41,9 +39,6 @@ const EARTHDATA_CHECK_CODE_URL = `${EARTHDATA_BASE_URL}/oauth/token`;
 export function handler(event, context, cb) {
   const s3 = new AWS.S3();
 
-  console.log(event);
-  //return cb('exit');
-
   let granuleKey = null;
   let query = {};
 
@@ -59,7 +54,6 @@ export function handler(event, context, cb) {
   // code means that this is a redirect back from
   // earthData login
   if (query.code) {
-    console.log('inside code')
     // we send the code to another endpoint to verify
     request.post({
       url: EARTHDATA_CHECK_CODE_URL,
@@ -74,7 +68,6 @@ export function handler(event, context, cb) {
         sendImmediately: true
       }
     }, (err, response, body) => {
-
       console.log(body);
       const tokenInfo = JSON.parse(body);
       const accessToken = tokenInfo.access_token;
@@ -118,7 +111,6 @@ export function handler(event, context, cb) {
     });
   }
   else {
-    console.log('no code')
     // ending up here means that user was not login
     // with earthdata and has to login
     const qs = {
@@ -130,24 +122,18 @@ export function handler(event, context, cb) {
     };
     const response = {
       statusCode: '302',
-      body: JSON.stringify({ error: 'you messed up!' }),
+      body: 'Redirect',
       headers: {
         Location: `${EARTHDATA_GET_CODE_URL}?${querystring.stringify(qs)}`
       }
     };
-
-    console.log(response);
 
     return cb(null, response);
   }
 }
 
 localRun(() => {
-  handler({
-    query: {
-      code: undefined
-    }
-  }, null, (e, r) => {
-    console.log(e, r)
+  handler({}, null, (e, r) => {
+    console.log(e, r);
   });
 });
