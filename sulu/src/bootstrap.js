@@ -123,11 +123,15 @@ module.exports = function(cmd) {
   const esClient = getEs(cmd);
   console.log('Bootstraping ElasticSearch');
 
+  const mainIndex = `${config.stackName}-${config.stage}`;
+  const logIndex = `${config.stackName}-${config.stage}-logs`;
+
+
   esClient.indices.exists({
-    index: config.stackName
+    index: mainIndex
   }).then((exists) => {
     if (exists) {
-      console.log('Elasticsearch instance already created');
+      console.log('Elasticsearch main instance already created');
     }
     else {
       const mappings = {};
@@ -150,12 +154,25 @@ module.exports = function(cmd) {
         }
       });
 
-      console.log('Elasticsearch Index doesn\'t exist, creating it');
+      console.log('Elasticsearch Main Index doesn\'t exist, creating it');
       return esClient.indices.create({
-        index: config.stackName,
+        index: mainIndex,
         body: { mappings }
       });
     }
     return;
-  }).catch(e => console.error(e));
+  }).then(() => esClient.indices.exists({ index: logIndex }))
+    .then((exists) => {
+      if (exists) {
+        console.log('Elasticsearch log instance already created');
+      }
+      else {
+        console.log('Elasticsearch Log Index doesn\'t exist, creating it');
+
+        return esClient.indices.create({
+          index: logIndex
+        });
+      }
+    })
+    .catch(e => console.error(e));
 };

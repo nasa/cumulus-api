@@ -7,7 +7,7 @@ import { get } from 'lodash';
 import example from 'cumulus-common/tests/data/dynamo-to-es/granule-insert.json';
 const unwrap = AttributeValue.unwrap;
 
-const index = process.env.StackName || 'cumulus-local-test';
+const index = `${process.env.StackName}-${process.env.Stage}`;
 
 function deleteRecord(params, callback) {
   const esClient = Search.es();

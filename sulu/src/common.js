@@ -236,19 +236,6 @@ function parseEnvVariables(config) {
     return group;
   }
 
-  // add splunk config if availble on the local machine
-  if (process.env.SPLUNK_PASSWORD) {
-    envs.SPLUNK_PASSWORD = process.env.SPLUNK_PASSWORD;
-  }
-
-  if (process.env.SPLUNK_USERNAME) {
-    envs.SPLUNK_USERNAME = process.env.SPLUNK_USERNAME;
-  }
-
-  if (process.env.SPLUNK_HOST) {
-    envs.SPLUNK_HOST = process.env.SPLUNK_HOST;
-  }
-
   // add buckets
   envs = Object.assign({}, envs, config.buckets);
 
