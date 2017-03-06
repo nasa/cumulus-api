@@ -50,6 +50,8 @@ sqs:
   - name: ProcessingQueue # queue for running process ECS tasks
     visibilityTimeout: 5000
     retry: 2
+  - name: DispatcherFailedQueue # queue for lambda messages that failed
+    VisibilityTimeout: 1000
 
 dynamos:
   - name: CollectionsTable

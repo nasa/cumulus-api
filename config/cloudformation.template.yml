@@ -273,15 +273,20 @@ Resources:
     Properties:
       QueueName: {{stackName}}-{{stage}}-{{name}}
       ReceiveMessageWaitTimeSeconds: 20
+    {{#if retry}}
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt [{{name}}FailedSQS, Arn]
         maxReceiveCount: {{retry}}
+    {{/if}}
       VisibilityTimeout: {{visibilityTimeout}}
 
+{{#if retry}}
   {{name}}FailedSQS:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: {{stackName}}-{{stage}}-{{name}}-failed
+
+{{/if}}
 {{/each}}
   #################################################
   # SQS config END
