@@ -36,7 +36,7 @@ function uploadKeyPair(bucket, stack, stage, profile, cb) {
   const publicKey = pki.publicKeyToPem(keyPair.publicKey);
   const params2 = {
     Bucket: bucket,
-    Key: path.join(`${stack}-${stage}`, `/crypto/public.pub`),
+    Key: path.join(`${stack}-${stage}`, '/crypto/public.pub'),
     ACL: 'private',
     Body: publicKey
   };
