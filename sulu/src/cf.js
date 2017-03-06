@@ -4,6 +4,7 @@ const Handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
+const uploadKeyPair = require('./crypto').uploadKeyPair;
 const exec = require('./common').exec;
 const uploadLambdas = require('./lambda').uploadLambdas;
 
@@ -195,7 +196,16 @@ function opsStack(options, ops) {
  * @param  {Object} options The options object should include the profile name (optional)
  */
 function createStack(options) {
-  opsStack(options, 'create');
+  // generating private/public keys first
+  const c = getConfig(options, options.config);
+  uploadKeyPair(c.buckets.internal, c.stackName, options.profile, (e) => {
+    if (e) {
+      console.log(e);
+      process.exit(1);
+    }
+
+    opsStack(options, 'create');
+  });
 }
 
 /**
