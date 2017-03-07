@@ -132,7 +132,7 @@ const configureApiGateway = (config) => {
 
         // Build the ApiMethod Options array. Only needed for resources
         // with cors set to true
-        if (lambda.apiGateway.cors) {
+        if (api.cors) {
           apiMethodsOptions[name] = {
             name: `ApiGatewayMethod${name}Options`,
             resource: `ApiGateWayResource${name}`,

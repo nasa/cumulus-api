@@ -633,11 +633,12 @@ Resources:
           method.response.header.Access-Control-Allow-Methods: true
           method.response.header.Access-Control-Allow-Origin: true
         StatusCode: '200'
-      RequestParameters: {}
+      RequestParameters:
+        method.request.header.Authorization: true
       ResourceId:
         Ref: {{resource}}
       RestApiId:
-        Ref: {{api}}
+        Ref: {{api}}RestApi
 
 {{/each}}
 
