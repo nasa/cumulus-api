@@ -1,6 +1,6 @@
 ## Cumulus-api
 
-[![CircleCI](https://circleci.com/gh/cumulus-nasa/workflow-engine.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/workflow-engine)
+[![CircleCI](https://circleci.com/gh/cumulus-nasa/cumulus-api.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/cumulus-api)
 
 Cumulus-api is the gateway to the Cumulus platform. Ultimately, everything that needs to be configured on Cumulus would be handled by the cumulus-api. All the metrics and status of the Cumulus as a platform is also accessible through the cumulus-api.
 
@@ -16,18 +16,54 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
     $ npm install
 
+### NGAP Deployment
+
+Run in order:
+
+    $ cp config/secrets.json.example config/secrets.json
+    $ npm run build
+    $ sulu cf create --stack ngap-stack-name --stage dev
+    $ sulu bootstrap remote  # needed to add mapping to ElasticSearch
+    # sulu cf ldg  # to add dead letter queues to lambda functions
+    # sulu users add user1 changethepassword  # to add the first user
+
 ### Deployment for the first time
 
-    $ bin/cf create --profile awsProfileName
+First make a copy of `config/secrets.json.example`:
+
+    $ cp config/secrets.json.example config/secrets.json
+
+Then update the fields with real value and proceed further.
+
+    $ sulu cf create --profile awsProfileName
+
+To override stack or stage names do:
+
+    $ sulu cf create --stack mySatck --stage prod
 
 ### Updating CF stack
 
-    $ bin/cf update --profile awsProfileName
+    $ sulu cf update --profile awsProfileName
 
 ### Updating Lambda Code
 
-    $ bin/lambda collections --profile awsProfileName
-    $ bin/lambda granules --profile awsProfileName
+    $ sulu lambda collections --profile awsProfileName
+    $ sulu lambda granules --profile awsProfileName
+
+### Public/Private Key
+
+Cumulus uses RSA public and private keys to encrypt and decrypt private data. Every time that `sulu cf create/update` is run, a new pair of private and public keys are generated and uploaded to the the deployment bucket on S3. The public key is used to encrypt all the private information in the deployment.
+
+The lambdas will use the private key to decrypt the private data.
+
+This is a temporary measure and has to be replaced with Amazon 'KMS' service.
+
+### Deploying using differnet config files
+
+To deploy using other config files (there are two others committed in this repo) pass `--config` argument. Examples:
+
+    $ sulu cf update --profile awsProfileName --config config/config-prod.yml
+    $ sulu cf validate --profile awsProfileName --config config/config-ngap.yml
 
 ### Adding a new Lambda function
 
@@ -52,34 +88,29 @@ lambdas:
 
 ### Running the API locally
 
-    $ bin/serve
-
-### Docs
-
-API documentation is deployed to https://cumulus-nasa.github.io/cumulus-api
-
-#### Installation
-
-To edit the documentation locally first install Doxbox by running:
-
-    $ bin/docs install
-
-#### Local Serve
-
-Serve the local documentation by running:
-
-    $ bin/docs serve
-
-While the documentation is served locally you can edit Markdown files under `docbox/content`. Your edits are automatically copied to `docs/api/content`.
-
-#### Deploy
-
-    $ bin/docs build
-    $ bin/docs deploy
+    $ sulu serve
 
 ## Local Development with Docker
 
 To make local development with DyanmoDB and SQS you can use docker. Just run:
 
     $ docker-compose up local
-    $ bin/bootstrap
+    $ sulu bootstrap
+
+To run a function with local DB run:
+
+    $ node dist/pdr/index.js local
+
+To run the function with aws resources, first add credentials to `.env`, then run:
+
+    $ node dist/pdr/index.js remote
+
+## Tests
+
+Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/collections.js`
+
+Library tests are located at `lib/tests`.
+
+To run the tests:
+
+    $ npm run test

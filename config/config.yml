@@ -1,6 +1,12 @@
-stackName: cumulus-api-test2
+stackName: cumulus-api-lpdaac
 stage: dev
-buildApiGateway: true
+
+vpc:
+  id: vpc-5aa75d3c
+  availabilityZones: us-east-1e
+  subnetId: subnet-41e23a7d
+
+distributionEndpoint: https://cumulus.developmentseed.org/distribution
 
 buckets:
   private: cumulus-private
@@ -8,13 +14,50 @@ buckets:
   protected: cumulus-protected
   internal: cumulus-internal
 
+ecs:
+  maxInstances: 5
+  desiredInstances: 2
+  keyPairName: cumulus-scisco
+  instanceType: m4.large
+
+# processing docker images
+images:
+  - name: asterProcessing
+    image: cumulus-docker-dev-aster
+    cpu: 25
+    memory: 400
+
+elasticsearch:
+  # the dynamic template that is included with every type
+  # used with the bootstrap command
+  dynamic_templates:
+    - all_date_fileds:
+        match_mapping_type: long
+        match: '*At'
+        mapping:
+          type: date
+  relations:
+    - CollectionsTable
+    - PDRsTable
+
 sqs:
-  - name: PDRsQueue
+  - name: PDRsQueue # queue for list of PDRs to be parsed
+    visibilityTimeout: 120
+    retry: 3
+  - name: GranulesQueue # queue for Granule files to be ingested
+    visibilityTimeout: 300
+    retry: 3
+  - name: ProcessingQueue # queue for running process ECS tasks
+    visibilityTimeout: 300
+    retry: 2
+  - name: DispatcherFailedQueue # queue for lambda messages that failed
+    visibilityTimeout: 120
 
 dynamos:
   - name: CollectionsTable
     read: 5
     write: 5
+    envName: CollectionsTable
     elasticsearch: true
     attributes:
       - name: collectionName
@@ -24,34 +67,21 @@ dynamos:
         type: HASH
 
   - name: GranulesTable
-    read: 5
-    write: 5
+    read: 300
+    write: 300
+    envName: GranulesTable
     elasticsearch: true
     attributes:
       - name: granuleId
         type: S
-      - name: collectionName
-        type: S
     schema:
-      - name: collectionName
-        type: HASH
       - name: granuleId
-        type: RANGE
-
-  - name: InvokeTable
-    read: 5
-    write: 5
-    elasticsearch: true
-    attributes:
-      - name: collectionName
-        type: S
-    schema:
-      - name: collectionName
         type: HASH
 
   - name: PDRsTable
-    read: 5
-    write: 5
+    read: 100
+    write: 100
+    envName: PDRsTable
     elasticsearch: true
     attributes:
       - name: pdrName
@@ -60,129 +90,199 @@ dynamos:
       - name: pdrName
         type: HASH
 
+  - name: DistributionTable
+    read: 1
+    write: 20
+    envName: DistributionTable
+    elasticsearch: true
+    attributes:
+      - name: userName
+        type: S
+      - name: accessDate
+        type: N
+    schema:
+      - name: userName
+        type: HASH
+      - name: accessDate
+        type: RANGE
+
+  - name: ErrorsTable
+    read: 1
+    write: 30
+    envName: ErrorsTable
+    elasticsearch: true
+    attributes:
+      - name: objName
+        type: S
+    schema:
+      - name: objName
+        type: HASH
+
+  - name: UsersTable
+    read: 100
+    write: 1
+    envName: UsersTable
+    attributes:
+      - name: userName
+        type: S
+    schema:
+      - name: userName
+        type: HASH
+
+  - name: SessionsTable
+    read: 100
+    write: 2
+    envName: SessionsTable
+    attributes:
+      - name: session
+        type: S
+    schema:
+      - name: session
+        type: HASH
+
+# difining the APIs. Each item will include a separate endpoint
+apis:
+  - name: distribution
+  - name: backend
+
 lambdas:
-  - name: signup
-    handler: auth.signup
+  - name: es
+    handler: es.handler
     timeout: 300
-    apiGateway:
-      path: signup
-      method: post
-      cors: trues
 
-  - name: signin
-    handler: auth.signin
+  - name: ingest
+    handler: ingest.handler
     timeout: 300
-    apiGateway:
-      path: signin
-      method: post
-      cors: true
+    services:
+      - name: parsePdrs
+        count: 1 # number of service instances running on ECS for this lambda
+        image: cumulus-docker-dev-lambdarunner
+        commands:
+          - --eventJson
+          - '{ \"action\": \"parsePdrs\" }'
+      - name: ingestGranules
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
+        memory: 512
+        cpu: 10
+        commands:
+          - --eventJson
+          - '{ \"action\": \"ingestGranules\", \"concurrency\": 4 }'
 
-  - name: statsSummary
-    handler: stats.summary
+  - name: runner
+    handler: runner.handler
     timeout: 300
-    apiGateway:
-      path: stats/summary
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+    services:
+      - name: runner
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
+        memory: 256
+        cpu: 10
 
-  - name: statsSummaryGrouped
-    handler: stats.summaryGrouped
+  - name: archive
+    handler: archive.handler
     timeout: 300
-    apiGateway:
-      path: stats/summary/grouped
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+    dlq: DispatcherFailedQueue # name of the dead letter queue
+    # if broadcast is set to true, the lambda ARN is
+    # included as an env variable
+    broadcast: true
 
-  - name: getErrorCounts
-    handler: errors.counts
+  - name: dispatcher
+    handler: dispatcher.handler
     timeout: 300
-    apiGateway:
-      path: stats/errors
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+    dlq: DispatcherFailedQueue
+    broadcast: true
 
-  - name: listErrors
-    handler: errors.list
+  - name: cmr
+    handler: cmr.handler
     timeout: 300
-    apiGateway:
-      path: errors
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+    dlq: DispatcherFailedQueue
+    broadcast: true
 
-  - name: listGranules
-    handler: granules.list
+  - name: distribution
+    handler: distribution.handler
     timeout: 300
     apiGateway:
-      path: granules/{collection}
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - api: distribution
+        path: 'redirect'
+        method: get
+      - api: distribution
+        path: '{granuleId}'
+        method: get
 
-  - name: getGranules
-    handler: granules.get
+  - name: stats
+    handler: stats.handler
     timeout: 300
     apiGateway:
-      path: granules/{collection}/{granuleName}
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - path: stats/summary
+        method: get
+        cors: true
+        api: backend
+      - path: stats/summary/grouped
+        method: get
+        cors: true
+        api: backend
 
-  - name: listCollections
-    handler: collections.list
+  - name: logs
+    handler: logs.handler
     timeout: 300
     apiGateway:
-      path: collections
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - path: stats/logs
+        method: get
+        cors: true
+        api: backend
+      - path: logs
+        method: get
+        cors: true
+        api: backend
 
-  - name: getCollection
-    handler: collections.get
+  - name: granules
+    handler: granules.handler
     timeout: 300
     apiGateway:
-      path: collections/{short_name}
-      method: get
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - path: granules
+        method: get
+        cors: true
+        api: backend
+      - path: granules/{granuleName}
+        method: get
+        cors: true
+        api: backend
+      - path: granules/{granuleName}
+        method: put
+        cors: true
+        api: backend
 
-  - name: postCollection
-    handler: collections.post
+  - name: collections
+    handler: collections.handler
     timeout: 300
     apiGateway:
-      path: collections
-      method: post
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - path: collections
+        method: get
+        cors: true
+        api: backend
+      - path: collections/{short_name}
+        method: get
+        cors: true
+        api: backend
+      - path: collections
+        method: post
+        cors: true
+        api: backend
+      - path: collections/{short_name}
+        method: put
+        cors: true
+        api: backend
 
-  - name: putCollection
-    handler: collections.put
+  - name: pdrs
+    handler: pdrs.handler
     timeout: 300
     apiGateway:
-      path: collections
-      method: put
-      authorizer:
-        type: COGNITO_USER_POOLS
-        id: b961m7
-      cors: true
+      - path: pdrs
+        method: get
+        cors: true
+        api: backend
+      - path: pdrs/{pdrName}
+        method: get
+        cors: true
+        api: backend

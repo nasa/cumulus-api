@@ -1,14 +1,15 @@
 'use strict';
 
 import _ from 'lodash';
-import { validate } from 'jsonschema';
-import { collection as schema } from 'cumulus-common/schemas';
-import { esList, esQuery } from 'cumulus-common/es';
-import * as db from 'cumulus-common/db';
+import { handle } from 'cumulus-common/response';
+import { localRun } from 'cumulus-common/local';
+import {
+  Collection,
+  RecordDoesNotExist
+} from 'cumulus-common/models';
+import example from 'cumulus-common/tests/data/collection.json';
 
-const table = process.env.CollectionsTable || 'table';
-const index = process.env.StackName || 'cumulus-local-test';
-const key = 'collectionName';
+import { Search } from 'cumulus-common/es/search';
 
 function parseRecipe(record) {
   const updatedRecord = Object.assign({}, record);
@@ -20,47 +21,34 @@ function parseRecipe(record) {
 
 /**
  * List all collections.
- * @return {array} every collection in the database.
+ * @param {object} event aws lambda event object.
+ * @param {object} context aws lambda context object
+ * @param {callback} cb aws lambda callback function
+ * @return {undefined}
  */
-export function list (event, context, cb) {
-  esList(index, table, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else {
-      const parsed = res.map(r => parseRecipe(r));
-      return cb(null, parsed);
-    }
+export function list(event, cb) {
+  const search = new Search(event, process.env.CollectionsTable);
+  search.query(true).then((response) => cb(null, response)).catch((e) => {
+    cb(e);
   });
 }
 
 /**
  * Query a single collection.
- * @param {string} name the collectionName property.
- * @return {object} a single collection object.
+ * @param {string} collectionName the name of the collection.
+ * @param {string} granuleId the id of the granule.
+ * @return {object} a single granule object.
  */
-export function get (event, context, cb) {
-  const name = _.get(event, 'name');
-  if (!name) {
-    return cb('Collection#get requires a name property');
+export function get(event, cb) {
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  if (!collectionName) {
+    return cb('collectionName is missing');
   }
-  esQuery(index, table, {
-    query: {
-      bool: {
-        must: [
-          { match: { [key]: name } }
-        ]
-      }
-    }
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else if (res.length === 0) {
-      return cb('Record was not found');
-    } else {
-      // Cannot have more than 1 document, because `name` is the primary Dynamo key
-      return cb(null, parseRecipe(res[0]));
-    }
-  });
+
+  const search = new Search({}, process.env.CollectionsTable);
+  search.get(collectionName, true)
+    .then(response => cb(null, response))
+    .catch((e) => cb(e));
 }
 
 /**
@@ -68,27 +56,32 @@ export function get (event, context, cb) {
  * @param {object} body a collection object to save in the database.
  * @return {object} returns the collection that was just saved.
  */
-export function post (event, context, cb) {
-  const data = _.get(event, 'body', {});
-  const model = validate(data, schema);
-  if (model.errors.length) {
-    let errors = JSON.stringify(model.errors.map(e => e.message));
-    return cb('Invalid POST: ' + errors);
+export function post(event, cb) {
+  let data = _.get(event, 'body', '{}');
+  data = JSON.parse(data);
+
+  // make sure primary key is included
+  if (!data.collectionName) {
+    return cb('Field collectionName is missing');
   }
-  const query = {
-    value: data.collectionName,
-    key,
-    table
-  };
-  db.get(query, function (error, collection) {
-    if (error && error.errorType !== 'ResourceNotFoundException') {
-      return cb(error);
-    } else if (_.isEmpty(collection)) {
-      return db.save({data, table}, cb);
-    } else {
-      return cb('Record already exists');
-    }
-  });
+  const collectionName = data.collectionName;
+
+  const c = new Collection();
+
+  c.get({ collectionName: collectionName })
+    .then(() => cb(`A record already exists for ${collectionName}`))
+    .catch(e => {
+      if (e instanceof RecordDoesNotExist) {
+        return c.create(data).then(() => {
+          cb(null, {
+            detail: 'Record saved',
+            record: data
+          });
+        }).catch(err => cb(err));
+      }
+
+      cb(e);
+    });
 }
 
 /**
@@ -96,32 +89,54 @@ export function post (event, context, cb) {
  * @param {object} body a set of properties to update on an existing collection.
  * @return {object} a mapping of the updated properties.
  */
-export function put (event, context, cb) {
-  const data = _.get(event, 'body', {});
-  const model = validate(data, schema);
-  if (model.errors.length) {
-    let errors = JSON.stringify(model.errors.map(e => e.message));
-    return cb('Invalid POST: ' + errors);
+export function put(event, cb) {
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  if (!collectionName) {
+    return cb('collectionName is missing');
   }
-  const name = data.collectionName;
-  const update = _.omit(data, [key]);
-  const query = {
-    value: name,
-    key,
-    table
-  };
-  db.get(query, function (error, collection) {
-    if (error) {
-      return cb(error);
-    } else if (_.isEmpty(collection)) {
-      return cb('Collection not found');
-    } else {
-      return db.update({
-        value: name,
-        data: update,
-        key,
-        table
-      }, cb);
+
+  let data = _.get(event, 'body', '{}');
+  data = JSON.parse(data);
+
+  const c = new Collection();
+
+  // get the record first
+  c.get({ collectionName: collectionName }).then(originalData => {
+    data = Object.assign({}, originalData, data);
+    return c.create(data);
+  }).then(r => cb(null, r)).catch(err => {
+    if (err instanceof RecordDoesNotExist) {
+      return cb('Record does not exist');
+    }
+    cb(err);
+  });
+}
+
+export function handler(event, context) {
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.pathParameters) {
+      get(event, cb);
+    }
+    else if (event.httpMethod === 'POST') {
+      post(event, cb);
+    }
+    else if (event.httpMethod === 'PUT' && event.pathParameters) {
+      put(event, cb);
+    }
+    else {
+      list(event, cb);
     }
   });
 }
+
+localRun(() => {
+  //get({ path: { short_name: 'AST_L1A__version__003' } }, null, (e, r) => {
+    //console.log(e, r);
+  //});
+
+  handler(
+    { httpMethod: 'GET' },
+    //{ httpMethod: 'POST', body: JSON.stringify(example) },
+    { succeed: (r) => console.log(r) }
+  );
+});

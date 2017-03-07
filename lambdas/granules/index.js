@@ -1,61 +1,92 @@
 'use strict';
 
-import { get as safeGet } from 'lodash';
-import { esQuery } from 'cumulus-common/es';
-import { granulesTablePrefix } from 'cumulus-common/tables';
-import { getLimit, getStart } from 'cumulus-common/utils';
+import _ from 'lodash';
+import { handle } from 'cumulus-common/response';
+import { Granule } from 'cumulus-common/models';
+import { invoke } from 'cumulus-common/aws-helpers';
+import { localRun } from 'cumulus-common/local';
+import { Search } from 'cumulus-common/es/search';
 
-export function list(event, context, cb) {
-  const collection = safeGet(event, 'path.collection');
-  if (!collection) {
-    return cb('Must supply path.collection');
+/**
+ * List all granules for a given collection.
+ * @param {object} event aws lambda event object.
+ * @param {object} context aws lambda context object
+ * @param {callback} cb aws lambda callback function
+ * @return {undefined}
+ */
+export function list(event, cb) {
+  const search = new Search(event, process.env.GranulesTable);
+  search.query().then((response) => cb(null, response)).catch((e) => {
+    cb(e);
+  });
+}
+
+export function put(event, cb) {
+  const action = _.get(event, ['body', 'action'], null);
+
+  if (action && action === 'reprocess') {
+    const granuleId = _.get(event, ['path', 'granuleName']);
+    // TODO: send the granule for processing
+    const g = new Granule();
+
+    g.get({ granuleId: granuleId }).then(record => {
+      record.status = 'processing';
+
+      return invoke(
+        process.env.dispatcher,
+        {
+          previousStep: 0,
+          nextStep: 0,
+          granuleRecord: record
+        }
+      );
+    }).then(r => cb(null, r))
+      .catch(e => cb(e));
   }
-  const tableName = granulesTablePrefix + collection.toLowerCase();
-  const limit = getLimit(event.query);
-  const start = getStart(event.query);
+  else {
+    return cb('action is missing');
+  }
+}
 
-  esQuery({
-    query: {
-      match: { _index: tableName }
-    },
-    size: limit,
-    from: start
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else if (_.isEmpty(res)) {
-      return cb('Requested collection ' + collection + ' not found');
-    } else {
-      return cb(null, res);
+/**
+ * Query a single granule.
+ * @param {string} collectionName the name of the collection.
+ * @param {string} granuleId the id of the granule.
+ * @return {object} a single granule object.
+ */
+export function get(event, cb) {
+  const granuleId = _.get(event.path, 'granuleName');
+
+  const search = new Search({}, process.env.GranulesTable);
+  search.get(granuleId).then((response) => {
+    cb(null, response);
+  }).catch((e) => {
+    cb(e);
+  });
+}
+
+
+export function handler(event, context) {
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.pathParameters) {
+      get(event, cb);
+    }
+    else if (event.httpMethod === 'PUT' && event.pathParameters) {
+      put(event, cb);
+    }
+    else {
+      list(event, cb);
     }
   });
 }
 
-export function get(event, context, cb) {
-  const collection = safeGet(event, 'path.collection');
-  const granuleName = safeGet(event, 'path.granuleName');
-  if (!collection || !granuleName) {
-    return cb('Must supply path.collection and path.granuleName');
-  }
-  const tableName = granulesTablePrefix + collection.toLowerCase();
 
-  esQuery({
-    query: {
-      bool: {
-        must: [
-          { match: { _index: tableName } },
-          { match: { name: granuleName } }
-        ]
+localRun(() => {
+  localRun(() => {
+    list({
+      query: {
+        prefix: 'good_25'
       }
-    }
-  }, (error, res) => {
-    if (error) {
-      return cb(error);
-    } else if (_.isEmpty(res)) {
-      // Cannot have more than 1 document, because `name` is the primary Dynamo key
-      return cb('Record was not found');
-    } else {
-      return cb(null, res[0]);
-    }
+    }, null, (e, r) => console.log(e, r));
   });
-}
+});

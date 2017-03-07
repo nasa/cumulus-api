@@ -1,0 +1,9 @@
+{
+  "address": "s3://cumulus-internal/pdrs/good_25grans.PDR",
+  "createdAt": 1488243148618,
+  "discoveredAt": 1488243148617,
+  "originalUrl": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES/good_25grans.PDR",
+  "pdrName": "good_25grans.PDR",
+  "status": "parsed",
+  "updatedAt": 1488243162496
+}

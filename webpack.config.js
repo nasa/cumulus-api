@@ -1,15 +1,21 @@
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 const glob = require('glob');
 
+function getEntries() {
+  const output = glob.sync('./lambdas/*')
+    .map((filename) => {
+      const entry = {};
+      entry[path.basename(filename)] = filename;
+      return entry;
+    })
+    .reduce((finalObject, entry) => Object.assign(finalObject, entry), {});
+
+  return output;
+}
+
 module.exports = {
-  entry: glob.sync('./lambdas/*')
-             .map((filename) => {
-               const entry = {};
-               entry[path.basename(filename)] = filename;
-               return entry;
-             })
-             .reduce((finalObject, entry) => Object.assign(finalObject, entry), {}),
+  entry: getEntries(),
   output: {
     path: path.join(__dirname, 'dist'),
     library: '[name]',
@@ -25,40 +31,36 @@ module.exports = {
     __filename: false
   },
   devtool: '#inline-source-map',
+  resolve: {
+    alias: {
+      'aws-sdk': 'aws-sdk/dist/aws-sdk'
+    }
+  },
+
   module: {
-    resolve: {
-      alias: {
-        'aws-sdk': 'aws-sdk/dist/aws-sdk'
-      }
-    },
-    noParse: [
-      /graceful-fs\/fs.js/,
-      /dynamoose/
-    ],
-    loaders: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel',
-        query: JSON.parse(
-          fs.readFileSync(path.join(__dirname, '.babelrc'), { encoding: 'utf8' })
-        )
-      },
+    rules: [
       {
         include: glob.sync('./lambdas/*/index.js', { realpath: true })
                      .map((filename) => path.resolve(__dirname, filename)),
         exclude: /node_modules/,
-        loader: 'prepend',
+        loader: 'prepend-loader',
         query: {
-          data: "'use strict';\n \
-          if (!global._babelPolyfill) require('babel-polyfill'); \n \
-          ;require('source-map-support').install();"
+          data: "if (!global._babelPolyfill) require('babel-polyfill');"
         }
       },
       {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: JSON.parse(
+          fs.readFileSync(path.join(__dirname, '.babelrc'), { encoding: 'utf8' })
+        )
+      },
+      {
         test: /\.json$/,
-        loader: 'json'
+        loader: 'json-loader'
       }
     ]
   }
 };
+
