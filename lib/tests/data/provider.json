@@ -6,12 +6,6 @@
   "path": "TEST_B/Cumulus/PDR/TEST_CASES",
   "status": "stopped",
   "isActive": false,
-  "regex": [
-    {
-      "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-      "collectionName": "AST_L1A__version__003"
-    }
-  ],
   "lastTimeIngestedAt": 1488570660415,
   "createdAt": 1488570660415,
   "updatedAt": 1488570660415
