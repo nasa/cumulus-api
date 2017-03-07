@@ -275,6 +275,27 @@ lambdas:
         cors: true
         api: backend
 
+  - name: providers
+    handler: providers.handler
+    timeout: 300
+    apiGateway:
+      - path: providers
+        method: get
+        cors: true
+        api: backend
+      - path: providers/{name}
+        method: get
+        cors: true
+        api: backend
+      - path: providers
+        method: post
+        cors: true
+        api: backend
+      - path: providers/{name}
+        method: put
+        cors: true
+        api: backend
+
   - name: pdrs
     handler: pdrs.handler
     timeout: 300
