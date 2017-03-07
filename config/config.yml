@@ -1,11 +1,6 @@
 stackName: cumulus-api-lpdaac
 stage: dev
 
-vpc:
-  id: vpc-5aa75d3c
-  availabilityZones: us-east-1e
-  subnetId: subnet-41e23a7d
-
 distributionEndpoint: https://cumulus.developmentseed.org/distribution
 
 buckets:
@@ -15,6 +10,9 @@ buckets:
   internal: cumulus-internal
 
 ecs:
+  subnet: subnet-623b1639 # cumulus-api-private-subnet on vpc-50286536
+  availabilityZone: us-east-1a
+  securityGroup: sg-8503f5fa
   maxInstances: 5
   desiredInstances: 2
   keyPairName: cumulus-scisco
