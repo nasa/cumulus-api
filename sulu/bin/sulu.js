@@ -20,12 +20,13 @@ program
   .option('--stage <stage>', 'stage name, defaults to the config value');
 
 program
-  .command('cf [create|update|validate|compile]')
+  .command('cf [create|update|validate|compile|dlq]')
   .description(`CloudFormation Operations:
     create    Creates the CF stack
     update    Updates the CF stack
     validate  Validates the CF stack
-    compile   Compiles the CF stack`)
+    compile   Compiles the CF stack
+    dlq       add dead letter queue to lambdas`)
   .action((cmd) => {
     switch (cmd) {
       case 'create':
@@ -40,8 +41,11 @@ program
       case 'compile':
         cf.compileCF(program);
         break;
+      case 'dlq':
+        cf.dlqToLambda(program);
+        break;
       default:
-        console.log('Wrong choice. Accepted arguments: [create|update|validate|compile]');
+        console.log('Wrong choice. Accepted arguments: [create|update|validate|compile|dlq]');
     }
   });
 

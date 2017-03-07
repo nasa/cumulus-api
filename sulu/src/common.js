@@ -12,9 +12,13 @@ const execSync = require('child_process').execSync;
  * @param  {String} cmd  Bash command
  * @return {String}     The command's stdout
  */
-function exec(cmd) {
+function exec(cmd, verbose) {
+  verbose = verbose || true;
+
   const stdout = execSync(cmd);
-  console.log(stdout.toString());
+  if (verbose) {
+    console.log(stdout.toString());
+  }
   return stdout;
 }
 

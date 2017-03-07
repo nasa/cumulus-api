@@ -51,7 +51,7 @@ sqs:
     visibilityTimeout: 5000
     retry: 2
   - name: DispatcherFailedQueue # queue for lambda messages that failed
-    VisibilityTimeout: 1000
+    visibilityTimeout: 1000
 
 dynamos:
   - name: CollectionsTable
@@ -160,6 +160,7 @@ lambdas:
   - name: archive
     handler: archive.handler
     timeout: 300
+    dlq: DispatcherFailedQueue # name of the dead letter queue
     # if broadcast is set to true, the lambda ARN is
     # included as an env variable
     broadcast: true
@@ -167,11 +168,13 @@ lambdas:
   - name: dispatcher
     handler: dispatcher.handler
     timeout: 300
+    dlq: DispatcherFailedQueue
     broadcast: true
 
   - name: cmr
     handler: cmr.handler
     timeout: 300
+    dlq: DispatcherFailedQueue
     broadcast: true
 
   - name: distribution
