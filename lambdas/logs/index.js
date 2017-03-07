@@ -1,6 +1,6 @@
 'use strict';
 
-import res from 'cumulus-common/response';
+import { handle } from 'cumulus-common/response';
 import { LogSearch } from 'cumulus-common/es/search';
 import { localRun } from 'cumulus-common/local';
 
@@ -18,16 +18,14 @@ export function list(event, cb) {
 
 
 export function handler(event, context) {
-  console.log(event);
-  //bind context to res object
-  const cb = res.bind(null, context);
-  console.log(event.resourcePath);
-  if (event.httpMethod === 'GET' && event.resource === '/stats/logs') {
-    count(event, cb);
-  }
-  else {
-    list(event, cb);
-  }
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.resource === '/stats/logs') {
+      count(event, cb);
+    }
+    else {
+      list(event, cb);
+    }
+  });
 }
 
 localRun(() => {

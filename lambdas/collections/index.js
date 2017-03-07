@@ -1,7 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
-import res from 'cumulus-common/response';
+import { handle } from 'cumulus-common/response';
 import { localRun } from 'cumulus-common/local';
 import {
   Collection,
@@ -113,20 +113,20 @@ export function put(event, cb) {
 }
 
 export function handler(event, context) {
-  //bind context to res object
-  const cb = res.bind(null, context);
-  if (event.httpMethod === 'GET' && event.pathParameters) {
-    get(event, cb);
-  }
-  else if (event.httpMethod === 'POST') {
-    post(event, cb);
-  }
-  else if (event.httpMethod === 'PUT' && event.pathParameters) {
-    put(event, cb);
-  }
-  else {
-    list(event, cb);
-  }
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.pathParameters) {
+      get(event, cb);
+    }
+    else if (event.httpMethod === 'POST') {
+      post(event, cb);
+    }
+    else if (event.httpMethod === 'PUT' && event.pathParameters) {
+      put(event, cb);
+    }
+    else {
+      list(event, cb);
+    }
+  });
 }
 
 localRun(() => {

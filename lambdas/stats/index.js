@@ -1,7 +1,7 @@
 'use strict';
 
 import moment from 'moment';
-import res from 'cumulus-common/response';
+import { handle } from 'cumulus-common/response';
 import { Search } from 'cumulus-common/es/search';
 
 export function summary(event, cb) {
@@ -66,16 +66,16 @@ export function summaryGrouped(event, cb) {
 }
 
 export function handler(event, context) {
-  //bind context to res object
-  const cb = res.bind(null, context);
-  if (event.httpMethod === 'GET' && event.resource === '/stats/summary') {
-    summary(event, cb);
-  }
-  else if (event.httpMethod === 'GET' && event.resource === '/stats/summary/grouped') {
-    summaryGrouped(event, cb);
-  }
-  else {
-    summary(event, cb);
-  }
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.resource === '/stats/summary') {
+      summary(event, cb);
+    }
+    else if (event.httpMethod === 'GET' && event.resource === '/stats/summary/grouped') {
+      summaryGrouped(event, cb);
+    }
+    else {
+      summary(event, cb);
+    }
+  });
 }
 
