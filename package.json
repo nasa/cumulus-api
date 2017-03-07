@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
   "dependencies": {
-    "amazon-cognito-identity-js": "^1.15.0",
     "aws-sdk": "^2.14.0",
     "cmrjs": "git+ssh://git@github.com/cumulus-nasa/pvl.git",
     "dynamodb-data-types": "^3.0.0",
