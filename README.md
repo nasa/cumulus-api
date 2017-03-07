@@ -16,6 +16,17 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
     $ npm install
 
+### NGAP Deployment
+
+Run in order:
+
+    $ cp config/secrets.json.example config/secrets.json
+    $ npm run build
+    $ sulu cf create --stack ngap-stack-name --stage dev
+    $ sulu bootstrap remote  # needed to add mapping to ElasticSearch
+    # sulu cf ldg  # to add dead letter queues to lambda functions
+    # sulu users add user1 changethepassword  # to add the first user
+
 ### Deployment for the first time
 
 First make a copy of `config/secrets.json.example`:
