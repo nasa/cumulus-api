@@ -11,18 +11,9 @@ import example from 'cumulus-common/tests/data/collection.json';
 
 import { Search } from 'cumulus-common/es/search';
 
-function parseRecipe(record) {
-  const updatedRecord = Object.assign({}, record);
-  if (_.has(record, 'dataPipeLine.recipe')) {
-    updatedRecord.dataPipeLine.recipe = JSON.parse(record.dataPipeLine.recipe);
-  }
-  return updatedRecord;
-}
-
 /**
  * List all collections.
  * @param {object} event aws lambda event object.
- * @param {object} context aws lambda context object
  * @param {callback} cb aws lambda callback function
  * @return {undefined}
  */
@@ -35,8 +26,7 @@ export function list(event, cb) {
 
 /**
  * Query a single collection.
- * @param {string} collectionName the name of the collection.
- * @param {string} granuleId the id of the granule.
+ * @param {object} event aws lambda event object.
  * @return {object} a single granule object.
  */
 export function get(event, cb) {
@@ -53,7 +43,7 @@ export function get(event, cb) {
 
 /**
  * Creates a new collection
- * @param {object} body a collection object to save in the database.
+ * @param {object} event aws lambda event object.
  * @return {object} returns the collection that was just saved.
  */
 export function post(event, cb) {
