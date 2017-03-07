@@ -77,6 +77,37 @@ function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, 
   }
 }
 
+function dlqToLambda(options) {
+  const profile = options.profile;
+  const config = parseConfig(options.config, options.stack, options.stage);
+  let queueUrl;
+  let queueArn;
+
+  console.log('Adding Dead Letter Queue to Lambda Functions');
+  for (const lambda of config.lambdas) {
+    if (lambda.dlq) {
+      // get queue arn
+      if (!queueUrl) {
+        let temp = exec(`aws sqs get-queue-url \
+          --queue-name ${config.stackName}-${config.stage}-${lambda.dlq} \
+          --profile ${profile}`);
+        queueUrl = JSON.parse(temp).QueueUrl;
+
+        temp = exec(`aws sqs get-queue-attributes \
+          --attribute-names QueueArn \
+          --queue-url ${queueUrl} \
+          --profile ${profile}`);
+        queueArn = JSON.parse(temp).Attributes.QueueArn;
+      }
+
+      exec(`aws lambda update-function-configuration \
+        --function-name ${config.stackName}-${lambda.name}-${config.stage} \
+        --dead-letter-config TargetArn=${queueArn}`);
+    }
+  }
+}
+
+
 /**
  * Returns the configuration file and checks if the bucket specified
  * in the configuration file exists on S3. If the bucket does not exist,
@@ -226,3 +257,4 @@ module.exports.validateTemplate = validateTemplate;
 module.exports.compileCF = compileCF;
 module.exports.createStack = createStack;
 module.exports.updateStack = updateStack;
+module.exports.dlqToLambda = dlqToLambda;

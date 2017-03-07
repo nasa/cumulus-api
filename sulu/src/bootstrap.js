@@ -81,7 +81,9 @@ module.exports = function(cmd) {
       dynamodb.createTable(params, (err) => {
         if (err && err.stack.match(/(Cannot create preexisting table)/)) {
           console.log(`${params.TableName} is already created`);
+          return;
         }
+        console.log(`${params.TableName} created!`);
       });
     });
 

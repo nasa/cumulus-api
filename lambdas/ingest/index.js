@@ -56,7 +56,7 @@ export function parsePdrs(event) {
  * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export function discoverPdrs(event, context, cb = () => {}) {
+export function discoverPdrs(event, cb = () => {}) {
   // use callback with promise
   pdrHandler(event).then(r => cb(null, r)).catch((err) => {
     log.error(err, err.stack);

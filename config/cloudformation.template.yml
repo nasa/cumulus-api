@@ -273,15 +273,20 @@ Resources:
     Properties:
       QueueName: {{stackName}}-{{stage}}-{{name}}
       ReceiveMessageWaitTimeSeconds: 20
+    {{#if retry}}
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt [{{name}}FailedSQS, Arn]
         maxReceiveCount: {{retry}}
+    {{/if}}
       VisibilityTimeout: {{visibilityTimeout}}
 
+{{#if retry}}
   {{name}}FailedSQS:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: {{stackName}}-{{stage}}-{{name}}-failed
+
+{{/if}}
 {{/each}}
   #################################################
   # SQS config END
@@ -453,6 +458,15 @@ Resources:
               AWS:
                 - Fn::GetAtt:
                   - ProcessingLambdaRole
+                  - Arn
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+          - Effect: "Allow"
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                  - ECSRole
                   - Arn
             Action: "es:*"
             Resource:
@@ -713,6 +727,11 @@ Resources:
             Value: !Ref AsterProcessingTaskDefinition
           - Name: CumulusCluster
             Value: !Ref CumulusECSCluster
+          - Name: ES_HOST
+            Value:
+              Fn::GetAtt:
+              - Elasticsearch5Domain
+              - DomainEndpoint
         {{#each envs}}
           - Name: {{key}}
             Value: !Sub {{value}}

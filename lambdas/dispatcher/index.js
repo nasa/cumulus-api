@@ -30,7 +30,7 @@ class Dispatcher {
     this.status = {
       processStep: 'processing',
       archive: 'archiving',
-      pushToCMR: 'CMR'
+      cmr: 'cmr'
     };
   }
 

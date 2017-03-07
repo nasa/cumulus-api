@@ -9,6 +9,7 @@ const dynamo = lib.dynamo;
 const lambda = lib.lambda;
 const serve = lib.offline;
 const bootstrap = lib.bootstrap;
+const users = lib.users;
 
 // the CLI activation
 program
@@ -20,12 +21,13 @@ program
   .option('--stage <stage>', 'stage name, defaults to the config value');
 
 program
-  .command('cf [create|update|validate|compile]')
+  .command('cf [create|update|validate|compile|dlq]')
   .description(`CloudFormation Operations:
     create    Creates the CF stack
     update    Updates the CF stack
     validate  Validates the CF stack
-    compile   Compiles the CF stack`)
+    compile   Compiles the CF stack
+    dlq       add dead letter queue to lambdas`)
   .action((cmd) => {
     switch (cmd) {
       case 'create':
@@ -40,8 +42,11 @@ program
       case 'compile':
         cf.compileCF(program);
         break;
+      case 'dlq':
+        cf.dlqToLambda(program);
+        break;
       default:
-        console.log('Wrong choice. Accepted arguments: [create|update|validate|compile]');
+        console.log('Wrong choice. Accepted arguments: [create|update|validate|compile|dlq]');
     }
   });
 
@@ -86,6 +91,25 @@ program
     bootstrap(cmd);
   });
 
+program
+  .command('user [add|list|create] [username] [password]')
+  .description('List users')
+  .option('-l, --local', 'run this locally')
+  .action((cmd, username, password, options) => {
+    switch (cmd) {
+      case 'add':
+        users.add(username, password, options);
+        break;
+      case 'list':
+        users.list(options);
+        break;
+      case 'delete':
+        users.delete(username, options);
+        break;
+      default:
+        console.log('nothing');
+    }
+  });
 
 program
   .parse(process.argv);

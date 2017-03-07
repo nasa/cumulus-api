@@ -42,14 +42,16 @@ elasticsearch:
 
 sqs:
   - name: PDRsQueue # queue for list of PDRs to be parsed
-    visibilityTimeout: 100
+    visibilityTimeout: 120
     retry: 3
   - name: GranulesQueue # queue for Granule files to be ingested
-    visibilityTimeout: 1000
+    visibilityTimeout: 300
     retry: 3
   - name: ProcessingQueue # queue for running process ECS tasks
-    visibilityTimeout: 5000
+    visibilityTimeout: 300
     retry: 2
+  - name: DispatcherFailedQueue # queue for lambda messages that failed
+    visibilityTimeout: 120
 
 dynamos:
   - name: CollectionsTable
@@ -116,6 +118,28 @@ dynamos:
       - name: objName
         type: HASH
 
+  - name: UsersTable
+    read: 100
+    write: 1
+    envName: UsersTable
+    attributes:
+      - name: userName
+        type: S
+    schema:
+      - name: userName
+        type: HASH
+
+  - name: SessionsTable
+    read: 100
+    write: 2
+    envName: SessionsTable
+    attributes:
+      - name: session
+        type: S
+    schema:
+      - name: session
+        type: HASH
+
 # difining the APIs. Each item will include a separate endpoint
 apis:
   - name: distribution
@@ -158,6 +182,7 @@ lambdas:
   - name: archive
     handler: archive.handler
     timeout: 300
+    dlq: DispatcherFailedQueue # name of the dead letter queue
     # if broadcast is set to true, the lambda ARN is
     # included as an env variable
     broadcast: true
@@ -165,11 +190,13 @@ lambdas:
   - name: dispatcher
     handler: dispatcher.handler
     timeout: 300
+    dlq: DispatcherFailedQueue
     broadcast: true
 
   - name: cmr
     handler: cmr.handler
     timeout: 300
+    dlq: DispatcherFailedQueue
     broadcast: true
 
   - name: distribution

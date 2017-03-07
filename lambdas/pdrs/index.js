@@ -1,7 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
-import res from 'cumulus-common/response';
+import { handle } from 'cumulus-common/response';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -39,19 +39,17 @@ export function get(event, cb) {
 }
 
 export function handler(event, context) {
-  //bind context to res object
-  const cb = res.bind(null, context);
-  if (event.httpMethod === 'GET' && event.pathParameters) {
-    get(event, cb);
-  }
-  else {
-    list(event, cb);
-  }
+  handle(event, context, true, (cb) => {
+    if (event.httpMethod === 'GET' && event.pathParameters) {
+      return get(event, cb);
+    }
+    return list(event, cb);
+  });
 }
 
 localRun(() => {
   handler(
-    { httpMethod: 'GET', queryStringParameters: { page: 2 }},
+    { httpMethod: 'GET', headers: { Authorization: 'Basic xxxxx' } },
     { succeed: (r) => console.log(r) }
   );
 });
