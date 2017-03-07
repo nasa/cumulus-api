@@ -74,7 +74,7 @@ describe('Testing PDRs', function() {
 
     testingServer.start();
 
-    main.discoverPdrs({ collectionName: collectionRecord.collectionName }, null, (err) => {
+    main.discoverPdrs({ collectionName: collectionRecord.collectionName }, (err) => {
       if (err) done(err);
       try {
         assert.ok(syncUrl.callCount, 2);
