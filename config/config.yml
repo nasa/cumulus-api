@@ -64,6 +64,18 @@ dynamos:
       - name: collectionName
         type: HASH
 
+  - name: ProvidersTable
+    read: 5
+    write: 5
+    envName: ProvidersTable
+    elasticsearch: true
+    attributes:
+      - name: name
+        type: S
+    schema:
+      - name: name
+        type: HASH
+
   - name: GranulesTable
     read: 300
     write: 300
@@ -127,16 +139,7 @@ dynamos:
       - name: userName
         type: HASH
 
-  - name: SessionsTable
-    read: 100
-    write: 2
-    envName: SessionsTable
-    attributes:
-      - name: session
-        type: S
-    schema:
-      - name: session
-        type: HASH
+
 
 # difining the APIs. Each item will include a separate endpoint
 apis:
