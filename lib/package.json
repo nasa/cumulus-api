@@ -23,6 +23,7 @@
     "jsonschema": "^1.1.1",
     "lambda-proxy-utils": "^1.2.4",
     "lodash": "^4.17.4",
+    "node-forge": "^0.7.0",
     "public-ip": "^2.3.3",
     "request": "^2.79.0",
     "splunk-sdk": "^1.8.1",
