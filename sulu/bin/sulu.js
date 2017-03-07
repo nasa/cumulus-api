@@ -9,6 +9,7 @@ const dynamo = lib.dynamo;
 const lambda = lib.lambda;
 const serve = lib.offline;
 const bootstrap = lib.bootstrap;
+const users = lib.users;
 
 // the CLI activation
 program
@@ -90,6 +91,25 @@ program
     bootstrap(cmd);
   });
 
+program
+  .command('user [add|list|create] [username] [password]')
+  .description('List users')
+  .option('-l, --local', 'run this locally')
+  .action((cmd, username, password, options) => {
+    switch (cmd) {
+      case 'add':
+        users.add(username, password, options);
+        break;
+      case 'list':
+        users.list(options);
+        break;
+      case 'delete':
+        users.delete(username, options);
+        break;
+      default:
+        console.log('nothing');
+    }
+  });
 
 program
   .parse(process.argv);
