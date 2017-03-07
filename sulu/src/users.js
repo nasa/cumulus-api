@@ -34,7 +34,7 @@ function dynamo(local) {
 function add(username, password, options) {
   const dynamodb = dynamo(options.local);
 
-  var md = forge.md.md5.create();
+  const md = forge.md.md5.create();
   md.update(password);
 
   const item = {
