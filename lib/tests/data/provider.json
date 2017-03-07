@@ -1,5 +1,5 @@
 {
-  "name": "Aster Test endpoint",
+  "name": "aster_test_endpoint",
   "providerName": "LPDAAC",
   "host": "https://e4ftl01.cr.usgs.gov:40521",
   "protocol": "http",
@@ -11,5 +11,8 @@
       "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
       "collectionName": "AST_L1A__version__003"
     }
-  ]
+  ],
+  "lastTimeIngestedAt": 1488570660415,
+  "createdAt": 1488570660415,
+  "updatedAt": 1488570660415
 }

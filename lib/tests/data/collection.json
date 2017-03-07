@@ -48,13 +48,9 @@
       "origin-thumbnail"
     ]
   },
-  "ingest": {
-    "config": {
-      "concurrency": 3,
-      "endpoint": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES"
-    },
-    "type": "PDR"
-  },
+  "providers": [
+    "aster_test_endpoint"
+  ],
   "recipe": {
     "archive": {
       "config": {}
