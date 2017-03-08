@@ -35,8 +35,8 @@ export function get(event, cb) {
     return cb('provider name is missing');
   }
 
-  const search = new Search({}, process.env.CollectionsTable);
-  search.get(name, true)
+  const search = new Search({}, process.env.ProvidersTable);
+  search.get(name)
     .then(response => cb(null, response))
     .catch((e) => cb(e));
 }
@@ -90,9 +90,19 @@ export function put(event, cb) {
 
   const p = new Provider();
 
+
   // get the record first
   p.get({ name: name }).then(originalData => {
     data = Object.assign({}, originalData, data);
+
+    // handle restart case
+    if (data.action === 'restart') {
+      return p.restart(name)
+        .then((r) => cb(null, r))
+        .catch((e) => cb(e));
+    }
+
+    // otherwise just update
     return p.create(data);
   }).then(r => cb(null, r)).catch(err => {
     if (err instanceof RecordDoesNotExist) {
