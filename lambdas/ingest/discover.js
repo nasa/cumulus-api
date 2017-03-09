@@ -1,5 +1,6 @@
 'use strict';
 
+import log from 'cumulus-common/log';
 import { PdrHttpIngest } from 'cumulus-common/ingest';
 import { Provider } from 'cumulus-common/models';
 
@@ -18,30 +19,36 @@ export async function runActiveProviders() {
     values: { ':value': true, ':s': 'ingesting' }
   });
 
-  for (const provider of r.Items) {
-    switch (provider.protocol) {
-      case 'ftp':
-        // do ftp discover
-        break;
-      default: {
-        const ingest = new PdrHttpIngest(provider);
-        try {
-          await ingest.ingest();
-        }
-        catch (e) {
-          console.log(e);
+  if (r.Count) {
+    for (const provider of r.Items) {
+      switch (provider.protocol) {
+        case 'ftp':
+          // do ftp discover
+          break;
+        default: {
+          const ingest = new PdrHttpIngest(provider);
+          try {
+            await ingest.ingest();
+          }
+          catch (e) {
+            console.log(e);
+          }
         }
       }
     }
+  }
+  else {
+    log.info('No active provider found', logDetails);
   }
 }
 
 export async function pollProviders(frequency = 300) {
   // run one time then do set interval
-  await runActiveProviders();
+  function timed() {
+    runActiveProviders()
+      .then(() => console.log(`waiting ${frequency} seconds`));
+  }
 
-  setInterval(() => {
-    runActiveProviders();
-    console.log(`waiting ${frequency} seconds`);
-  }, frequency * 1000);
+  timed();
+  setInterval(timed, frequency * 1000);
 }
