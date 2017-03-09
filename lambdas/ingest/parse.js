@@ -40,8 +40,14 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
         logDetails.provider = pdr.provider.name;
         log.info(`Parsing ${pdr.name}`, logDetails);
 
-        const ingest = new PdrHttpIngest(pdr.provider);
-        await ingest.parse(pdr, concurrency);
+        switch (pdr.provider.protocol) {
+          case 'ftp':
+            // do ftp
+            break;
+          default:
+            const ingest = new PdrHttpIngest(pdr.provider);
+            await ingest.parse(pdr, concurrency);
+        }
 
         // detele message if parse successful
         log.info(`deleting ${pdr.name} from the Queue`, logDetails);
