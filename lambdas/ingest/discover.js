@@ -1,6 +1,5 @@
 'use strict';
 
-import { localRun } from 'cumulus-common/local';
 import { PdrHttpIngest } from 'cumulus-common/ingest';
 import { Provider } from 'cumulus-common/models';
 
@@ -19,13 +18,13 @@ export async function runActiveProviders() {
     values: { ':value': true, ':s': 'ingesting' }
   });
 
-  for (const item of r.Items) {
-    switch (item.protocol) {
+  for (const provider of r.Items) {
+    switch (provider.protocol) {
       case 'ftp':
         // do ftp discover
         break;
       default: {
-        const ingest = new PdrHttpIngest(item.host, item.path, item.name);
+        const ingest = new PdrHttpIngest(provider);
         try {
           await ingest.ingest();
         }
@@ -46,10 +45,3 @@ export async function pollProviders(frequency = 300) {
     console.log(`waiting ${frequency} seconds`);
   }, frequency * 1000);
 }
-
-
-localRun(() => {
-  pollProviders(60).then(() => {});
-  //runActiveProviders().then(r => console.log(r)).catch(e => console.log(e));
-});
-
