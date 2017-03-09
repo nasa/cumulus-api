@@ -41,16 +41,11 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
         log.info(`Parsing ${pdr.name}`, logDetails);
 
         const ingest = new PdrHttpIngest(pdr.provider);
-        const parsed = await ingest.parsePdr(pdr, concurrency);
+        await ingest.parse(pdr, concurrency);
 
         // detele message if parse successful
-        if (parsed) {
-          log.info(`deleting ${pdr.name} from the Queue`, logDetails);
-          await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
-        }
-        else {
-          log.error(`Parsing failed for ${pdr.name}`, logDetails);
-        }
+        log.info(`deleting ${pdr.name} from the Queue`, logDetails);
+        await SQS.deleteMessage(process.env.PDRsQueue, receiptHandle);
       }
     }
     else {
