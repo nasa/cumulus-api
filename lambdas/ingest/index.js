@@ -51,9 +51,6 @@ export function parse(event) {
  * function to check
  * @param {object} event AWS Lambda uses this parameter to
  * pass in event data to the handler
- * @param {object} context
- * {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html|AWS Lambda's context object}
- * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
 export function discover(event) {
