@@ -102,6 +102,14 @@ export function put(event, cb) {
         .catch((e) => cb(e));
     }
 
+    // handle stop case
+    if (data.action === 'stop') {
+      return p.update(
+        { name: name },
+        { status: 'stopped', isActive: false }
+      );
+    }
+
     // otherwise just update
     return p.create(data);
   }).then(r => cb(null, r)).catch(err => {
