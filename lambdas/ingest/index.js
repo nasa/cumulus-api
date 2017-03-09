@@ -15,7 +15,7 @@ import { pollGranulesQueue } from './download';
  * @return {undefined}
  */
 export function download(event) {
-  const concurrency = event.concurrency || 1;
+  const concurrency = event.concurrency || 2;
   try {
     pollGranulesQueue(concurrency)
     .then((r) => console.log(r))
