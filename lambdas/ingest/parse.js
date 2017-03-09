@@ -49,7 +49,7 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
       }
     }
     else {
-      log.debug('No new messages in the PDR queue', logDetails);
+      console.log('No new messages in the PDR queue');
     }
   }
   catch (e) {
