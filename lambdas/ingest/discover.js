@@ -27,12 +27,7 @@ export async function runActiveProviders() {
           break;
         default: {
           const ingest = new PdrHttpIngest(provider);
-          try {
-            await ingest.discover();
-          }
-          catch (e) {
-            console.log(e);
-          }
+          await ingest.discover();
         }
       }
     }
