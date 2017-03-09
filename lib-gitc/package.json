@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "async": "^2.0.0",
-    "aws-sdk": "^2.4.11",
+    "aws-sdk": "^2.14.0",
     "cwait": "^1.0.0",
     "lodash": "^4.13.1"
   }
