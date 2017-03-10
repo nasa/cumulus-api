@@ -80,13 +80,6 @@
     },
     "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
   },
-  "ingest": {
-    "type": "PDR",
-    "config": {
-      "endpoint": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES",
-      "concurrency": 3
-    }
-  },
   "status": "ingesting",
   "updatedAt": 1488992876164,
   "timestamp": "2017-03-08T17:07:57.320Z",
