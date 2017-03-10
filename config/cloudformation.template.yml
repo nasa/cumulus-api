@@ -311,22 +311,6 @@ Resources:
   CumulusECSCluster:
     Type: AWS::ECS::Cluster
 
-  CumulusECSSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for {{stackName}}-{{stage}}
-      SecurityGroupEgress:
-      - IpProtocol: "-1"
-        FromPort: "-1"
-        ToPort: "-1"
-        CidrIp: 0.0.0.0/0
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp: 0.0.0.0/0
-      VpcId: {{vpc.id}}
-
   CumulusContainerInstanceLaunch:
     Type: AWS::AutoScaling::LaunchConfiguration
     Metadata:
@@ -364,7 +348,7 @@ Resources:
     Properties:
       AssociatePublicIpAddress: true
       SecurityGroups:
-      - !Ref CumulusECSSecurityGroup
+        -  {{ecs.securityGroup}}
       ImageId: !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMIID]
       InstanceType: {{ecs.instanceType}}
       IamInstanceProfile: !Ref CumulusInstanceProfile
@@ -390,9 +374,9 @@ Resources:
         MinInstancesInService: 0
     Properties:
       AvailabilityZones:
-        - {{vpc.availabilityZones}}
+        - {{ecs.availabilityZone}}
       VPCZoneIdentifier:
-        - {{vpc.subnetId}}
+        - {{ecs.subnet}}
       LaunchConfigurationName: !Ref CumulusContainerInstanceLaunch
       MinSize: '0'
       MaxSize: {{ ecs.maxInstances }}
@@ -534,32 +518,6 @@ Resources:
 
 {{/each}}
 
-  DynamoToElasticSearchLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        S3Bucket: !Ref ConfigS3Bucket
-        S3Key: !Sub {{stackName}}-{{stage}}/${ArtifactPath}/lambda/es.zip
-      FunctionName: {{stackName}}-dynamoToEs-{{stage}}
-      Environment:
-        Variables:
-          ES_HOST:
-            Fn::GetAtt:
-              - Elasticsearch5Domain
-              - DomainEndpoint
-        {{#each envsList}}
-          {{key}}: !Sub {{value}}
-        {{/each}}
-      Handler: es.handler
-      MemorySize: 512
-      Role:
-        Fn::GetAtt:
-        - LambdaApiGatewayRole
-        - Arn
-      Runtime: nodejs4.3
-      Timeout: 300
-
-
   #################################################
   # DyanmoDB config END
   #################################################
@@ -633,11 +591,12 @@ Resources:
           method.response.header.Access-Control-Allow-Methods: true
           method.response.header.Access-Control-Allow-Origin: true
         StatusCode: '200'
-      RequestParameters: {}
+      RequestParameters:
+        method.request.header.Authorization: true
       ResourceId:
         Ref: {{resource}}
       RestApiId:
-        Ref: {{api}}
+        Ref: {{api}}RestApi
 
 {{/each}}
 

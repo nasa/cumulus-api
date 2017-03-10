@@ -18,6 +18,8 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
 ### NGAP Deployment
 
+Make sure to update the subnet id, availability zone and security group id in the `config.yml`. In the current setup all ec2 instances are launched into a private subnet that has the same ip address.
+
 Run in order:
 
     $ cp config/secrets.json.example config/secrets.json

@@ -2,8 +2,8 @@
 
 import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
-import { pdrHandler } from './discover';
-import { pollPdrQueue, parsePdr } from './parse';
+import { pollProviders } from './discover';
+import { pollPdrQueue } from './parse';
 import { pollGranulesQueue } from './download';
 
 /**
@@ -14,8 +14,8 @@ import { pollGranulesQueue } from './download';
  * pass in event data to the handler
  * @return {undefined}
  */
-export function ingestGranules(event) {
-  const concurrency = event.concurrency || 1;
+export function download(event) {
+  const concurrency = event.concurrency || 2;
   try {
     pollGranulesQueue(concurrency)
     .then((r) => console.log(r))
@@ -35,7 +35,7 @@ export function ingestGranules(event) {
  * pass in event data to the handler
  * @return {undefined}
  */
-export function parsePdrs(event) {
+export function parse(event) {
   const numOfMessage = event.numOfMessage || 1;
   const visibilityTimeout = event.visibilityTimeout || 20;
 
@@ -51,55 +51,36 @@ export function parsePdrs(event) {
  * function to check
  * @param {object} event AWS Lambda uses this parameter to
  * pass in event data to the handler
- * @param {object} context
- * {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html|AWS Lambda's context object}
- * @param {function} cb {@link http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback|AWS Lambda's callback}
  * @return {undefined}
  */
-export function discoverPdrs(event, cb = () => {}) {
+export function discover(event) {
   // use callback with promise
-  pdrHandler(event).then(r => cb(null, r)).catch((err) => {
-    log.error(err, err.stack);
-  });
+  const frequency = event.frequency || 60;
+  pollProviders(frequency);
 }
 
 export function handler(event, context, cb) {
   const registered = {
-    discoverPdrs,
-    parsePdrs,
-    ingestGranules
+    discover,
+    parse,
+    download
   };
 
-  registered[event.action](event, cb);
+  if (registered.hasOwnProperty(event.action)) {
+    registered[event.action](event);
+  }
+  else {
+    cb(`Action is not supported. Supported actions are ${Object.keys(registered)}`);
+  }
 }
 
 
-// for local run: babel-node lambdas/pdr/index.js local
+// for local run: babel-node lambdas/pdr/index.js local discover
+// for remote run: babel-node lambdas/ingest/index.js remote discover
 localRun(() => {
-  //handler(
-    //{ action: 'discoverPdrs', collectionName: 'AST_L1A__version__003' },
-    //null,
-    //(e, d) => console.log(e, d)
-  //);
-
   handler(
-    { action: 'parsePdrs', collectionName: 'AST_L1A__version__003' },
+    { action: process.argv[3] },
     null,
     (e, d) => console.log(e, d)
   );
-
-  //pollPdrQueue(1, 100, 15);
-
-  //ingestGranulesHandler({
-    //concurrency: 3
-  //});
-  //pollGranulesQueue(3);
-  //
-
-  //parsePdr({
-    //name: 'PDN.cecc72bd-238d-4a8a-86df-d2306c39f7cb.PDR',
-    ////name: 'PDN.ID1611071200.PDR',
-    //collectionName: 'MCD43A1.006',
-  //});
-
 });

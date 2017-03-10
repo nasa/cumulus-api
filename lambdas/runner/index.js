@@ -4,21 +4,13 @@ import AWS from 'aws-sdk';
 import log from 'cumulus-common/log';
 import { SQS, S3 } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
+import { sleep } from 'cumulus-common/utils';
 
 const logDetails = {
   file: 'lambdas/runner/index.js',
   type: 'processing',
   source: 'runner'
 };
-
-function sleep(milliseconds) {
-  const start = new Date().getTime();
-  for (let i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds) {
-      break;
-    }
-  }
-}
 
 export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 3) {
   try {

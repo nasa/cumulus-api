@@ -23,21 +23,19 @@
   },
   "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
   "dependencies": {
-    "amazon-cognito-identity-js": "^1.15.0",
     "aws-sdk": "^2.14.0",
-    "cmrjs": "git+ssh://git@github.com/cumulus-nasa/pvl.git",
     "dynamodb-data-types": "^3.0.0",
     "elasticsearch": "^12.1.3",
+    "form-data": "^2.1.2",
     "geoip-lite": "^1.1.9",
+    "got": "^6.7.1",
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
+    "pvl": "git+ssh://git@github.com/cumulus-nasa/pvl.git",
     "querystring": "^0.2.0",
     "queue-async": "^1.2.1",
-    "request": "^2.79.0",
-    "simplecrawler": "^1.0.3",
-    "source-map-support": "^0.4.6",
-    "steed": "^1.1.3"
+    "simplecrawler": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
