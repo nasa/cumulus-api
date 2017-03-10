@@ -75,6 +75,7 @@ describe('Testing PDRs', function() {
 
       // update ingest endpoint & add provider record
       const c = new Collection();
+      collectionRecord.providers = ['aster_test_endpoint'];
       await c.create(collectionRecord);
 
       // create PDR Queue
