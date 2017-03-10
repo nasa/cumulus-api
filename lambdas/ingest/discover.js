@@ -1,7 +1,7 @@
 'use strict';
 
 import log from 'cumulus-common/log';
-import { PdrHttpIngest } from 'cumulus-common/ingest';
+import { HttpPdrIngest } from 'cumulus-common/ingest';
 import { Provider } from 'cumulus-common/models';
 
 const logDetails = {
@@ -26,7 +26,7 @@ export async function runActiveProviders() {
           // do ftp discover
           break;
         default: {
-          const ingest = new PdrHttpIngest(provider);
+          const ingest = new HttpPdrIngest(provider);
           await ingest.discover();
         }
       }
@@ -37,7 +37,7 @@ export async function runActiveProviders() {
   }
 }
 
-export async function pollProviders(frequency = 300) {
+export function pollProviders(frequency = 300) {
   // run one time then do set interval
   function timed() {
     runActiveProviders()
@@ -45,5 +45,5 @@ export async function pollProviders(frequency = 300) {
   }
 
   timed();
-  setInterval(timed, frequency * 1000);
+  return setInterval(timed, frequency * 1000);
 }

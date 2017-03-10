@@ -2,7 +2,7 @@
 
 import { SQS } from 'cumulus-common/aws-helpers';
 import log from 'cumulus-common/log';
-import { PdrHttpIngest } from 'cumulus-common/ingest';
+import { HttpPdrIngest } from 'cumulus-common/ingest';
 
 const logDetails = {
   file: 'lambdas/pdr/parse.js',
@@ -22,7 +22,7 @@ const logDetails = {
  * @param {number} [messageNum=1] Number of messages to be retrieved from the queue
  * @param {number} [visibilityTimeout=20] How long the message is removed from the queue
  */
-export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concurrency = 5) {
+export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concurrency = 5, test = false) {
   try {
     // receive a message
     const messages = await SQS.receiveMessage(
@@ -45,7 +45,7 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
             // do ftp
             break;
           default:
-            const ingest = new PdrHttpIngest(pdr.provider);
+            const ingest = new HttpPdrIngest(pdr.provider);
             await ingest.parse(pdr, concurrency);
         }
 
@@ -62,7 +62,10 @@ export async function pollPdrQueue(messageNum = 1, visibilityTimeout = 20, concu
     log.error(e, e.stack, 'pollPdrQueue', logDetails);
   }
   finally {
-    // make the function recursive
+    // make the function recursive unless it is for test
+    if (test) {
+      return;
+    }
     pollPdrQueue();
   }
 }
