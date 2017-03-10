@@ -48,9 +48,8 @@ async function processMessage(message) {
  *
  * @param {number} concurrency=1
  * @param {number} visibilityTimeout=200
- * @param {number} [testLoops=-1] number of messages to be processd before quitting (for test)
  */
-export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200) {
+export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200, test = false) {
   while (true) { // eslint-disable-line no-constant-condition
     try {
       // receive a message
@@ -77,9 +76,11 @@ export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200
       else {
         log.debug('No new messages in the PDR queue', logDetails);
 
-        // this prevents the function from running forever in test mode
-        if (testLoops === 0) return;
-        if (testLoops > 0) testLoops -= 1;
+        // if this is a test exit after
+        // all messages are processed
+        if (test) {
+          break;
+        }
       }
     }
     catch (e) {
