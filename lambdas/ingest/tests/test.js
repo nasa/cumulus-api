@@ -1,19 +1,28 @@
 'use strict';
 
 // the import below is needed to run the test
+import os from 'os';
 import assert from 'assert';
 import sinon from 'sinon';
+import { join } from 'path';
+import { execSync } from 'child_process';
+import { HttpPdrIngest, HttpGranuleIngest } from 'cumulus-common/ingest';
 import { SQS } from 'cumulus-common/aws-helpers';
-import { Manager, Pdr, Granule, Collection } from 'cumulus-common/models';
+import { Manager, Pdr, Granule, Collection, Provider } from 'cumulus-common/models';
+import providerRecord from 'cumulus-common/tests/data/provider.json';
 import collectionRecord from 'cumulus-common/tests/data/collection.json';
+import { runActiveProviders } from '../discover';
+import { pollPdrQueue } from '../parse';
+import { pollGranulesQueue } from '../download';
 import * as aws from 'gitc-common/aws';
-import * as main from '../index';
-import * as download from '../download';
-import * as discover from '../discover';
-import * as parse from '../parse';
+//import * as main from '../index';
+//import * as download from '../download';
+//import * as discover from '../discover';
+//import * as parse from '../parse';
 import { testingServer } from './testServer';
 
 
+// TODO: add tests for edge cases
 describe('Testing PDRs', function() {
   // increase the timeout
   this.timeout(20000);
@@ -23,7 +32,7 @@ describe('Testing PDRs', function() {
 
     try {
       // create PDR table for testing
-      const pdrTableName = 'PDRTestTable-pdrs';
+      const pdrTableName = 'PDRTestTable-ingest';
       process.env.PDRsTable = pdrTableName;
       //await Manager.deleteTable(process.env.PDRsTable);
       await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
@@ -35,12 +44,20 @@ describe('Testing PDRs', function() {
       await Manager.createTable(
         granuleTableName, {
           name: 'granuleId', type: 'S'
-        }
-      );
+        });
+
+      // Provider table for testing
+      const providerTableName = 'ProviderTableTest-ingest'
+      process.env.ProvidersTable = providerTableName;
+      //await Manager.deleteTable(process.env.ProvidersTable);
+      await Manager.createTable(
+        process.env.ProvidersTable, {
+          name: 'name', type: 'S'
+        });
 
 
       // Collection table for testing
-      const collectionTableName = 'CollectionTestTable-pdrs';
+      const collectionTableName = 'CollectionTestTable-ingest';
       process.env.CollectionsTable = collectionTableName;
       //await Manager.deleteTable(process.env.CollectionsTable);
       await Manager.createTable(
@@ -48,9 +65,16 @@ describe('Testing PDRs', function() {
           name: 'collectionName', type: 'S'
         });
 
-      // update ingest endpoint & add collection record
+      // create a provider record
+      const p = new Provider();
+      providerRecord.host = 'http://localhost:3001/';
+      providerRecord.path = '/';
+      providerRecord.isActive = true;
+      providerRecord.status = 'ingesting';
+      await p.create(providerRecord);
+
+      // update ingest endpoint & add provider record
       const c = new Collection();
-      collectionRecord.ingest.config.endpoint = 'http://localhost:3001/';
       await c.create(collectionRecord);
 
       // create PDR Queue
@@ -67,97 +91,49 @@ describe('Testing PDRs', function() {
     }
   });
 
-  it('test PDR discovery', (done) => {
-    sinon.stub(aws, 'fileNotFound', () => true);
-    const syncUrl = sinon.stub(aws, 'syncUrl');
+  it('test PDR discovery', async () => {
+    sinon.stub(HttpPdrIngest.prototype, '_sync').callsFake(() => 's3://file.txt');
 
-
+    // starting the test server
     testingServer.start();
 
-    main.discoverPdrs({ collectionName: collectionRecord.collectionName }, (err) => {
-      if (err) done(err);
-      try {
-        assert.ok(syncUrl.callCount, 2);
+    await runActiveProviders();
 
-        aws.fileNotFound.restore();
-        aws.syncUrl.restore();
+    // check if the PDRs are added to the table
+    const p = new Pdr()
+    const pdr = await p.get({ pdrName: 'PDN.ID1611071307.PDR' });
+    assert.equal(pdr.status, 'discovered');
 
-        testingServer.stop();
-        done();
-      }
-      catch (e) {
-        console.log(e);
-        done(e);
-      }
-    });
+    // there must be two pdrs added to the table
+    const pdrs = await p.scan({});
+    assert.equal(pdrs.Count, 2);
+
+    // two messages must be added to the PDR queue
+    const attr = await SQS.attributes(process.env.PDRsQueue);
+    assert.equal(attr.ApproximateNumberOfMessages, 2, 'number of messages in the queue');
+
+    // stopping the test server
+    testingServer.stop();
+
+    // restore the stub
+    HttpPdrIngest.prototype._sync.restore();
   });
-
-  it('test uploadIfNotFound when file is found', async () => {
-    sinon.stub(aws, 'fileNotFound', () => false);
-
-    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
-    assert.ok(!result);
-    aws.fileNotFound.restore();
-  });
-
-  it('test uploadIfNotFound when file is not found', async () => {
-    sinon.stub(aws, 'fileNotFound', () => true);
-    const syncUrl = sinon.stub(aws, 'syncUrl');
-
-    const result = await download.uploadIfNotFound('example.com', 'bucket', 'file');
-    assert.ok(result);
-    assert.ok(syncUrl.calledOnce);
-
-    aws.fileNotFound.restore();
-    aws.syncUrl.restore();
-  });
-
-  it('test uploading and adding PDR to the queue', async () => {
-    const syncUrl = sinon.stub(aws, 'syncUrl');
-    const pdr = {
-      name: 'myPdr',
-      url: 'example.com/pdr'
-    };
-
-    await discover.uploadAddQueuePdr(pdr);
-
-    assert.ok(syncUrl.calledOnce);
-
-    // check if the record is added to PDR table
-    const p = new Pdr();
-    const record = await p.get({ pdrName: pdr.name });
-    assert.equal(record.pdrName, pdr.name);
-
-    // check if message is added to the queue
-    const messages = await SQS.receiveMessage(process.env.PDRsQueue, 3);
-    assert.equal(messages.length, 3);
-
-    aws.syncUrl.restore();
-  });
-
 
   it('parsing should work', async () => {
-    // mock download of the PDR from S3
+    // there are two PDRs from the previous test in the queue.
+    // we will only use one of them
+
+    //mock download of the PDR from S3
     const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
 
-    const pdr = {
-      name: 'lambdas/ingest/tests/data/PDN.ID1611081200.PDR',
-      url: 'example.com/pdr',
-      collectionName: collectionRecord.collectionName,
-      concurrency: 1
-    };
+    // copy pdrs to the temp directory
+    execSync(
+      `cp -r ${join(process.cwd(), 'lambdas/ingest/tests/data/*')} ${os.tmpdir()}`
+    );
 
-    // add a PDR record
-    const p = new Pdr();
-    const pRecord = Pdr.buildRecord(pdr.name, pdr.url);
-    await p.create(pRecord);
+    await pollPdrQueue(1, 20, 1, true);
 
     const g = new Granule();
-
-    const success = await parse.parsePdr(pdr);
-
-    assert.ok(success);
-    assert.ok(downloadS3Files.calledOnce);
 
     const gs = await g.scan({});
     assert.equal(gs.Count, 4, '4 granules should be added to the database');
@@ -166,11 +142,11 @@ describe('Testing PDRs', function() {
     const attr = await SQS.attributes(process.env.GranulesQueue);
     assert.equal(attr.ApproximateNumberOfMessages, 4, 'number of messages in the queue');
 
-    // the PDR record must have 4 granules associated with it
+    //// the PDR record must have 4 granules associated with it
     const granules = await g.scan({
       filter: 'pdrName = :value',
       values: {
-        ':value': pdr.name
+        ':value': 'PDN.ID1611071307.PDR'
       }
     });
 
@@ -184,34 +160,26 @@ describe('Testing PDRs', function() {
     aws.downloadS3Files.restore();
   });
 
-  it('test parsing PDR with invalid argument', async () => {
-    const response = await parse.parsePdr({ name: 'somename' });
-    assert.ok(!response);
-  });
-
   it('test polling granule queue', async () => {
     // IMPORTANT: this test depends on the output of 'test parsing PDR'
     // the test fails if run alone
-
-    sinon.stub(aws, 'fileNotFound', () => true);
-    const syncUrl = sinon.stub(aws, 'syncUrl');
+    const ingestFile = sinon.stub(HttpGranuleIngest.prototype, '_ingestFile')
+                            .callsFake(() => {});
 
     // count the messages before
     let attr = await SQS.attributes(process.env.GranulesQueue);
     assert.equal(attr.ApproximateNumberOfMessages, 4);
 
-    // test with concurrency of 2
-    await download.pollGranulesQueue(2, 200, 8);
+    await pollGranulesQueue(1, 200, true);
 
     // count the messages again
     attr = await SQS.attributes(process.env.GranulesQueue);
     assert.equal(parseInt(attr.ApproximateNumberOfMessages, 10), 0);
 
-    // make sure syncUrl was called 8 times
-    assert.equal(syncUrl.callCount, 8);
+    // make sure ingestFile was called 8 times
+    assert.equal(ingestFile.callCount, 8);
 
-    aws.fileNotFound.restore();
-    aws.syncUrl.restore();
+    HttpGranuleIngest.prototype._ingestFile.restore();
   });
 
   after((done) => {
@@ -224,6 +192,7 @@ describe('Testing PDRs', function() {
       await Manager.deleteTable(process.env.PDRsTable);
       await Manager.deleteTable(process.env.GranulesTable);
       await Manager.deleteTable(process.env.CollectionsTable);
+      await Manager.deleteTable(process.env.ProvidersTable);
 
       done();
     }, 2000);
