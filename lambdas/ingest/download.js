@@ -2,6 +2,7 @@
 
 import path from 'path';
 import log from 'cumulus-common/log';
+import { HttpGranuleIngest } from 'cumulus-common/ingest';
 import { SQS, invoke } from 'cumulus-common/aws-helpers';
 import { Granule } from 'cumulus-common/models';
 import { syncUrl, fileNotFound } from 'gitc-common/aws';
@@ -12,29 +13,32 @@ const logDetails = {
   source: 'downloadGranules'
 };
 
-/**
- * Uploads a file from a given URL if file is not found on S3
- *
- * @param {string} originalUrl URL of the file that has to be uploaded
- * @param {string} bucket AWS S3 bucket name
- * @param {string} fileName name of the file
- * @param {string} [key=''] s3 folder name(s)
- * @returns {boolean} true if uploaded / false if not
- */
-export async function uploadIfNotFound(originalUrl, bucket, fileName, granuleId, key = '') {
-  const fullKey = path.join(key, fileName);
-  // check if the file is already uploaded to S3
-  const notFound = await fileNotFound(bucket, fileName, key);
-  if (notFound) {
-    log.info(`Uploading ${fileName} to S3`, logDetails);
-    await syncUrl(originalUrl, bucket, fullKey);
-    log.info(`${fileName} uploaded`, logDetails);
-    return true;
-  }
-  log.info(`${fileName} is already uploaded`, logDetails);
-  return false;
-}
 
+async function processMessage(message) {
+  const granule = message.Body;
+  const receiptHandle = message.ReceiptHandle;
+
+  try {
+    switch (granule.protocol) {
+      case 'ftp':
+        // do ftp
+        break;
+      default:
+        const ingest = new HttpGranuleIngest(granule);
+        await ingest.ingest();
+    }
+
+    await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
+  }
+  catch (e) {
+    log.error(
+      `Couldn't ingest files of ${granule.granuleId}. There was an error`,
+      e,
+      e.stack,
+      logDetails
+    );
+  }
+}
 
 /**
  * This is an indefinitely running function the keeps polling
@@ -44,15 +48,10 @@ export async function uploadIfNotFound(originalUrl, bucket, fileName, granuleId,
  *
  * @param {number} concurrency=1
  * @param {number} visibilityTimeout=200
- * @param {number} [testLoops=-1] number of messages to be processd before quitting (for test)
  */
-export async function pollGranulesQueue(
-  concurrency = 1,
-  visibilityTimeout = 200,
-  testLoops = -1
-) {
-  try {
-    while (true) { // eslint-disable-line no-constant-condition
+export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200, test = false) {
+  while (true) { // eslint-disable-line no-constant-condition
+    try {
       // receive a message
       const messages = await SQS.receiveMessage(
         process.env.GranulesQueue,
@@ -70,71 +69,23 @@ export async function pollGranulesQueue(
           logDetails
         );
 
-        for (const message of messages) {
-          let granuleId;
-          const files = message.Body;
-          const receiptHandle = message.ReceiptHandle;
-          const func = async () => {  // eslint-disable-line no-loop-func
-            try {
-              for (const file of files) {
-                granuleId = file.granuleId;
-                logDetails.granuleId = granuleId;
-                logDetails.collectionName = file.collectionName;
-                log.info(`Ingesting ${file.name}`, logDetails);
-
-                await uploadIfNotFound(
-                  file.file,
-                  file.bucket,
-                  file.name,
-                  granuleId,
-                  file.type
-                );
-              }
-
-              // update granule record
-              const g = new Granule();
-              const record = await g.ingestCompleted({
-                granuleId: granuleId
-              }, files);
-
-              // TODO: send the granule for processing
-              await invoke(process.env.dispatcher, {
-                previousStep: 0,
-                nextStep: 0,
-                granuleRecord: record
-              });
-
-              await SQS.deleteMessage(process.env.GranulesQueue, receiptHandle);
-            }
-            catch (e) {
-              log.error(
-                `Couldn't ingest files of ${granuleId}. There was an error`,
-                e,
-                e.stack,
-                logDetails
-              );
-            }
-            return;
-          };
-          downloads.push(func());
-        }
-
         // wait for concurrent downloads to finish before next loop
         // this is important to manage the memory usage better
-        await Promise.all(downloads);
+        await Promise.all(messages.map(processMessage));
       }
       else {
         log.debug('No new messages in the PDR queue', logDetails);
 
-        // this prevents the function from running forever in test mode
-        if (testLoops === 0) return;
-        if (testLoops > 0) testLoops -= 1;
+        // if this is a test exit after
+        // all messages are processed
+        if (test) {
+          break;
+        }
       }
     }
-  }
-  catch (e) {
-    log.error(e, e.stack, logDetails);
-    pollGranulesQueue(concurrency, visibilityTimeout, testLoops);
+    catch (e) {
+      log.error(e, e.stack, logDetails);
+    }
   }
 }
 

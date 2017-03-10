@@ -1,0 +1,12 @@
+{
+  "name": "aster_test_endpoint",
+  "providerName": "LPDAAC",
+  "host": "https://e4ftl01.cr.usgs.gov:40521",
+  "protocol": "http",
+  "path": "TEST_B/Cumulus/PDR/TEST_CASES",
+  "status": "stopped",
+  "isActive": false,
+  "lastTimeIngestedAt": 1488570660415,
+  "createdAt": 1488570660415,
+  "updatedAt": 1488570660415
+}
