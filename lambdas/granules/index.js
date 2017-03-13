@@ -82,11 +82,5 @@ export function handler(event, context) {
 
 
 localRun(() => {
-  localRun(() => {
-    //list({
-      //query: {
-        //prefix: 'good_25'
-      //}
-    //}, null, (e, r) => console.log(e, r));
-  });
+
 });

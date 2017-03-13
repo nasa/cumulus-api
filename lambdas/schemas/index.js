@@ -22,5 +22,8 @@ localRun(() => {
     //{ pathParameters: { schemaName: 'provider' } },
     //{ succeed: (r) => console.log(r) }
   //);
-  get({ pathParameters: { schemaName: 'provider' } }, (e, r) => console.log(e, r));
+  get(
+    { pathParameters: { schemaName: 'collection' } },
+    (e, r) => console.log(e, JSON.stringify(r))
+  );
 });
