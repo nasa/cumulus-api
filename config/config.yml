@@ -1,11 +1,6 @@
 stackName: cumulus-api-lpdaac
 stage: dev
 
-vpc:
-  id: vpc-5aa75d3c
-  availabilityZones: us-east-1e
-  subnetId: subnet-41e23a7d
-
 distributionEndpoint: https://cumulus.developmentseed.org/distribution
 
 buckets:
@@ -15,6 +10,9 @@ buckets:
   internal: cumulus-internal
 
 ecs:
+  subnet: subnet-623b1639 # cumulus-api-private-subnet on vpc-50286536
+  availabilityZone: us-east-1a
+  securityGroup: sg-8503f5fa
   maxInstances: 5
   desiredInstances: 2
   keyPairName: cumulus-scisco
@@ -64,6 +62,18 @@ dynamos:
         type: S
     schema:
       - name: collectionName
+        type: HASH
+
+  - name: ProvidersTable
+    read: 5
+    write: 5
+    envName: ProvidersTable
+    elasticsearch: true
+    attributes:
+      - name: name
+        type: S
+    schema:
+      - name: name
         type: HASH
 
   - name: GranulesTable
@@ -129,16 +139,7 @@ dynamos:
       - name: userName
         type: HASH
 
-  - name: SessionsTable
-    read: 100
-    write: 2
-    envName: SessionsTable
-    attributes:
-      - name: session
-        type: S
-    schema:
-      - name: session
-        type: HASH
+
 
 # difining the APIs. Each item will include a separate endpoint
 apis:
@@ -270,6 +271,27 @@ lambdas:
         cors: true
         api: backend
       - path: collections/{short_name}
+        method: put
+        cors: true
+        api: backend
+
+  - name: providers
+    handler: providers.handler
+    timeout: 300
+    apiGateway:
+      - path: providers
+        method: get
+        cors: true
+        api: backend
+      - path: providers/{name}
+        method: get
+        cors: true
+        api: backend
+      - path: providers
+        method: post
+        cors: true
+        api: backend
+      - path: providers/{name}
         method: put
         cors: true
         api: backend

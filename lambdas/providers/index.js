@@ -4,45 +4,45 @@ import _ from 'lodash';
 import { handle } from 'cumulus-common/response';
 import { localRun } from 'cumulus-common/local';
 import {
-  Collection,
+  Provider,
   RecordDoesNotExist
 } from 'cumulus-common/models';
-import example from 'cumulus-common/tests/data/collection.json';
 
 import { Search } from 'cumulus-common/es/search';
 
 /**
- * List all collections.
+ * List all providers.
  * @param {object} event aws lambda event object.
  * @param {callback} cb aws lambda callback function
  * @return {undefined}
  */
 export function list(event, cb) {
-  const search = new Search(event, process.env.CollectionsTable);
-  search.query(true).then((response) => cb(null, response)).catch((e) => {
+  const search = new Search(event, process.env.ProvidersTable);
+  search.query().then((response) => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
 
 /**
- * Query a single collection.
+ * Query a single provider.
  * @param {object} event aws lambda event object.
+ * @param {string} granuleId the id of the granule.
  * @return {object} a single granule object.
  */
 export function get(event, cb) {
-  const collectionName = _.get(event.pathParameters, 'short_name');
-  if (!collectionName) {
-    return cb('collectionName is missing');
+  const name = _.get(event.pathParameters, 'name');
+  if (!name) {
+    return cb('provider name is missing');
   }
 
-  const search = new Search({}, process.env.CollectionsTable);
-  search.get(collectionName, true)
+  const search = new Search({}, process.env.ProvidersTable);
+  search.get(name)
     .then(response => cb(null, response))
     .catch((e) => cb(e));
 }
 
 /**
- * Creates a new collection
+ * Creates a new provider
  * @param {object} event aws lambda event object.
  * @return {object} returns the collection that was just saved.
  */
@@ -51,18 +51,18 @@ export function post(event, cb) {
   data = JSON.parse(data);
 
   // make sure primary key is included
-  if (!data.collectionName) {
-    return cb('Field collectionName is missing');
+  if (!data.name) {
+    return cb('Field name is missing');
   }
-  const collectionName = data.collectionName;
+  const name = data.name;
 
-  const c = new Collection();
+  const p = new Provider();
 
-  c.get({ collectionName: collectionName })
-    .then(() => cb(`A record already exists for ${collectionName}`))
+  p.get({ name: name })
+    .then(() => cb(`A record already exists for ${name}`))
     .catch(e => {
       if (e instanceof RecordDoesNotExist) {
-        return c.create(data).then(() => {
+        return p.create(data).then(() => {
           cb(null, {
             detail: 'Record saved',
             record: data
@@ -75,25 +75,43 @@ export function post(event, cb) {
 }
 
 /**
- * Updates an existing collection
- * @param {object} body a set of properties to update on an existing collection.
+ * Updates an existing provider
+ * @param {object} event aws lambda event object.
  * @return {object} a mapping of the updated properties.
  */
 export function put(event, cb) {
-  const collectionName = _.get(event.pathParameters, 'short_name');
-  if (!collectionName) {
-    return cb('collectionName is missing');
+  const name = _.get(event.pathParameters, 'name');
+  if (!name) {
+    return cb('provider name is missing');
   }
 
   let data = _.get(event, 'body', '{}');
   data = JSON.parse(data);
 
-  const c = new Collection();
+  const p = new Provider();
+
 
   // get the record first
-  c.get({ collectionName: collectionName }).then(originalData => {
+  p.get({ name: name }).then(originalData => {
     data = Object.assign({}, originalData, data);
-    return c.create(data);
+
+    // handle restart case
+    if (data.action === 'restart') {
+      return p.restart(name)
+        .then((r) => cb(null, r))
+        .catch((e) => cb(e));
+    }
+
+    // handle stop case
+    if (data.action === 'stop') {
+      return p.update(
+        { name: name },
+        { status: 'stopped', isActive: false }
+      );
+    }
+
+    // otherwise just update
+    return p.create(data);
   }).then(r => cb(null, r)).catch(err => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');

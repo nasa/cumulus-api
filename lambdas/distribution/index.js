@@ -1,7 +1,8 @@
 'use strict';
 
 import AWS from 'aws-sdk';
-import request from 'request';
+import got from 'got';
+import FormData from 'form-data';
 import querystring from 'querystring';
 import { localRun } from 'cumulus-common/local';
 import { Distribution } from 'cumulus-common/models';
@@ -54,22 +55,18 @@ export function handler(event, context, cb) {
   // code means that this is a redirect back from
   // earthData login
   if (query.code) {
+    const form = new FormData();
+    form.append('grant_type', 'authorization_code');
+    form.append('code', query.code);
+    form.append('redirect_uri', DEPLOYMENT_ENDPOINT);
+
     // we send the code to another endpoint to verify
-    request.post({
-      url: EARTHDATA_CHECK_CODE_URL,
-      form: {
-        grant_type: 'authorization_code',
-        code: query.code,
-        redirect_uri: DEPLOYMENT_ENDPOINT
-      },
-      auth: {
-        user: EARTHDATA_CLIENT_ID,
-        password: EARTHDATA_CLIENT_PASSWORD,
-        sendImmediately: true
-      }
-    }, (err, response, body) => {
-      console.log(body);
-      const tokenInfo = JSON.parse(body);
+    got.post(EARTHDATA_CHECK_CODE_URL, {
+      body: form,
+      json: true,
+      auth: `${EARTHDATA_CLIENT_ID}:${EARTHDATA_CLIENT_PASSWORD}`
+    }).then(r => {
+      const tokenInfo = r.body;
       const accessToken = tokenInfo.access_token;
 
       // if no access token is given, then the code is wrong
@@ -108,7 +105,7 @@ export function handler(event, context, cb) {
       }).catch(e => {
         cb(e);
       });
-    });
+    }).catch(e => cb(e));
   }
   else {
     // ending up here means that user was not login
