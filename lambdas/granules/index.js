@@ -55,7 +55,7 @@ export function put(event, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, cb) {
-  const granuleId = _.get(event.path, 'granuleName');
+  const granuleId = _.get(event.pathParameters, 'granuleName');
 
   const search = new Search({}, process.env.GranulesTable);
   search.get(granuleId).then((response) => {
@@ -83,10 +83,10 @@ export function handler(event, context) {
 
 localRun(() => {
   localRun(() => {
-    list({
-      query: {
-        prefix: 'good_25'
-      }
-    }, null, (e, r) => console.log(e, r));
+    //list({
+      //query: {
+        //prefix: 'good_25'
+      //}
+    //}, null, (e, r) => console.log(e, r));
   });
 });
