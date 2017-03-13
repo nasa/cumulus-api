@@ -296,3 +296,12 @@ lambdas:
         method: get
         cors: true
         api: backend
+
+  - name: schemas
+    handler: schemas.handler
+    timeout: 300
+    apiGateway:
+      - path: schemas/{schemaName}
+        method: get
+        cors: true
+        api: backend
