@@ -25,6 +25,11 @@ images:
     cpu: 25
     memory: 400
 
+  - name: modisProcessing
+    image: cumulus-docker-dev-modis
+    cpu: 25
+    memory: 400
+
 elasticsearch:
   # the dynamic template that is included with every type
   # used with the bootstrap command

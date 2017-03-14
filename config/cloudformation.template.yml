@@ -387,16 +387,18 @@ Resources:
         PropagateAtLaunch: true
 
 
+{{#each images}}
   # adding TaskDefinition for Lambda/ECS services
-  AsterProcessingTaskDefinition:
+  {{name}}TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      Family: {{stackName}}-{{stage}}-{{name}}-TaskDefinition
       ContainerDefinitions:
-      - Name: dockerAster
+      - Name: {{name}}
         Environment:
           - Name: distributionEndpoint
             Value: {{distributionEndpoint}}
-        {{#each envsList}}
+        {{#each envs}}
           - Name: {{key}}
             Value: !Sub {{value}}
         {{/each}}
@@ -410,6 +412,7 @@ Resources:
             awslogs-group: !Ref DockerAsterLogs
             awslogs-region: !Sub ${AWS::Region}
 
+{{/each}}
 
   #################################################
   # ECS config END
@@ -682,8 +685,8 @@ Resources:
         Environment:
           - Name: AWS_DEFAULT_REGION
             Value: !Sub ${AWS::Region}
-          - Name: TaskDefinition
-            Value: !Ref AsterProcessingTaskDefinition
+          - Name: AWS_ACCOUNT_ID
+            Value: !Sub ${AWS::AccountId}
           - Name: CumulusCluster
             Value: !Ref CumulusECSCluster
           - Name: ES_HOST

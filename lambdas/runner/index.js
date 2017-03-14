@@ -26,6 +26,7 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         const payload = message.Body;
         const granuleId = payload.granuleRecord.granuleId;
         const receiptHandle = message.ReceiptHandle;
+        const image = payload.granuleRecord.recipe.processStep.config.image;
         logDetails.granuleId = granuleId;
         logDetails.collectionName = payload.granuleRecord.collectionName;
 
@@ -44,18 +45,23 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         // launch ecs task
         const ecs = new AWS.ECS();
 
+        // construct task definition
+        const taskDefinition = `${process.env.StackName}-${process.env.Stage}-${image}`;
+
         const params = {
           cluster: process.env.CumulusCluster,
-          taskDefinition: process.env.TaskDefinition,
+          taskDefinition: taskDefinition,
           overrides: {
             containerOverrides: [
               {
-                name: 'dockerAster',
+                name: granuleId,
                 command: [
                   'recipe',
                   payloadUri,
-                  '--s3path',
-                  `s3://${process.env.internal}/staging`
+                  '--dispatcher',
+                  process.env.dispatcher,
+                  '--sqs',
+                  receiptHandle
                 ]
               }
             ]
