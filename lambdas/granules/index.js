@@ -16,7 +16,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.GranulesTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -29,7 +29,7 @@ export function put(event, cb) {
     // TODO: send the granule for processing
     const g = new Granule();
 
-    g.get({ granuleId: granuleId }).then(record => {
+    g.get({ granuleId: granuleId }).then((record) => {
       record.status = 'processing';
 
       return invoke(
@@ -82,5 +82,10 @@ export function handler(event, context) {
 
 
 localRun(() => {
-
+  list({
+    queryStringParameters: {
+      ingestStartedAt: 1489507394548,
+      prefix: '1A00'
+    }
+  }, (e, r) => console.log(e, r));
 });
