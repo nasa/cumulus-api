@@ -1,7 +1,7 @@
 'use strict';
 
 import log from 'cumulus-common/log';
-import { HttpPdrIngest } from 'cumulus-common/ingest';
+import { HttpPdrIngest, FtpPdrIngest } from 'cumulus-common/ingest';
 import { Provider } from 'cumulus-common/models';
 
 const logDetails = {
@@ -21,12 +21,14 @@ export async function runActiveProviders() {
 
   if (r.Count) {
     for (const provider of r.Items) {
+      let ingest;
       switch (provider.protocol) {
         case 'ftp':
-          // do ftp discover
+          ingest = new FtpPdrIngest(provider, 'cumulususer', 'cumulus');
+          await ingest.discover();
           break;
         default: {
-          const ingest = new HttpPdrIngest(provider);
+          ingest = new HttpPdrIngest(provider);
           await ingest.discover();
         }
       }
@@ -41,7 +43,11 @@ export function pollProviders(frequency = 300) {
   // run one time then do set interval
   function timed() {
     runActiveProviders()
-      .then(() => console.log(`waiting ${frequency} seconds`));
+      .then(() => console.log(`waiting ${frequency} seconds`))
+      .catch((e) => {
+        console.error(e);
+        console.log(`waiting ${frequency} seconds`);
+      });
   }
 
   timed();

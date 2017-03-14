@@ -1,11 +1,8 @@
 'use strict';
 
-import path from 'path';
 import log from 'cumulus-common/log';
-import { HttpGranuleIngest } from 'cumulus-common/ingest';
-import { SQS, invoke } from 'cumulus-common/aws-helpers';
-import { Granule } from 'cumulus-common/models';
-import { syncUrl, fileNotFound } from 'gitc-common/aws';
+import { HttpGranuleIngest, FtpGranuleIngest } from 'cumulus-common/ingest';
+import { SQS } from 'cumulus-common/aws-helpers';
 
 const logDetails = {
   file: 'lambdas/pdr/download.js',
@@ -19,12 +16,14 @@ async function processMessage(message) {
   const receiptHandle = message.ReceiptHandle;
 
   try {
+    let ingest;
     switch (granule.protocol) {
       case 'ftp':
-        // do ftp
+        ingest = new FtpGranuleIngest(granule, 'cumulususer', 'cumulus');
+        await ingest.ingest();
         break;
       default:
-        const ingest = new HttpGranuleIngest(granule);
+        ingest = new HttpGranuleIngest(granule);
         await ingest.ingest();
     }
 
@@ -62,10 +61,9 @@ export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200
       // get message body
       if (messages.length > 0) {
         // holds list of parallels downloads
-        const downloads = [];
 
         log.info(
-          `Ingest: ${concurrency} Granules(s) concurrently`,
+          `Ingest: ${messages.length} Granules(s) concurrently`,
           logDetails
         );
 

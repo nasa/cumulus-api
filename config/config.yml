@@ -116,18 +116,6 @@ dynamos:
       - name: accessDate
         type: RANGE
 
-  - name: ErrorsTable
-    read: 1
-    write: 30
-    envName: ErrorsTable
-    elasticsearch: true
-    attributes:
-      - name: objName
-        type: S
-    schema:
-      - name: objName
-        type: HASH
-
   - name: UsersTable
     read: 100
     write: 1
@@ -305,6 +293,15 @@ lambdas:
         cors: true
         api: backend
       - path: pdrs/{pdrName}
+        method: get
+        cors: true
+        api: backend
+
+  - name: schemas
+    handler: schemas.handler
+    timeout: 300
+    apiGateway:
+      - path: schemas/{schemaName}
         method: get
         cors: true
         api: backend

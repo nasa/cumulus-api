@@ -25,9 +25,17 @@
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "consistent-return": "off",
+    "no-await-in-loop": "off",
     "max-len": [2, {
       "code": 100,
       "ignorePattern": "(https?:|JSON\\.parse|[Uu]rl =)"
-    }]
+    }],
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement",
+    ],
+    "class-methods-use-this": "off"
   }
 }
