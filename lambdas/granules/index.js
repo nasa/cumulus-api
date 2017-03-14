@@ -84,8 +84,8 @@ export function handler(event, context) {
 localRun(() => {
   list({
     queryStringParameters: {
-      ingestStartedAt: 1489507394548,
-      prefix: '1A00'
+      collectionName: 'AST_L1A__version__003',
+      prefix: 'bad'
     }
   }, (e, r) => console.log(e, r));
 });
