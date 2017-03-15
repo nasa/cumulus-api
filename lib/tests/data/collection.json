@@ -15,7 +15,7 @@
       "config": {
         "image": "asterProcessing",
         "outputFiles": [
-          "processed-hd5",
+          "processed-hdf5",
           "thumbnail-1",
           "meta-xml"
         ],
@@ -34,6 +34,7 @@
   "collectionName": "AST_L1A__version__003",
   "granuleDefinition": {
     "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
+    "sampleFileName": "pg-PR1A0000-2016121001_001_011",
     "neededForProcessing": [
       "origin-hdf5",
       "origin-thumbnail"
@@ -75,7 +76,11 @@
         "source": "cumulus"
       }
     },
-    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
+    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
+    "neededForProcessing": [
+      "origin-hdf5",
+      "origin-thumbnail"
+    ]
   },
   "status": "ingesting",
   "updatedAt": 1488992876164,
