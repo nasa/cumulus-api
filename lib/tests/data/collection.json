@@ -28,7 +28,7 @@
         "source": "sips"
       },
       "meta-xml": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
         "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
         "access": "public",
         "source": "cumulus"
@@ -85,5 +85,7 @@
       "cmr"
     ]
   },
-  "changedBy": "Cumulus Dashboard"
+  "changedBy": "Cumulus Dashboard",
+  "createdAt": 123123413214,
+  "updatedAt": 123134523525
 }
