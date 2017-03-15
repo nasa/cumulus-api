@@ -56,7 +56,7 @@ export function formatMetadata(payload, xml) {
 
 export async function postToCMR(xml) {
   log.info('Pushing the metadata to CMR', logDetails);
-  return await ingestGranule(xml);
+  return ingestGranule(xml);
 }
 
 
@@ -66,10 +66,10 @@ export function handler(event, context, cb) {
     logDetails.granuleId = event.granuleRecord.granuleId;
 
     log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
-    getMetadata(event).then(xml => {
+    getMetadata(event).then((xml) => {
       const payload = formatMetadata(event, xml);
       return postToCMR(payload);
-    }).then(res => {
+    }).then((res) => {
       log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
 
       // add conceptId to the record
@@ -81,7 +81,7 @@ export function handler(event, context, cb) {
 
       // invoking dispatcher
       return invoke(process.env.dispatcher, event);
-    }).then((res) => cb(null, res))
+    }).then(res => cb(null, res))
       .catch(e => cb(e));
   }
   catch (e) {
