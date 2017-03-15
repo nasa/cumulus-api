@@ -1,0 +1,69 @@
+{
+  "collectionName": "MOD09GQ__version__006",
+  "granuleDefinition": {
+    "granuleId": "^A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
+    "sampleFileName": "MOD09GQ.A2017031.h24v05.006.2017033095832.hdf",
+    "granuleIdExtraction": "MOD09GQ\\.(.*)\\.hdf",
+    "neededForProcessing": [
+      "meta-odl",
+      "origin-hdf5"
+    ],
+    "files": {
+      "origin-hdf5": {
+        "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$",
+        "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+        "access": "protected",
+        "source": "sips"
+      },
+      "meta-odl": {
+        "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf\\.met$",
+        "sampleFileName": "MOD09GQ.A2017031.h24v05.006.2017033095832.hdf.met",
+        "access": "private",
+        "source": "sips"
+      },
+      "meta-xml": {
+        "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.meta\\.xml$",
+        "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.meta.xml",
+        "access": "protected",
+        "source": "cumulus"
+      },
+      "thumbnail-1": {
+        "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$",
+        "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104_1.jpg",
+        "access": "public",
+        "source": "cumulus"
+      }
+    }
+  },
+  "recipe": {
+    "cmr": {
+      "config": {}
+    },
+    "archive": {
+      "config": {}
+    },
+    "processStep": {
+      "description": "Processing modis images",
+      "config": {
+        "image": "modisProcessing",
+        "outputFiles": [
+          "thumbnail-1",
+          "meta-xml"
+        ],
+        "inputFiles": [
+          "origin-hdf5",
+          "meta-odl"
+        ]
+      }
+    },
+    "order": [
+      "processStep",
+      "cmr",
+      "archive"
+    ]
+  },
+  "providers": [],
+  "changedBy": "Cumulus Dashboard",
+  "createdAt": 123123413214,
+  "updatedAt": 123134523525
+}
