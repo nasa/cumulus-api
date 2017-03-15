@@ -46,7 +46,8 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         const ecs = new AWS.ECS();
 
         // construct task definition
-        const taskDefinition = `${process.env.StackName}-${process.env.Stage}-${image}`;
+        const taskDefinition = (`${process.env.StackName}-` +
+          `${process.env.Stage}-${image}-TaskDefinition`);
 
         const params = {
           cluster: process.env.CumulusCluster,
@@ -54,10 +55,12 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
           overrides: {
             containerOverrides: [
               {
-                name: granuleId,
+                name: image,
                 command: [
                   'recipe',
                   payloadUri,
+                  '--s3path',
+                  `s3://${process.env.internal}/staging`,
                   '--dispatcher',
                   process.env.dispatcher,
                   '--sqs',
@@ -111,9 +114,7 @@ export function handler(event, context, cb) {
 }
 
 localRun(() => {
-  process.env.CumulusCluster = 'cumulus-api-test2-CumulusECSCluster-YOFUX7L4ZQDR';
-  process.env.TaskDefinition = 'cumulus-api-test2-AsterProcessingTaskDefinition-1KXHC9IXBCMYF:1';
-  handler({}, {}, {});
-  //pollQueue().then(r => console.log(r)).catch(e => console.log(e));
+  process.env.CumulusCluster = 'cumulus-api-lpdaac-CumulusECSCluster-15GFT0YONVDKS';
+  handler({}, {}, () => {});
 });
 
