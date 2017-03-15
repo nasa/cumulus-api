@@ -4,68 +4,51 @@
   "files": {
     "meta-xml": {
       "access": "public",
-      "archivedFile": null,
-      "name": null,
       "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
-      "sipFile": null,
-      "source": "cumulus",
-      "stagingFile": null
+      "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
+      "source": "cumulus"
     },
     "origin-hdf5": {
       "access": "private",
-      "archivedFile": null,
       "name": "pg-PR1A0000-2016121001_001_011",
       "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+      "sampleFileName": "pg-PR1A0000-2016121001_000_001",
       "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1612101200/pg-PR1A0000-2016121001_001_011",
       "source": "sips",
-      "staging": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1612101200/pg-PR1A0000-2016121001_001_011",
       "stagingFile": "s3://cumulus-internal/staging/pg-PR1A0000-2016121001_001_011"
     },
     "origin-thumbnail": {
       "access": "private",
-      "archivedFile": null,
       "name": "pg-BR1A0000-2016121001_001_011",
       "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+      "sampleFileName": "pg-BR1A0000-2016121001_000_001",
       "sipFile": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1612101200/pg-BR1A0000-2016121001_001_011",
       "source": "sips",
-      "staging": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/DATA/ID1612101200/pg-BR1A0000-2016121001_001_011",
       "stagingFile": "s3://cumulus-internal/staging/pg-BR1A0000-2016121001_001_011"
     },
     "processed-hdf5": {
       "access": "protected",
-      "archivedFile": null,
-      "name": null,
       "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-      "sipFile": null,
-      "source": "cumulus",
-      "stagingFile": null
+      "sampleFileName": "AST_L1A_00301052017002700_02242017094829.hdf",
+      "source": "cumulus"
     },
     "thumbnail-1": {
       "access": "public",
-      "archivedFile": null,
-      "name": null,
       "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
-      "sipFile": null,
-      "source": "cumulus",
-      "stagingFile": null
+      "sampleFileName": "AST_L1A_00301052017002700_02242017094829_1.jpg",
+      "source": "cumulus"
     },
     "thumbnail-2": {
       "access": "public",
-      "archivedFile": null,
-      "name": null,
       "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
-      "sipFile": null,
-      "source": "cumulus",
-      "stagingFile": null
+      "sampleFileName": "AST_L1A_00301052017002700_02242017094829_2.jpg",
+      "source": "cumulus"
     },
     "thumbnail-3": {
       "access": "public",
-      "archivedFile": null,
-      "name": null,
       "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
-      "sipFile": null,
-      "source": "cumulus",
-      "stagingFile": null
+      "sampleFileName": "AST_L1A_00301052017002700_02242017094829_3.jpg",
+      "source": "cumulus"
     }
   },
   "granuleId": "1A0000-2016121001_001_011",

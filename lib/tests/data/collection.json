@@ -42,36 +42,43 @@
     "files": {
       "origin-hdf5": {
         "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "sampleFileName": "pg-PR1A0000-2016121001_000_001",
         "access": "private",
         "source": "sips"
       },
       "processed-hdf5": {
         "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829.hdf",
         "access": "protected",
         "source": "cumulus"
       },
       "origin-thumbnail": {
         "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "sampleFileName": "pg-BR1A0000-2016121001_000_001",
         "access": "private",
         "source": "sips"
       },
       "meta-xml": {
         "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
         "access": "public",
         "source": "cumulus"
       },
       "thumbnail-2": {
         "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_2.jpg",
         "access": "public",
         "source": "cumulus"
       },
       "thumbnail-1": {
         "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_1.jpg",
         "access": "public",
         "source": "cumulus"
       },
       "thumbnail-3": {
         "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_3.jpg",
         "access": "public",
         "source": "cumulus"
       }
