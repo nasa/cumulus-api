@@ -83,7 +83,7 @@
     ],
     "processStep": {
       "config": {
-        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "image": "asterProcessing",
         "inputFiles": [
           "origin-hdf5",
           "origin-thumbnail"
@@ -96,7 +96,7 @@
       },
       "description": "UpdateHDF5fileandextractthumbnail"
     },
-    "pushToCMR": {
+    "cmr": {
       "config": {}
     }
   },

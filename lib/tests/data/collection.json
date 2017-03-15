@@ -4,7 +4,7 @@
   "changedBy": "Cumulus Dashboard",
   "cmrProvider": "CUMULUS",
   "recipe": {
-    "pushToCMR": {
+    "cmr": {
       "config": {}
     },
     "archive": {
@@ -13,7 +13,7 @@
     "processStep": {
       "description": "new-updated-value",
       "config": {
-        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "image": "asterProcessing",
         "outputFiles": [
           "processed-hd5",
           "thumbnail-1",
@@ -29,10 +29,7 @@
       "processStep",
       "archive",
       "cmr"
-    ],
-    "cmr": {
-      "config": {}
-    }
+    ]
   },
   "collectionName": "AST_L1A__version__003",
   "granuleDefinition": {
