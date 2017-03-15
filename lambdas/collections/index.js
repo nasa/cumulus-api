@@ -7,7 +7,7 @@ import {
   Collection,
   RecordDoesNotExist
 } from 'cumulus-common/models';
-import example from 'cumulus-common/tests/data/collection.json';
+//import example from 'cumulus-common/tests/data/collection.json';
 
 import { Search } from 'cumulus-common/es/search';
 
@@ -19,7 +19,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.CollectionsTable);
-  search.query(true).then((response) => cb(null, response)).catch((e) => {
+  search.query(true).then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -38,7 +38,7 @@ export function get(event, cb) {
   const search = new Search({}, process.env.CollectionsTable);
   search.get(collectionName, true)
     .then(response => cb(null, response))
-    .catch((e) => cb(e));
+    .catch(e => cb(e));
 }
 
 /**
@@ -60,7 +60,7 @@ export function post(event, cb) {
 
   c.get({ collectionName: collectionName })
     .then(() => cb(`A record already exists for ${collectionName}`))
-    .catch(e => {
+    .catch((e) => {
       if (e instanceof RecordDoesNotExist) {
         return c.create(data).then(() => {
           cb(null, {
@@ -91,10 +91,10 @@ export function put(event, cb) {
   const c = new Collection();
 
   // get the record first
-  c.get({ collectionName: collectionName }).then(originalData => {
+  c.get({ collectionName: collectionName }).then((originalData) => {
     data = Object.assign({}, originalData, data);
     return c.create(data);
-  }).then(r => cb(null, r)).catch(err => {
+  }).then(r => cb(null, r)).catch((err) => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');
     }
@@ -127,6 +127,6 @@ localRun(() => {
   handler(
     { httpMethod: 'GET' },
     //{ httpMethod: 'POST', body: JSON.stringify(example) },
-    { succeed: (r) => console.log(r) }
+    { succeed: r => console.log(r) }
   );
 });
