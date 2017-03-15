@@ -1,37 +1,6 @@
 {
-  "createdAt": 1488674724159,
-  "statusId": 0,
-  "changedBy": "Cumulus Dashboard",
-  "cmrProvider": "CUMULUS",
-  "recipe": {
-    "cmr": {
-      "config": {}
-    },
-    "archive": {
-      "config": {}
-    },
-    "processStep": {
-      "description": "new-updated-value",
-      "config": {
-        "image": "asterProcessing",
-        "outputFiles": [
-          "processed-hdf5",
-          "thumbnail-1",
-          "meta-xml"
-        ],
-        "inputFiles": [
-          "origin-hdf5",
-          "origin-thumbnail"
-        ]
-      }
-    },
-    "order": [
-      "processStep",
-      "archive",
-      "cmr"
-    ]
-  },
   "collectionName": "AST_L1A__version__003",
+  "cmrProvider": "CUMULUS",
   "granuleDefinition": {
     "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
     "sampleFileName": "pg-PR1A0000-2016121001_001_011",
@@ -83,27 +52,38 @@
         "source": "cumulus"
       }
     },
-    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-    "neededForProcessing": [
-      "origin-hdf5",
-      "origin-thumbnail"
-    ]
+    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
   },
-  "status": "ingesting",
-  "updatedAt": 1488992876164,
-  "timestamp": "2017-03-08T17:07:57.320Z",
   "providers": [
     "aster_test_endpoint"
   ],
-  "granulesStatus": {
-    "failed": 9,
-    "ingesting": 3,
-    "processing": 13,
-    "archiving": 0,
-    "cmr": 0,
-    "completed": 0
+  "recipe": {
+    "cmr": {
+      "config": {}
+    },
+    "archive": {
+      "config": {}
+    },
+    "processStep": {
+      "description": "new-updated-value",
+      "config": {
+        "image": "asterProcessing",
+        "outputFiles": [
+          "processed-hdf5",
+          "thumbnail-1",
+          "meta-xml"
+        ],
+        "inputFiles": [
+          "origin-hdf5",
+          "origin-thumbnail"
+        ]
+      }
+    },
+    "order": [
+      "processStep",
+      "archive",
+      "cmr"
+    ]
   },
-  "averageDuration": null,
-  "granules": 25,
-  "queriedAt": "2017-03-08T16:55:24.082Z"
+  "changedBy": "Cumulus Dashboard"
 }
