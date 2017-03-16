@@ -33,6 +33,7 @@ describe('Testing PDRs', function() {
       process.env.PDRsTable = pdrTableName;
       //await Manager.deleteTable(process.env.PDRsTable);
       await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+      console.log('PDR table created');
 
       // Granule Table for Testing
       const granuleTableName = 'GranuleTestTable-pdrs';
@@ -42,6 +43,7 @@ describe('Testing PDRs', function() {
         granuleTableName, {
           name: 'granuleId', type: 'S'
         });
+      console.log('granule table created');
 
       // Provider table for testing
       const providerTableName = 'ProviderTableTest-ingest';
@@ -51,6 +53,7 @@ describe('Testing PDRs', function() {
         process.env.ProvidersTable, {
           name: 'name', type: 'S'
         });
+      console.log('provider table created');
 
 
       // Collection table for testing
@@ -61,6 +64,7 @@ describe('Testing PDRs', function() {
         collectionTableName, {
           name: 'collectionName', type: 'S'
         });
+      console.log('collection table created');
 
       // create a provider record
       const p = new Provider();
@@ -69,15 +73,18 @@ describe('Testing PDRs', function() {
       providerRecord.isActive = true;
       providerRecord.status = 'ingesting';
       await p.create(providerRecord);
+      console.log('provider record added');
 
       // update ingest endpoint & add provider record
       const c = new Collection();
       collectionRecord.providers = ['aster_test_endpoint'];
       await c.create(collectionRecord);
+      console.log('aster record added');
 
       // add modis record
       modisRecord.providers = ['aster_test_endpoint'];
       await c.create(modisRecord);
+      console.log('modis record added');
 
       // create PDR Queue
       process.env.PDRsQueue = 'PDRTestQueue-pdr';

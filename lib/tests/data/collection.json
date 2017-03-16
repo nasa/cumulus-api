@@ -54,9 +54,6 @@
     },
     "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
   },
-  "providers": [
-    "aster_test_endpoint"
-  ],
   "recipe": {
     "cmr": {
       "config": {}
