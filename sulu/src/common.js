@@ -34,7 +34,7 @@ const configureApiGateway = (config) => {
   const apiMethodsOptions = {};
   const apiDependencies = {};
 
-  config.apis.forEach(api => {
+  config.apis.forEach((api) => {
     apiDependencies[api.name] = [];
   });
 
@@ -90,7 +90,7 @@ const configureApiGateway = (config) => {
               ), '')}`
             ];
 
-            name = _.join(segmentNames.map((x) => x), '');
+            name = _.join(segmentNames.map(x => x), '');
           }
 
           // We use an object here to catch duplicate resources
@@ -105,7 +105,7 @@ const configureApiGateway = (config) => {
         });
 
         const method = _.capitalize(api.method);
-        const name = _.join(segmentNames.map((x) => x), '');
+        const name = _.join(segmentNames.map(x => x), '');
 
         const methodName = `ApiGatewayMethod${name}${_.capitalize(method)}`;
 
@@ -228,6 +228,7 @@ function parseEnvVariables(config) {
     group.forEach((item, index) => {
       item.stackName = config.stackName;
       item.stage = config.stage;
+      item.distributionEndpoint = config.distributionEndpoint;
       if (item.hasOwnProperty('envs')) {
         item.envs = item.envs.concat(envList);
       }
@@ -270,6 +271,7 @@ function parseEnvVariables(config) {
   config.sqs = addCommonSettings(config.sqs, envList);
   config.dynamos = addCommonSettings(config.dynamos);
   config.lambdas = addCommonSettings(config.lambdas, envList);
+  config.images = addCommonSettings(config.images, envList);
 
   config.lambdas.forEach((lambda, index) => {
     if (lambda.services) {
@@ -286,7 +288,9 @@ function parseEnvVariables(config) {
  * Parses the config/config.yml to js Object
  * @return {Object}
  */
-function parseConfig(configPath, stackName = null, stage = null) {
+function parseConfig(configPath, stackName, stage) {
+  stackName = stackName || null;
+  stage = stage || null;
   const p = path.join(process.cwd(), configPath || 'config/config.yml');
   let config = yaml.safeLoad(fs.readFileSync(p, 'utf8'));
 

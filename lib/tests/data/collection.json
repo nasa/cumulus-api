@@ -1,10 +1,61 @@
 {
-  "createdAt": 1488674724159,
-  "statusId": 0,
-  "changedBy": "Cumulus Dashboard",
+  "collectionName": "AST_L1A__version__003",
   "cmrProvider": "CUMULUS",
+  "granuleDefinition": {
+    "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
+    "sampleFileName": "pg-PR1A0000-2016121001_001_011",
+    "neededForProcessing": [
+      "origin-hdf5",
+      "origin-thumbnail"
+    ],
+    "files": {
+      "origin-hdf5": {
+        "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "sampleFileName": "pg-PR1A0000-2016121001_000_001",
+        "access": "private",
+        "source": "sips"
+      },
+      "processed-hdf5": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829.hdf",
+        "access": "protected",
+        "source": "cumulus"
+      },
+      "origin-thumbnail": {
+        "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
+        "sampleFileName": "pg-BR1A0000-2016121001_000_001",
+        "access": "private",
+        "source": "sips"
+      },
+      "meta-xml": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-2": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_2.jpg",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-1": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_1.jpg",
+        "access": "public",
+        "source": "cumulus"
+      },
+      "thumbnail-3": {
+        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
+        "sampleFileName": "AST_L1A_00301052017002700_02242017094829_3.jpg",
+        "access": "public",
+        "source": "cumulus"
+      }
+    },
+    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
+  },
   "recipe": {
-    "pushToCMR": {
+    "cmr": {
       "config": {}
     },
     "archive": {
@@ -13,9 +64,9 @@
     "processStep": {
       "description": "new-updated-value",
       "config": {
-        "image": "985962406024.dkr.ecr.us-east-1.amazonaws.com/cumulus-api-test2-dev-processingimages:aster",
+        "image": "asterProcessing",
         "outputFiles": [
-          "processed-hd5",
+          "processed-hdf5",
           "thumbnail-1",
           "meta-xml"
         ],
@@ -29,72 +80,9 @@
       "processStep",
       "archive",
       "cmr"
-    ],
-    "cmr": {
-      "config": {}
-    }
+    ]
   },
-  "collectionName": "AST_L1A__version__003",
-  "granuleDefinition": {
-    "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-    "neededForProcessing": [
-      "origin-hdf5",
-      "origin-thumbnail"
-    ],
-    "files": {
-      "origin-hdf5": {
-        "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-        "access": "private",
-        "source": "sips"
-      },
-      "processed-hdf5": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-        "access": "protected",
-        "source": "cumulus"
-      },
-      "origin-thumbnail": {
-        "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-        "access": "private",
-        "source": "sips"
-      },
-      "meta-xml": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf\\.meta\\.xml$",
-        "access": "public",
-        "source": "cumulus"
-      },
-      "thumbnail-2": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
-        "access": "public",
-        "source": "cumulus"
-      },
-      "thumbnail-1": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
-        "access": "public",
-        "source": "cumulus"
-      },
-      "thumbnail-3": {
-        "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
-        "access": "public",
-        "source": "cumulus"
-      }
-    },
-    "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
-  },
-  "status": "ingesting",
-  "updatedAt": 1488992876164,
-  "timestamp": "2017-03-08T17:07:57.320Z",
-  "providers": [
-    "aster_test_endpoint"
-  ],
-  "granulesStatus": {
-    "failed": 9,
-    "ingesting": 3,
-    "processing": 13,
-    "archiving": 0,
-    "cmr": 0,
-    "completed": 0
-  },
-  "averageDuration": null,
-  "granules": 25,
-  "queriedAt": "2017-03-08T16:55:24.082Z"
+  "changedBy": "Cumulus Dashboard",
+  "createdAt": 123123413214,
+  "updatedAt": 123134523525
 }

@@ -23,18 +23,6 @@ function lambdaObject() {
   const c = parseConfig();
   const obj = {};
 
-  // add distribution
-  c.lambdas.push({
-    handler: 'distribution.handler',
-    name: 'distribution'
-  });
-
-  // add dynamo to es function
-  c.lambdas.push({
-    handler: 'es.handler',
-    name: 'dynamoToEs'
-  });
-
   for (const lambda of c.lambdas) {
     // extract the lambda folder name from the handler
     const funcName = getLambdaZipFile(lambda.handler);

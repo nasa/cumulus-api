@@ -10,15 +10,12 @@ import { HttpPdrIngest, HttpGranuleIngest } from 'cumulus-common/ingest';
 import { SQS } from 'cumulus-common/aws-helpers';
 import { Manager, Pdr, Granule, Collection, Provider } from 'cumulus-common/models';
 import providerRecord from 'cumulus-common/tests/data/provider.json';
+import modisRecord from 'cumulus-common/tests/data/MYD13A1.006.json';
 import collectionRecord from 'cumulus-common/tests/data/collection.json';
+import * as aws from 'gitc-common/aws';
 import { runActiveProviders } from '../discover';
 import { pollPdrQueue } from '../parse';
 import { pollGranulesQueue } from '../download';
-import * as aws from 'gitc-common/aws';
-//import * as main from '../index';
-//import * as download from '../download';
-//import * as discover from '../discover';
-//import * as parse from '../parse';
 import { testingServer } from './testServer';
 
 
@@ -36,6 +33,7 @@ describe('Testing PDRs', function() {
       process.env.PDRsTable = pdrTableName;
       //await Manager.deleteTable(process.env.PDRsTable);
       await Manager.createTable(pdrTableName, { name: 'pdrName', type: 'S' });
+      console.log('PDR table created');
 
       // Granule Table for Testing
       const granuleTableName = 'GranuleTestTable-pdrs';
@@ -45,15 +43,17 @@ describe('Testing PDRs', function() {
         granuleTableName, {
           name: 'granuleId', type: 'S'
         });
+      console.log('granule table created');
 
       // Provider table for testing
-      const providerTableName = 'ProviderTableTest-ingest'
+      const providerTableName = 'ProviderTableTest-ingest';
       process.env.ProvidersTable = providerTableName;
       //await Manager.deleteTable(process.env.ProvidersTable);
       await Manager.createTable(
         process.env.ProvidersTable, {
           name: 'name', type: 'S'
         });
+      console.log('provider table created');
 
 
       // Collection table for testing
@@ -64,6 +64,7 @@ describe('Testing PDRs', function() {
         collectionTableName, {
           name: 'collectionName', type: 'S'
         });
+      console.log('collection table created');
 
       // create a provider record
       const p = new Provider();
@@ -72,11 +73,18 @@ describe('Testing PDRs', function() {
       providerRecord.isActive = true;
       providerRecord.status = 'ingesting';
       await p.create(providerRecord);
+      console.log('provider record added');
 
       // update ingest endpoint & add provider record
       const c = new Collection();
       collectionRecord.providers = ['aster_test_endpoint'];
       await c.create(collectionRecord);
+      console.log('aster record added');
+
+      // add modis record
+      modisRecord.providers = ['aster_test_endpoint'];
+      await c.create(modisRecord);
+      console.log('modis record added');
 
       // create PDR Queue
       process.env.PDRsQueue = 'PDRTestQueue-pdr';
@@ -85,6 +93,9 @@ describe('Testing PDRs', function() {
       // create Granule Queue
       process.env.GranulesQueue = 'GranuleTestQueue-pdr';
       await SQS.createQueue(process.env.GranulesQueue);
+
+      // starting the test server
+      testingServer.start();
     }
     catch (e) {
       console.log(e);
@@ -95,55 +106,60 @@ describe('Testing PDRs', function() {
   it('test PDR discovery', async () => {
     sinon.stub(HttpPdrIngest.prototype, '_sync').callsFake(() => 's3://file.txt');
 
-    // starting the test server
-    testingServer.start();
-
     await runActiveProviders();
 
     // check if the PDRs are added to the table
-    const p = new Pdr()
-    const pdr = await p.get({ pdrName: 'PDN.ID1611071307.PDR' });
+    const p = new Pdr();
+    let pdr = await p.get({ pdrName: 'PDN.ID1611071307.PDR' });
     assert.equal(pdr.status, 'discovered');
 
-    // there must be two pdrs added to the table
+    // check a modis PDR
+    pdr = await p.get({ pdrName: 'MYD13A1_5_grans.PDR' });
+    assert.equal(pdr.status, 'discovered');
+  });
+
+  it('there must be two pdrs added to the table', async () => {
+    const p = new Pdr();
     const pdrs = await p.scan({});
-    assert.equal(pdrs.Count, 2);
+    assert.equal(pdrs.Count, 3);
 
     // two messages must be added to the PDR queue
     const attr = await SQS.attributes(process.env.PDRsQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 2, 'number of messages in the queue');
-
-    // stopping the test server
-    testingServer.stop();
+    assert.equal(attr.ApproximateNumberOfMessages, 3, 'number of messages in the queue');
 
     // restore the stub
     HttpPdrIngest.prototype._sync.restore();
   });
 
-  it('parsing should work', async () => {
+  it('10 granules should be added to the database', async () => {
     // there are two PDRs from the previous test in the queue.
     // we will only use one of them
 
     //mock download of the PDR from S3
-    const downloadS3Files = sinon.stub(aws, 'downloadS3Files');
+    sinon.stub(aws, 'downloadS3Files');
 
     // copy pdrs to the temp directory
     execSync(
       `cp -r ${join(process.cwd(), 'lambdas/ingest/tests/data/*')} ${os.tmpdir()}`
     );
 
-    await pollPdrQueue(1, 20, 1, true);
+    // get all the 3 messages
+    await pollPdrQueue(3, 20, 1, true);
 
     const g = new Granule();
 
     const gs = await g.scan({});
-    assert.equal(gs.Count, 4, '4 granules should be added to the database');
+    assert.equal(gs.Count, 10, '10 granules should be added to the database');
+  });
 
-    // there has to 4  messages in the granule's queue
+  it('there has to 10 messages in the granule\'s queue', async () => {
     const attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 4, 'number of messages in the queue');
+    assert.equal(attr.ApproximateNumberOfMessages, 10, 'number of messages in the queue');
+  });
 
+  it('there has to 4 aster granules in the table', async () => {
     //// the PDR record must have 4 granules associated with it
+    const g = new Granule();
     const granules = await g.scan({
       filter: 'pdrName = :value',
       values: {
@@ -154,7 +170,26 @@ describe('Testing PDRs', function() {
     assert.equal(granules.Items.length, 4);
 
     // all granules must have ingesting status
-    granules.Items.forEach(item => {
+    granules.Items.forEach((item) => {
+      assert.equal(item.status, 'ingesting');
+    });
+  });
+
+  it('there has to 2 modis granules in the table', async () => {
+    // run the same test for modis granules
+    const g = new Granule();
+
+    const granules = await g.scan({
+      filter: 'pdrName = :value',
+      values: {
+        ':value': 'MYD13A1_5_grans.PDR'
+      }
+    });
+
+    assert.equal(granules.Items.length, 2);
+
+    // all granules must have ingesting status
+    granules.Items.forEach((item) => {
       assert.equal(item.status, 'ingesting');
     });
 
@@ -169,16 +204,16 @@ describe('Testing PDRs', function() {
 
     // count the messages before
     let attr = await SQS.attributes(process.env.GranulesQueue);
-    assert.equal(attr.ApproximateNumberOfMessages, 4);
+    assert.equal(attr.ApproximateNumberOfMessages, '10');
 
-    await pollGranulesQueue(1, 200, true);
+    await pollGranulesQueue(10, 200, true);
 
     // count the messages again
     attr = await SQS.attributes(process.env.GranulesQueue);
     assert.equal(parseInt(attr.ApproximateNumberOfMessages, 10), 0);
 
     // make sure ingestFile was called 8 times
-    assert.equal(ingestFile.callCount, 8);
+    assert.equal(ingestFile.callCount, 22);
 
     HttpGranuleIngest.prototype._ingestFile.restore();
   });
@@ -195,6 +230,8 @@ describe('Testing PDRs', function() {
       await Manager.deleteTable(process.env.CollectionsTable);
       await Manager.deleteTable(process.env.ProvidersTable);
 
+      // stopping the test server
+      testingServer.stop();
       done();
     }, 2000);
   });

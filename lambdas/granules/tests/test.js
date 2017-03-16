@@ -1,4 +1,5 @@
 'use strict';
+
 import assert from 'assert';
 import record from 'cumulus-common/tests/data/granule.json';
 import { Search } from 'cumulus-common/es/search';
@@ -12,7 +13,7 @@ describe('Granules endpoint', () => {
     process.env.GranulesTable = 'es-test-graneules-table';
 
     // get ES client
-    const client = Search.es();
+    const client = await Search.es();
 
     // add index
     await client.indices.create({ index: process.env.StackName });
@@ -44,7 +45,7 @@ describe('Granules endpoint', () => {
 
   after(async () => {
     // get ES client
-    const client = Search.es();
+    const client = await Search.es();
 
     // delete index
     await client.indices.delete({ index: process.env.StackName });

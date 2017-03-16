@@ -1,4 +1,5 @@
 'use strict';
+
 import queue from 'queue-async';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
@@ -9,9 +10,7 @@ const unwrap = AttributeValue.unwrap;
 
 const index = `${process.env.StackName}-${process.env.Stage}`;
 
-function deleteRecord(params, callback) {
-  const esClient = Search.es();
-
+function deleteRecord(esClient, params, callback) {
   // if it is a Granule record use delete by query
   // so granule records in the main type and parent/child
   // types are deleted at the same. otherwise, use
@@ -45,8 +44,7 @@ function deleteRecord(params, callback) {
   }
 }
 
-function saveRecord(data, params, callback) {
-  const esClient = Search.es();
+function saveRecord(esClient, data, params, callback) {
   esClient.get(params, (error, response, status) => {
     if (status !== 200 && status !== 404) {
       callback(error);
@@ -91,7 +89,7 @@ function saveRecord(data, params, callback) {
         createdAt: data.createdAt
       };
 
-      granuleRelationTypes.forEach(g => {
+      granuleRelationTypes.forEach((g) => {
         const newParams = Object.assign({}, params);
         newParams._type = g[0];
         newParams._parent = data[g[1]];
@@ -118,7 +116,7 @@ function saveRecord(data, params, callback) {
   });
 }
 
-function processRecords(event, done) {
+function processRecords(esClient, event, done) {
   const q = queue();
   const records = get(event, 'Records');
   console.log('Processing records');
@@ -142,17 +140,17 @@ function processRecords(event, done) {
       const params = { index, type, id };
       if (record.eventName === 'REMOVE') {
         console.log(`Deleting ${id} from ${type}`);
-        q.defer((callback) => deleteRecord(params, callback));
+        q.defer(callback => deleteRecord(esClient, params, callback));
       }
       else {
         const data = unwrap(record.dynamodb.NewImage);
         console.log(`Adding/Updating ${id} to ${type}`);
-        q.defer((callback) => saveRecord(data, params, callback));
+        q.defer(callback => saveRecord(esClient, data, params, callback));
       }
     }
     else {
       // defer an error'd callback so we can handle it in awaitAll.
-      q.defer((callback) =>
+      q.defer(callback =>
         callback(new Error(`Could not construct a valid id from ${keys}`))
       );
     }
@@ -175,27 +173,28 @@ function processRecords(event, done) {
  * @return {string} response text indicating the number of records altered in elasticsearch.
  */
 export function handler(event, context, done) {
-  const esClient = Search.es();
-  esClient.indices.exists({ index }, (error, response, status) => {
-    if (status === 404) {
-      console.log(`${index} doesn't exist. Creating it`);
-      esClient.indices.create({ index }, (e) => {
-        if (e) {
-          done(null, e.message);
-        }
-        else {
-          console.log(`Index ${index} created on ES`);
-          processRecords(event, done);
-        }
-      });
-    }
-    else if (status === 200) {
-      processRecords(event, done);
-    }
-    else {
-      done(null, error.message);
-    }
-  });
+  Search.es().then((esClient) => {
+    esClient.indices.exists({ index }, (error, response, status) => {
+      if (status === 404) {
+        console.log(`${index} doesn't exist. Creating it`);
+        esClient.indices.create({ index }, (e) => {
+          if (e) {
+            done(null, e.message);
+          }
+          else {
+            console.log(`Index ${index} created on ES`);
+            processRecords(esClient, event, done);
+          }
+        });
+      }
+      else if (status === 200) {
+        processRecords(esClient, event, done);
+      }
+      else {
+        done(null, error.message);
+      }
+    });
+  }).catch(e => done(e));
 }
 
 localRun(() => {

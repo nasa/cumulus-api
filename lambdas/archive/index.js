@@ -43,6 +43,8 @@ async function archive(files) {
       await S3.copy(path.join(p.host, p.path), bucket, filename, isPublic);
 
       // delete the file from staging
+      const deleteInfo = S3.parseS3Uri(file.stagingFile);
+      await S3.delete(deleteInfo.Bucket, deleteInfo.Key);
       log.info(`${file.stagingFile} deleted`, logDetails);
 
       file.archivedFile = `s3://${bucket}/${filename}`;
@@ -61,10 +63,9 @@ export function handler(event, context, cb) {
   logDetails.collectionName = event.granuleRecord.collectionName;
 
   log.info('Started archiving', logDetails);
-
   log.debug('Started file copy', logDetails);
 
-  archive(files).then(newFiles => {
+  archive(files).then((newFiles) => {
     log.info('All files archived', logDetails);
 
     event.previousStep = event.nextStep;
@@ -72,10 +73,10 @@ export function handler(event, context, cb) {
 
     event.granuleRecord.files = newFiles;
     return invoke(process.env.dispatcher, event);
-  }).then(r => {
+  }).then((r) => {
     log.info('Invoked dispatcher', logDetails);
     cb(null, r);
-  }).catch(e => {
+  }).catch((e) => {
     log.error(e, e.stack, logDetails);
     cb(e.stack);
   });
