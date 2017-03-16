@@ -39,6 +39,14 @@ export async function pollPdrQueue(
     // get message body
     if (messages.length > 0) {
       for (const message of messages) {
+        // This is how a PDR object look like
+        //{
+        //  name: 'MYD13A1_5_grans.PDR',
+        //  provider: {},
+        //  url: 'https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES/MYD13A1_5_grans.PDR',
+        //  s3Uri: 's3://cumulus-internal/pdrs/MYD13A1_5_grans.PDR'
+        //}
+
         const pdr = message.Body;
         const receiptHandle = message.ReceiptHandle;
 
