@@ -302,12 +302,6 @@ Resources:
     Properties:
       LogGroupName: {{stackName}}-{{stage}}-lambdarunner
 
-  DockerAsterLogs:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: {{stackName}}-{{stage}}-docker-aster
-
-
   CumulusECSCluster:
     Type: AWS::ECS::Cluster
 
@@ -409,8 +403,13 @@ Resources:
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group: !Ref DockerAsterLogs
+            awslogs-group: !Ref {{name}}DockerLogs
             awslogs-region: !Sub ${AWS::Region}
+
+  {{name}}DockerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: {{stackName}}-{{stage}}-{{name}}
 
 {{/each}}
 
