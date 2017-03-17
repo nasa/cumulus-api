@@ -92,7 +92,7 @@ export function put(event, cb) {
 
 
   // get the record first
-  p.get({ name: name }).then((originalData) => {
+  p.get({ name }).then((originalData) => {
     data = Object.assign({}, originalData, data);
 
     // handle restart case
@@ -105,7 +105,7 @@ export function put(event, cb) {
     // handle stop case
     if (data.action === 'stop') {
       return p.update(
-        { name: name },
+        { name },
         { status: 'stopped', isActive: false }
       );
     }
@@ -120,6 +120,16 @@ export function put(event, cb) {
   });
 }
 
+export function del(event, cb) {
+  const name = _.get(event.pathParameters, 'name');
+  const p = new Provider();
+
+  return p.get({ name })
+    .then(() => p.delete({ name }))
+    .then(() => cb(null, { detail: 'Record deleted' }))
+    .catch(e => cb(e));
+}
+
 export function handler(event, context) {
   handle(event, context, true, (cb) => {
     if (event.httpMethod === 'GET' && event.pathParameters) {
@@ -130,6 +140,9 @@ export function handler(event, context) {
     }
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
+    }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
     }
     else {
       list(event, cb);
@@ -145,6 +158,6 @@ localRun(() => {
   handler(
     { httpMethod: 'GET' },
     //{ httpMethod: 'POST', body: JSON.stringify(example) },
-    { succeed: (r) => console.log(r) }
+    { succeed: r => console.log(r) }
   );
 });
