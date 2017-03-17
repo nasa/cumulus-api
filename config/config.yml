@@ -335,6 +335,10 @@ lambdas:
         method: get
         cors: true
         api: backend
+      - path: pdrs/{pdrName}
+        method: delete
+        cors: true
+        api: backend
 
   - name: schemas
     handler: schemas.handler
