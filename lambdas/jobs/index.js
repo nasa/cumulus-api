@@ -39,7 +39,7 @@ async function markStaleGranulesFailed(timeElapsed = 20, timeUnit = 'minute') {
     )));
   }
   else {
-    log.info('No stale granules found');
+    console.log('No stale granules found');
   }
 }
 
@@ -68,13 +68,18 @@ async function markPdrs() {
       return false;
     });
 
-    log.info(`Found ${completed.length} completed PDRs. Marking them as completed`);
+    if (completed.length > 0) {
+      log.info(`Found ${completed.length} completed PDRs. Marking them as completed`);
 
-    // mark them as completed
-    const p = new Pdr();
-    await Promise.all(completed.map(i => p.hasCompleted(
-      i.pdrName, i.granules === i.granulesStatus.completed
-    )));
+      // mark them as completed
+      const p = new Pdr();
+      await Promise.all(completed.map(i => p.hasCompleted(
+        i.pdrName, i.granules === i.granulesStatus.completed
+      )));
+    }
+    else {
+      console.log('All PDRs are doing great');
+    }
   }
 }
 
