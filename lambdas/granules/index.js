@@ -70,7 +70,7 @@ export function del(event, cb) {
     }
 
     return g.delete({ granuleId: granuleId });
-  }).then(r => cb(null, r)).catch(e => cb(e));
+  }).then(() => cb(null, { detail: 'Record deleted' })).catch(e => cb(e));
 }
 
 /**
