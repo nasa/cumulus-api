@@ -348,3 +348,12 @@ lambdas:
         method: get
         cors: true
         api: backend
+
+  - name: resources
+    handler: resources.handler
+    timeout: 300
+    apiGateway:
+      - path: resources
+        method: get
+        cors: true
+        api: backend
