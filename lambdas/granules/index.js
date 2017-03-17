@@ -58,6 +58,21 @@ export function put(event, cb) {
   return cb('action is missing');
 }
 
+export function del(event, cb) {
+  const granuleId = _.get(event.pathParameters, 'granuleName');
+  const g = new Granule();
+
+  return g.get({ granuleId: granuleId }).then((record) => {
+    if (record.published) {
+      throw new Error(
+        'You cannot delete a granule that is published to CMR. Remove it from CMR first'
+      );
+    }
+
+    return g.delete({ granuleId: granuleId });
+  }).then(r => cb(null, r)).catch(e => cb(e));
+}
+
 /**
  * Query a single granule.
  * @param {string} collectionName the name of the collection.
@@ -83,6 +98,9 @@ export function handler(event, context) {
     }
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
+    }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
     }
     else {
       list(event, cb);
