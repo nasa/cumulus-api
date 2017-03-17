@@ -302,12 +302,6 @@ Resources:
     Properties:
       LogGroupName: {{stackName}}-{{stage}}-lambdarunner
 
-  DockerAsterLogs:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: {{stackName}}-{{stage}}-docker-aster
-
-
   CumulusECSCluster:
     Type: AWS::ECS::Cluster
 
@@ -402,15 +396,20 @@ Resources:
           - Name: {{key}}
             Value: !Sub {{value}}
         {{/each}}
-        Cpu: 25
+        Cpu: {{cpu}}
         Essential: true
-        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cumulus-docker-dev-aster
-        Memory: 400
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
+        MemoryReservation: {{memory}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group: !Ref DockerAsterLogs
+            awslogs-group: !Ref {{name}}DockerLogs
             awslogs-region: !Sub ${AWS::Region}
+
+  {{name}}DockerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: {{stackName}}-{{stage}}-{{name}}
 
 {{/each}}
 
@@ -711,7 +710,7 @@ Resources:
         Cpu: {{#if cpu }}{{ cpu }}{{ else }}10{{/if}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
+        MemoryReservation: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
         LogConfiguration:
           LogDriver: awslogs
           Options:

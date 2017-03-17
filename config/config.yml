@@ -28,7 +28,7 @@ images:
   - name: modisProcessing
     image: cumulus-docker-dev-modis
     cpu: 25
-    memory: 400
+    memory: 1000
 
 elasticsearch:
   # the dynamic template that is included with every type
@@ -180,6 +180,16 @@ lambdas:
     timeout: 300
     services:
       - name: runner
+        image: cumulus-docker-dev-lambdarunner
+        count: 1
+        memory: 256
+        cpu: 10
+
+  - name: jobs
+    handler: jobs.handler
+    timeout: 300
+    services:
+      - name: jobs
         image: cumulus-docker-dev-lambdarunner
         count: 1
         memory: 256

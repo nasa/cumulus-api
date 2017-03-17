@@ -13,7 +13,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.PDRsTable);
-  search.query(true).then((response) => cb(null, response)).catch((e) => {
+  search.query(true).then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -56,8 +56,27 @@ export function handler(event, context) {
 }
 
 localRun(() => {
-  handler(
-    { httpMethod: 'GET', headers: { Authorization: 'Basic xxxxx' } },
-    { succeed: (r) => console.log(r) }
-  );
+  //handler(
+    //{ httpMethod: 'GET', headers: { Authorization: 'Basic xxxxx' } },
+    //{ succeed: r => console.log(r) }
+  //);
+
+  list({
+    queryStringParameters: {
+      pdrName: 'good_100_grans_2.PDR',
+      //status: 'parsed'
+      //createdAt: 1489721558764
+      //createdAt__to: 1489721560462,
+      //createdAt__from: 1,
+      //updatedAt__to: 1489721583764,
+      //updatedAt__from: 1489721583764,
+      //status__not: 'parsed',
+      //provider__in: 'aster_lpdaac_pdrs',
+      //change__not: 'what',
+      //PAN__exists: false,
+      prefix: 'comple',
+      //fields: 'status',
+      limit: 100
+    }
+  }, (e, r) => console.log(e, r));
 });
