@@ -293,6 +293,10 @@ lambdas:
         method: put
         cors: true
         api: backend
+      - path: collections/{short_name}
+        method: delete
+        cors: true
+        api: backend
 
   - name: providers
     handler: providers.handler

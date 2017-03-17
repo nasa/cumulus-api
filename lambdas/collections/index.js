@@ -102,6 +102,33 @@ export function put(event, cb) {
   });
 }
 
+export function del(event, cb) {
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  const c = new Collection();
+
+  return c.get({ collectionName }).then(() => {
+    // check if there are any granules associated with this collection
+    // do not delete if there are granules
+    const params = {
+      queryStringParameters: {
+        fields: 'granuleId',
+        collectionName,
+        limit: 1
+      }
+    };
+
+    const search = new Search(params, process.env.GranulesTable);
+    return search.query();
+  }).then((r) => {
+    if (r.meta.count > 0) {
+      throw new Error('Cannot delete this collection while there are granules associated with it');
+    }
+
+    return c.delete({ collectionName });
+  }).then(() => cb(null, { detail: 'Record deleted' }))
+    .catch(e => cb(e));
+}
+
 export function handler(event, context) {
   handle(event, context, true, (cb) => {
     if (event.httpMethod === 'GET' && event.pathParameters) {
@@ -112,6 +139,9 @@ export function handler(event, context) {
     }
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
+    }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
     }
     else {
       list(event, cb);
