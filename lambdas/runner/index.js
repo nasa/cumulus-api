@@ -1,5 +1,6 @@
 'use strict';
 
+import _ from 'lodash';
 import AWS from 'aws-sdk';
 import log from 'cumulus-common/log';
 import { SQS, S3 } from 'cumulus-common/aws-helpers';
@@ -69,7 +70,7 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
               }
             ]
           },
-          startedBy: granuleId
+          startedBy: _.truncate(granuleId, { length: 36 })
         };
 
         log.info('Attempting to register the task with ECS', logDetails);
