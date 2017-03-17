@@ -13,7 +13,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.PDRsTable);
-  search.query(true).then((response) => cb(null, response)).catch((e) => {
+  search.query(true).then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -58,6 +58,6 @@ export function handler(event, context) {
 localRun(() => {
   handler(
     { httpMethod: 'GET', headers: { Authorization: 'Basic xxxxx' } },
-    { succeed: (r) => console.log(r) }
+    { succeed: r => console.log(r) }
   );
 });
