@@ -18,7 +18,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.ProvidersTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -38,7 +38,7 @@ export function get(event, cb) {
   const search = new Search({}, process.env.ProvidersTable);
   search.get(name)
     .then(response => cb(null, response))
-    .catch((e) => cb(e));
+    .catch(e => cb(e));
 }
 
 /**
@@ -60,7 +60,7 @@ export function post(event, cb) {
 
   p.get({ name: name })
     .then(() => cb(`A record already exists for ${name}`))
-    .catch(e => {
+    .catch((e) => {
       if (e instanceof RecordDoesNotExist) {
         return p.create(data).then(() => {
           cb(null, {
@@ -92,14 +92,14 @@ export function put(event, cb) {
 
 
   // get the record first
-  p.get({ name: name }).then(originalData => {
+  p.get({ name: name }).then((originalData) => {
     data = Object.assign({}, originalData, data);
 
     // handle restart case
     if (data.action === 'restart') {
       return p.restart(name)
-        .then((r) => cb(null, r))
-        .catch((e) => cb(e));
+        .then(r => cb(null, r))
+        .catch(e => cb(e));
     }
 
     // handle stop case
@@ -112,7 +112,7 @@ export function put(event, cb) {
 
     // otherwise just update
     return p.create(data);
-  }).then(r => cb(null, r)).catch(err => {
+  }).then(r => cb(null, r)).catch((err) => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');
     }
