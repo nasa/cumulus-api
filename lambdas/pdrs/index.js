@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import { handle } from 'cumulus-common/response';
 import { localRun } from 'cumulus-common/local';
+import { Pdr } from 'cumulus-common/models';
 import { Search } from 'cumulus-common/es/search';
 
 /**
@@ -46,11 +47,25 @@ export function get(event, cb) {
   });
 }
 
+export function del(event, cb) {
+  const pdrName = _.get(event.pathParameters, 'pdrName');
+  const p = new Pdr();
+
+  return p.get({ pdrName })
+    .then(() => p.delete({ pdrName }))
+    .then(() => cb(null, { detail: 'Record deleted' }))
+    .catch(e => cb(e));
+}
+
 export function handler(event, context) {
   handle(event, context, true, (cb) => {
     if (event.httpMethod === 'GET' && event.pathParameters) {
       return get(event, cb);
     }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      return del(event, cb);
+    }
+
     return list(event, cb);
   });
 }
