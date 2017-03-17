@@ -13,30 +13,33 @@ import { Granule, Pdr } from 'cumulus-common/models';
  * @param {string} timeUnit='minute'
  */
 
-async function markStaleGranulesFailed(timeElapsed = 15, timeUnit = 'minute') {
+async function markStaleGranulesFailed(timeElapsed = 20, timeUnit = 'minute') {
   const g = new Granule();
 
-  const r = await g.scan({
-    filter: '#statusName <> :status1 AND #statusName <> :status2 AND updatedAt < :time',
-    names: {
-      '#statusName': 'status'
-    },
-    values: {
-      ':status1': 'completed',
-      ':status2': 'failed',
-      ':time': moment().subtract(timeElapsed, timeUnit).unix() * 1000
+  const params = {
+    queryStringParameters: {
+      fields: 'granuleId',
+      status__in: 'processing,archiving,cmr',
+      updatedAt__to: moment().subtract(timeElapsed, timeUnit).unix() * 1000,
+      limit: 100
     }
-  }, 'granuleId');
+  };
+
+  const search = new Search(params, process.env.GranulesTable);
+  const r = await search.query();
 
   const errMsg = ('did not complete ' +
     `or fail for at least ${timeElapsed} ${timeUnit}s`);
 
-  if (r.Count) {
-    log.info(`${r.Count} granules ${errMsg}. Marking them as failed`);
+  if (r.meta.count) {
+    log.info(`${r.meta.count} granules ${errMsg}. Marking them as failed`);
 
-    await Promise.all(r.Items.map(item => g.hasFailed(
+    await Promise.all(r.results.map(item => g.hasFailed(
       { granuleId: item.granuleId }, `The granule ${errMsg}`
     )));
+  }
+  else {
+    log.info('No stale granules found');
   }
 }
 
@@ -45,7 +48,7 @@ async function markPdrs() {
   const params = {
     queryStringParameters: {
       fields: 'pdrName',
-      isActive: true,
+      status: 'parsed',
       limit: 100
     }
   };
@@ -65,7 +68,7 @@ async function markPdrs() {
       return false;
     });
 
-    log.info(`Found ${completed.length} completed PDRs. Marding them as completed`);
+    log.info(`Found ${completed.length} completed PDRs. Marking them as completed`);
 
     // mark them as completed
     const p = new Pdr();
@@ -80,13 +83,13 @@ export function handler(event = {}) {
 
   return setInterval(() => {
     markPdrs();
-    markStaleGranulesFailed(5);
+    markStaleGranulesFailed();
   }, parseInt(frequency) * 100);
 }
 
 
 localRun(() => {
-  handler();
-  //markStaleGranulesFailed(1).then(() => {}).catch(e => console.log(e));
-  //markPdrs().then(() => {}).catch(e => console.log(e));
+  //handler();
+  //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
+  markPdrs().then(() => {}).catch(e => console.log(e));
 });
