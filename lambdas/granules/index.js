@@ -1,6 +1,7 @@
 'use strict';
 
 import _ from 'lodash';
+import { deleteGranule } from 'cumulus-common/cmrjs';
 import { handle } from 'cumulus-common/response';
 import { Granule } from 'cumulus-common/models';
 import { invoke } from 'cumulus-common/aws-helpers';
@@ -22,30 +23,54 @@ export function list(event, cb) {
 }
 
 export function put(event, cb) {
-  const action = _.get(event, ['body', 'action'], null);
+  let data = _.get(event, 'body', '{}');
+  data = JSON.parse(data);
 
-  if (action && action === 'reprocess') {
-    const granuleId = _.get(event, ['path', 'granuleName']);
-    // TODO: send the granule for processing
+  const action = _.get(data, 'action', null);
+
+  if (action) {
+    const granuleId = _.get(event.pathParameters, 'granuleName');
     const g = new Granule();
 
-    g.get({ granuleId: granuleId }).then((record) => {
-      record.status = 'processing';
-
-      return invoke(
-        process.env.dispatcher,
-        {
-          previousStep: 0,
-          nextStep: 0,
-          granuleRecord: record
+    return g.get({ granuleId: granuleId }).then((record) => {
+      if (action === 'reprocess') {
+        record.status = 'processing';
+        return invoke(
+          process.env.dispatcher,
+          {
+            previousStep: 0,
+            nextStep: 0,
+            granuleRecord: record
+          }
+        );
+      }
+      else if (action === 'removeFromCmr') {
+        if (!record.published) {
+          throw new Error('The granule is not published to CMR');
         }
+
+        return deleteGranule(granuleId).then(() => g.unpublish(granuleId));
+      }
+      throw new Error(`Action <${action}> is not supported`);
+    }).then(r => cb(null, r)).catch(e => cb(e));
+  }
+
+  return cb('action is missing');
+}
+
+export function del(event, cb) {
+  const granuleId = _.get(event.pathParameters, 'granuleName');
+  const g = new Granule();
+
+  return g.get({ granuleId: granuleId }).then((record) => {
+    if (record.published) {
+      throw new Error(
+        'You cannot delete a granule that is published to CMR. Remove it from CMR first'
       );
-    }).then(r => cb(null, r))
-      .catch(e => cb(e));
-  }
-  else {
-    return cb('action is missing');
-  }
+    }
+
+    return g.delete({ granuleId: granuleId });
+  }).then(r => cb(null, r)).catch(e => cb(e));
 }
 
 /**
@@ -74,6 +99,9 @@ export function handler(event, context) {
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
     }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
+    }
     else {
       list(event, cb);
     }
@@ -82,10 +110,17 @@ export function handler(event, context) {
 
 
 localRun(() => {
-  list({
-    queryStringParameters: {
-      collectionName: 'AST_L1A__version__003',
-      prefix: 'bad'
-    }
+  //list({
+    //queryStringParameters: {
+      //collectionName: 'AST_L1A__version__003',
+      //prefix: 'bad'
+    //}
+  //}, (e, r) => console.log(e, r));
+
+  put({
+    pathParameters: {
+      granuleName: '1A0000-2017012301_003_061'
+    },
+    body: '{\n\t"action": "removeFromCmr"\n}'
   }, (e, r) => console.log(e, r));
 });
