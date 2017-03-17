@@ -396,10 +396,10 @@ Resources:
           - Name: {{key}}
             Value: !Sub {{value}}
         {{/each}}
-        Cpu: 25
+        Cpu: {{cpu}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: 400
+        MemoryReservation: {{memory}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -710,7 +710,7 @@ Resources:
         Cpu: {{#if cpu }}{{ cpu }}{{ else }}10{{/if}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
+        MemoryReservation: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
