@@ -30,7 +30,7 @@ module.exports = {
     __dirname: false,
     __filename: false
   },
-  devtool: '#inline-source-map',
+  //devtool: '#inline-source-map',
   resolve: {
     alias: {
       'aws-sdk': 'aws-sdk/dist/aws-sdk'
