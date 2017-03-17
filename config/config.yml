@@ -318,6 +318,10 @@ lambdas:
         method: put
         cors: true
         api: backend
+      - path: providers/{name}
+        method: delete
+        cors: true
+        api: backend
 
   - name: pdrs
     handler: pdrs.handler
