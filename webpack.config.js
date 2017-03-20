@@ -41,7 +41,7 @@ module.exports = {
     rules: [
       {
         include: glob.sync('./lambdas/*/index.js', { realpath: true })
-                     .map((filename) => path.resolve(__dirname, filename)),
+                     .map(filename => path.resolve(__dirname, filename)),
         exclude: /node_modules/,
         loader: 'prepend-loader',
         query: {
