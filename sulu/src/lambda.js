@@ -19,8 +19,8 @@ function getLambdaZipFile(handler) {
  * lambda zip file. The information is exracted from the config.yml
  * @return {Object} A grouped lambdas list
  */
-function lambdaObject() {
-  const c = parseConfig();
+function lambdaObject(c) {
+  c = c || parseConfig();
   const obj = {};
 
   for (const lambda of c.lambdas) {
@@ -47,12 +47,21 @@ function lambdaObject() {
   return obj;
 }
 
+function zipLambda(name, includeConfig) {
+  // copy config file
+  if (includeConfig) {
+    exec(`cp config/config.yml dist/${name}/`);
+  }
+
+  exec(`cd dist && zip -r ../build/lambda/${name} ${name}`);
+}
+
 /**
  * Zips lambda functions and uploads them to a given S3 location
  * @param  {string} s3Path  A valid S3 URI for uploading the zip files
  * @param  {string} profile The profile name used in aws CLI
  */
-function uploadLambdas(s3Path, profile) {
+function uploadLambdas(s3Path, profile, config) {
   // remove the build folder if exists
   fs.removeSync(path.join(process.cwd(), 'build'));
 
@@ -60,10 +69,9 @@ function uploadLambdas(s3Path, profile) {
   fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // zip files dist folders
-  const distFolders = fs.readdirSync('dist');
-  distFolders.forEach((dir) => {
-    exec(`cd dist && zip -r ../build/lambda/$(basename ${dir} .js) ${dir}`);
-  });
+  for (const lambda of config.lambdas) {
+    zipLambda(lambda.name, lambda.includeConfig);
+  }
 
   // upload the artifacts to AWS S3
   // we use the aws cli to make things easier
@@ -91,7 +99,7 @@ function updateLambda(options, name, webpack) {
   fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // Update the zip file
-  exec(`cd dist && zip -r ../build/lambda/${name} ${name}`);
+  zipLambda(name);
 
   for (const lambda of lambdas[name]) {
     // Upload the zip file to AWS Lambda

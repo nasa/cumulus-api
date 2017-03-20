@@ -207,7 +207,7 @@ function opsStack(options, ops) {
   const h = getHash(c);
 
   // upload lambdas and the cf template
-  uploadLambdas(h.path, profile);
+  uploadLambdas(h.path, profile, c);
 
   // Build and upload the CF template
   uploadCF(h.path, profile, configPath);

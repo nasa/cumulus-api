@@ -352,6 +352,7 @@ lambdas:
   - name: resources
     handler: resources.handler
     timeout: 300
+    includeConfig: true
     apiGateway:
       - path: resources
         method: get
