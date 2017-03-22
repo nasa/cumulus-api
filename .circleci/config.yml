@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:4.8.0-wheezy
+      - image: peopleperhour/dynamodb
+      - image: vsouza/sqs-local
+      - image: elasticsearch:2.3.5
+    working_directory: ~/ecs-lambda-runner
+    steps:
+      - checkout
+      # ... steps for building/testing app ...
+
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      # build and push Docker image
+      - run: |
+          cp config/secrets.json.example config/secrets.json
+          npm run test
