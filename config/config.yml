@@ -242,11 +242,11 @@ lambdas:
     handler: stats.handler
     timeout: 300
     apiGateway:
-      - path: stats/summary
+      - path: stats
         method: get
         cors: true
         api: backend
-      - path: stats/summary/grouped
+      - path: stats/histogram
         method: get
         cors: true
         api: backend
