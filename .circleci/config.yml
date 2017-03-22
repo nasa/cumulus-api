@@ -6,16 +6,18 @@ jobs:
       - image: peopleperhour/dynamodb
       - image: vsouza/sqs-local
       - image: elasticsearch:2.3.5
-    working_directory: ~/ecs-lambda-runner
+    working_directory: ~/cumulus-api
     steps:
       - checkout
       # ... steps for building/testing app ...
 
       - run:
-          name: Install dependencies
+          name: Installing Dependencies
           command: npm install
 
       # build and push Docker image
-      - run: |
+      - run:
+          name: Running Test
+          command: |
           cp config/secrets.json.example config/secrets.json
           npm run test
