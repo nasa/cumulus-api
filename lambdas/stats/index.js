@@ -49,7 +49,7 @@ export function handler(event, context) {
     if (event.httpMethod === 'GET' && event.resource === '/stats') {
       summary(event, cb);
     }
-    else if (event.httpMethod === 'GET' && event.resource === '/histogram') {
+    else if (event.httpMethod === 'GET' && event.resource === '/stats/histogram') {
       histogram(event, cb);
     }
     else {
