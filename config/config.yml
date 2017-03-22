@@ -250,6 +250,14 @@ lambdas:
         method: get
         cors: true
         api: backend
+      - path: stats/count
+        method: get
+        cors: true
+        api: backend
+      - path: stats/average
+        method: get
+        cors: true
+        api: backend
 
   - name: logs
     handler: logs.handler
