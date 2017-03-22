@@ -219,7 +219,8 @@ const configureDynamo = (config) => {
 function parseEnvVariables(config) {
   let envs = {
     StackName: config.stackName,
-    Stage: config.stage
+    Stage: config.stage,
+    ECS_CLUSTER: '${CumulusECSCluster}' // eslint-disable-line
   };
 
   function addCommonSettings(group, envList) {

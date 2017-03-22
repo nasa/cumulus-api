@@ -4,7 +4,9 @@ import moment from 'moment';
 import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
-import { Granule, Pdr } from 'cumulus-common/models';
+import { Granule, Pdr, Resource } from 'cumulus-common/models';
+import { Stats } from 'cumulus-common/stats';
+
 
 /**
  * markStaleGranulesFailed
@@ -83,12 +85,31 @@ async function markPdrs() {
   }
 }
 
+/**
+ * Populates an ElasticSearch table for AWS resources
+ *
+ */
+async function populateResources() {
+  const stats = new Stats('jobs');
+
+  // get latest numbers
+  log.info('Getting latest AWS resources stats');
+  const result = await stats.get();
+  result.createdAt = Date.now();
+
+  // add it to DynamoDb
+  const rs = new Resource();
+  await rs.create(result);
+  log.info('Latest AWS resources stats saved to DynamoDB');
+}
+
 export function handler(event = {}) {
   const frequency = event.frequency || 120;
 
   return setInterval(() => {
-    markPdrs();
-    markStaleGranulesFailed();
+    markPdrs().catch(e => console.log(e));
+    markStaleGranulesFailed().catch(e => console.log(e));
+    populateResources().catch(e => console.log(e));
   }, parseInt(frequency) * 100);
 }
 
@@ -96,5 +117,6 @@ export function handler(event = {}) {
 localRun(() => {
   //handler();
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
-  markPdrs().then(() => {}).catch(e => console.log(e));
+  //markPdrs().then(() => {}).catch(e => console.log(e));
+  //populateResources()
 });

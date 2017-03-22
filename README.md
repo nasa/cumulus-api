@@ -109,7 +109,7 @@ To run the function with aws resources, first add credentials to `.env`, then ru
 
 ## Tests
 
-Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/collections.js`
+Lambda tests are located in each Lambda folder. Example: `lambdas/collections/tests/test.js`
 
 Library tests are located at `lib/tests`.
 

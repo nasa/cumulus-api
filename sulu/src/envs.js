@@ -2,15 +2,18 @@
  * Makes the environment variables defined in config.js
  * available locally
  */
+
 'use strict';
 
+const fs = require('fs');
 const dotenv = require('dotenv');
 const path = require('path');
 const common = require('./common');
 
 module.exports.loadCredentials = function loadCredentials() {
-  dotenv.load({
-    path: path.join(process.cwd(), '.env')
+  const envConfig = dotenv.parse(fs.readFileSync(path.join(process.cwd(), '.env')));
+  Object.keys(envConfig).forEach((k) => {
+    process.env[k] = envConfig[k];
   });
 };
 
