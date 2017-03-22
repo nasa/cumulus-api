@@ -24,4 +24,4 @@ jobs:
           name: Running Test
           command: |
             cp config/secrets.json.example config/secrets.json
-            npm run test
+            yarn run test
