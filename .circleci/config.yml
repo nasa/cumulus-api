@@ -9,7 +9,13 @@ jobs:
     working_directory: ~/cumulus-api
     steps:
       - checkout
-      # ... steps for building/testing app ...
+
+      # restore cache
+      - restore_cache:
+          keys:
+            - cumulus-api-{{ .Branch }}
+            - cumulus-api-develop
+            - cumulus-api
 
       - run:
           name: Installing Dependencies
@@ -17,9 +23,16 @@ jobs:
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
             apt-get update && sudo apt-get install yarn
-            yarn
+            mkdir -p ~/cumulus-api/yarn-cache
+            yarn --cache-folder ~/cumulus-api/yarn-cache
 
-      # build and push Docker image
+      # save node_module and yarn-cache folders
+      - save_cache:
+          key: cumulus-api-{{ .Branch }}
+          paths:
+            - ~/cumulus-api/node_modules
+            - ~/cumulus-api/yarn-cache
+
       - run:
           name: Running Test
           command: |
