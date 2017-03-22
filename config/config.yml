@@ -132,6 +132,17 @@ dynamos:
       - name: userName
         type: HASH
 
+  - name: ResourcesTable
+    read: 2
+    write: 1
+    envName: ResourcesTable
+    elasticsearch: true
+    attributes:
+      - name: createdAt
+        type: N
+    schema:
+      - name: createdAt
+        type: HASH
 
 
 # difining the APIs. Each item will include a separate endpoint
@@ -188,6 +199,7 @@ lambdas:
   - name: jobs
     handler: jobs.handler
     timeout: 300
+    includeConfig: true
     services:
       - name: jobs
         image: cumulus-docker-dev-lambdarunner
@@ -352,7 +364,6 @@ lambdas:
   - name: resources
     handler: resources.handler
     timeout: 300
-    includeConfig: true
     apiGateway:
       - path: resources
         method: get
