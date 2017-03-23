@@ -48,11 +48,6 @@ class Dispatcher {
     // if there is no order, set the duration for the processig
     // and the total duration
     if (!this.nextOrder) {
-      const processingDuration = (
-        this.record.processingEndedAt -
-        this.record.processingStartedAt
-      );
-
       // this duration shows the time from the moment the processing
       // started (ECS Task) to the time the record is archived
       const duration = (
@@ -60,14 +55,13 @@ class Dispatcher {
         this.record.timeline.processStep.startedAt
       );
 
-      this.record.processingDuration = processingDuration ? processingDuration / 1000 : 0;
-
       // get total duration from individaul duration of each item
       this.record.totalDuration = this.record.recipe.order.map(
         o => this.record[`${o}Duration`]
       ).reduce((t, v) => (v ? t + v : 0), 0) + this.record.ingestDuration;
 
       this.record.duration = duration ? duration / 1000 : 0;
+      this.record.processingDuration = this.record.duration;
 
       log.info('Processing finished', logDetails);
       log.info(`Processing duration: ${this.record.duration}`, logDetails);
