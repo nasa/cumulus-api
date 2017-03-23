@@ -61,7 +61,12 @@ class Dispatcher {
       );
 
       this.record.processingDuration = processingDuration ? processingDuration / 1000 : 0;
-      this.record.totalDuration = this.record.processingDuration + this.record.ingestDuration;
+
+      // get total duration from individaul duration of each item
+      this.record.totalDuration = this.record.recipe.order.map(
+        o => this.record[`${o}Duration`]
+      ).reduce((t, v) => (v ? t + v : 0), 0) + this.record.ingestDuration;
+
       this.record.duration = duration ? duration / 1000 : 0;
 
       log.info('Processing finished', logDetails);
@@ -72,7 +77,7 @@ class Dispatcher {
   setTime() {
     if (!this.record.hasOwnProperty('timeline')) {
       this.record.timeline = {};
-      this.record.recipe.order.forEach(o => {
+      this.record.recipe.order.forEach((o) => {
         this.record.timeline[o] = {};
       });
     }
@@ -116,10 +121,10 @@ class Dispatcher {
     if (this.nextOrder) {
       if (this.nextOrder === 'processStep') {
         log.info('Sending processing message to ProcessingQueueu', logDetails);
-        return await SQS.sendMessage(process.env.ProcessingQueue, this.payload);
+        return SQS.sendMessage(process.env.ProcessingQueue, this.payload);
       }
       log.info(`Invoking ${process.env[this.nextOrder]}`, logDetails);
-      return await invoke(process.env[this.nextOrder], this.payload);
+      return invoke(process.env[this.nextOrder], this.payload);
     }
     return 'No next step';
   }
@@ -127,7 +132,7 @@ class Dispatcher {
   async updateRecord() {
     const g = new Granule();
     log.info('Granule record updated', logDetails);
-    return await g.create(this.record);
+    return g.create(this.record);
   }
 
   dispatch(cb) {
@@ -136,7 +141,7 @@ class Dispatcher {
     this.setStatus();
 
     this.launchNextStep()
-      .then(r => {
+      .then((r) => {
         console.log(r);
         return this.updateRecord();
       })
