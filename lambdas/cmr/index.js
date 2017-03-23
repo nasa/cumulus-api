@@ -75,6 +75,7 @@ export function handler(event, context, cb) {
       // add conceptId to the record
       event.granuleRecord.cmrLink = 'https://cmr.uat.earthdata.nasa.gov/search/granules.json' +
         `?concept_id=${res.result['concept-id']}`;
+      event.granuleRecord.published = true;
 
       event.previousStep = event.nextStep;
       event.nextStep += 1;
