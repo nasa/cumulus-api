@@ -186,11 +186,11 @@ lambdas:
           - --eventJson
           - '{ \"action\": \"discover\" }'
 
-  - name: runner
-    handler: runner.handler
+  - name: ecsrunner
+    handler: ecsrunner.handler
     timeout: 300
     services:
-      - name: runner
+      - name: ecsrunner
         image: cumulus-docker-dev-lambdarunner
         count: 1
         memory: 256
