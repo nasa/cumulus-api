@@ -96,6 +96,11 @@ Resources:
                 - ecr:BatchGetImage
                 - ecr:GetDownloadUrlForLayer
                 - ecr:GetAuthorizationToken
+                - ecs:DescribeClusters
+                - ecs:ListServices
+                - ecs:ListContainerInstances
+                - ecs:DescribeServices
+                - ecs:DescribeContainerInstances
                 Resource:
                 - "*"
 
@@ -107,6 +112,12 @@ Resources:
                 - logs:CreateLogStream
                 - logs:PutLogEvents
                 Resource: arn:aws:logs:*:*:*
+
+              # Allow Cloudwatch metrics access - needed to get S3 bucket size
+              - Effect: Allow
+                Action:
+                - cloudwatch:GetMetricStatistics
+                Resource: "*"
 
 
   # needed for EC2 instances
