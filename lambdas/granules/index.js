@@ -27,6 +27,7 @@ export function put(event, cb) {
   data = JSON.parse(data);
 
   const action = _.get(data, 'action', null);
+  const step = _.get(data, 'step', 0);
 
   if (action) {
     const granuleId = _.get(event.pathParameters, 'granuleName');
@@ -38,8 +39,8 @@ export function put(event, cb) {
         return invoke(
           process.env.dispatcher,
           {
-            previousStep: 0,
-            nextStep: 0,
+            previousStep: step > 0 ? step - 1 : 0,
+            nextStep: step,
             granuleRecord: record
           }
         );
