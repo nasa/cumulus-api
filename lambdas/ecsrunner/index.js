@@ -63,9 +63,9 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
                   '--s3path',
                   `s3://${process.env.internal}/staging`,
                   '--dispatcher',
-                  process.env.dispatcher
-                  //'--sqs',
-                  //receiptHandle
+                  process.env.dispatcher,
+                  '--sqs',
+                  receiptHandle
                 ]
               }
             ]
@@ -96,8 +96,8 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         }
 
         // deleting the message
-        await SQS.deleteMessage(process.env.ProcessingQueue, receiptHandle);
-        log.info('Message deleted', logDetails);
+        //await SQS.deleteMessage(process.env.ProcessingQueue, receiptHandle);
+        //log.info('Message deleted', logDetails);
       }
     }
   }
