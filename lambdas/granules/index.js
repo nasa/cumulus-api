@@ -39,7 +39,7 @@ export function put(event, cb) {
         return invoke(
           process.env.dispatcher,
           {
-            previousStep: step > 0 ? step - 1 : 0,
+            previousStep: 0,
             nextStep: step,
             granuleRecord: record
           }
