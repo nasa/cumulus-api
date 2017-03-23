@@ -110,7 +110,7 @@ export function handler(event = {}) {
     markPdrs().catch(e => console.log(e));
     markStaleGranulesFailed().catch(e => console.log(e));
     populateResources().catch(e => console.log(e));
-  }, parseInt(frequency) * 100);
+  }, parseInt(frequency) * 1000);
 }
 
 
