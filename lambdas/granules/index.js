@@ -38,11 +38,7 @@ export function put(event, cb) {
         record.status = 'processing';
         return invoke(
           process.env.dispatcher,
-          {
-            previousStep: 0,
-            nextStep: step,
-            granuleRecord: record
-          }
+          Granule.generatePayload(record, step)
         );
       }
       else if (action === 'removeFromCmr') {
