@@ -27,6 +27,7 @@ export function put(event, cb) {
   data = JSON.parse(data);
 
   const action = _.get(data, 'action', null);
+  const step = _.get(data, 'step', 0);
 
   if (action) {
     const granuleId = _.get(event.pathParameters, 'granuleName');
@@ -37,11 +38,7 @@ export function put(event, cb) {
         record.status = 'processing';
         return invoke(
           process.env.dispatcher,
-          {
-            previousStep: 0,
-            nextStep: 0,
-            granuleRecord: record
-          }
+          Granule.generatePayload(record, step)
         );
       }
       else if (action === 'removeFromCmr') {

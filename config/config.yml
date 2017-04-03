@@ -93,6 +93,22 @@ dynamos:
       - name: granuleId
         type: HASH
 
+  - name: DuplicateGranulesTable
+    read: 10
+    write: 10
+    envName: DuplicateGranulesTable
+    elasticsearch: true
+    attributes:
+      - name: granuleId
+        type: S
+      - name: pdrName
+        type: S
+    schema:
+      - name: granuleId
+        type: HASH
+      - name: pdrName
+        type: RANGE
+
   - name: PDRsTable
     read: 100
     write: 100
@@ -186,11 +202,11 @@ lambdas:
           - --eventJson
           - '{ \"action\": \"discover\" }'
 
-  - name: runner
-    handler: runner.handler
+  - name: ecsrunner
+    handler: ecsrunner.handler
     timeout: 300
     services:
-      - name: runner
+      - name: ecsrunner
         image: cumulus-docker-dev-lambdarunner
         count: 1
         memory: 256
