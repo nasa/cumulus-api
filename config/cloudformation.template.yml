@@ -351,7 +351,7 @@ Resources:
                 - "/etc/cfn/cfn-hup.conf"
                 - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
     Properties:
-      AssociatePublicIpAddress: true
+      AssociatePublicIpAddress: false
       SecurityGroups:
         -  {{ecs.securityGroup}}
       ImageId: !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMIID]
