@@ -17,8 +17,8 @@ const uploadLambdas = require('./lambda').uploadLambdas;
  * for generating the final CF template
  * @return {null}
  */
-const compileCF = (options) => {
-  const config = parseConfig(options.config, options.stack, options.stage);
+const compileCF = (options, stage) => {
+  const config = parseConfig(options.config, options.stack, stage);
 
   const t = fs.readFileSync(path.join(process.cwd(), 'config/cloudformation.template.yml'), 'utf8');
   const template = Handlebars.compile(t);
@@ -33,9 +33,9 @@ const compileCF = (options) => {
  * @param  {string} s3Path  A valid S3 URI for uploading the zip files
  * @param  {string} profile The profile name used in aws CLI
  */
-function uploadCF(s3Path, profile, configPath) {
+function uploadCF(s3Path, profile, configPath, stage) {
   // build the template first
-  compileCF(configPath);
+  compileCF(configPath, stage);
 
   // make sure cloudformation template exists
   try {
@@ -51,11 +51,12 @@ function uploadCF(s3Path, profile, configPath) {
                   --profile ${profile}`);
 }
 
-function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile) {
+function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile, stage) {
+  const name = stage ? `${stackName}-${stage}` : stackName;
   // Run the cloudformation cli command
   exec(`aws cloudformation ${op}-stack \
 --profile ${profile} \
---stack-name ${stackName} \
+--stack-name ${name} \
 --template-url "${templateUrl}" \
 --parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
 "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
@@ -66,7 +67,7 @@ function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, 
   console.log(`Waiting for the stack to be ${op}ed:`);
   try {
     exec(`aws cloudformation wait stack-${op}-complete \
-            --stack-name ${stackName} \
+            --stack-name ${name} \
             --profile ${profile}`);
     console.log(`Stack is successfully ${op}ed`);
   }
@@ -184,7 +185,7 @@ function validateTemplate(options) {
   const url = `${h.url}/cloudformation.yml`;
 
   // Build and upload the CF template
-  uploadCF(h.path, profile, configPath);
+  uploadCF(h.path, profile, configPath, options.stage);
 
   exec(`aws cloudformation validate-template \
 --template-url "${url}" \
@@ -210,7 +211,7 @@ function opsStack(options, ops) {
   uploadLambdas(h.path, profile, c);
 
   // Build and upload the CF template
-  uploadCF(h.path, profile, configPath);
+  uploadCF(h.path, profile, configPath, options.stage);
 
   cloudFormation(
     ops,
@@ -218,7 +219,8 @@ function opsStack(options, ops) {
     c.stackName,
     c.buckets.internal,
     h.hash,
-    profile
+    profile,
+    c.stage
   );
 }
 
@@ -228,6 +230,7 @@ function opsStack(options, ops) {
  */
 function createStack(options) {
   // generating private/public keys first
+  console.log(options);
   const c = getConfig(options, options.config);
   uploadKeyPair(c.buckets.internal, c.stackName, c.stage, options.profile, (e) => {
     if (e) {
