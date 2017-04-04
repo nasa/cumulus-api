@@ -89,8 +89,11 @@ program
 program
   .command('bootstrap [local|remote]')
   .description('create tables and queues on local DynamoDB and SQS')
-  .action((cmd) => {
-    bootstrap(cmd, program);
+  .option(
+    '--delete',
+    'Delete Elasticsearch indices and recreate them. WARNING: This will delete all the data'
+  ).action((cmd, options) => {
+    bootstrap(cmd, program, options.delete);
   });
 
 program

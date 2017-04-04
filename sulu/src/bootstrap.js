@@ -40,7 +40,7 @@ function getEs(cmd) {
   return new elasticsearch.Client(esConfig);
 }
 
-module.exports = function(cmd, options) {
+module.exports = function(cmd, options, deleteEs) {
   envs.apply(options.stage);
   const config = parseConfig(null, null, options.stage);
 
@@ -135,10 +135,7 @@ module.exports = function(cmd, options) {
   esClient.indices.exists({
     index: mainIndex
   }).then((exists) => {
-    if (exists) {
-      console.log('Elasticsearch main instance already created');
-    }
-    else {
+    const addMapping = function() {
       const mappings = {};
       const es = config.elasticsearch;
       const dynamicTemplates = es.dynamic_templates;
@@ -164,6 +161,16 @@ module.exports = function(cmd, options) {
         index: mainIndex,
         body: { mappings }
       });
+    };
+
+    if (exists) {
+      console.log('Elasticsearch main instance already created');
+      if (deleteEs) {
+        return esClient.indices.delete({ index: mainIndex }).then(() => addMapping());
+      }
+    }
+    else {
+      return addMapping();
     }
   }).then(() => esClient.indices.exists({ index: logIndex }))
     .then((exists) => {
