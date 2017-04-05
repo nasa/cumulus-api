@@ -1,5 +1,8 @@
 #! /usr/bin/env node
+
 'use strict';
+
+const envs = require('./envs');
 
 const AWS = require('aws-sdk');
 const elasticsearch = require('elasticsearch');
@@ -37,8 +40,9 @@ function getEs(cmd) {
   return new elasticsearch.Client(esConfig);
 }
 
-module.exports = function(cmd) {
-  const config = parseConfig();
+module.exports = function(cmd, options, deleteEs) {
+  envs.apply(options.stage);
+  const config = parseConfig(null, null, options.stage);
 
   if (cmd === 'local') {
     // use dummy access info
@@ -100,19 +104,18 @@ module.exports = function(cmd) {
 
       // get queue url (if any)
       sqs.getQueueUrl({ QueueName: queueName }).promise()
-        .then(data => {
+        .then((data) => {
           if (data.QueueUrl) {
             // delete the queue
             return sqs.deleteQueue({ QueueUrl: data.QueueUrl }).promise();
           }
-          return;
         })
         .then((deleted) => {
           if (deleted) console.log(`${queueName} deleted`);
           return createQueue();
         })
         .then(data => console.log(data))
-        .catch(e => {
+        .catch((e) => {
           if (e.code === 'AWS.SimpleQueueService.NonExistentQueue') {
             return createQueue().then(data => console.log(data)).catch(err => console.log(err));
           }
@@ -132,18 +135,15 @@ module.exports = function(cmd) {
   esClient.indices.exists({
     index: mainIndex
   }).then((exists) => {
-    if (exists) {
-      console.log('Elasticsearch main instance already created');
-    }
-    else {
+    const addMapping = function() {
       const mappings = {};
       const es = config.elasticsearch;
-      const dynamic_templates = es.dynamic_templates;
+      const dynamicTemplates = es.dynamic_templates;
 
       // add mapping and parent info for all dynamoDBs
-      config.dynamos.forEach(d => {
+      config.dynamos.forEach((d) => {
         const typeName = `${d.stackName}-${d.stage}-${d.name}`;
-        mappings[typeName] = { dynamic_templates };
+        mappings[typeName] = { dynamic_templates: dynamicTemplates };
 
         // add relation mappings
         if (es.relations.indexOf(d.name) > -1) {
@@ -151,7 +151,7 @@ module.exports = function(cmd) {
             _parent: {
               type: typeName
             },
-            dynamic_templates
+            dynamic_templates: dynamicTemplates
           };
         }
       });
@@ -161,8 +161,17 @@ module.exports = function(cmd) {
         index: mainIndex,
         body: { mappings }
       });
+    };
+
+    if (exists) {
+      console.log('Elasticsearch main instance already created');
+      if (deleteEs) {
+        return esClient.indices.delete({ index: mainIndex }).then(() => addMapping());
+      }
     }
-    return;
+    else {
+      return addMapping();
+    }
   }).then(() => esClient.indices.exists({ index: logIndex }))
     .then((exists) => {
       if (exists) {

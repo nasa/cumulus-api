@@ -19,8 +19,8 @@ function getLambdaZipFile(handler) {
  * lambda zip file. The information is exracted from the config.yml
  * @return {Object} A grouped lambdas list
  */
-function lambdaObject(c) {
-  c = c || parseConfig();
+function lambdaObject(c, step) {
+  c = c || parseConfig(null, null, step);
   const obj = {};
 
   for (const lambda of c.lambdas) {
@@ -88,7 +88,7 @@ function uploadLambdas(s3Path, profile, config) {
  */
 function updateLambda(options, name, webpack) {
   const profile = options.profile;
-  const lambdas = lambdaObject();
+  const lambdas = lambdaObject(null, options.stage);
 
   // Run webpack
   if (_.has(webpack, 'webpack') && webpack.webpack) {

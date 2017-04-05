@@ -65,7 +65,7 @@ export function handler(event, context, cb) {
       body: form,
       json: true,
       auth: `${EARTHDATA_CLIENT_ID}:${EARTHDATA_CLIENT_PASSWORD}`
-    }).then(r => {
+    }).then((r) => {
       const tokenInfo = r.body;
       const accessToken = tokenInfo.access_token;
 
@@ -102,7 +102,7 @@ export function handler(event, context, cb) {
             Location: url
           }
         });
-      }).catch(e => {
+      }).catch((e) => {
         cb(e);
       });
     }).catch(e => cb(e));

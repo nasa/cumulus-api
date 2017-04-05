@@ -39,3 +39,17 @@ jobs:
           command: |
             cp config/secrets.json.example config/secrets.json
             yarn run test
+
+      - deploy:
+          name: develop branch deployed to dev stack
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              sulu cf update --stage dev
+            fi
+
+      - deploy:
+          name: master branch deployed to prod stack
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sulu cf update --stage prod
+            fi
