@@ -24,7 +24,7 @@ export async function runActiveProviders() {
       let ingest;
       switch (provider.protocol) {
         case 'ftp':
-          ingest = new FtpPdrIngest(provider, 'cumulususer', 'cumulus');
+          ingest = new FtpPdrIngest(provider, provider.config.username, provider.config.password);
           await ingest.discover();
           break;
         default: {
