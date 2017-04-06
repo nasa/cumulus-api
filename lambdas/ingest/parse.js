@@ -36,17 +36,12 @@ export async function pollPdrQueue(
       visibilityTimeout
     );
 
+    // Example of parse message
+    //const messages = [{Body: {"name":"MODAPSops8.15742522.PDR","provider":{"isActive":true,"lastTimeIngestedAt":1491431669575,"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/PDR/","config":{"password":"xxxx","username":"xxxxx"},"host":"modpdr01.nascom.nasa.gov","updatedAt":1491431669575,"protocol":"ftp","status":"ingesting","providerName":"MODAPS","createdAt":1491335902735,"regex":{"MYD09A1_version_006":"(MYD09A1\\.(.*))\\.(hdf|HDF)"},"name":"MODAPS_FPROC"},"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/PDR/MODAPSops8.15742522.PDR","s3Uri":"s3://cumulus-internal/pdrs/MODAPSops8.15742522.PDR"}}]
+
     // get message body
     if (messages.length > 0) {
       for (const message of messages) {
-        // This is how a PDR object look like
-        //{
-        //  name: 'MYD13A1_5_grans.PDR',
-        //  provider: {},
-        //  url: 'https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES/MYD13A1_5_grans.PDR',
-        //  s3Uri: 's3://cumulus-internal/pdrs/MYD13A1_5_grans.PDR'
-        //}
-
         const pdr = message.Body;
         const receiptHandle = message.ReceiptHandle;
 
