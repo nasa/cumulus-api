@@ -43,10 +43,10 @@ jobs:
       - deploy:
           name: develop branch deployed to dev stack
           command: |
-            node_modules/.bin/webpack --progress
             apt-get update
             apt-get install -y python-dev python-pip apt-transport-https
             pip install awscli
+            node_modules/.bin/webpack --progress
             sulu cf update
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               sulu cf update --stage dev
