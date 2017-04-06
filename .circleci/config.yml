@@ -43,7 +43,7 @@ jobs:
       - deploy:
           name: develop branch deployed to dev stack
           command: |
-            sulu cf compile
+            sulu cf update
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               sulu cf update --stage dev
             fi
