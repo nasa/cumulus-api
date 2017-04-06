@@ -1,6 +1,7 @@
 'use strict';
 
 import log from 'cumulus-common/log';
+import { Provider } from 'cumulus-common/models';
 import { HttpGranuleIngest, FtpGranuleIngest } from 'cumulus-common/ingest';
 import { SQS } from 'cumulus-common/aws-helpers';
 
@@ -12,16 +13,24 @@ const logDetails = {
 
 
 async function processMessage(message) {
+  // Example of granule message
+  //const granule = {"granuleId":"MYD09A1.A2017081.H24V01.006.2017095190811","protocol":"ftp","provider":"MODAPS_FPROC","host":"modpdr01.nascom.nasa.gov","pdrName":"MODAPSops8.15742522.PDR","collectionName":"MYD09A1_version_006","files":[{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"MYD09A1.A2017081.H24V01.006.2017095190811.HDF","fileSize":750318,"checksumType":"CKSUM","checksumValue":785845502,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/MYD09A1.A2017081.H24V01.006.2017095190811.HDF"},{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"MYD09A1.A2017081.H24V01.006.2017095190811.HDF.MET","fileSize":54640,"checksumType":null,"checksumValue":null,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/MYD09A1.A2017081.H24V01.006.2017095190811.HDF.MET"},{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"BROWSE.MYD09A1.A2017081.H24V01.006.2017095190811.HDF","fileSize":6669,"checksumType":null,"checksumValue":null,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/BROWSE.MYD09A1.A2017081.H24V01.006.2017095190811.HDF"}],"isDuplicate":false}
   const granule = message.Body;
   const receiptHandle = message.ReceiptHandle;
 
   try {
     let ingest;
     switch (granule.protocol) {
-      case 'ftp':
-        ingest = new FtpGranuleIngest(granule, 'cumulususer', 'cumulus');
+      case 'ftp': {
+        // get provider record for username/password
+        const p = new Provider();
+        const provider = await p.get({ name: granule.provider });
+
+
+        ingest = new FtpGranuleIngest(granule, provider.config.username, provider.config.password);
         await ingest.ingest();
         break;
+      }
       default:
         ingest = new HttpGranuleIngest(granule);
         await ingest.ingest();
