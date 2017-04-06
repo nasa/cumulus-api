@@ -78,8 +78,12 @@ localRun(() => {
 
   list({
     queryStringParameters: {
-      pdrName: 'good_100_grans_2.PDR',
-      //status: 'parsed'
+      //pdrName: 'good_100_grans_2.PDR',
+      status: 'completed',
+      page: 1,
+      limit: 50,
+      order: 'desc',
+      sort_by: 'updatedAt'
       //createdAt: 1489721558764
       //createdAt__to: 1489721560462,
       //createdAt__from: 1,
@@ -89,9 +93,9 @@ localRun(() => {
       //provider__in: 'aster_lpdaac_pdrs',
       //change__not: 'what',
       //PAN__exists: false,
-      prefix: 'comple',
+      //prefix: 'comple',
       //fields: 'status',
-      limit: 100
+      //limit: 100
     }
   }, (e, r) => console.log(e, r));
 });
