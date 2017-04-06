@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Installing Dependencies
           command: |
-            sudo apt-get update && sudo apt-get install python-dev python-pip
+            apt-get update && apt-get install python-dev python-pip
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
             apt-get update && sudo apt-get install yarn
