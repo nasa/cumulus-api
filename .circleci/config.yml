@@ -23,7 +23,7 @@ jobs:
           command: |
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-            apt-get update && sudo apt-get install yarn
+            apt-get update && sudo apt-get install yarn python-dev python-pip
             mkdir -p ~/cumulus-api/yarn-cache
             yarn --cache-folder ~/cumulus-api/yarn-cache
 
@@ -43,8 +43,6 @@ jobs:
       - deploy:
           name: develop branch deployed to dev stack
           command: |
-            apt-get update
-            apt-get install -y python-dev python-pip apt-transport-https
             pip install awscli
             node_modules/.bin/webpack --progress
             sulu cf update
