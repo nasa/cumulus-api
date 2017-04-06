@@ -47,10 +47,11 @@ async function markStaleGranulesFailed(timeElapsed = 20, timeUnit = 'minute') {
 
 
 async function markPdrs() {
+  // mark parsed PDRs as completed
   const params = {
     queryStringParameters: {
       fields: 'pdrName',
-      status: 'parsed',
+      status__in: 'parsed,discovered',
       limit: 100
     }
   };
