@@ -22,12 +22,12 @@ ecs:
 images:
   - name: asterProcessing
     image: cumulus-docker-dev-aster
-    cpu: 25
+    cpu: 100
     memory: 400
 
   - name: modisProcessing
     image: cumulus-docker-dev-modis
-    cpu: 25
+    cpu: 100
     memory: 1000
 
 elasticsearch:
@@ -188,7 +188,7 @@ lambdas:
         image: cumulus-docker-dev-lambdarunner
         count: 1
         memory: 512
-        cpu: 10
+        cpu: 20
         commands:
           - --eventJson
           - '{ \"action\": \"download\" }'
