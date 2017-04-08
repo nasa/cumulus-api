@@ -55,22 +55,32 @@ function uploadCF(s3Path, profile, configPath, stage) {
 function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile, stage) {
   const name = stage ? `${stackName}-${stage}` : stackName;
   // Run the cloudformation cli command
-  exec(`aws cloudformation ${op}-stack \
-${getProfile(profile)} \
---stack-name ${name} \
---template-url "${templateUrl}" \
---parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
-"ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
---capabilities CAPABILITY_IAM`
-  );
+  try {
+    exec(`aws cloudformation ${op}-stack \
+  ${getProfile(profile)} \
+  --stack-name ${name} \
+  --template-url "${templateUrl}" \
+  --parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
+  "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
+  --capabilities CAPABILITY_IAM`
+    );
+  }
+  catch (e) {
+    if (e.message.match(/(No updates are to be performed)/)) {
+      console.log('Nothing to update');
+      process.exit(0);
+    }
+    console.error(e);
+    process.exit(1);
+  }
 
   // await for the response
-  console.log(`Waiting for the stack to be ${op}ed:`);
+  console.log(`Waiting for the stack to be ${op}d:`);
   try {
     exec(`aws cloudformation wait stack-${op}-complete \
             --stack-name ${name} \
             ${getProfile(profile)}`);
-    console.log(`Stack is successfully ${op}ed`);
+    console.log(`Stack is successfully ${op}d`);
   }
   catch (e) {
     console.log('Stack creation failed due to:');
