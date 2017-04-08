@@ -15,7 +15,7 @@ import { Stats } from 'cumulus-common/stats';
  * @param {string} timeUnit='minute'
  */
 
-async function markStaleGranulesFailed(timeElapsed = 20, timeUnit = 'minute') {
+async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
   const g = new Granule();
 
   const params = {
