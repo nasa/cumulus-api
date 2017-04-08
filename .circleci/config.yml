@@ -44,10 +44,9 @@ jobs:
       - deploy:
           name: develop branch deployed to dev stack
           command: |
-            pip install awscli
-            node_modules/.bin/webpack --progress
-            sulu cf update
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              pip install awscli
+              node_modules/.bin/webpack --progress
               sulu cf update --stage dev
             fi
 
@@ -55,5 +54,7 @@ jobs:
           name: master branch deployed to prod stack
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              pip install awscli
+              node_modules/.bin/webpack --progress
               sulu cf update --stage prod
             fi
