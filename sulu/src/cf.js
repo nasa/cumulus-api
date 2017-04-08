@@ -6,6 +6,7 @@ const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const uploadKeyPair = require('./crypto').uploadKeyPair;
 const exec = require('./common').exec;
+const getProfile = require('./common').getProfile;
 const uploadLambdas = require('./lambda').uploadLambdas;
 
 
@@ -48,14 +49,14 @@ function uploadCF(s3Path, profile, configPath, stage) {
 
   // upload CF template to S3
   exec(`aws s3 cp config/cloudformation.yml ${s3Path}/ \
-                  --profile ${profile}`);
+                  ${getProfile(profile)}`);
 }
 
 function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile, stage) {
   const name = stage ? `${stackName}-${stage}` : stackName;
   // Run the cloudformation cli command
   exec(`aws cloudformation ${op}-stack \
---profile ${profile} \
+${getProfile(profile)} \
 --stack-name ${name} \
 --template-url "${templateUrl}" \
 --parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
@@ -68,7 +69,7 @@ function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, 
   try {
     exec(`aws cloudformation wait stack-${op}-complete \
             --stack-name ${name} \
-            --profile ${profile}`);
+            ${getProfile(profile)}`);
     console.log(`Stack is successfully ${op}ed`);
   }
   catch (e) {
@@ -91,13 +92,13 @@ function dlqToLambda(options) {
       if (!queueUrl) {
         let temp = exec(`aws sqs get-queue-url \
           --queue-name ${config.stackName}-${config.stage}-${lambda.dlq} \
-          --profile ${profile}`);
+          ${getProfile(profile)}`);
         queueUrl = JSON.parse(temp).QueueUrl;
 
         temp = exec(`aws sqs get-queue-attributes \
           --attribute-names QueueArn \
           --queue-url ${queueUrl} \
-          --profile ${profile}`);
+          ${getProfile(profile)}`);
         queueArn = JSON.parse(temp).Attributes.QueueArn;
       }
 
@@ -189,7 +190,7 @@ function validateTemplate(options) {
 
   exec(`aws cloudformation validate-template \
 --template-url "${url}" \
---profile ${profile}`);
+${getProfile(profile)}`);
 }
 
 /**

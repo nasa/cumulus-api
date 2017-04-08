@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const exec = require('./common').exec;
+const getProfile = require('./common').getProfile;
 
 function getLambdaZipFile(handler) {
   return _.split(handler, '.')[0];
@@ -77,7 +78,7 @@ function uploadLambdas(s3Path, profile, config) {
   // we use the aws cli to make things easier
   // this fails if the user doesn't have aws-cli installed
   exec(`cd build && aws s3 cp --recursive . ${s3Path}/ \
-                              --profile ${profile} \
+                              ${getProfile(profile)} \
                               --exclude=.DS_Store`);
 }
 
@@ -106,7 +107,7 @@ function updateLambda(options, name, webpack) {
     exec(`aws lambda update-function-code \
       --function-name ${lambda.name} \
       --zip-file fileb://build/lambda/${name}.zip \
-      --profile ${profile}`);
+      ${getProfile(profile)}`);
   }
 }
 
