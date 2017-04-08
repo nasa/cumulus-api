@@ -132,7 +132,7 @@ function getConfig(options, configPath) {
 
   // check if the configBucket exists, if not throw an error
   try {
-    exec(`aws s3 ls s3://${config.buckets.internal} --profile ${options.profile}`);
+    exec(`aws s3 ls s3://${config.buckets.internal} ${getProfile(options.profile)}`);
   }
   catch (e) {
     console.error(`${config.buckets.internal} does not exist or ` +
@@ -231,7 +231,6 @@ function opsStack(options, ops) {
  */
 function createStack(options) {
   // generating private/public keys first
-  console.log(options);
   const c = getConfig(options, options.config);
   uploadKeyPair(c.buckets.internal, c.stackName, c.stage, options.profile, (e) => {
     if (e) {
