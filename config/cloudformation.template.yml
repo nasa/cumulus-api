@@ -326,6 +326,8 @@ Resources:
               command: !Sub |
                 #!/bin/bash
                 echo ECS_CLUSTER=${CumulusECSCluster} >> /etc/ecs/ecs.config
+                echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=1m >> /etc/ecs/ecs.config
+
           files:
             "/etc/cfn/cfn-hup.conf":
               content: !Sub |
@@ -362,6 +364,7 @@ Resources:
         Ebs:
           DeleteOnTermination: true
           VolumeSize: 100
+          VolumeType: gp2
       KeyName: {{ ecs.keyPairName }}
       UserData:
         "Fn::Base64": !Join
@@ -760,4 +763,4 @@ Mappings:
     us-west-2:
       AMIID: ami-241bd844
     us-east-1:
-      AMIID: ami-e4c4cbf3
+      AMIID: ami-275ffe31

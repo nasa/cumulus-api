@@ -15,7 +15,7 @@ import { Stats } from 'cumulus-common/stats';
  * @param {string} timeUnit='minute'
  */
 
-async function markStaleGranulesFailed(timeElapsed = 20, timeUnit = 'minute') {
+async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
   const g = new Granule();
 
   const params = {
@@ -64,9 +64,11 @@ async function markPdrs() {
     // if the total of completed and failed granules matches
     // the total granules, mark the pdr as completed
     const completed = r.results.filter((i) => {
-      const total = i.granulesStatus.completed + i.granulesStatus.failed;
-      if (total >= i.granules) {
-        return true;
+      if (i.granulesStatus) {
+        const total = i.granulesStatus.completed + i.granulesStatus.failed;
+        if (total >= i.granules && total > 0) {
+          return true;
+        }
       }
       return false;
     });
@@ -76,9 +78,14 @@ async function markPdrs() {
 
       // mark them as completed
       const p = new Pdr();
-      await Promise.all(completed.map(i => p.hasCompleted(
-        i.pdrName, i.granules === i.granulesStatus.completed
-      )));
+      await Promise.all(completed.map((i) => {
+        if (i.granulesStatus) {
+          return p.hasCompleted(
+            i.pdrName, i.granules === i.granulesStatus.completed
+          );
+        }
+        return true;
+      }));
     }
     else {
       console.log('All PDRs are doing great');
@@ -118,6 +125,6 @@ export function handler(event = {}) {
 localRun(() => {
   //handler();
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
-  //markPdrs().then(() => {}).catch(e => console.log(e));
+  markPdrs().then(() => {}).catch(e => console.log(e));
   //populateResources()
 });

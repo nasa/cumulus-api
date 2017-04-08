@@ -6,6 +6,8 @@ const yaml = require('js-yaml');
 const fs = require('fs-extra');
 const execSync = require('child_process').execSync;
 
+const getProfile = profile => (profile !== 'default' ? `--profile ${profile}` : '');
+
 /**
  * Executes shell commands synchronously and logs the
  * stdout to console.
@@ -315,3 +317,4 @@ function parseConfig(configPath, stackName, stage) {
 
 module.exports.parseConfig = parseConfig;
 module.exports.exec = exec;
+module.exports.getProfile = getProfile;
