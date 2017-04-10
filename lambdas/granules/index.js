@@ -1,10 +1,10 @@
 'use strict';
 
 import _ from 'lodash';
-import { deleteGranule } from 'cumulus-common/cmrjs';
+import path from 'path';
 import { handle } from 'cumulus-common/response';
-import { Granule } from 'cumulus-common/models';
-import { invoke } from 'cumulus-common/aws-helpers';
+import { Granule, Provider } from 'cumulus-common/models';
+import { invoke, SQS } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -35,18 +35,20 @@ export function put(event, cb) {
 
     return g.get({ granuleId: granuleId }).then((record) => {
       if (action === 'reprocess') {
-        record.status = 'processing';
         return invoke(
           process.env.dispatcher,
           Granule.generatePayload(record, step)
         );
+      }
+      else if (action === 'reingest') {
+        return g.reingest(granuleId);
       }
       else if (action === 'removeFromCmr') {
         if (!record.published) {
           throw new Error('The granule is not published to CMR');
         }
 
-        return deleteGranule(granuleId).then(() => g.unpublish(granuleId));
+        return g.unpublish(granuleId);
       }
       throw new Error(`Action <${action}> is not supported`);
     }).then(r => cb(null, r)).catch(e => cb(e));
@@ -116,8 +118,8 @@ localRun(() => {
 
   put({
     pathParameters: {
-      granuleName: '1A0000-2017012301_003_061'
+      granuleName: 'MYD13A1.A2017073.h21v06.006.2017094141555'
     },
-    body: '{\n\t"action": "removeFromCmr"\n}'
+    body: '{\n\t"action": "reingest"\n}'
   }, (e, r) => console.log(e, r));
 });

@@ -1,6 +1,7 @@
 {
   "collectionName": "AST_L1A__version__003",
   "createdAt": 1488243160197,
+  "provider": "someprovider",
   "files": {
     "meta-xml": {
       "access": "public",
