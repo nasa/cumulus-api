@@ -21,6 +21,7 @@ class Dispatcher {
     this.nextOrder = this.record.recipe.order[this.nextStep];
 
     logDetails.granuleId = this.record.granuleId;
+    logDetails.pdrName = this.record.pdrName;
     logDetails.collectionName = this.record.collectionName;
 
     log.info(`${this.record.granuleId}: Dispatcher launched`, logDetails);

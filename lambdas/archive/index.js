@@ -60,6 +60,7 @@ async function archive(files) {
 export function handler(event, context, cb) {
   const files = event.granuleRecord.files;
   logDetails.granuleId = event.granuleRecord.granuleId;
+  logDetails.pdrName = event.granuleRecord.pdrName;
   logDetails.collectionName = event.granuleRecord.collectionName;
 
   log.info('Started archiving', logDetails);

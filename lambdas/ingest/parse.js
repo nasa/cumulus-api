@@ -46,6 +46,7 @@ export async function pollPdrQueue(
         const receiptHandle = message.ReceiptHandle;
 
         logDetails.provider = pdr.provider.name;
+        logDetails.pdrName = pdr.name;
         log.info(`Parsing ${pdr.name}`, logDetails);
 
         let ingest;
@@ -69,7 +70,7 @@ export async function pollPdrQueue(
     }
   }
   catch (e) {
-    log.error(e, e.stack, 'pollPdrQueue', logDetails);
+    log.error(e, logDetails);
   }
   finally {
     // make the function recursive unless it is for test
