@@ -63,6 +63,7 @@ export async function postToCMR(xml) {
 export function handler(event, context, cb) {
   try {
     logDetails.collectionName = event.granuleRecord.collectionName;
+    logDetails.pdrName = event.granuleRecord.pdrName;
     logDetails.granuleId = event.granuleRecord.granuleId;
 
     log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);

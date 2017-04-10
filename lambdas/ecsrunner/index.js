@@ -29,6 +29,7 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         const receiptHandle = message.ReceiptHandle;
         const image = payload.granuleRecord.recipe.processStep.config.image;
         logDetails.granuleId = granuleId;
+        logDetails.pdrName = payload.granuleRecord.pdrName;
         logDetails.collectionName = payload.granuleRecord.collectionName;
 
         log.info('Recieved message from SQS', logDetails);
@@ -102,7 +103,7 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
     }
   }
   catch (e) {
-    log.error(e, e.stack, logDetails);
+    log.error(e, logDetails);
   }
   finally {
     // rerun the function
