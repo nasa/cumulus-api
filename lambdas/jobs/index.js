@@ -50,6 +50,38 @@ async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
   }
 }
 
+async function consolidateAllPdrStats() {
+  const params = {
+    queryStringParameters: {
+      fields: 'pdrName',
+      status__in: 'failed,completed',
+      limit: 10000
+    }
+  };
+
+  const search = new Search(params, process.env.PDRsTable);
+  const r = await search.query();
+
+  const p = new Pdr();
+
+  for (const result of r.results) {
+    const stats = await search.granulesStats('pdrName', result.pdrName);
+    const updateObj = {
+      granules: stats.granules,
+      granulesStatus: stats.granulesStatus,
+      progress: stats.progress,
+      averageDuration: stats.averageDuration
+    };
+
+    console.log(`Updating ${result.pdrName}`);
+
+    if (stats.progress < 100 && stats.progress > 0) {
+      updateObj.status = 'parsed';
+      await p.update({ pdrName: result.pdrName }, updateObj);
+    }
+  }
+}
+
 
 async function updatePdrStats() {
   const params = {
@@ -140,6 +172,7 @@ export function handler(event = {}) {
   // update collections stats every 12 seconds
   setInterval(() => {
     updatePdrStats().catch(e => log.error(e, logDetails));
+    consolidateAllPdrStats().catch(e => log.error(e, logDetails));
   }, 12 * 1000);
 
   return setInterval(() => {
@@ -154,6 +187,6 @@ localRun(() => {
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
   //markPdrs().then(() => {}).catch(e => console.log(e));
   //populateResources()
-  //updatePdrStats();
+  updatePdrStats();
   updateCollectionsStats();
 });
