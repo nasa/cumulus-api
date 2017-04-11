@@ -275,6 +275,16 @@ Resources:
             - !Sub arn:aws:s3:::{{buckets.protected}}
             - !Sub arn:aws:s3:::{{buckets.protected}}/*
 
+          # Allow access to SQS
+          - Effect: Allow
+            Action:
+            - sqs:GetQueueUrl
+            - sqs:GetQueueAttributes
+            - sqs:SendMessage
+            Resource:
+            - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
+
+
   #################################################
   # SQS config BEGIN
   #################################################
