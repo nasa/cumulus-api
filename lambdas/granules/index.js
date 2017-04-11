@@ -48,7 +48,7 @@ export function put(event, cb) {
           throw new Error('The granule is not published to CMR');
         }
 
-        return g.unpublish(granuleId);
+        return g.unpublish(granuleId, record.cmrProvider);
       }
       throw new Error(`Action <${action}> is not supported`);
     }).then(r => cb(null, r)).catch(e => cb(e));

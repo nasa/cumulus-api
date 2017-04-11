@@ -14,12 +14,6 @@ const logDetails = {
   type: 'processing'
 };
 
-
-function identifyCollection(payload) {
-  return payload.granuleRecord.collectionName;
-}
-
-
 export async function getMetadata(payload) {
   // Identify the location of the metadata file,
   // conditional on the name of the collection
@@ -39,24 +33,9 @@ export async function getMetadata(payload) {
 }
 
 
-export function formatMetadata(payload, xml) {
-  // Format the metadata so that it is compliant with the ECHO-10 XML format
-  const collection = identifyCollection(payload);
-  if (collection === 'AST_L1A') {
-    // ASTER data isn't in complaint ECHO-10 format
-    // But for now we'll just pass it through
-    return xml;
-  }
-
-  log.debug('Formatted metdata');
-  // By default, we'll assume that the xml string is ready to go
-  return xml;
-}
-
-
-export async function postToCMR(xml) {
+export async function postToCMR(xml, cmrProvider) {
   log.info('Pushing the metadata to CMR', logDetails);
-  return ingestGranule(xml);
+  return ingestGranule(xml, cmrProvider);
 }
 
 
@@ -65,12 +44,10 @@ export function handler(event, context, cb) {
     logDetails.collectionName = event.granuleRecord.collectionName;
     logDetails.pdrName = event.granuleRecord.pdrName;
     logDetails.granuleId = event.granuleRecord.granuleId;
+    const cmrProvider = event.granuleRecord.cmrProvider || 'CUMULUS';
 
     log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
-    getMetadata(event).then((xml) => {
-      const payload = formatMetadata(event, xml);
-      return postToCMR(payload);
-    }).then((res) => {
+    getMetadata(event).then(xml => postToCMR(xml, cmrProvider)).then((res) => {
       log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
 
       // add conceptId to the record
