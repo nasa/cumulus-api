@@ -1,10 +1,8 @@
 'use strict';
 
 import _ from 'lodash';
-import path from 'path';
 import { handle } from 'cumulus-common/response';
-import { Granule, Provider } from 'cumulus-common/models';
-import { invoke, SQS } from 'cumulus-common/aws-helpers';
+import { Granule } from 'cumulus-common/models';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -35,10 +33,7 @@ export function put(event, cb) {
 
     return g.get({ granuleId: granuleId }).then((record) => {
       if (action === 'reprocess') {
-        return invoke(
-          process.env.dispatcher,
-          Granule.generatePayload(record, step)
-        );
+        return g.reprocess(record, step);
       }
       else if (action === 'reingest') {
         return g.reingest(granuleId);
