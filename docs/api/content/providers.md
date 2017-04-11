@@ -41,7 +41,8 @@ $ curl https://cumulus.developmentseed.org/api/dev/providers --header 'Authoriza
       "lastTimeIngestedAt": 1491940611371
     }
   ]
-}```
+}
+```
 
 ## Retrieve provider
 
@@ -54,7 +55,7 @@ GET /providers/{name}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/providers/ --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/providers/LPDAAC_HTTP_MODIS --header 'Authorization: TokenFromAuthorizationEndpoint'
 ```
 
 #### Example response

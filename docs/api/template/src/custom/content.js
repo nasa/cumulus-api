@@ -20,7 +20,6 @@ module.exports =
   '# Providers\n' +
   fs.readFileSync('./content/providers.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Collections\n' +
   fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
 
