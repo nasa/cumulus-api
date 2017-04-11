@@ -12,13 +12,43 @@ var fs = require('fs');
 module.exports =
   '# Introduction\n' +
   fs.readFileSync('./content/intro.md', 'utf8') + '\n' +
+
+  // NOT DONE
   '# Authentication\n' +
   fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
+
+  '# Providers\n' +
+  fs.readFileSync('./content/providers.md', 'utf8') + '\n' +
+
+  // NOT DONE
   '# Collections\n' +
   fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
+
+  // NOT DONE
   '# Granules\n' +
   fs.readFileSync('./content/granules.md', 'utf8') + '\n' +
+
+  // NOT DONE
+  '# PDRs\n' +
+  fs.readFileSync('./content/pdrs.md', 'utf8') + '\n' +
+
+  // NOT DONE
   '# Stats\n' +
   fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
+
+  // NOT DONE
+  '# Resources\n' +
+  fs.readFileSync('./content/resources.md', 'utf8') + '\n' +
+
+  // NOT DONE
+  '# Logs\n' +
+  fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
+
+  // NOT DONE
   '# Errors\n' +
-  fs.readFileSync('./content/errors.md', 'utf8') + '\n';
+  fs.readFileSync('./content/errors.md', 'utf8') + '\n' +
+
+  // NOT DONE
+  '# Schemas\n' +
+  fs.readFileSync('./content/schemas.md', 'utf8') + '\n'
+;
