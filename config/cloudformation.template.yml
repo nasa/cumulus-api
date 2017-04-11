@@ -278,6 +278,8 @@ Resources:
           # Allow access to SQS
           - Effect: Allow
             Action:
+            - sqs:GetQueueUrl
+            - sqs:GetQueueAttributes
             - sqs:SendMessage
             Resource:
             - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
