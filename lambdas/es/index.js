@@ -11,37 +11,19 @@ const unwrap = AttributeValue.unwrap;
 const index = `${process.env.StackName}-${process.env.Stage}`;
 
 function deleteRecord(esClient, params, callback) {
-  // if it is a Granule record use delete by query
-  // so granule records in the main type and parent/child
-  // types are deleted at the same. otherwise, use
-  // the regular delete
-  if (params.type === process.env.GranulesTable) {
-    esClient.deleteByQuery({
-      index: params.index,
-      body: {
-        query: {
-          match: {
-            'granuleId.keyword': params.id
-          }
-        }
+  esClient.get(params, (error, response, status) => {
+    if (status !== 200) {
+      return callback(null, null);
+    }
+    esClient.delete(params, (e, r) => {
+      if (e) {
+        callback(e);
       }
-    }, callback);
-  }
-  else {
-    esClient.get(params, (error, response, status) => {
-      if (status !== 200) {
-        return callback(null, null);
+      else {
+        callback(null, r);
       }
-      esClient.delete(params, (e, r) => {
-        if (e) {
-          callback(e);
-        }
-        else {
-          callback(null, r);
-        }
-      });
     });
-  }
+  });
 }
 
 function saveRecord(esClient, data, params, callback) {
@@ -69,34 +51,6 @@ function saveRecord(esClient, data, params, callback) {
     };
 
     params = { _index: params.index, _type: params.type, _id: params.id };
-
-    // if it is granule record we use bulk update
-    // this handles Granule parent/child relationships
-    // this is needed to simplify running aggregations on granules
-    // from Collections and PDRs tables
-    if (params._type === process.env.GranulesTable) {
-      console.log('Handing parent/child relations for the Granule Record');
-      const granuleRelationTypes = [
-        [`${process.env.CollectionsTable}Granules`, 'collectionName'],
-        [`${process.env.PDRsTable}Granules`, 'pdrName']
-      ];
-      // adding two extra types for granule parent/child relation
-      // we only record the fields we need for aggregations
-      const dataSummary = {
-        granuleId: data.granuleId,
-        granuleStatus: data.status,
-        granuleDuration: data.duration,
-        createdAt: data.createdAt
-      };
-
-      granuleRelationTypes.forEach((g) => {
-        const newParams = Object.assign({}, params);
-        newParams._type = g[0];
-        newParams._parent = data[g[1]];
-        body.push({ index: newParams });
-        body.push(dataSummary);
-      });
-    }
 
     // use update action if the record already exists
     // this seems to have some performance

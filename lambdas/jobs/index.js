@@ -4,9 +4,14 @@ import moment from 'moment';
 import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
-import { Granule, Pdr, Resource } from 'cumulus-common/models';
+import { Granule, Pdr, Resource, Collection } from 'cumulus-common/models';
 import { Stats } from 'cumulus-common/stats';
 
+const logDetails = {
+  file: 'lambdas/jobs/index.js',
+  type: 'backgroundJobs',
+  source: 'jobs'
+};
 
 /**
  * markStaleGranulesFailed
@@ -46,50 +51,63 @@ async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
 }
 
 
-async function markPdrs() {
-  // mark parsed PDRs as completed
+async function updatePdrStats() {
   const params = {
     queryStringParameters: {
       fields: 'pdrName',
-      status__in: 'parsed,discovered',
+      status__not: 'failed,completed',
       limit: 100
     }
   };
 
   const search = new Search(params, process.env.PDRsTable);
-  const r = await search.query(true);
+  const r = await search.query();
 
-  if (r.meta.count) {
-    // iterate over all items
-    // if the total of completed and failed granules matches
-    // the total granules, mark the pdr as completed
-    const completed = r.results.filter((i) => {
-      if (i.granulesStatus) {
-        const total = i.granulesStatus.completed + i.granulesStatus.failed;
-        if (total >= i.granules && total > 0) {
-          return true;
-        }
-      }
-      return false;
-    });
+  const p = new Pdr();
 
-    if (completed.length > 0) {
-      log.info(`Found ${completed.length} completed PDRs. Marking them as completed`);
+  for (const result of r.results) {
+    const stats = await search.granulesStats('pdrName', result.pdrName);
+    const updateObj = {
+      granules: stats.granules,
+      granulesStatus: stats.granulesStatus,
+      progress: stats.progress,
+      averageDuration: stats.averageDuration
+    };
 
-      // mark them as completed
-      const p = new Pdr();
-      await Promise.all(completed.map((i) => {
-        if (i.granulesStatus) {
-          return p.hasCompleted(
-            i.pdrName, i.granules === i.granulesStatus.completed
-          );
-        }
-        return true;
-      }));
+    console.log(`Updating ${result.pdrName}`);
+
+    if (stats.progress >= 100) {
+      updateObj.status = 'completed';
     }
-    else {
-      console.log('All PDRs are doing great');
+
+    await p.update({ pdrName: result.pdrName }, updateObj);
+  }
+}
+
+async function updateCollectionsStats() {
+  const params = {
+    queryStringParameters: {
+      fields: 'collectionName',
+      limit: 100
     }
+  };
+
+  const search = new Search(params, process.env.CollectionsTable);
+  const r = await search.query();
+
+  const c = new Collection();
+
+  for (const result of r.results) {
+    const stats = await search.granulesStats('collectionName', result.collectionName);
+    const updateObj = {
+      granules: stats.granules,
+      granulesStatus: stats.granulesStatus,
+      progress: stats.progress,
+      averageDuration: stats.averageDuration
+    };
+
+    console.log(`Updating ${result.collectionName}`);
+    await c.update({ collectionName: result.collectionName }, updateObj);
   }
 }
 
@@ -114,10 +132,19 @@ async function populateResources() {
 export function handler(event = {}) {
   const frequency = event.frequency || 120;
 
+  // update pdr stats every 5 seconds
+  setInterval(() => {
+    updatePdrStats().catch(e => log.error(e, logDetails));
+  }, 5 * 1000);
+
+  // update collections stats every 12 seconds
+  setInterval(() => {
+    updatePdrStats().catch(e => log.error(e, logDetails));
+  }, 12 * 1000);
+
   return setInterval(() => {
-    markPdrs().catch(e => console.log(e));
-    markStaleGranulesFailed().catch(e => console.log(e));
-    populateResources().catch(e => console.log(e));
+    markStaleGranulesFailed().catch(e => log.error(e, logDetails));
+    populateResources().catch(e => log.error(e, logDetails));
   }, parseInt(frequency) * 1000);
 }
 
@@ -125,6 +152,8 @@ export function handler(event = {}) {
 localRun(() => {
   //handler();
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
-  markPdrs().then(() => {}).catch(e => console.log(e));
+  //markPdrs().then(() => {}).catch(e => console.log(e));
   //populateResources()
+  //updatePdrStats();
+  updateCollectionsStats();
 });

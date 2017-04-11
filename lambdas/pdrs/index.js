@@ -14,7 +14,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.PDRsTable);
-  search.query(true).then(response => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -32,7 +32,7 @@ export function get(event, cb) {
   }
 
   const search = new Search({}, process.env.PDRsTable);
-  search.get(name, true).then((response) => {
+  search.get(name).then((response) => {
     // return PDRD message if pdrd query is made
     if (event.queryStringParameters && event.queryStringParameters.pdrd) {
       if (response.PDRD) {

@@ -19,7 +19,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.CollectionsTable);
-  search.query(true).then(response => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -36,7 +36,7 @@ export function get(event, cb) {
   }
 
   const search = new Search({}, process.env.CollectionsTable);
-  search.get(collectionName, true)
+  search.get(collectionName)
     .then(response => cb(null, response))
     .catch(e => cb(e));
 }
