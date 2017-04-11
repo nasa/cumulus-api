@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const exec = require('./common').exec;
+const getProfile = require('./common').getProfile;
 
 function getLambdaZipFile(handler) {
   return _.split(handler, '.')[0];
@@ -19,21 +20,9 @@ function getLambdaZipFile(handler) {
  * lambda zip file. The information is exracted from the config.yml
  * @return {Object} A grouped lambdas list
  */
-function lambdaObject() {
-  const c = parseConfig();
+function lambdaObject(c, step) {
+  c = c || parseConfig(null, null, step);
   const obj = {};
-
-  // add distribution
-  c.lambdas.push({
-    handler: 'distribution.handler',
-    name: 'distribution'
-  });
-
-  // add dynamo to es function
-  c.lambdas.push({
-    handler: 'es.handler',
-    name: 'dynamoToEs'
-  });
 
   for (const lambda of c.lambdas) {
     // extract the lambda folder name from the handler
@@ -59,12 +48,21 @@ function lambdaObject() {
   return obj;
 }
 
+function zipLambda(name, includeConfig) {
+  // copy config file
+  if (includeConfig) {
+    exec(`cp config/config.yml dist/${name}/`);
+  }
+
+  exec(`cd dist && zip -r ../build/lambda/${name} ${name}`);
+}
+
 /**
  * Zips lambda functions and uploads them to a given S3 location
  * @param  {string} s3Path  A valid S3 URI for uploading the zip files
  * @param  {string} profile The profile name used in aws CLI
  */
-function uploadLambdas(s3Path, profile) {
+function uploadLambdas(s3Path, profile, config) {
   // remove the build folder if exists
   fs.removeSync(path.join(process.cwd(), 'build'));
 
@@ -72,16 +70,15 @@ function uploadLambdas(s3Path, profile) {
   fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // zip files dist folders
-  const distFolders = fs.readdirSync('dist');
-  distFolders.forEach((dir) => {
-    exec(`cd dist && zip -r ../build/lambda/$(basename ${dir} .js) ${dir}`);
-  });
+  for (const lambda of config.lambdas) {
+    zipLambda(lambda.name, lambda.includeConfig);
+  }
 
   // upload the artifacts to AWS S3
   // we use the aws cli to make things easier
   // this fails if the user doesn't have aws-cli installed
   exec(`cd build && aws s3 cp --recursive . ${s3Path}/ \
-                              --profile ${profile} \
+                              ${getProfile(profile)} \
                               --exclude=.DS_Store`);
 }
 
@@ -92,7 +89,7 @@ function uploadLambdas(s3Path, profile) {
  */
 function updateLambda(options, name, webpack) {
   const profile = options.profile;
-  const lambdas = lambdaObject();
+  const lambdas = lambdaObject(null, options.stage);
 
   // Run webpack
   if (_.has(webpack, 'webpack') && webpack.webpack) {
@@ -103,14 +100,14 @@ function updateLambda(options, name, webpack) {
   fs.mkdirpSync(path.join(process.cwd(), 'build/lambda'));
 
   // Update the zip file
-  exec(`cd dist && zip -r ../build/lambda/${name} ${name}`);
+  zipLambda(name);
 
   for (const lambda of lambdas[name]) {
     // Upload the zip file to AWS Lambda
     exec(`aws lambda update-function-code \
       --function-name ${lambda.name} \
       --zip-file fileb://build/lambda/${name}.zip \
-      --profile ${profile}`);
+      ${getProfile(profile)}`);
   }
 }
 

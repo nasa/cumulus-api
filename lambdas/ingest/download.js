@@ -1,11 +1,9 @@
 'use strict';
 
-import path from 'path';
 import log from 'cumulus-common/log';
-import { HttpGranuleIngest } from 'cumulus-common/ingest';
-import { SQS, invoke } from 'cumulus-common/aws-helpers';
-import { Granule } from 'cumulus-common/models';
-import { syncUrl, fileNotFound } from 'gitc-common/aws';
+import { Provider } from 'cumulus-common/models';
+import { HttpGranuleIngest, FtpGranuleIngest } from 'cumulus-common/ingest';
+import { SQS } from 'cumulus-common/aws-helpers';
 
 const logDetails = {
   file: 'lambdas/pdr/download.js',
@@ -15,16 +13,29 @@ const logDetails = {
 
 
 async function processMessage(message) {
+  // Example of granule message
+  //const granule = {"granuleId":"MYD09A1.A2017081.H24V01.006.2017095190811","protocol":"ftp","provider":"MODAPS_FPROC","host":"modpdr01.nascom.nasa.gov","pdrName":"MODAPSops8.15742522.PDR","collectionName":"MYD09A1_version_006","files":[{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"MYD09A1.A2017081.H24V01.006.2017095190811.HDF","fileSize":750318,"checksumType":"CKSUM","checksumValue":785845502,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/MYD09A1.A2017081.H24V01.006.2017095190811.HDF"},{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"MYD09A1.A2017081.H24V01.006.2017095190811.HDF.MET","fileSize":54640,"checksumType":null,"checksumValue":null,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/MYD09A1.A2017081.H24V01.006.2017095190811.HDF.MET"},{"path":"/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA","filename":"BROWSE.MYD09A1.A2017081.H24V01.006.2017095190811.HDF","fileSize":6669,"checksumType":null,"checksumValue":null,"url":"modpdr01.nascom.nasa.gov/MODOPS/MODAPS/EDC/CUMULUS/FPROC/DATA/BROWSE.MYD09A1.A2017081.H24V01.006.2017095190811.HDF"}],"isDuplicate":false}
   const granule = message.Body;
   const receiptHandle = message.ReceiptHandle;
+  logDetails.granuleId = granule.granuleId;
+  logDetails.pdrName = granule.pdrName;
+  logDetails.provider = granule.provider;
 
   try {
+    let ingest;
     switch (granule.protocol) {
-      case 'ftp':
-        // do ftp
+      case 'ftp': {
+        // get provider record for username/password
+        const p = new Provider();
+        const provider = await p.get({ name: granule.provider });
+
+
+        ingest = new FtpGranuleIngest(granule, provider.config.username, provider.config.password);
+        await ingest.ingest();
         break;
+      }
       default:
-        const ingest = new HttpGranuleIngest(granule);
+        ingest = new HttpGranuleIngest(granule);
         await ingest.ingest();
     }
 
@@ -33,10 +44,10 @@ async function processMessage(message) {
   catch (e) {
     log.error(
       `Couldn't ingest files of ${granule.granuleId}. There was an error`,
-      e,
-      e.stack,
       logDetails
     );
+
+    log.error(e, logDetails);
   }
 }
 
@@ -62,10 +73,9 @@ export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200
       // get message body
       if (messages.length > 0) {
         // holds list of parallels downloads
-        const downloads = [];
 
         log.info(
-          `Ingest: ${concurrency} Granules(s) concurrently`,
+          `Ingest: ${messages.length} Granules(s) concurrently`,
           logDetails
         );
 
@@ -84,7 +94,7 @@ export async function pollGranulesQueue(concurrency = 1, visibilityTimeout = 200
       }
     }
     catch (e) {
-      log.error(e, e.stack, logDetails);
+      log.error(e, logDetails);
     }
   }
 }

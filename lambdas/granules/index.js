@@ -1,9 +1,10 @@
 'use strict';
 
 import _ from 'lodash';
+import path from 'path';
 import { handle } from 'cumulus-common/response';
-import { Granule } from 'cumulus-common/models';
-import { invoke } from 'cumulus-common/aws-helpers';
+import { Granule, Provider } from 'cumulus-common/models';
+import { invoke, SQS } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 
@@ -16,36 +17,59 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.GranulesTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
 
 export function put(event, cb) {
-  const action = _.get(event, ['body', 'action'], null);
+  let data = _.get(event, 'body', '{}');
+  data = JSON.parse(data);
 
-  if (action && action === 'reprocess') {
-    const granuleId = _.get(event, ['path', 'granuleName']);
-    // TODO: send the granule for processing
+  const action = _.get(data, 'action', null);
+  const step = _.get(data, 'step', 0);
+
+  if (action) {
+    const granuleId = _.get(event.pathParameters, 'granuleName');
     const g = new Granule();
 
-    g.get({ granuleId: granuleId }).then(record => {
-      record.status = 'processing';
-
-      return invoke(
-        process.env.dispatcher,
-        {
-          previousStep: 0,
-          nextStep: 0,
-          granuleRecord: record
+    return g.get({ granuleId: granuleId }).then((record) => {
+      if (action === 'reprocess') {
+        return invoke(
+          process.env.dispatcher,
+          Granule.generatePayload(record, step)
+        );
+      }
+      else if (action === 'reingest') {
+        return g.reingest(granuleId);
+      }
+      else if (action === 'removeFromCmr') {
+        if (!record.published) {
+          throw new Error('The granule is not published to CMR');
         }
+
+        return g.unpublish(granuleId, record.cmrProvider);
+      }
+      throw new Error(`Action <${action}> is not supported`);
+    }).then(r => cb(null, r)).catch(e => cb(e));
+  }
+
+  return cb('action is missing');
+}
+
+export function del(event, cb) {
+  const granuleId = _.get(event.pathParameters, 'granuleName');
+  const g = new Granule();
+
+  return g.get({ granuleId: granuleId }).then((record) => {
+    if (record.published) {
+      throw new Error(
+        'You cannot delete a granule that is published to CMR. Remove it from CMR first'
       );
-    }).then(r => cb(null, r))
-      .catch(e => cb(e));
-  }
-  else {
-    return cb('action is missing');
-  }
+    }
+
+    return g.delete({ granuleId: granuleId });
+  }).then(() => cb(null, { detail: 'Record deleted' })).catch(e => cb(e));
 }
 
 /**
@@ -55,7 +79,7 @@ export function put(event, cb) {
  * @return {object} a single granule object.
  */
 export function get(event, cb) {
-  const granuleId = _.get(event.path, 'granuleName');
+  const granuleId = _.get(event.pathParameters, 'granuleName');
 
   const search = new Search({}, process.env.GranulesTable);
   search.get(granuleId).then((response) => {
@@ -74,6 +98,9 @@ export function handler(event, context) {
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
     }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
+    }
     else {
       list(event, cb);
     }
@@ -82,11 +109,17 @@ export function handler(event, context) {
 
 
 localRun(() => {
-  localRun(() => {
-    list({
-      query: {
-        prefix: 'good_25'
-      }
-    }, null, (e, r) => console.log(e, r));
-  });
+  //list({
+    //queryStringParameters: {
+      //collectionName: 'AST_L1A__version__003',
+      //prefix: 'bad'
+    //}
+  //}, (e, r) => console.log(e, r));
+
+  put({
+    pathParameters: {
+      granuleName: 'MYD13A1.A2017073.h21v06.006.2017094141555'
+    },
+    body: '{\n\t"action": "reingest"\n}'
+  }, (e, r) => console.log(e, r));
 });

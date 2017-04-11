@@ -18,7 +18,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.ProvidersTable);
-  search.query().then((response) => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -38,7 +38,7 @@ export function get(event, cb) {
   const search = new Search({}, process.env.ProvidersTable);
   search.get(name)
     .then(response => cb(null, response))
-    .catch((e) => cb(e));
+    .catch(e => cb(e));
 }
 
 /**
@@ -60,7 +60,7 @@ export function post(event, cb) {
 
   p.get({ name: name })
     .then(() => cb(`A record already exists for ${name}`))
-    .catch(e => {
+    .catch((e) => {
       if (e instanceof RecordDoesNotExist) {
         return p.create(data).then(() => {
           cb(null, {
@@ -92,32 +92,42 @@ export function put(event, cb) {
 
 
   // get the record first
-  p.get({ name: name }).then(originalData => {
+  p.get({ name }).then((originalData) => {
     data = Object.assign({}, originalData, data);
 
     // handle restart case
     if (data.action === 'restart') {
       return p.restart(name)
-        .then((r) => cb(null, r))
-        .catch((e) => cb(e));
+        .then(r => cb(null, r))
+        .catch(e => cb(e));
     }
 
     // handle stop case
     if (data.action === 'stop') {
       return p.update(
-        { name: name },
+        { name },
         { status: 'stopped', isActive: false }
       );
     }
 
     // otherwise just update
     return p.create(data);
-  }).then(r => cb(null, r)).catch(err => {
+  }).then(r => cb(null, r)).catch((err) => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');
     }
     cb(err);
   });
+}
+
+export function del(event, cb) {
+  const name = _.get(event.pathParameters, 'name');
+  const p = new Provider();
+
+  return p.get({ name })
+    .then(() => p.delete({ name }))
+    .then(() => cb(null, { detail: 'Record deleted' }))
+    .catch(e => cb(e));
 }
 
 export function handler(event, context) {
@@ -130,6 +140,9 @@ export function handler(event, context) {
     }
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
+    }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
     }
     else {
       list(event, cb);
@@ -145,6 +158,6 @@ localRun(() => {
   handler(
     { httpMethod: 'GET' },
     //{ httpMethod: 'POST', body: JSON.stringify(example) },
-    { succeed: (r) => console.log(r) }
+    { succeed: r => console.log(r) }
   );
 });

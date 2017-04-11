@@ -7,7 +7,7 @@ import {
   Collection,
   RecordDoesNotExist
 } from 'cumulus-common/models';
-import example from 'cumulus-common/tests/data/collection.json';
+//import example from 'cumulus-common/tests/data/collection.json';
 
 import { Search } from 'cumulus-common/es/search';
 
@@ -19,7 +19,7 @@ import { Search } from 'cumulus-common/es/search';
  */
 export function list(event, cb) {
   const search = new Search(event, process.env.CollectionsTable);
-  search.query(true).then((response) => cb(null, response)).catch((e) => {
+  search.query().then(response => cb(null, response)).catch((e) => {
     cb(e);
   });
 }
@@ -36,9 +36,9 @@ export function get(event, cb) {
   }
 
   const search = new Search({}, process.env.CollectionsTable);
-  search.get(collectionName, true)
+  search.get(collectionName)
     .then(response => cb(null, response))
-    .catch((e) => cb(e));
+    .catch(e => cb(e));
 }
 
 /**
@@ -60,7 +60,7 @@ export function post(event, cb) {
 
   c.get({ collectionName: collectionName })
     .then(() => cb(`A record already exists for ${collectionName}`))
-    .catch(e => {
+    .catch((e) => {
       if (e instanceof RecordDoesNotExist) {
         return c.create(data).then(() => {
           cb(null, {
@@ -91,15 +91,42 @@ export function put(event, cb) {
   const c = new Collection();
 
   // get the record first
-  c.get({ collectionName: collectionName }).then(originalData => {
+  c.get({ collectionName: collectionName }).then((originalData) => {
     data = Object.assign({}, originalData, data);
     return c.create(data);
-  }).then(r => cb(null, r)).catch(err => {
+  }).then(r => cb(null, r)).catch((err) => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');
     }
     cb(err);
   });
+}
+
+export function del(event, cb) {
+  const collectionName = _.get(event.pathParameters, 'short_name');
+  const c = new Collection();
+
+  return c.get({ collectionName }).then(() => {
+    // check if there are any granules associated with this collection
+    // do not delete if there are granules
+    const params = {
+      queryStringParameters: {
+        fields: 'granuleId',
+        collectionName,
+        limit: 1
+      }
+    };
+
+    const search = new Search(params, process.env.GranulesTable);
+    return search.query();
+  }).then((r) => {
+    if (r.meta.count > 0) {
+      throw new Error('Cannot delete this collection while there are granules associated with it');
+    }
+
+    return c.delete({ collectionName });
+  }).then(() => cb(null, { detail: 'Record deleted' }))
+    .catch(e => cb(e));
 }
 
 export function handler(event, context) {
@@ -112,6 +139,9 @@ export function handler(event, context) {
     }
     else if (event.httpMethod === 'PUT' && event.pathParameters) {
       put(event, cb);
+    }
+    else if (event.httpMethod === 'DELETE' && event.pathParameters) {
+      del(event, cb);
     }
     else {
       list(event, cb);
@@ -127,6 +157,6 @@ localRun(() => {
   handler(
     { httpMethod: 'GET' },
     //{ httpMethod: 'POST', body: JSON.stringify(example) },
-    { succeed: (r) => console.log(r) }
+    { succeed: r => console.log(r) }
   );
 });

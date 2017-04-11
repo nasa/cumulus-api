@@ -30,7 +30,7 @@ module.exports = {
     __dirname: false,
     __filename: false
   },
-  devtool: '#inline-source-map',
+  //devtool: '#inline-source-map',
   resolve: {
     alias: {
       'aws-sdk': 'aws-sdk/dist/aws-sdk'
@@ -41,7 +41,7 @@ module.exports = {
     rules: [
       {
         include: glob.sync('./lambdas/*/index.js', { realpath: true })
-                     .map((filename) => path.resolve(__dirname, filename)),
+                     .map(filename => path.resolve(__dirname, filename)),
         exclude: /node_modules/,
         loader: 'prepend-loader',
         query: {

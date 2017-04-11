@@ -6,6 +6,7 @@ const fs = require('fs-extra');
 const parseConfig = require('./common').parseConfig;
 const uploadKeyPair = require('./crypto').uploadKeyPair;
 const exec = require('./common').exec;
+const getProfile = require('./common').getProfile;
 const uploadLambdas = require('./lambda').uploadLambdas;
 
 
@@ -17,8 +18,8 @@ const uploadLambdas = require('./lambda').uploadLambdas;
  * for generating the final CF template
  * @return {null}
  */
-const compileCF = (options) => {
-  const config = parseConfig(options.config, options.stack, options.stage);
+const compileCF = (options, stage) => {
+  const config = parseConfig(options.config, options.stack, stage);
 
   const t = fs.readFileSync(path.join(process.cwd(), 'config/cloudformation.template.yml'), 'utf8');
   const template = Handlebars.compile(t);
@@ -33,9 +34,9 @@ const compileCF = (options) => {
  * @param  {string} s3Path  A valid S3 URI for uploading the zip files
  * @param  {string} profile The profile name used in aws CLI
  */
-function uploadCF(s3Path, profile, configPath) {
+function uploadCF(s3Path, profile, configPath, stage) {
   // build the template first
-  compileCF(configPath);
+  compileCF(configPath, stage);
 
   // make sure cloudformation template exists
   try {
@@ -48,27 +49,38 @@ function uploadCF(s3Path, profile, configPath) {
 
   // upload CF template to S3
   exec(`aws s3 cp config/cloudformation.yml ${s3Path}/ \
-                  --profile ${profile}`);
+                  ${getProfile(profile)}`);
 }
 
-function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile) {
+function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile, stage) {
+  const name = stage ? `${stackName}-${stage}` : stackName;
   // Run the cloudformation cli command
-  exec(`aws cloudformation ${op}-stack \
---profile ${profile} \
---stack-name ${stackName} \
---template-url "${templateUrl}" \
---parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
-"ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
---capabilities CAPABILITY_IAM`
-  );
+  try {
+    exec(`aws cloudformation ${op}-stack \
+  ${getProfile(profile)} \
+  --stack-name ${name} \
+  --template-url "${templateUrl}" \
+  --parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
+  "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
+  --capabilities CAPABILITY_IAM`
+    );
+  }
+  catch (e) {
+    if (e.message.match(/(No updates are to be performed)/)) {
+      console.log('Nothing to update');
+      process.exit(0);
+    }
+    console.error(e);
+    process.exit(1);
+  }
 
   // await for the response
-  console.log(`Waiting for the stack to be ${op}ed:`);
+  console.log(`Waiting for the stack to be ${op}d:`);
   try {
     exec(`aws cloudformation wait stack-${op}-complete \
-            --stack-name ${stackName} \
-            --profile ${profile}`);
-    console.log(`Stack is successfully ${op}ed`);
+            --stack-name ${name} \
+            ${getProfile(profile)}`);
+    console.log(`Stack is successfully ${op}d`);
   }
   catch (e) {
     console.log('Stack creation failed due to:');
@@ -90,13 +102,13 @@ function dlqToLambda(options) {
       if (!queueUrl) {
         let temp = exec(`aws sqs get-queue-url \
           --queue-name ${config.stackName}-${config.stage}-${lambda.dlq} \
-          --profile ${profile}`);
+          ${getProfile(profile)}`);
         queueUrl = JSON.parse(temp).QueueUrl;
 
         temp = exec(`aws sqs get-queue-attributes \
           --attribute-names QueueArn \
           --queue-url ${queueUrl} \
-          --profile ${profile}`);
+          ${getProfile(profile)}`);
         queueArn = JSON.parse(temp).Attributes.QueueArn;
       }
 
@@ -130,7 +142,7 @@ function getConfig(options, configPath) {
 
   // check if the configBucket exists, if not throw an error
   try {
-    exec(`aws s3 ls s3://${config.buckets.internal} --profile ${options.profile}`);
+    exec(`aws s3 ls s3://${config.buckets.internal} ${getProfile(options.profile)}`);
   }
   catch (e) {
     console.error(`${config.buckets.internal} does not exist or ` +
@@ -184,11 +196,11 @@ function validateTemplate(options) {
   const url = `${h.url}/cloudformation.yml`;
 
   // Build and upload the CF template
-  uploadCF(h.path, profile, configPath);
+  uploadCF(h.path, profile, configPath, options.stage);
 
   exec(`aws cloudformation validate-template \
 --template-url "${url}" \
---profile ${profile}`);
+${getProfile(profile)}`);
 }
 
 /**
@@ -207,10 +219,10 @@ function opsStack(options, ops) {
   const h = getHash(c);
 
   // upload lambdas and the cf template
-  uploadLambdas(h.path, profile);
+  uploadLambdas(h.path, profile, c);
 
   // Build and upload the CF template
-  uploadCF(h.path, profile, configPath);
+  uploadCF(h.path, profile, configPath, options.stage);
 
   cloudFormation(
     ops,
@@ -218,7 +230,8 @@ function opsStack(options, ops) {
     c.stackName,
     c.buckets.internal,
     h.hash,
-    profile
+    profile,
+    c.stage
   );
 }
 

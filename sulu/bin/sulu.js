@@ -1,4 +1,5 @@
-#! /usr/bin/env node --harmony
+#!/usr/bin/env node
+
 'use strict';
 
 const program = require('commander');
@@ -10,6 +11,7 @@ const lambda = lib.lambda;
 const serve = lib.offline;
 const bootstrap = lib.bootstrap;
 const users = lib.users;
+const envs = lib.envs;
 
 // the CLI activation
 program
@@ -87,8 +89,11 @@ program
 program
   .command('bootstrap [local|remote]')
   .description('create tables and queues on local DynamoDB and SQS')
-  .action((cmd) => {
-    bootstrap(cmd);
+  .option(
+    '--delete',
+    'Delete Elasticsearch indices and recreate them. WARNING: This will delete all the data'
+  ).action((cmd, options) => {
+    bootstrap(cmd, program, options.delete);
   });
 
 program
@@ -96,12 +101,13 @@ program
   .description('List users')
   .option('-l, --local', 'run this locally')
   .action((cmd, username, password, options) => {
+    envs.apply(program.stage);
     switch (cmd) {
       case 'add':
         users.add(username, password, options);
         break;
       case 'list':
-        users.list(options);
+        users.list(program, options);
         break;
       case 'delete':
         users.delete(username, options);

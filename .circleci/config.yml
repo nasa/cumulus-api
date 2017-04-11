@@ -1,0 +1,60 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:4.8.0-wheezy
+      - image: peopleperhour/dynamodb
+      - image: vsouza/sqs-local
+      - image: elasticsearch:2.3.5
+    working_directory: ~/cumulus-api
+    steps:
+      - checkout
+
+      # restore cache
+      - restore_cache:
+          keys:
+            - cumulus-api-{{ .Branch }}-{{ checksum "package.json" }}
+            - cumulus-api-{{ .Branch }}
+            - cumulus-api-develop
+            - cumulus-api
+
+      - run:
+          name: Installing Dependencies
+          command: |
+            apt-get update && apt-get install -y python-dev python-pip zip
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+            apt-get update && apt-get install yarn
+            mkdir -p ~/cumulus-api/yarn-cache
+            yarn --cache-folder ~/cumulus-api/yarn-cache
+
+      # save node_module and yarn-cache folders
+      - save_cache:
+          key: cumulus-api-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/cumulus-api/node_modules
+            - ~/cumulus-api/yarn-cache
+
+      - run:
+          name: Running Test
+          command: |
+            cp config/secrets.json.example config/secrets.json
+            yarn run test
+
+      - deploy:
+          name: develop branch deployed to dev stack
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              pip install awscli
+              node_modules/.bin/webpack --progress
+              sulu cf update --stage dev
+            fi
+
+      - deploy:
+          name: master branch deployed to prod stack
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              pip install awscli
+              node_modules/.bin/webpack --progress
+              sulu cf update --stage prod
+            fi

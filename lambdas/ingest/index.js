@@ -18,8 +18,8 @@ export function download(event) {
   const concurrency = event.concurrency || 2;
   try {
     pollGranulesQueue(concurrency)
-    .then((r) => console.log(r))
-    .catch((e) => log.error(e, e.stack, 'ingestGranulesHandler'));
+    .then(r => console.log(r))
+    .catch(e => log.error(e, e.stack, 'ingestGranulesHandler'));
   }
   catch (e) {
     console.log(e, e.stack);
@@ -59,7 +59,7 @@ export function discover(event) {
   pollProviders(frequency);
 }
 
-export function handler(event, context, cb) {
+export function handler(event) {
   const registered = {
     discover,
     parse,
@@ -70,7 +70,7 @@ export function handler(event, context, cb) {
     registered[event.action](event);
   }
   else {
-    cb(`Action is not supported. Supported actions are ${Object.keys(registered)}`);
+    log.error(`Action is not supported. Supported actions are ${Object.keys(registered)}`);
   }
 }
 

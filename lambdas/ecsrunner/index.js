@@ -1,5 +1,6 @@
 'use strict';
 
+import _ from 'lodash';
 import AWS from 'aws-sdk';
 import log from 'cumulus-common/log';
 import { SQS, S3 } from 'cumulus-common/aws-helpers';
@@ -26,7 +27,9 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         const payload = message.Body;
         const granuleId = payload.granuleRecord.granuleId;
         const receiptHandle = message.ReceiptHandle;
+        const image = payload.granuleRecord.recipe.processStep.config.image;
         logDetails.granuleId = granuleId;
+        logDetails.pdrName = payload.granuleRecord.pdrName;
         logDetails.collectionName = payload.granuleRecord.collectionName;
 
         log.info('Recieved message from SQS', logDetails);
@@ -44,23 +47,31 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         // launch ecs task
         const ecs = new AWS.ECS();
 
+        // construct task definition
+        const taskDefinition = (`${process.env.StackName}-` +
+          `${process.env.Stage}-${image}-TaskDefinition`);
+
         const params = {
           cluster: process.env.CumulusCluster,
-          taskDefinition: process.env.TaskDefinition,
+          taskDefinition: taskDefinition,
           overrides: {
             containerOverrides: [
               {
-                name: 'dockerAster',
+                name: image,
                 command: [
                   'recipe',
                   payloadUri,
                   '--s3path',
-                  `s3://${process.env.internal}/staging`
+                  `s3://${process.env.internal}/staging`,
+                  '--dispatcher',
+                  process.env.dispatcher,
+                  '--sqs',
+                  receiptHandle
                 ]
               }
             ]
           },
-          startedBy: granuleId
+          startedBy: _.truncate(granuleId, { length: 36 })
         };
 
         log.info('Attempting to register the task with ECS', logDetails);
@@ -86,13 +97,13 @@ export async function pollQueue(messageNum = 1, visibilityTimeout = 100, wait = 
         }
 
         // deleting the message
-        await SQS.deleteMessage(process.env.ProcessingQueue, receiptHandle);
-        log.info('Message deleted', logDetails);
+        //await SQS.deleteMessage(process.env.ProcessingQueue, receiptHandle);
+        //log.info('Message deleted', logDetails);
       }
     }
   }
   catch (e) {
-    log.error(e, e.stack, logDetails);
+    log.error(e, logDetails);
   }
   finally {
     // rerun the function
@@ -105,9 +116,7 @@ export function handler(event, context, cb) {
 }
 
 localRun(() => {
-  process.env.CumulusCluster = 'cumulus-api-test2-CumulusECSCluster-YOFUX7L4ZQDR';
-  process.env.TaskDefinition = 'cumulus-api-test2-AsterProcessingTaskDefinition-1KXHC9IXBCMYF:1';
-  handler({}, {}, {});
-  //pollQueue().then(r => console.log(r)).catch(e => console.log(e));
+  process.env.CumulusCluster = 'cumulus-api-lpdaac-CumulusECSCluster-15GFT0YONVDKS';
+  handler({}, {}, () => {});
 });
 

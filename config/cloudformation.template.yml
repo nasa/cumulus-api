@@ -96,6 +96,11 @@ Resources:
                 - ecr:BatchGetImage
                 - ecr:GetDownloadUrlForLayer
                 - ecr:GetAuthorizationToken
+                - ecs:DescribeClusters
+                - ecs:ListServices
+                - ecs:ListContainerInstances
+                - ecs:DescribeServices
+                - ecs:DescribeContainerInstances
                 Resource:
                 - "*"
 
@@ -107,6 +112,12 @@ Resources:
                 - logs:CreateLogStream
                 - logs:PutLogEvents
                 Resource: arn:aws:logs:*:*:*
+
+              # Allow Cloudwatch metrics access - needed to get S3 bucket size
+              - Effect: Allow
+                Action:
+                - cloudwatch:GetMetricStatistics
+                Resource: "*"
 
 
   # needed for EC2 instances
@@ -264,6 +275,16 @@ Resources:
             - !Sub arn:aws:s3:::{{buckets.protected}}
             - !Sub arn:aws:s3:::{{buckets.protected}}/*
 
+          # Allow access to SQS
+          - Effect: Allow
+            Action:
+            - sqs:GetQueueUrl
+            - sqs:GetQueueAttributes
+            - sqs:SendMessage
+            Resource:
+            - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:{{stackName}}-*"
+
+
   #################################################
   # SQS config BEGIN
   #################################################
@@ -302,12 +323,6 @@ Resources:
     Properties:
       LogGroupName: {{stackName}}-{{stage}}-lambdarunner
 
-  DockerAsterLogs:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: {{stackName}}-{{stage}}-docker-aster
-
-
   CumulusECSCluster:
     Type: AWS::ECS::Cluster
 
@@ -321,6 +336,8 @@ Resources:
               command: !Sub |
                 #!/bin/bash
                 echo ECS_CLUSTER=${CumulusECSCluster} >> /etc/ecs/ecs.config
+                echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=1m >> /etc/ecs/ecs.config
+
           files:
             "/etc/cfn/cfn-hup.conf":
               content: !Sub |
@@ -346,7 +363,7 @@ Resources:
                 - "/etc/cfn/cfn-hup.conf"
                 - "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
     Properties:
-      AssociatePublicIpAddress: true
+      AssociatePublicIpAddress: false
       SecurityGroups:
         -  {{ecs.securityGroup}}
       ImageId: !FindInMap [AWSRegionToAMI, !Ref "AWS::Region", AMIID]
@@ -357,6 +374,7 @@ Resources:
         Ebs:
           DeleteOnTermination: true
           VolumeSize: 100
+          VolumeType: gp2
       KeyName: {{ ecs.keyPairName }}
       UserData:
         "Fn::Base64": !Join
@@ -387,29 +405,37 @@ Resources:
         PropagateAtLaunch: true
 
 
+{{#each images}}
   # adding TaskDefinition for Lambda/ECS services
-  AsterProcessingTaskDefinition:
+  {{name}}TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      Family: {{stackName}}-{{stage}}-{{name}}-TaskDefinition
       ContainerDefinitions:
-      - Name: dockerAster
+      - Name: {{name}}
         Environment:
           - Name: distributionEndpoint
             Value: {{distributionEndpoint}}
-        {{#each envsList}}
+        {{#each envs}}
           - Name: {{key}}
             Value: !Sub {{value}}
         {{/each}}
-        Cpu: 25
+        Cpu: {{cpu}}
         Essential: true
-        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/cumulus-docker-dev-aster
-        Memory: 400
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
+        MemoryReservation: {{memory}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group: !Ref DockerAsterLogs
+            awslogs-group: !Ref {{name}}DockerLogs
             awslogs-region: !Sub ${AWS::Region}
 
+  {{name}}DockerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: {{stackName}}-{{stage}}-{{name}}
+
+{{/each}}
 
   #################################################
   # ECS config END
@@ -576,7 +602,7 @@ Resources:
         IntegrationResponses:
         - ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
-            method.response.header.Access-Control-Allow-Methods: '''OPTIONS,PUT,POST,GET'''
+            method.response.header.Access-Control-Allow-Methods: '''OPTIONS,PUT,POST,GET,DELETE'''
             method.response.header.Access-Control-Allow-Origin: '''*'''
           ResponseTemplates:
             application/json: ''
@@ -682,8 +708,8 @@ Resources:
         Environment:
           - Name: AWS_DEFAULT_REGION
             Value: !Sub ${AWS::Region}
-          - Name: TaskDefinition
-            Value: !Ref AsterProcessingTaskDefinition
+          - Name: AWS_ACCOUNT_ID
+            Value: !Sub ${AWS::AccountId}
           - Name: CumulusCluster
             Value: !Ref CumulusECSCluster
           - Name: ES_HOST
@@ -708,7 +734,7 @@ Resources:
         Cpu: {{#if cpu }}{{ cpu }}{{ else }}10{{/if}}
         Essential: true
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/{{image}}
-        Memory: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
+        MemoryReservation: {{#if memory }}{{ memory }}{{ else }}256{{/if}}
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -747,4 +773,4 @@ Mappings:
     us-west-2:
       AMIID: ami-241bd844
     us-east-1:
-      AMIID: ami-e4c4cbf3
+      AMIID: ami-275ffe31
