@@ -5,6 +5,7 @@ import log from 'cumulus-common/log';
 import { localRun } from 'cumulus-common/local';
 import { Search } from 'cumulus-common/es/search';
 import { Granule, Pdr, Resource, Collection } from 'cumulus-common/models';
+import { SQS } from 'cumulus-common/aws-helpers';
 import { Stats } from 'cumulus-common/stats';
 
 const logDetails = {
@@ -47,6 +48,45 @@ async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
   }
   else {
     console.log('No stale granules found');
+  }
+}
+
+async function granulesProcessingFailures() {
+  const queue = `${process.env.ProcessingQueue}-failed`;
+  while (true) {
+    const messages = await SQS.receiveMessage(queue, 1, 100);
+
+    if (messages.length > 0) {
+      for (const message of messages) {
+        const payload = message.Body;
+
+        // get granule Record
+        const g = new Granule();
+        try {
+          const granule = await g.get({ granuleId: payload.granuleRecord.granuleId });
+          if (granule.status === 'processing') {
+            // mark it as failed
+            log.error(`processing step for ${granule.granuleId} failed after 3 attempts`, {
+              pdrName: granule.pdrName,
+              provider: granule.provider,
+              collectionName: granule.collectionName,
+              granuleId: granule.granuleId
+            });
+
+            await g.hasFailed(
+              { granuleId: granule.granuleId },
+              'Granule processing failed after 3 attemps.'
+            );
+          }
+        }
+        catch (e) {
+          console.log(e.message);
+          // pass, do nothing
+        }
+
+        await SQS.deleteMessage(queue, message.ReceiptHandle);
+      }
+    }
   }
 }
 
@@ -164,6 +204,9 @@ async function populateResources() {
 export function handler(event = {}) {
   const frequency = event.frequency || 120;
 
+  // run this one forever
+  granulesProcessingFailures();
+
   // update pdr stats every 5 seconds
   setInterval(() => {
     updatePdrStats().catch(e => log.error(e, logDetails));
@@ -171,7 +214,7 @@ export function handler(event = {}) {
 
   // update collections stats every 12 seconds
   setInterval(() => {
-    updatePdrStats().catch(e => log.error(e, logDetails));
+    updateCollectionsStats().catch(e => log.error(e, logDetails));
     consolidateAllPdrStats().catch(e => log.error(e, logDetails));
   }, 12 * 1000);
 
@@ -187,6 +230,7 @@ localRun(() => {
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
   //markPdrs().then(() => {}).catch(e => console.log(e));
   //populateResources()
-  updatePdrStats();
-  updateCollectionsStats();
+  //updatePdrStats();
+  //updateCollectionsStats();
+  granulesProcessingFailures();
 });
