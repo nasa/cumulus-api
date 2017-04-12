@@ -428,7 +428,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/collections/MY_
 
 ## Delete collection
 
-Delete a collection from Cumulus, but not from CMR. The related granules remain in the Cumulus and CMR systems.
+Delete a collection from Cumulus, but not from CMR. All related granules in Cumulus must have already been deleted from Cumulus.
 
 ```endpoint
 DELETE /collections/{collectionName}

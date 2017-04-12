@@ -1,163 +1,316 @@
 ## Summary
 
-Returns a summary of various metrics for the whole system
+Retrieve a summary of various metrics for all of the Cumulus engine.
 
 ```endpoint
-GET /stats/summary
+GET /stats
 ```
 
 #### Example Request
 
 ```curl
-$ curl https://workflow.ds.io/stats/summary -H 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization: tokentakenfromsinginendpoint'
 ```
 
 #### Example success response
 
 ```json
 {
-    "activeDatasets": 6,
-    "totalUsers": 4,
-    "granules": 2065,
-    "downloads": 72,
-    "errors": {
-        "datasets": 2,
-        "total": 10
-    },
-    "updatedAt": 1476190903330,
-    "bandwidth": 0,
-    "storageUsed": 0
+  "errors": {
+    "dateFrom": "1970-01-18T06:25:29+00:00",
+    "dateTo": "2017-04-12T04:55:27+00:00",
+    "value": 158,
+    "aggregation": "count",
+    "unit": "error"
+  },
+  "collections": {
+    "dateFrom": "1970-01-01T12:00:00+00:00",
+    "dateTo": "2017-04-12T04:55:27+00:00",
+    "value": 4,
+    "aggregation": "count",
+    "unit": "collection"
+  },
+  "processingTime": {
+    "dateFrom": "1970-01-18T06:25:29+00:00",
+    "dateTo": "2017-04-12T04:55:27+00:00",
+    "value": 54.05747180514865,
+    "aggregation": "average",
+    "unit": "second"
+  },
+  "granules": {
+    "dateFrom": "1970-01-18T06:25:29+00:00",
+    "dateTo": "2017-04-12T04:55:27+00:00",
+    "value": 36,
+    "aggregation": "count",
+    "unit": "granule"
+  },
+  "resources": [
+    {
+      "s3": [
+        {
+          "bucket": "cumulus-private",
+          "Sum": 770681495866,
+          "Unit": "Bytes",
+          "Timestamp": {}
+        },
+        {
+          "bucket": "cumulus-public",
+          "Sum": 1625772229,
+          "Unit": "Bytes",
+          "Timestamp": {}
+        },
+        {
+          "bucket": "cumulus-protected",
+          "Sum": 2720993174445,
+          "Unit": "Bytes",
+          "Timestamp": {}
+        },
+        {
+          "bucket": "cumulus-internal",
+          "Sum": 2688662529050,
+          "Unit": "Bytes",
+          "Timestamp": {}
+        }
+      ],
+      "createdAt": 1492016051264,
+      "instances": [
+        {
+          "pendingTasks": 0,
+          "availableMemory": 6450,
+          "availableCpu": 1993,
+          "id": "i-084ebffda1e5f4f6c",
+          "runningTasks": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "pendingTasks": 0,
+          "availableMemory": 6450,
+          "availableCpu": 1993,
+          "id": "i-04e019987a688d0ed",
+          "runningTasks": 4,
+          "status": "ACTIVE"
+        }
+      ],
+      "queues": [
+        {
+          "messagesAvailable": "0",
+          "name": "cumulus-api-lpdaac-dev-PDRsQueue",
+          "messagesInFlight": "0"
+        },
+        {
+          "messagesAvailable": "0",
+          "name": "cumulus-api-lpdaac-dev-GranulesQueue",
+          "messagesInFlight": "0"
+        },
+        {
+          "messagesAvailable": "0",
+          "name": "cumulus-api-lpdaac-dev-ProcessingQueue",
+          "messagesInFlight": "0"
+        },
+        {
+          "messagesAvailable": "562",
+          "name": "cumulus-api-lpdaac-dev-DispatcherFailedQueue",
+          "messagesInFlight": "0"
+        }
+      ],
+      "services": [
+        {
+          "pendingCount": 0,
+          "desiredCount": 1,
+          "name": "cumulus-api-lpdaac-dev-discoverPdrsECSService-6YW4ICJMNAT1",
+          "runningCount": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "pendingCount": 0,
+          "desiredCount": 1,
+          "name": "cumulus-api-lpdaac-dev-ecsrunnerECSService-UNZYDBT4VQG",
+          "runningCount": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "pendingCount": 0,
+          "desiredCount": 4,
+          "name": "cumulus-api-lpdaac-dev-ingestGranulesECSService-14DH5QS8SBT1C",
+          "runningCount": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "pendingCount": 0,
+          "desiredCount": 1,
+          "name": "cumulus-api-lpdaac-dev-parsePdrsECSService-13TX7LIJHUUWG",
+          "runningCount": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "pendingCount": 0,
+          "desiredCount": 1,
+          "name": "cumulus-api-lpdaac-dev-jobsECSService-Z6ZGBLE2C83T",
+          "runningCount": 1,
+          "status": "ACTIVE"
+        }
+      ],
+      "tasks": {
+        "pendingTasks": 0,
+        "runningTasks": 8
+      },
+      "updatedAt": 1492016051264,
+      "timestamp": "2017-04-12T16:54:09.508Z"
+    }
+  ]
 }
 ```
 
-## Summary Grouped
+## Histogram
 
-Returns stats grouped by type and date
+Retrieve time-bounded metrics needed to produce a histogram for dashboards. The "X-axis" variable is time. Accepts the following query parameters, _in addition_ to the filter parameters listed in the introductory query parameter table:
+
+| query string parameter | description |
+| `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
+| `field={fieldName}` | which field to query; default is `timestamp` |
+| `interval={day|week|month|year}` | "size" in time of each bar; default is `day` |
+| `format={ElasticSearch date format}` | display format for the datetime in the response, accepts any [ElasticSearch date format](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html); default is `yyyy-MM-dd` |
 
 ```endpoint
-GET /stats/summary/grouped
+GET /stats/histogram
 ```
 
-#### Example Request
+#### Example request
 
 ```curl
-$ curl https://workflow.ds.io/stats/summary/grouped -H 'Authorization: tokentakenfromsinginendpoint'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: tokentakenfromsinginendpoint'
 ```
 
-#### Example success response
+#### Example response
 
 ```json
 {
-    "granulesPublished": {
-        "2016-09-22": 166,
-        "2016-09-21": 23,
-        "2016-09-20": 48,
-        "2016-09-19": 11,
-        "2016-09-18": 102,
-        "2016-09-17": 73,
-        "2016-09-16": 167,
-        "2016-09-15": 65,
-        "2016-09-14": 113,
-        "2016-09-13": 163
-    },
-    "granulesDownloaded": {
-        "2016-09-22": 74,
-        "2016-09-21": 66,
-        "2016-09-20": 99,
-        "2016-09-19": 117,
-        "2016-09-18": 116,
-        "2016-09-17": 118,
-        "2016-09-16": 8,
-        "2016-09-15": 100,
-        "2016-09-14": 18,
-        "2016-09-13": 43
-    },
-    "downloadsPerDataSet": {
-        "hs3cpl": 66,
-        "hs3hirad": 99,
-        "hs3hiwrap": 117,
-        "hs3hamsr": 116,
-        "hs3wwlln": 118
-    },
-    "totalGranules": {
-        "2016-09-22": 47,
-        "2016-09-21": 67,
-        "2016-09-20": 59,
-        "2016-09-19": 19,
-        "2016-09-18": 108,
-        "2016-09-17": 174,
-        "2016-09-16": 0,
-        "2016-09-15": 52,
-        "2016-09-14": 12,
-        "2016-09-13": 123
-    },
-    "topCountries": {
-        "USA": 320,
-        "Germany": 10,
-        "China": 24,
-        "UK": 78,
-        "France": 110,
-        "Brazil": 43,
-        "Chile": 21,
-        "Mexico": 98,
-        "Canada": 45
-    },
-    "numberOfUsers": {
-        "2016-09-22": 47,
-        "2016-09-21": 67,
-        "2016-09-20": 59,
-        "2016-09-19": 19,
-        "2016-09-18": 108,
-        "2016-09-17": 174,
-        "2016-09-16": 0,
-        "2016-09-15": 52,
-        "2016-09-14": 12,
-        "2016-09-13": 123
+  "meta": {
+    "name": "cumulus-api",
+    "count": 29,
+    "criteria": {
+      "field": "timestamp",
+      "interval": "day",
+      "format": "yyyy-MM-dd"
     }
+  },
+  "histogram": [
+    {
+      "date": "2017-04-06",
+      "count": 3
+    },
+    {
+      "date": "2017-04-07",
+      "count": 1
+    },
+    {
+      "date": "2017-04-08",
+      "count": 0
+    },
+    {
+      "date": "2017-04-09",
+      "count": 0
+    },
+    {
+      "date": "2017-04-10",
+      "count": 0
+    },
+    {
+      "date": "2017-04-11",
+      "count": 24
+    },
+    {
+      "date": "2017-04-12",
+      "count": 1
+    }
+  ]
 }
 ```
 
-## Errors
+## Count
 
-List error stats
+Count the value frequencies for a given variable, for a given type of record in Cumulus. Requires the following query parameters, and may include the normal filter parameters:
+
+| query string parameter | description |
+| `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
+| `field={fieldName}` | which field to count frequencies for; no default |
 
 ```endpoint
-GET /stats/errors
+GET /stats/count
 ```
 
-#### Example Request
+#### Example request
 
 ```curl
-$ curl https://workflow.ds.io/stats/errors -H 'Authorization: tokentakenfromsinginendpoint'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=pdrs' --header 'Authorization: tokentakenfromsinginendpoint'
 ```
 
-#### Example success response
+#### Example response
 
 ```json
-[
+{
+  "meta": {
+    "name": "cumulus-api",
+    "count": 52,
+    "field": "status.keyword"
+  },
+  "count": [
     {
-        "dataset_id": "avaps",
-        "count": 3
+      "key": "failed",
+      "count": 43
     },
     {
-        "dataset_id": "cpl",
-        "count": 3
+      "key": "completed",
+      "count": 5
     },
     {
-        "dataset_id": "hamsr",
-        "count": 3
-    },
-    {
-        "dataset_id": "hirad",
-        "count": 3
-    },
-    {
-        "dataset_id": "hiwrap",
-        "count": 3
-    },
-    {
-        "dataset_id": "wwlln",
-        "count": 4
+      "key": "parsed",
+      "count": 3
     }
-]
+  ]
+}
+```
+
+## Average
+
+Calculate the average value for a numeric field. Requires the following query parameters, and may include the normal filter parameters:
+
+| query string parameter | description |
+| `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
+| `field={fieldName}` | which field to count frequencies for, must be numeric; no default |
+
+```endpoint
+GET /stats/average
+```
+
+#### Example request
+
+```curl
+curl 'https://cumulus.developmentseed.org/api/dev/stats/average?field=duration&type=granules' --header 'Authorization: tokentakenfromsinginendpoint'
+```
+
+#### Example response
+
+```json
+{
+  "meta": {
+    "name": "cumulus-api",
+    "count": 34,
+    "field": "duration"
+  },
+  "stats": {
+    "count": 34,
+    "min": 1.7050000429153442,
+    "max": 868.7949829101562,
+    "avg": 40.43520551919937,
+    "sum": 1374.7969876527786,
+    "sum_of_squares": 771227.9831936971,
+    "variance": 21048.170130905317,
+    "std_deviation": 145.0798750030662,
+    "std_deviation_bounds": {
+      "upper": 330.5949555253318,
+      "lower": -249.72454448693304
+    }
+  }
+}
 ```

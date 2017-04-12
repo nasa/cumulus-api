@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 /**
  * This file exports the content of your website, as a bunch of concatenated
@@ -23,15 +23,13 @@ module.exports =
   '# Collections\n' +
   fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
 
-  // NOT DONE
+  // NEED TO UPDATE/ADD RESONSES FOR ACTIONS
   '# Granules\n' +
   fs.readFileSync('./content/granules.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# PDRs\n' +
   fs.readFileSync('./content/pdrs.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Stats\n' +
   fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
 
