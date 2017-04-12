@@ -33,7 +33,7 @@ export function put(event, cb) {
 
     return g.get({ granuleId: granuleId }).then((record) => {
       if (action === 'reprocess') {
-        return g.reprocess(record, step);
+        return g.reprocess(record, step).then(() => ({ StatusCode: 202, Payload: '' }));
       }
       else if (action === 'reingest') {
         return g.reingest(granuleId);
@@ -111,10 +111,23 @@ localRun(() => {
     //}
   //}, (e, r) => console.log(e, r));
 
-  put({
+  handler({
+    httpMethod: 'PUT',
+    headers: {
+      Authorization: 'Basic xxxxxxxxxxxxx',
+      'Content-Type': 'application/json'
+    },
+    body: '{\n\t"action": "reprocess", "step": 1\n}',
     pathParameters: {
       granuleName: 'MYD13A1.A2017073.h21v06.006.2017094141555'
-    },
-    body: '{\n\t"action": "reingest"\n}'
-  }, (e, r) => console.log(e, r));
+    }
+  }, { succeed: (e, r) => console.log(e, r) });
+
+
+  //put({
+    //pathParameters: {
+      //granuleName: 'MYD13A1.A2017073.h21v06.006.2017094141555'
+    //},
+    //body: '{\n\t"action": "reingest"\n}'
+  //}, (e, r) => console.log(e, r));
 });
