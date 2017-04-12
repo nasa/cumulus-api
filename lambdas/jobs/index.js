@@ -21,13 +21,13 @@ const logDetails = {
  * @param {string} timeUnit='minute'
  */
 
-async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
+async function markStaleGranulesFailed(timeElapsed = 10, timeUnit = 'minute') {
   const g = new Granule();
 
   const params = {
     queryStringParameters: {
       fields: 'granuleId',
-      status__in: 'processing,archiving,cmr',
+      status__in: 'cmr',
       updatedAt__to: moment().subtract(timeElapsed, timeUnit).unix() * 1000,
       limit: 100
     }
@@ -36,8 +36,7 @@ async function markStaleGranulesFailed(timeElapsed = 200, timeUnit = 'minute') {
   const search = new Search(params, process.env.GranulesTable);
   const r = await search.query();
 
-  const errMsg = ('did not complete ' +
-    `or fail for at least ${timeElapsed} ${timeUnit}s`);
+  const errMsg = ('CMR step failed');
 
   if (r.meta.count) {
     log.info(`${r.meta.count} granules ${errMsg}. Marking them as failed`);
