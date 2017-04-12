@@ -1,6 +1,6 @@
-## List all granules
+## List granules
 
-List all granules in the Cumulus engine.
+List granules in the Cumulus engine.
 
 ```endpoint
 GET /granules

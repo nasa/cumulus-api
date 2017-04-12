@@ -33,17 +33,11 @@ module.exports =
   '# Stats\n' +
   fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Resources\n' +
   fs.readFileSync('./content/resources.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Logs\n' +
   fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
-
-  // NOT DONE
-  '# Errors\n' +
-  fs.readFileSync('./content/errors.md', 'utf8') + '\n' +
 
   // NOT DONE
   '# Schemas\n' +

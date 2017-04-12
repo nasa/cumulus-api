@@ -1,32 +1,103 @@
-## List
+## List logs
 
-Lists errors reported by Splunk.
+List processing logs from the Cumulus engine. Includes all errors for the system, if `level=error` is used as a query parameter.
 
 ```endpoint
-GET /errors
+GET /logs
 ```
 
-#### Example Request
+#### Example request
 
 ```curl
-$ curl https://workflow.ds.io/errors -H 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/logs?limit=5 --header 'Authorization: tokentakenfromsinginendpoint'
 ```
 
-#### Example success response
+#### Example response
 
 ```json
-[
+{
+  "meta": {
+    "name": "cumulus-api",
+    "table": null,
+    "limit": 5,
+    "page": 1,
+    "count": 86239
+  },
+  "results": [
     {
-        "timestamp": "2016-09-22T14:39:23.651637",
-        "dataset_id": "hamsr",
-        "process": "File process",
-        "message": "Something went terribly wrong again"
+      "level": "info",
+      "data": "\"No active provider found\"",
+      "meta": {
+        "file": "lambdas/pdr/discover.js",
+        "type": "ingesting",
+        "source": "discover"
+      },
+      "timestamp": "2017-04-12T18:34:44.553Z"
     },
     {
-        "timestamp": "2016-09-22T14:39:23.649773",
-        "dataset_id": "cpl",
-        "process": "File process",
-        "message": "Something went terribly wrong again"
+      "level": "info",
+      "data": "\"Latest AWS resources stats saved to DynamoDB\"",
+      "meta": {},
+      "timestamp": "2017-04-12T18:34:13.741Z"
+    },
+    {
+      "level": "info",
+      "data": "\"Getting latest AWS resources stats\"",
+      "meta": {},
+      "timestamp": "2017-04-12T18:34:13.524Z"
+    },
+    {
+      "level": "info",
+      "data": "\"No active provider found\"",
+      "meta": {
+        "file": "lambdas/pdr/discover.js",
+        "type": "ingesting",
+        "source": "discover"
+      },
+      "timestamp": "2017-04-12T18:33:44.512Z"
+    },
+    {
+      "level": "info",
+      "data": "\"No active provider found\"",
+      "meta": {
+        "file": "lambdas/pdr/discover.js",
+        "type": "ingesting",
+        "source": "discover"
+      },
+      "timestamp": "2017-04-12T18:32:44.510Z"
     }
-]
+  ]
+}
+```
+
+#### Example request for errors
+
+```curl
+$ curl https://cumulus.developmentseed.org/api/dev/logs?level=error --header 'Authorization: tokentakenfromsinginendpoint'
+```
+
+#### Example response for errors
+
+```json
+{
+  "meta": {
+    "name": "cumulus-api",
+    "table": null,
+    "limit": 1,
+    "page": 1,
+    "count": 158
+  },
+  "results": [
+    {
+      "level": "error",
+      "data": "\"[TypeError: Cannot read property 'count' of undefined]\"",
+      "meta": {
+        "file": "lambdas/jobs/index.js",
+        "type": "backgroundJobs",
+        "source": "jobs"
+      },
+      "timestamp": "2017-04-12T09:05:59.527Z"
+    }
+  ]
+}
 ```

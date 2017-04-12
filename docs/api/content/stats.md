@@ -166,6 +166,7 @@ $ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization
 Retrieve time-bounded metrics needed to produce a histogram for dashboards. The "X-axis" variable is time. Accepts the following query parameters, _in addition_ to the filter parameters listed in the introductory query parameter table:
 
 | query string parameter | description |
+| --- | --- |
 | `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
 | `field={fieldName}` | which field to query; default is `timestamp` |
 | `interval={day|week|month|year}` | "size" in time of each bar; default is `day` |
@@ -232,6 +233,7 @@ curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&s
 Count the value frequencies for a given variable, for a given type of record in Cumulus. Requires the following query parameters, and may include the normal filter parameters:
 
 | query string parameter | description |
+| --- | --- |
 | `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
 | `field={fieldName}` | which field to count frequencies for; no default |
 
@@ -276,6 +278,7 @@ curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=
 Calculate the average value for a numeric field. Requires the following query parameters, and may include the normal filter parameters:
 
 | query string parameter | description |
+| --- | --- |
 | `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
 | `field={fieldName}` | which field to count frequencies for, must be numeric; no default |
 
