@@ -1,89 +1,119 @@
-## List
+## List PDRs
 
-You can list all granules within a collection using this endpoint
-
-```endpoint
-GET /granules/{collection_short_name}
-```
-
-#### Example Request
-
-```curl
-$ curl https://workflow.ds.io/granules/cpl -H 'Authorization: tokentakenfromsinginendpoint'
-```
-
-#### Example Success Response
-
-```json
-[
-    {
-        "sourceS3Uris": [
-            "s3://cumulus-ghrc-raw/cpl/HS3_CPL_ATB_13215a_20130829.hdf5"
-        ],
-        "name": "HS3_CPL_ATB_13215a_20130829.hdf5",
-        "lastModified": 1398384000,
-        "destinationS3Uris": [
-            "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_ATB_13215a_20130829.hdf5",
-            "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_ATB_13215a_20130829.nc"
-        ],
-        "updatedAt": 1474892118,
-        "sourceFiles": [
-            "ftp://hs3.nsstc.nasa.gov/pub/hs3/CPL/data/2013/hdf/0829/HS3_CPL_ATB_13215a_20130829.hdf5"
-        ],
-        "createdAt": 1474892118,
-        "_index": "cumulus_granules_cpl"
-    },
-    {
-        "sourceS3Uris": [
-            "s3://cumulus-ghrc-raw/cpl/HS3_CPL_OP_13216a_20130904.hdf5"
-        ],
-        "name": "HS3_CPL_OP_13216a_20130904.hdf5",
-        "lastModified": 1398384000,
-        "destinationS3Uris": [
-            "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_OP_13216a_20130904.hdf5",
-            "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_OP_13216a_20130904.nc"
-        ],
-        "updatedAt": 1474892832,
-        "sourceFiles": [
-            "ftp://hs3.nsstc.nasa.gov/pub/hs3/CPL/data/2013/hdf/0904/HS3_CPL_OP_13216a_20130904.hdf5"
-        ],
-        "createdAt": 1474892832,
-        "_index": "cumulus_granules_cpl"
-    }
-]
-```
-
-## Retrieve
-
-To retrieve a particular granule use this endpoint
+List PDRs in the Cumulus engine.
 
 ```endpoint
-GET /granules/{collection_short_name}/{granule_short_name}
+GET /pdrs
 ```
-#### Example Request
+
+#### Example request
 
 ```curl
-$ curl https://workflow.ds.io/granules/cpl/HS3_CPL_ATB_13215a_20130829.hdf5 -H 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/pdrs --header 'Authorization: TokenFromAuthorizationEndpoint'
 ```
 
-#### Example Success Response
+#### Example response
 
 ```json
 {
-    "sourceS3Uris": [
-        "s3://cumulus-ghrc-raw/cpl/HS3_CPL_ATB_13215a_20130829.hdf5"
-    ],
-    "name": "HS3_CPL_ATB_13215a_20130829.hdf5",
-    "lastModified": 1398384000,
-    "destinationS3Uris": [
-        "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_ATB_13215a_20130829.hdf5",
-        "s3://cumulus-ghrc-archive/hs3cpl/HS3_CPL_ATB_13215a_20130829.nc"
-    ],
-    "updatedAt": 1474892118,
-    "sourceFiles": [
-        "ftp://hs3.nsstc.nasa.gov/pub/hs3/CPL/data/2013/hdf/0829/HS3_CPL_ATB_13215a_20130829.hdf5"
-    ],
-    "createdAt": 1474892118,
-    "_index": "cumulus_granules_cpl"
+  "meta": {
+    "name": "cumulus-api",
+    "table": "cumulus-api-lpdaac-dev-PDRsTable",
+    "limit": 1,
+    "page": 1,
+    "count": 52
+  },
+  "results": [
+    {
+      "pdrName": "good_25grans.PDR",
+      "createdAt": 1491926374428,
+      "address": "s3://cumulus-internal/pdrs/good_25grans.PDR",
+      "provider": "LPDAAC_HTTP_MODIS",
+      "originalUrl": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES/good_25grans.PDR",
+      "discoveredAt": 1491926374428,
+      "isActive": true,
+      "status": "parsed",
+      "updatedAt": 1492011755137,
+      "timestamp": "2017-04-12T15:42:33.796Z",
+      "granulesCount": 25,
+      "granulesStatus": {
+        "ingesting": 0,
+        "cmr": 2,
+        "processing": 0,
+        "completed": 23,
+        "failed": 0,
+        "archiving": 0
+      },
+      "averageDuration": 8.76088011264801,
+      "granules": 25,
+      "progress": 92
+    }
+  ]
+}
+```
+
+## Retrieve PDR
+
+Retrieve a single PDR.
+
+```endpoint
+GET /pdrs/{pdrName}
+```
+
+#### Example request
+
+```curl
+$ curl https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: TokenFromAuthorizationEndpoint'
+```
+
+#### Example response
+
+```json
+{
+  "pdrName": "good_25grans.PDR",
+  "createdAt": 1491926374428,
+  "address": "s3://cumulus-internal/pdrs/good_25grans.PDR",
+  "provider": "LPDAAC_HTTP_MODIS",
+  "originalUrl": "https://e4ftl01.cr.usgs.gov:40521/TEST_B/Cumulus/PDR/TEST_CASES/good_25grans.PDR",
+  "discoveredAt": 1491926374428,
+  "isActive": true,
+  "status": "parsed",
+  "updatedAt": 1492011820301,
+  "timestamp": "2017-04-12T15:43:38.539Z",
+  "granulesCount": 25,
+  "granulesStatus": {
+    "ingesting": 0,
+    "cmr": 2,
+    "processing": 0,
+    "completed": 23,
+    "failed": 0,
+    "archiving": 0
+  },
+  "averageDuration": 8.76088011264801,
+  "granules": 25,
+  "progress": 92
+}
+```
+
+## Delete PDR
+
+Delete a PDR from Cumulus. Its granules will remain, and the PDR may be re-discovered and re-ingested/re-processed from scratch in the future.
+
+```endpoint
+DELETE /pdrs/{pdrName}
+```
+
+#### Example request
+
+```curl
+$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: TokenFromAuthorizationEndpoint'
+
+```
+
+#### Example response
+
+```json
+{
+  "detail": "Record deleted"
 }
 ```

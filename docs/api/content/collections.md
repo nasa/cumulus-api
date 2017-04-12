@@ -1,6 +1,6 @@
 ## List collections
 
-List collections in the Cumulus engine. 
+List collections in the Cumulus engine.
 
 ```endpoint
 GET /collections
@@ -428,7 +428,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/collections/MY_
 
 ## Delete collection
 
-Delete a collection from Cumulus.
+Delete a collection from Cumulus, but not from CMR. The related granules remain in the Cumulus and CMR systems.
 
 ```endpoint
 DELETE /collections/{collectionName}

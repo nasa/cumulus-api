@@ -1,6 +1,6 @@
 ## List providers
 
-List providers in the Cumulus engine. 
+List providers in the Cumulus engine.
 
 ```endpoint
 GET /providers
@@ -157,7 +157,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DA
 
 ## Restart provider
 
-Restart a provider. This causes all associated granules to begin processing from scratch.
+Restart a provider. If the provider had been stopped or errored, it will leave that status and return to searching for new PDRs to process.
 
 ```endpoint
 PUT /providers/{name}
@@ -219,7 +219,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DA
 
 ## Delete provider
 
-Delete a provider from Cumulus.
+Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.
 
 ```endpoint
 DELETE /providers/{name}
