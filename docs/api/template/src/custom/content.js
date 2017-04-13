@@ -39,7 +39,6 @@ module.exports =
   '# Logs\n' +
   fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Schemas\n' +
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n'
 ;

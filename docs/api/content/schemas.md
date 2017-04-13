@@ -1,32 +1,123 @@
-## List
+## Retrieve schema
 
-Lists errors reported by Splunk.
+Retrieve the data schema for a particular type Cumulus record.
+
+This schema describes the expected format of a record's JSON object when retrieving from Cumulus, as well as a summary of what each field contains. The schema response can also be used to determine _which_ fields are required when creating a new record using the API.
+
+Supported `type` values are `provider`, `collection`, `granule`, and `pdr`.
 
 ```endpoint
-GET /errors
+GET /schemas/{type}
 ```
 
-#### Example Request
+#### Example request
 
 ```curl
-$ curl https://workflow.ds.io/errors -H 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/schemas/provider --header 'Authorization: tokentakenfromsinginendpoint'
 ```
 
-#### Example success response
+#### Example response
 
 ```json
-[
-    {
-        "timestamp": "2016-09-22T14:39:23.651637",
-        "dataset_id": "hamsr",
-        "process": "File process",
-        "message": "Something went terribly wrong again"
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Provider Object",
+  "description": "Keep the information about each ingest endpoint",
+  "type": "object",
+  "properties": {
+    "name": {
+      "title": "Title",
+      "description": "A title for the provider record",
+      "type": "string",
+      "pattern": "^([\\w\\d_\\-]*)$"
     },
-    {
-        "timestamp": "2016-09-22T14:39:23.649773",
-        "dataset_id": "cpl",
-        "process": "File process",
-        "message": "Something went terribly wrong again"
+    "providerName": {
+      "title": "Provider, e.g. MODAPS",
+      "description": "Name of the SIP",
+      "type": "string"
+    },
+    "protocol": {
+      "title": "Protocol",
+      "type": "string",
+      "enum": [
+        "http",
+        "ftp"
+      ],
+      "default": "http"
+    },
+    "host": {
+      "title": "Host",
+      "type": "string"
+    },
+    "path": {
+      "title": "Path to the PDR/files folder",
+      "type": "string"
+    },
+    "config": {
+      "title": "Configuration",
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "title": "Status",
+      "type": "string",
+      "enum": [
+        "ingesting",
+        "stopped",
+        "failed"
+      ],
+      "default": "stopped",
+      "readonly": true
+    },
+    "isActive": {
+      "title": "Is Active?",
+      "type": "boolean",
+      "default": false,
+      "readonly": true
+    },
+    "regex": {
+      "type": "object",
+      "patternProperties": {
+        "^([\\S]*)$": {
+          "type": "string"
+        }
+      },
+      "readonly": true
+    },
+    "lastTimeIngestedAt": {
+      "title": "Last Time Ingest from the Provider",
+      "type": "number",
+      "readonly": true
+    },
+    "createdAt": {
+      "type": "number",
+      "readonly": true
+    },
+    "updatedAt": {
+      "type": "number",
+      "readonly": true
     }
-]
+  },
+  "required": [
+    "name",
+    "providerName",
+    "protocol",
+    "host",
+    "path",
+    "isActive",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ]
+}
 ```

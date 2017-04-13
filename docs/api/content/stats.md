@@ -275,7 +275,7 @@ curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=
 
 ## Average
 
-Calculate the average value for a numeric field. Requires the following query parameters, and may include the normal filter parameters:
+Calculate the average value and other summary statistics for a given numeric field. Requires the following query parameters, and may include the normal filter parameters:
 
 | query string parameter | description |
 | --- | --- |
