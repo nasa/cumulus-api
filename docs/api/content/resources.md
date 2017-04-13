@@ -9,7 +9,7 @@ GET /resources
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/resources --header 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/resources --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response

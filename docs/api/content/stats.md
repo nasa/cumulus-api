@@ -9,7 +9,7 @@ GET /stats
 #### Example Request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example success response
@@ -163,13 +163,15 @@ $ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization
 
 ## Histogram
 
-Retrieve time-bounded metrics needed to produce a histogram for dashboards. The "X-axis" variable is time. Accepts the following query parameters, _in addition_ to the filter parameters listed in the introductory query parameter table:
+Retrieve metrics over various time periods, to produce a histogram for dashboards.
+
+Accepts the following query parameters, _in addition to_ the regular filter parameters:
 
 | query string parameter | description |
 | --- | --- |
 | `type={providers|collections|granules|pdrs|logs}` | type of Cumulus record to query |
 | `field={fieldName}` | which field to query; default is `timestamp` |
-| `interval={day|week|month|year}` | "size" in time of each bar; default is `day` |
+| `interval={day|week|month|year}` | "X-axis size" in time of each bar; default is `day` |
 | `format={ElasticSearch date format}` | display format for the datetime in the response, accepts any [ElasticSearch date format](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html); default is `yyyy-MM-dd` |
 
 ```endpoint
@@ -179,7 +181,7 @@ GET /stats/histogram
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: tokentakenfromsinginendpoint'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -230,7 +232,7 @@ curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&s
 
 ## Count
 
-Count the value frequencies for a given variable, for a given type of record in Cumulus. Requires the following query parameters, and may include the normal filter parameters:
+Count the value frequencies for a given field, for a given type of record in Cumulus. Requires the following query parameters, and may include the regular filter parameters:
 
 | query string parameter | description |
 | --- | --- |
@@ -244,7 +246,7 @@ GET /stats/count
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=pdrs' --header 'Authorization: tokentakenfromsinginendpoint'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=pdrs' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -275,7 +277,7 @@ curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=
 
 ## Average
 
-Calculate the average value and other summary statistics for a given numeric field. Requires the following query parameters, and may include the normal filter parameters:
+Calculate the average value and other summary statistics for a given numeric field. Requires the following query parameters, and may include the regular filter parameters:
 
 | query string parameter | description |
 | --- | --- |
@@ -289,7 +291,7 @@ GET /stats/average
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/average?field=duration&type=granules' --header 'Authorization: tokentakenfromsinginendpoint'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/average?field=duration&type=granules' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response

@@ -57,4 +57,8 @@ jobs:
               pip install awscli
               node_modules/.bin/webpack --progress
               sulu cf update --stage prod
+
+              ./docs.sh install
+              ./docs.sh build
+              ./docs.sh deploy
             fi

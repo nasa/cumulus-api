@@ -1,6 +1,6 @@
 ## List providers
 
-List providers in the Cumulus engine.
+List providers in the Cumulus system.
 
 ```endpoint
 GET /providers
@@ -9,7 +9,7 @@ GET /providers
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -55,7 +55,7 @@ GET /providers/{name}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/providers/LPDAAC_HTTP_MODIS --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -90,7 +90,7 @@ POST /providers
 #### Example request
 
 ```curl
-$ curl --request POST https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: TokenFromAuthorizationEndpoint' --data '{
+$ curl --request POST https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: Basic Base64EncodedCredentials' --data '{
     "changedBy": "Cumulus Dashboard",
     "createdAt": 1491941727851,
     "host": "https://www.example.gov",
@@ -124,7 +124,7 @@ $ curl --request POST https://cumulus.developmentseed.org/api/dev/providers --he
 
 ## Update provider
 
-Update values for a provider. Can accept a subset of the provider fields, or the whole provider object.
+Update values for a provider. Can accept the whole provider object, or just a subset of fields, the ones that are being updated.
 
 ```endpoint
 PUT /providers
@@ -133,7 +133,7 @@ PUT /providers
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: TokenFromAuthorizationEndpoint' --data '{
+$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{
     "host": "https://www.example.co.uk"
 }'
 ```
@@ -157,7 +157,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DA
 
 ## Restart provider
 
-Restart a provider. If the provider had been stopped or errored, it will leave that status and return to searching for new PDRs to process.
+Restart a provider. If the provider's `status` value had been `stopped` or `failed`, it will leave that status and return to searching for new PDRs to process.
 
 ```endpoint
 PUT /providers/{name}
@@ -166,7 +166,7 @@ PUT /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: TokenFromAuthorizationEndpoint' --data '{"action": "restart"}'
+$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "restart"}'
 ```
 
 #### Example response
@@ -188,7 +188,7 @@ $ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DA
 
 ## Stop provider
 
-Set a provider's status to `stopped`. This halts all processing of granules associated with the provider.
+Set a provider's `status` to `stopped`. This halts all processing of granules associated with the provider.
 
 ```endpoint
 PUT /providers/{name}
@@ -197,7 +197,7 @@ PUT /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: TokenFromAuthorizationEndpoint' --data '{"action": "stop"}'
+$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "stop"}'
 ```
 
 #### Example response
@@ -228,7 +228,7 @@ DELETE /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials'
 
 ```
 

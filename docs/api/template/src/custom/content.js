@@ -13,7 +13,6 @@ module.exports =
   '# Introduction\n' +
   fs.readFileSync('./content/intro.md', 'utf8') + '\n' +
 
-  // NOT DONE
   '# Authentication\n' +
   fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
 
@@ -23,7 +22,6 @@ module.exports =
   '# Collections\n' +
   fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
 
-  // NEED TO UPDATE/ADD RESONSES FOR ACTIONS
   '# Granules\n' +
   fs.readFileSync('./content/granules.md', 'utf8') + '\n' +
 

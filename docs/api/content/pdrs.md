@@ -1,6 +1,6 @@
 ## List PDRs
 
-List PDRs in the Cumulus engine.
+List PDRs in the Cumulus system.
 
 ```endpoint
 GET /pdrs
@@ -9,7 +9,7 @@ GET /pdrs
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/pdrs --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/pdrs --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -63,7 +63,7 @@ GET /pdrs/{pdrName}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -106,7 +106,7 @@ DELETE /pdrs/{pdrName}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/pdrs/good_25grans.PDR --header 'Authorization: Basic Base64EncodedCredentials'
 
 ```
 

@@ -1,6 +1,6 @@
 ## List collections
 
-List collections in the Cumulus engine.
+List collections in the Cumulus system.
 
 ```endpoint
 GET /collections
@@ -9,7 +9,7 @@ GET /collections
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/collections --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/collections --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -142,7 +142,7 @@ GET /collections/{collectionName}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/collections/AST_L1A__version__003 --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/collections/AST_L1A__version__003 --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -363,7 +363,7 @@ $ curl --request POST https://cumulus.developmentseed.org/api/dev/collections --
 
 ## Update collection
 
-Update values for a collection. Can accept a subset of the collection fields, or the whole collection object.
+Update values for a collection. Can accept the whole collection object, or just a subset of fields, the ones that are being updated.
 
 ```endpoint
 PUT /collections
@@ -372,7 +372,7 @@ PUT /collections
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/collections/MY_COLLECTION --header 'Authorization: TokenFromAuthorizationEndpoint' --data '{
+$ curl --request PUT https://cumulus.developmentseed.org/api/dev/collections/MY_COLLECTION --header 'Authorization: Basic Base64EncodedCredentials' --data '{
     "providers": ["ANOTHER_PROVIDER"]
 }'
 ```
@@ -437,7 +437,7 @@ DELETE /collections/{collectionName}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/collections/MY_COLLECTION --header 'Authorization: TokenFromAuthorizationEndpoint'
+$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/collections/MY_COLLECTION --header 'Authorization: Basic Base64EncodedCredentials'
 
 ```
 

@@ -1,6 +1,6 @@
 ## List logs
 
-List processing logs from the Cumulus engine. Includes all errors for the system, if `level=error` is used as a query parameter.
+List processing logs from the Cumulus engine. A log's `level` field may be either `info` or `error`.
 
 ```endpoint
 GET /logs
@@ -9,7 +9,7 @@ GET /logs
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/logs?limit=5 --header 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/logs?limit=5 --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -73,7 +73,7 @@ $ curl https://cumulus.developmentseed.org/api/dev/logs?limit=5 --header 'Author
 #### Example request for errors
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/logs?level=error --header 'Authorization: tokentakenfromsinginendpoint'
+$ curl https://cumulus.developmentseed.org/api/dev/logs?level=error --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response for errors
