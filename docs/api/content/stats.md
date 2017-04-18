@@ -240,13 +240,13 @@ Count the value frequencies for a given field, for a given type of record in Cum
 | `field={fieldName}` | which field to count frequencies for; no default |
 
 ```endpoint
-GET /stats/count
+GET /stats/aggregate
 ```
 
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/count?field=status&type=pdrs' --header 'Authorization: Basic Base64EncodedCredentials'
+curl 'https://cumulus.developmentseed.org/api/dev/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
