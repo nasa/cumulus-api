@@ -63,7 +63,7 @@
         "error",
         "ForInStatement",
         "LabeledStatement",
-        "WithStatement",
+        "WithStatement"
       ],
       "class-methods-use-this": "off"
     }
