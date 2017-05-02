@@ -14,3 +14,4 @@ npm-debug.log
 *.meta.xml
 secrets.json
 .nyc_output
+*.pub
