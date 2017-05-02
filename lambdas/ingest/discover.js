@@ -23,10 +23,16 @@ export async function runActiveProviders() {
     for (const provider of r.Items) {
       let ingest;
       switch (provider.protocol) {
-        case 'ftp':
-          ingest = new FtpPdrIngest(provider, provider.config.username, provider.config.password);
+        case 'ftp': {
+          let password;
+          if (provider.config && provider.config.password) {
+            password = await p.decryptPassword(provider.config.password);
+          }
+
+          ingest = new FtpPdrIngest(provider, provider.config.username, password);
           await ingest.discover();
           break;
+        }
         default: {
           ingest = new HttpPdrIngest(provider);
           await ingest.discover();

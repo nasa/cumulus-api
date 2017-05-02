@@ -272,6 +272,8 @@ Resources:
             Action:
             - s3:Get*
             Resource:
+            - !Sub arn:aws:s3:::{{buckets.internal}}
+            - !Sub arn:aws:s3:::{{buckets.internal}}/*
             - !Sub arn:aws:s3:::{{buckets.protected}}
             - !Sub arn:aws:s3:::{{buckets.protected}}/*
 
