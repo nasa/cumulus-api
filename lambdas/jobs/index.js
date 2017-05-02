@@ -148,10 +148,17 @@ async function updatePdrStats() {
     console.log(`Updating ${result.pdrName}`);
 
     if (stats.progress >= 100) {
-      updateObj.status = 'completed';
+      console.log(`Marking ${result.pdrName} as completed`);
+      try {
+        await p.hasCompleted(result.pdrName, updateObj);
+      }
+      catch (e) {
+        log.error(e, logDetails);
+      }
     }
-
-    await p.update({ pdrName: result.pdrName }, updateObj);
+    else {
+      await p.update({ pdrName: result.pdrName }, updateObj);
+    }
   }
 }
 
@@ -229,7 +236,8 @@ localRun(() => {
   //markStaleGranulesFailed().then(() => {}).catch(e => console.log(e));
   //markPdrs().then(() => {}).catch(e => console.log(e));
   //populateResources()
-  //updatePdrStats();
+  updatePdrStats();
+  markStaleGranulesFailed();
   //updateCollectionsStats();
-  granulesProcessingFailures();
+  //granulesProcessingFailures();
 });
