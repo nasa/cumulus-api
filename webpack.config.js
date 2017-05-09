@@ -1,6 +1,6 @@
-const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
+const pckg = require('./package.json');
 
 function getEntries() {
   const output = glob.sync('./lambdas/*')
@@ -52,9 +52,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        options: JSON.parse(
-          fs.readFileSync(path.join(__dirname, '.babelrc'), { encoding: 'utf8' })
-        )
+        options: pckg.babel
       },
       {
         test: /\.json$/,

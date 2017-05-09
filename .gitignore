@@ -13,3 +13,5 @@ npm-debug.log
 .swo
 *.meta.xml
 secrets.json
+.nyc_output
+*.pub
