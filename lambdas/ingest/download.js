@@ -29,8 +29,12 @@ async function processMessage(message) {
         const p = new Provider();
         const provider = await p.get({ name: granule.provider });
 
+        let password;
+        if (provider.config && provider.config.password) {
+          password = await p.decryptPassword(provider.config.password);
+        }
 
-        ingest = new FtpGranuleIngest(granule, provider.config.username, provider.config.password);
+        ingest = new FtpGranuleIngest(granule, provider.config.username, password);
         await ingest.ingest();
         break;
       }

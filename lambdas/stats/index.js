@@ -74,7 +74,7 @@ export function handler(event, context) {
     else if (event.httpMethod === 'GET' && event.resource === '/stats/histogram') {
       histogram(event, cb);
     }
-    else if (event.httpMethod === 'GET' && event.resource === '/stats/count') {
+    else if (event.httpMethod === 'GET' && event.resource === '/stats/aggregate') {
       count(event, cb);
     }
     else if (event.httpMethod === 'GET' && event.resource === '/stats/average') {
