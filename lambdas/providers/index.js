@@ -111,7 +111,7 @@ export function put(event, cb) {
     }
 
     // otherwise just update
-    return p.create(data);
+    return p.update({ name }, data);
   }).then(r => cb(null, r)).catch((err) => {
     if (err instanceof RecordDoesNotExist) {
       return cb('Record does not exist');
