@@ -1,0 +1,255 @@
+---
+Parameters:
+  DeploymentStackTemplateUrl:
+    Type: String
+  CreateDeploymentRole:
+    Type: String
+    AllowedValues:
+      - true
+      - false
+    Default: true
+  DeploymentUserName:
+    Type: String
+    Default: "n/a"
+  ResourcePrefix:
+    Type: String
+  InternalBucketName:
+    Type: String
+  PrivateBucketName:
+    Type: String
+  ProtectedBucketName:
+    Type: String
+  PublicBucketName:
+    Type: String
+Resources:
+  DeploymentStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        CreateDeploymentRole: !Ref CreateDeploymentRole
+        DeploymentUserName: !Ref DeploymentUserName
+        ResourcePrefix: !Ref ResourcePrefix
+      TemplateURL: !Ref DeploymentStackTemplateUrl
+  LambdaApiGatewayRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ResourcePrefix}-lambda-api-gateway"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: LambdaApiGateway
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:DescribeLogStreams
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - lambda:GetFunction
+                  - lambda:invokeFunction
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:DeleteItem
+                  - dynamodb:DescribeStream
+                  - dynamodb:GetItem
+                  - dynamodb:GetRecords
+                  - dynamodb:GetShardIterator
+                  - dynamodb:ListStreams
+                  - dynamodb:ListTables
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ResourcePrefix}-*"
+              - Effect: Allow
+                Action: s3:Get*
+                Resource:
+                  - !Sub "arn:aws:s3:::${ProtectedBucketName}"
+                  - !Sub "arn:aws:s3:::${ProtectedBucketName}/*"
+              - Effect: Allow
+                Action:
+                  - sqs:GetQueueUrl
+                  - sqs:GetQueueAttributes
+                  - sqs:SendMessage
+                Resource: !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${ResourcePrefix}-*"
+  # role for Lambdas that are NOT used with APIGateway
+  LambdaProcessingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ResourcePrefix}-lambda-processing"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ProcessingLambda
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:GetFunction
+                  - lambda:invokeFunction
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DescribeLogStreams
+                  - logs:PutLogEvents
+                Resource: "*"
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:Get*
+                  - s3:Put*
+                  - s3:List*
+                  - s3:DeleteObject
+                  - s3:DeleteObjectVersion
+                Resource:
+                  - !Sub "arn:aws:s3:::${InternalBucketName}"
+                  - !Sub "arn:aws:s3:::${InternalBucketName}/*"
+                  - !Sub "arn:aws:s3:::${PrivateBucketName}"
+                  - !Sub "arn:aws:s3:::${PrivateBucketName}/*"
+                  - !Sub "arn:aws:s3:::${ProtectedBucketName}"
+                  - !Sub "arn:aws:s3:::${ProtectedBucketName}/*"
+                  - !Sub "arn:aws:s3:::${PublicBucketName}"
+                  - !Sub "arn:aws:s3:::${PublicBucketName}/*"
+              # Allow access to dynamoDB
+              - Effect: Allow
+                Action:
+                  - dynamodb:DeleteItem
+                  - dynamodb:DescribeStream
+                  - dynamodb:GetItem
+                  - dynamodb:GetRecords
+                  - dynamodb:GetShardIterator
+                  - dynamodb:ListStreams
+                  - dynamodb:ListTables
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ResourcePrefix}-*"
+              # Allow access to SQS
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:ReceiveMessage
+                  - sqs:ChangeMessageVisibility
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueUrl
+                  - sqs:GetQueueAttributes
+                Resource: !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${ResourcePrefix}-*"
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ResourcePrefix}-ecs"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ECSRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:GetMetricStatistics
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:GetAuthorizationToken
+                  - ecr:GetDownloadUrlForLayer
+                  - ecs:DeregisterContainerInstance
+                  - ecs:DescribeClusters
+                  - ecs:DescribeContainerInstances
+                  - ecs:DescribeServices
+                  - ecs:DiscoverPollEndpoint
+                  - ecs:ListContainerInstances
+                  - ecs:ListServices
+                  - ecs:ListTaskDefinitions
+                  - ecs:ListTasks
+                  - ecs:Poll
+                  - ecs:RegisterContainerInstance
+                  - ecs:RunTask
+                  - ecs:StartTelemetrySession
+                  - ecs:Submit*
+                  - lambda:GetFunction
+                  - lambda:invokeFunction
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DescribeLogStreams
+                  - logs:PutLogEvents
+                Resource: "*"
+              # Allow writing to ingest buckets
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:Get*
+                  - s3:Put*
+                  - s3:List*
+                  - s3:DeleteObject
+                  - s3:DeleteObjectVersion
+                Resource:
+                  - !Sub "arn:aws:s3:::${InternalBucketName}"
+                  - !Sub "arn:aws:s3:::${InternalBucketName}/*"
+                  - !Sub "arn:aws:s3:::${PrivateBucketName}"
+                  - !Sub "arn:aws:s3:::${PrivateBucketName}/*"
+              # Allow access to SQS
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:ReceiveMessage
+                  - sqs:ChangeMessageVisibility
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueUrl
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${ResourcePrefix}-*"
+              # Allow use of dynamo
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:GetItem
+                  - dynamodb:GetRecords
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ResourcePrefix}-*
+  CumulusInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Sub "${ResourcePrefix}-ecs"
+      Path: "/"
+      Roles:
+        - !Ref ECSRole
+Outputs:
+  CumulusInstanceProfileArn:
+    Value: !GetAtt CumulusInstanceProfile.Arn
+  EcsRoleArn:
+    Value: !GetAtt ECSRole.Arn
+  LambdaApiGatewayRoleArn:
+    Value: !GetAtt LambdaApiGatewayRole.Arn
+  LambdaProcessingRoleArn:
+    Value: !GetAtt LambdaProcessingRole.Arn

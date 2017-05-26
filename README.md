@@ -20,13 +20,20 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
 Make sure to update the subnet id, availability zone and security group id in the `config.yml`. In the current setup all ec2 instances are launched into a private subnet that has the same ip address.
 
+? Same IP address?
+
+* Make sure to create the internal bucket first:  `aws s3 mb s3://my-bucket-internal`
+* Create the ECS security group
+
 Run in order:
 
     $ cp config/secrets.json.example config/secrets.json
     $ npm run build
-    $ sulu cf create --stack ngap-stack-name --stage dev
+    ? Why is the stack name and stage set here and in config.yml?
+    # If --stack and --stage are not specified, they are pulled from config.yml
+    $ sulu cf create --config ./config/gsfc-ngap-cumulus-api-lpdaac-sit.yml --region us-east-1
     $ sulu bootstrap remote  # needed to add mapping to ElasticSearch
-    # sulu cf ldg  # to add dead letter queues to lambda functions
+    # sulu cf dlq --config ./config/gsfc-ngap-cumulus-api-lpdaac-sit.yml --region us-east-1 # to add dead letter queues to lambda functions
     # sulu users add user1 changethepassword  # to add the first user
 
 ### Deployment for the first time
@@ -116,3 +123,58 @@ Library tests are located at `lib/tests`.
 To run the tests:
 
     $ npm run test
+
+## Deploying in Bamboo
+
+### Build modules package
+
+```(bash)
+mkdir -p artifacts
+docker run \
+  -e RELEASE_UID=$(id -u) \
+  -e RELEASE_GID=$(id -g) \
+  --rm \
+  -v "$(pwd):/source:ro" \
+  -v "$(pwd)/artifacts:/artifacts" \
+  node \
+  /source/ngap/bamboo/build_modules_package.sh
+```
+
+### Run tests
+
+Assumes that modules.tar is present in the project root directory.
+
+```(bash)
+docker run --detach --cidfile=elasticsearch.cid --name test_elasticsearch elasticsearch:2.3.5
+
+docker run --detach --cidfile=sqs.cid --name test_sqs vsouza/sqs-local
+
+docker run --detach --cidfile=dynamodb.cid --name test_dynamodb peopleperhour/dynamodb
+
+mkdir -p artifacts
+docker run \
+  -e RELEASE_UID=$(id -u) \
+  -e RELEASE_GID=$(id -g) \
+  --rm \
+  -v "$(pwd):/source:ro" \
+  -v "$(pwd)/artifacts:/artifacts" \
+  --link test_elasticsearch:elasticsearch \
+  --link test_sqs:sqs \
+  --link test_dynamodb:dynamodb \
+  node \
+  /source/ngap/bamboo/run_tests.sh
+```
+
+### Build release package
+
+```(bash)
+mkdir -p artifacts
+docker run \
+  -e RELEASE_UID=$(id -u) \
+  -e RELEASE_GID=$(id -g) \
+  --rm \
+  -v "$(pwd):/source:ro" \
+  -v "$(pwd)/artifacts:/artifacts" \
+  node \
+  /source/ngap/bamboo/build_release_package.sh
+```

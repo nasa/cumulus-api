@@ -260,7 +260,7 @@ function parseEnvVariables(config) {
   // add lambda names
   for (const lambda of config.lambdas) {
     if (lambda.broadcast) {
-      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${lambda.name}-${config.stage}`; // eslint-disable-line max-len
+      envs[lambda.name] = `arn:aws:lambda:\$\{AWS::Region\}:\$\{AWS::AccountId\}:function:${config.stackName}-${config.stage}-${lambda.name}`; // eslint-disable-line max-len
     }
   }
 

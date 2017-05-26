@@ -1,0 +1,67 @@
+---
+Parameters:
+  AppName:
+    Type: String
+  LoadBalancerName:
+    Type: String
+  NGAPAppEnvironment:
+    Type: String
+  NGAPBillingProject:
+    Type: String
+  SSLCertificateId:
+    Type: String
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+Resources:
+  AppRouterLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      ConnectionDrainingPolicy:
+        Enabled: true
+        Timeout: 300
+      ConnectionSettings:
+        IdleTimeout: 300
+      CrossZone: true
+      HealthCheck:
+        HealthyThreshold: 10
+        Interval: 30
+        Target: HTTP:80/health-check
+        Timeout: 5
+        UnhealthyThreshold: 2
+      LoadBalancerName: !Ref LoadBalancerName
+      Listeners:
+        - InstancePort: 80
+          InstanceProtocol: HTTP
+          LoadBalancerPort: 80
+          Protocol: HTTP
+        - InstancePort: 80
+          InstanceProtocol: HTTP
+          LoadBalancerPort: 443
+          Protocol: HTTPS
+          SSLCertificateId: !Ref SSLCertificateId
+      Scheme: internal
+      SecurityGroups:
+        - Ref: SecurityGroup
+      Subnets: !Ref SubnetIds
+      Tags:
+        - Key: App
+          Value: !Ref AppName
+        - Key: emccBilling
+          Value: GSFC-EOSDIS-NGAP
+        - Key: Billing
+          Value: GSFC-EOSDIS-NGAP
+        - Key: NGAPAppEnvironment
+          Value: !Ref NGAPAppEnvironment
+        - Key: NGAP-Role
+          Value: app
+        - Key: NGAPCluster
+          Value: prod
+        - Key: NGAPBillingProject
+          Value: !Ref NGAPBillingProject
+        - Key: Name
+          Value: !Ref LoadBalancerName
+Outputs:
+  LoadBalancerHostname:
+    Value: !GetAtt AppRouterLoadBalancer.DNSName

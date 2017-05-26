@@ -52,17 +52,25 @@ function uploadCF(s3Path, profile, configPath, stage) {
                   ${getProfile(profile)}`);
 }
 
-function cloudFormation(op, templateUrl, stackName, configBucket, artifactHash, profile, stage) {
-  const name = stage ? `${stackName}-${stage}` : stackName;
+function cloudFormation(config, op, templateUrl, artifactHash, profile) {
+  const name = config.stage ? `${config.stackName}-${config.stage}` : config.stackName;
   // Run the cloudformation cli command
   try {
     exec(`aws cloudformation ${op}-stack \
   ${getProfile(profile)} \
   --stack-name ${name} \
   --template-url "${templateUrl}" \
-  --parameters "ParameterKey=ConfigS3Bucket,ParameterValue=${configBucket},UsePreviousValue=false" \
-  "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
-  --capabilities CAPABILITY_IAM`
+  --parameters \
+    "ParameterKey=ConfigS3Bucket,ParameterValue=${config.buckets.internal},UsePreviousValue=false" \
+    "ParameterKey=ArtifactPath,ParameterValue=${artifactHash},UsePreviousValue=false" \
+  --tags \
+    Key=project,Value=gsfc-eosdis-ngap \
+    Key=emccBilling,Value=GSFC-EOSDIS-NGAP \
+    Key=MCE,Value=NGAP-Cumulus \
+    Key=NGAPBillingProject,Value=Cumulus \
+    Key=NGAPAppName,Value=${config.NGAPAppName} \
+    Key=NGAPAppEnvironment,Value=${config.NGAPAppEnvironment} \
+    Key=NGAP-Project,Value=Cumulus`
     );
   }
   catch (e) {
@@ -213,26 +221,18 @@ function opsStack(options, ops) {
   const configPath = options.config;
 
   // Get the config
-  const c = getConfig(options, configPath);
+  const config = getConfig(options, configPath);
 
   // Get the checksum hash
-  const h = getHash(c);
+  const h = getHash(config);
 
   // upload lambdas and the cf template
-  uploadLambdas(h.path, profile, c);
+  uploadLambdas(h.path, profile, config);
 
   // Build and upload the CF template
-  uploadCF(h.path, profile, configPath, options.stage);
+  uploadCF(h.path, profile, configPath);
 
-  cloudFormation(
-    ops,
-    `${h.url}/cloudformation.yml`,
-    c.stackName,
-    c.buckets.internal,
-    h.hash,
-    profile,
-    c.stage
-  );
+  cloudFormation(config, ops, `${h.url}/cloudformation.yml`, h.hash, profile);
 }
 
 /**

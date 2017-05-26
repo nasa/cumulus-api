@@ -13,9 +13,9 @@ function generateKeyPair() {
 }
 
 function uploadKeyPair(bucket, stack, stage, profile, cb) {
-  profile = profile || 'default';
-  const credentials = new AWS.SharedIniFileCredentials({ profile: profile });
-  AWS.config.credentials = credentials;
+  // profile = profile || 'default';
+  // const credentials = new AWS.SharedIniFileCredentials({ profile: profile });
+  // AWS.config.credentials = credentials;
 
   const pki = forge.pki;
   const keyPair = generateKeyPair();
