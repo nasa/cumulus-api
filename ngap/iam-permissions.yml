@@ -75,6 +75,8 @@ Resources:
               - Effect: Allow
                 Action: s3:Get*
                 Resource:
+                  - !Sub "arn:aws:s3:::${InternalBucketName}"
+                  - !Sub "arn:aws:s3:::${InternalBucketName}/*"
                   - !Sub "arn:aws:s3:::${ProtectedBucketName}"
                   - !Sub "arn:aws:s3:::${ProtectedBucketName}/*"
               - Effect: Allow

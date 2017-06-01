@@ -266,7 +266,7 @@ lambdas:
         method: get
         cors: true
         api: backend
-      - path: stats/count
+      - path: stats/aggregate
         method: get
         cors: true
         api: backend

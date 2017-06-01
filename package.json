@@ -4,13 +4,68 @@
   "description": "Cumulus API",
   "main": "handler.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha-webpack --webpack-config webpack.config-test.js --recursive lib/tests lambdas/*/tests",
-    "test-ci": "PORT=8000 ./node_modules/.bin/nodemon --ext js --watch ./test --watch ./lambdas --watch ./lib --exec 'npm run test'",
+    "test": "ava lib/tests/*.js",
     "lint": "./node_modules/.bin/eslint .",
     "start": "bin/parallel 'webpack -w --colors' 'sulu serve'",
     "serve": "bin/parallel 'webpack -w --colors' 'sulu serve'",
     "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd lib-gitc && npm link && cd .. && npm link gitc-common && cd sulu && npm link && cd .. && npm link sulu",
     "build": "webpack --progress"
+  },
+  "ava": {
+    "babel": "inherit",
+    "require": [
+      "babel-polyfill",
+      "babel-register"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "@ava/stage-4",
+      "@ava/transform-test-files"
+    ],
+    "plugins": ["transform-async-to-generator"]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "airbnb",
+    "env": {
+      "node": true,
+      "mocha": true
+    },
+    "rules": {
+      "generator-star-spacing": "off",
+      "radix": "off",
+      "strict": "off",
+      "import/no-extraneous-dependencies": "off",
+      "import/newline-after-import": "off",
+      "import/prefer-default-export": "off",
+      "no-console": "off",
+      "no-continue": "off",
+      "spaced-comment": "off",
+      "prefer-template": "warn",
+      "no-underscore-dangle": "off",
+      "comma-dangle": ["warn", "never"],
+      "object-shorthand": "off",
+      "space-before-function-paren": ["error", "never"],
+      "brace-style": [2, "stroustrup"],
+      "no-useless-escape": "off",
+      "no-param-reassign": "off",
+      "no-prototype-builtins": "off",
+      "consistent-return": "off",
+      "no-await-in-loop": "off",
+      "max-len": [2, {
+        "code": 100,
+        "ignorePattern": "(https?:|JSON\\.parse|[Uu]rl =)"
+      }],
+      "no-restricted-syntax": [
+        "error",
+        "ForInStatement",
+        "LabeledStatement",
+        "WithStatement"
+      ],
+      "class-methods-use-this": "off"
+    }
   },
   "repository": {
     "type": "git",
@@ -37,6 +92,7 @@
     "simplecrawler": "^1.0.3"
   },
   "devDependencies": {
+    "ava": "^0.19.1",
     "babel-core": "^6.23.1",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.3.2",
@@ -57,6 +113,7 @@
     "json-loader": "^0.5.4",
     "mocha": "^3.0.2",
     "mocha-webpack": "^1.0.0-beta.1",
+    "nyc": "^10.2.0",
     "prepend-loader": "0.0.2",
     "sinon": "^2.0.0-pre.5",
     "webpack": "^2.2.1",
