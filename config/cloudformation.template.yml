@@ -189,6 +189,12 @@ Resources:
         Statement:
           - Effect: "Allow"
             Principal:
+              AWS: {{cumulusApiDeploymentUserArn}}
+            Action: "es:*"
+            Resource:
+              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/{{stackName}}-{{stage}}-es-5/*"
+          - Effect: "Allow"
+            Principal:
               AWS: {{lambdaProcessingRoleArn}}
             Action: "es:*"
             Resource:

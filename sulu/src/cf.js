@@ -9,7 +9,6 @@ const exec = require('./common').exec;
 const getProfile = require('./common').getProfile;
 const uploadLambdas = require('./lambda').uploadLambdas;
 
-
 /**
  * Compiles a CloudFormation template in Yaml format
  * Reads the configuration yaml from config/config.yml
@@ -25,9 +24,29 @@ const compileCF = (options, stage) => {
   const template = Handlebars.compile(t);
 
   const destPath = path.join(process.cwd(), 'config/cloudformation.yml');
-  console.log(`CF template saved to ${destPath}`);
   fs.writeFileSync(destPath, template(config));
+  console.log(`CF template saved to ${destPath}`);
 };
+
+/**
+ * Uploads a file to S3
+ * @param {string} filePath the path of the file to be uploaded to S3
+ * @param {string} s3Path the s3 path to upload the file to.
+ *                        ex: s3://mybucket/my/destination/file.txt
+ */
+function uploadFileToS3(filePath, s3Path) {
+  // Make sure the file exists
+  try {
+    fs.accessSync(filePath);
+  }
+  catch (e) {
+    console.log(`${filePath} is missing.`);
+    process.exit(1);
+  }
+
+  // Upload file to S3
+  exec(`aws s3 cp ${filePath} ${s3Path}`);
+}
 
 /**
  * Uploads the Cloud Formation template to a given S3 location
@@ -35,21 +54,8 @@ const compileCF = (options, stage) => {
  * @param  {string} profile The profile name used in aws CLI
  */
 function uploadCF(s3Path, profile, configPath, stage) {
-  // build the template first
-  compileCF(configPath, stage);
-
-  // make sure cloudformation template exists
-  try {
-    fs.accessSync(path.join(process.cwd(), 'config/cloudformation.yml'));
-  }
-  catch (e) {
-    console.log('cloudformation.yml is missing.');
-    process.exit(1);
-  }
-
-  // upload CF template to S3
-  exec(`aws s3 cp config/cloudformation.yml ${s3Path}/ \
-                  ${getProfile(profile)}`);
+  compileCF(configPath, stage, s3Path);
+  uploadFileToS3('config/cloudformation.yml', `${s3Path}/cloudformation.yml`);
 }
 
 function cloudFormation(config, op, templateUrl, artifactHash, profile) {
@@ -121,7 +127,7 @@ function dlqToLambda(options) {
       }
 
       exec(`aws lambda update-function-configuration \
-        --function-name ${config.stackName}-${lambda.name}-${config.stage} \
+        --function-name ${config.stackName}-${config.stage}-${lambda.name} \
         --dead-letter-config TargetArn=${queueArn}`);
     }
   }
