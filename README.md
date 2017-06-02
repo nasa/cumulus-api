@@ -20,8 +20,6 @@ The CloudFormation template is generated from `config/cloudformation.template.ym
 
 Make sure to update the subnet id, availability zone and security group id in the `config.yml`. In the current setup all ec2 instances are launched into a private subnet that has the same ip address.
 
-? Same IP address?
-
 * Make sure to create the internal bucket first:  `aws s3 mb s3://my-bucket-internal`
 * Create the ECS security group
 
@@ -29,11 +27,10 @@ Run in order:
 
     $ cp config/secrets.json.example config/secrets.json
     $ npm run build
-    ? Why is the stack name and stage set here and in config.yml?
     # If --stack and --stage are not specified, they are pulled from config.yml
     $ sulu cf create --config ./config/gsfc-ngap-cumulus-api-lpdaac-sit.yml --region us-east-1
     $ sulu bootstrap remote  # needed to add mapping to ElasticSearch
-    # sulu cf dlq --config ./config/gsfc-ngap-cumulus-api-lpdaac-sit.yml --region us-east-1 # to add dead letter queues to lambda functions
+    # sulu cf dlq # to add dead letter queues to lambda functions
     # sulu users add user1 changethepassword  # to add the first user
 
 ### Deployment for the first time
