@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 /**
  * This file exports the content of your website, as a bunch of concatenated
@@ -12,13 +12,31 @@ var fs = require('fs');
 module.exports =
   '# Introduction\n' +
   fs.readFileSync('./content/intro.md', 'utf8') + '\n' +
+
   '# Authentication\n' +
   fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
+
+  '# Providers\n' +
+  fs.readFileSync('./content/providers.md', 'utf8') + '\n' +
+
   '# Collections\n' +
   fs.readFileSync('./content/collections.md', 'utf8') + '\n' +
+
   '# Granules\n' +
   fs.readFileSync('./content/granules.md', 'utf8') + '\n' +
+
+  '# PDRs\n' +
+  fs.readFileSync('./content/pdrs.md', 'utf8') + '\n' +
+
   '# Stats\n' +
   fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
-  '# Errors\n' +
-  fs.readFileSync('./content/errors.md', 'utf8') + '\n';
+
+  '# Resources\n' +
+  fs.readFileSync('./content/resources.md', 'utf8') + '\n' +
+
+  '# Logs\n' +
+  fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
+
+  '# Schemas\n' +
+  fs.readFileSync('./content/schemas.md', 'utf8') + '\n'
+;
