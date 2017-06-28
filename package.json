@@ -9,7 +9,7 @@
     "start": "bin/parallel 'webpack -w --colors' 'sulu serve'",
     "serve": "bin/parallel 'webpack -w --colors' 'sulu serve'",
     "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd lib-gitc && npm link && cd .. && npm link gitc-common && cd sulu && npm link && cd .. && npm link sulu",
-    "build": "webpack -w --progress"
+    "build": "webpack --progress"
   },
   "ava": {
     "babel": "inherit",
@@ -86,7 +86,7 @@
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
-    "pvl": "git+ssh://git@github.com/cumulus-nasa/pvl.git#v1.0.1",
+    "pvl": "https://github.com/cumulus-nasa/pvl.git",
     "querystring": "^0.2.0",
     "queue-async": "^1.2.1",
     "simplecrawler": "^1.0.3"
