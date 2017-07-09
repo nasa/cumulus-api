@@ -8,7 +8,7 @@
     "lint": "./node_modules/.bin/eslint .",
     "start": "bin/parallel 'webpack -w --colors' 'sulu serve'",
     "serve": "bin/parallel 'webpack -w --colors' 'sulu serve'",
-    "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd lib-gitc && npm link && cd .. && npm link gitc-common && cd sulu && npm link && cd .. && npm link sulu",
+    "prepublish": "cd lib && npm link && cd .. && npm link cumulus-common && cd sulu && npm link && cd .. && npm link sulu",
     "build": "webpack --progress"
   },
   "ava": {
@@ -79,6 +79,7 @@
   "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
   "dependencies": {
     "aws-sdk": "^2.14.0",
+    "ingest-common": "^0.1.0",
     "dynamodb-data-types": "^3.0.0",
     "elasticsearch": "^12.1.3",
     "form-data": "^2.1.2",
