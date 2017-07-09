@@ -1,6 +1,16 @@
 stackName: cumulus-api-lpdaac
 stage: dev
 
+# Billing tags
+NGAPAppName: Cumulus-api-lpdaac
+NGAPAppEnvironment: dev
+
+# IAM configuration
+cumulusApiDeploymentUserArn: arn:aws:iam::985962406024:user/alireza@developmentseed.org
+ecsInstanceProfileArn: arn:aws:iam::985962406024:instance-profile/cumulus-api-lpdaac-ecs
+ecsRoleArn: arn:aws:iam::985962406024:role/cumulus-api-lpdaac-ecs
+lambdaApiGatewayRoleArn: arn:aws:iam::985962406024:role/cumulus-api-lpdaac-lambda-api-gateway
+lambdaProcessingRoleArn: arn:aws:iam::985962406024:role/cumulus-api-lpdaac-lambda-processing
 distributionEndpoint: https://cumulus.developmentseed.org/distribution
 
 buckets:
@@ -241,6 +251,11 @@ lambdas:
     handler: cmr.handler
     timeout: 300
     dlq: DispatcherFailedQueue
+    broadcast: true
+
+  - name: modis
+    handler: modis.handler
+    timeout: 300
     broadcast: true
 
   - name: distribution
