@@ -39,6 +39,11 @@ test.cb('Should fail if the metadata file uri is missing', (t) => {
   });
 });
 
+// TODO: write tests for
+//  - when metadata fails CMR validation
+//  - when CMR is down
+//  - when username/password is incorrect
+
 test.after(() => {
   S3.get.restore();
   cmrjs.ingestGranule.restore();
