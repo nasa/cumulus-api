@@ -6,6 +6,7 @@ import { S3 } from 'cumulus-common/aws-helpers';
 import { localRun } from 'cumulus-common/local';
 import { ingestGranule } from 'cumulus-common/cmrjs';
 import { createErrorType } from 'ingest-common/errors';
+import Task from 'ingest-common/task';
 import payloadExample from 'cumulus-common/tests/data/payload4.json';
 
 /**
@@ -20,6 +21,18 @@ const logDetails = {
   type: 'processing'
 };
 
+
+// TODO: this fails due to an underlying bug in Task class
+// Have to fix the lib problem first before building this
+export class Cmr extends Task {
+  async run() {
+    console.log(this.message);
+  }
+
+  static handler(...args) {
+    return Cmr.handle(...args);
+  }
+}
 
 /**
  * getMetadata

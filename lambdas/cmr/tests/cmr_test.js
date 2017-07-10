@@ -4,7 +4,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import { S3 } from 'cumulus-common/aws-helpers';
 import cmrjs from 'cumulus-common/cmrjs';
-import { handler } from '../index';
+import { handler, Cmr } from '../index';
 import payload from './data/payload.json';
 
 const result = {
@@ -17,6 +17,10 @@ test.before(() => {
   sinon.stub(cmrjs, 'ingestGranule').callsFake(() => ({
     result
   }));
+});
+
+test.cb.skip('testing new task subclass', (t) => {
+  Cmr.handler(payload, {}, t.end);
 });
 
 test.cb('should succeed with correct payload', (t) => {

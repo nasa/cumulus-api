@@ -1,5 +1,11 @@
 {
   "eventSource": "sfn",
+  "ingest_meta": {
+    "task": "cmr"
+  },
+  "workflow_config_template": {
+    "cmr": {}
+  },
   "resources": {
     "stack": "cumulus-generic-test",
     "stateMachines": {
