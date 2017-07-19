@@ -73,6 +73,40 @@ export async function postToCMR(xml, cmrProvider) {
   return ingestGranule(xml, cmrProvider);
 }
 
+export async function cmr(collectionName, event) {
+  const output = get(event, 'payload.output');
+  const cmrProvider = get(event, 'collection.meta.cmrProvider', 'CUMULUS');
+  const granules = [];
+
+  for (const granule of output[collectionName].granules) {
+    // get xml-meta if exists
+    const xmlFilePath = get(granule, 'files[\'meta-xml\']', null);
+
+    if (xmlFilePath) {
+      const xml = await getMetadata(xmlFilePath);
+      const res = await postToCMR(xml, cmrProvider);
+
+      logDetails.collectionName = get(event, 'collection.id');
+      logDetails.pdrname = get(event, 'payload.pdrname');
+      logDetails.granuleId = get(granule, 'granuleId', 'unknown_granule');
+
+      log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
+
+      // add conceptId to the record
+      granule.cmrLink = 'https://cmr.uat.earthdata.nasa.gov/search/granules.json' +
+        `?concept_id=${res.result['concept-id']}`;
+      granule.published = true;
+    }
+
+    granules.push(granule);
+  }
+
+  return {
+    collectionName,
+    granules
+  };
+}
+
 
 /**
  * Lambda function handler
@@ -80,37 +114,40 @@ export async function postToCMR(xml, cmrProvider) {
  * @param {object} event Lambda function payload
  * @param {object} context aws lambda context object
  * @param {function} cb lambda callback
- * @returns {object} returns the updated event object
+ * @returns 1A0000-2016111101_000_001{object} returns the updated event object[M`A[M`A[M`A
  */
 export function handler(event, context, cb) {
   try {
-    logDetails.collectionName = get(event, 'collection.id');
-    logDetails.pdrName = get(event, 'payload.pdrName');
-    logDetails.granuleId = get(event, 'payload.granuleId');
-    const cmrProvider = get(event, 'collection.meta.cmrProvider', 'CUMULUS');
-    const xmlFilePath = get(event, 'payload.files[\'meta-xml\']');
+    // we have to post the meta-xml file of all output granules
+    // first we check if there is an output file
+    const output = get(event, 'payload.output');
 
-    if (!xmlFilePath) {
-      const err = new XmlMetaFileNotFound('Staging XML File is missing');
-      return cb(err);
+    // do nothing and return the payload as is
+    if (!output) {
+      return cb(null, event);
     }
 
-    log.debug(`Received a new payload: ${JSON.stringify(event)}`, logDetails);
+    // for all granules of all output collections post to CMR if meta-xml key exists
+    const jobs = [];
+    for (const collectionName in output) {
+      jobs.push(cmr(collectionName, event));
+    }
 
-    getMetadata(xmlFilePath).then(xml => postToCMR(xml, cmrProvider)).then((res) => {
-      log.info(`successfully posted with this message: ${JSON.stringify(res)}`, logDetails);
+    Promise.all(jobs).then((results) => {
+      // update output section of the payload
+      for (const result of results) {
+        event.payload.output[result.collectionName].granules = result.granules;
 
-      // add conceptId to the record
-      event.payload.cmrLink = 'https://cmr.uat.earthdata.nasa.gov/search/granules.json' +
-        `?concept_id=${res.result['concept-id']}`;
-      event.payload.published = true;
-
-      return event;
-    }).then(res => cb(null, res))
-      .catch(e => cb(e));
+        // also update granules info in the meta section of the payload
+        for (const granule of result.granules) {
+          event.meta.granules[granule.granuleId].cmrLink = get(granule, 'cmrLink', null);
+          event.meta.granules[granule.granuleId].published = get(granule, 'published', false);
+        }
+      }
+      return cb(null, event);
+    }).catch(e => cb(e));
   }
   catch (e) {
-    log.error(e, logDetails);
     cb(e);
   }
 }
