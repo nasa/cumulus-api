@@ -6,11 +6,12 @@ import { S3 } from 'cumulus-common/aws-helpers';
 import cmrjs from 'cumulus-common/cmrjs';
 import { handler, Cmr } from '../index';
 import payload from './data/payload.json';
+const fs = require('fs');
+const invalidMetaXML = fs.readFileSync(__dirname + '/data/invalid.xml', 'utf8');
 
 const result = {
   'concept-id': 'testingtesging'
 };
-
 
 test.before(() => {
   sinon.stub(S3, 'get').callsFake(() => ({ Body: '<xml></xml>' }));
@@ -23,23 +24,33 @@ test.cb.skip('testing new task subclass', (t) => {
   Cmr.handler(payload, {}, t.end);
 });
 
-test.cb('should succeed with correct payload', (t) => {
+test.cb.serial('should succeed with correct payload', (t) => {
   handler(payload, {}, (e, r) => {
     t.is(
       r.payload.cmrLink,
       `https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=${result['concept-id']}`
     );
     t.is(r.payload.published, true);
-    t.end(e);
+    t.end(e)
   });
 });
 
-test.cb('Should fail if the metadata file uri is missing', (t) => {
+test.cb.serial('should fail if the metadata file uri is missing', (t) => {
   const newPayload = Object.assign({}, payload);
   newPayload.payload.files['meta-xml'] = null;
   handler(newPayload, {}, (e) => {
     t.truthy(e);
-    t.end();
+    t.end()
+  });
+});
+
+test.cb.serial('should succeed if cmr correctly identifies the xml as invalid', (t) => {
+  cmrjs.ingestGranule.restore();
+  S3.get.restore();
+  sinon.stub(S3, 'get').callsFake(() => ({ Body: '<xml>' + invalidMetaXML +'</xml>' }));
+  handler(payload, {}, (e) => {
+    t.truthy(e);
+    t.end()
   });
 });
 
@@ -50,5 +61,4 @@ test.cb('Should fail if the metadata file uri is missing', (t) => {
 
 test.after(() => {
   S3.get.restore();
-  cmrjs.ingestGranule.restore();
 });
