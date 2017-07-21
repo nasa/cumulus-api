@@ -24,7 +24,9 @@
       "@ava/stage-4",
       "@ava/transform-test-files"
     ],
-    "plugins": ["transform-async-to-generator"]
+    "plugins": [
+      "transform-async-to-generator"
+    ]
   },
   "eslintConfig": {
     "parser": "babel-eslint",
@@ -45,19 +47,31 @@
       "spaced-comment": "off",
       "prefer-template": "warn",
       "no-underscore-dangle": "off",
-      "comma-dangle": ["warn", "never"],
+      "comma-dangle": [
+        "warn",
+        "never"
+      ],
       "object-shorthand": "off",
-      "space-before-function-paren": ["error", "never"],
-      "brace-style": [2, "stroustrup"],
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ],
+      "brace-style": [
+        2,
+        "stroustrup"
+      ],
       "no-useless-escape": "off",
       "no-param-reassign": "off",
       "no-prototype-builtins": "off",
       "consistent-return": "off",
       "no-await-in-loop": "off",
-      "max-len": [2, {
-        "code": 100,
-        "ignorePattern": "(https?:|JSON\\.parse|[Uu]rl =)"
-      }],
+      "max-len": [
+        2,
+        {
+          "code": 100,
+          "ignorePattern": "(https?:|JSON\\.parse|[Uu]rl =)"
+        }
+      ],
       "no-restricted-syntax": [
         "error",
         "ForInStatement",
@@ -79,11 +93,11 @@
   "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
   "dependencies": {
     "aws-sdk": "^2.14.0",
-    "ingest-common": "^0.1.0",
     "dynamodb-data-types": "^3.0.0",
     "elasticsearch": "^12.1.3",
     "form-data": "^2.1.2",
     "got": "^6.7.1",
+    "ingest-common": "^0.1.0",
     "jsonschema": "^1.1.1",
     "lodash": "^4.17.4",
     "moment": "^2.17.1",

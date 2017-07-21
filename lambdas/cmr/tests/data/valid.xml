@@ -24,6 +24,32 @@
             <EndingDateTime>2017-03-15T10:45:00.000000Z</EndingDateTime>
         </RangeDateTime>
     </Temporal>
+    <Spatial>
+        <HorizontalSpatialDomain>
+            <Geometry>
+                <GPolygon>
+                    <Boundary>
+                        <Point>
+                            <PointLongitude>-15.557238265754000</PointLongitude>
+                            <PointLatitude>-49.999999995509803</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>-13.025754899560900</PointLongitude>
+                            <PointLatitude>-39.815137901055998</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>0.010707321005942</PointLongitude>
+                            <PointLatitude>-39.819130142883701</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>0.021626772236075</PointLongitude>
+                            <PointLatitude>-50.006173039631598</PointLatitude>
+                        </Point>
+                    </Boundary>
+                </GPolygon>
+            </Geometry>
+        </HorizontalSpatialDomain>
+    </Spatial>
     <MeasuredParameters>
         <MeasuredParameter>
             <ParameterName>MOD09G</ParameterName>
