@@ -38,6 +38,7 @@
     "rules": {
       "generator-star-spacing": "off",
       "radix": "off",
+      "guard-for-in": "off",
       "strict": "off",
       "import/no-extraneous-dependencies": "off",
       "import/newline-after-import": "off",
@@ -74,7 +75,6 @@
       ],
       "no-restricted-syntax": [
         "error",
-        "ForInStatement",
         "LabeledStatement",
         "WithStatement"
       ],
