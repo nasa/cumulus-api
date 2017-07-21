@@ -4,6 +4,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import { S3 } from 'cumulus-common/aws-helpers';
 import cmrjs from 'cumulus-common/cmrjs';
+const utils = require('cumulus-common/cmrjs/utils.js')
 import { handler } from '../index';
 import payload from './data/payload.json';
 const fs = require('fs');
@@ -72,9 +73,23 @@ test.cb.serial('should succeed if cmr correctly identifies the xml as valid', (t
   });
 });
 
+test.cb.serial('should succeed if program throws a 401 error when username and password are incorrect', (t) => {
+  var newPayload = JSON.parse(JSON.stringify(payload));
+  t.is(newPayload.meta.granules[granuleId].published, false);
+  S3.get.restore();
+  sinon.stub(S3, 'get').callsFake(() => ({ Body: validMetaXML }));
+  const fakeUpdateToken = utils.updateToken
+  sinon.stub(utils, 'updateToken').callsFake((cmrProvider, clientId) => fakeUpdateToken(cmrProvider, clientId, 'fakeUser', 'fakePassword'))
+  handler(newPayload, {}, (e) => {
+    t.is(e.host, 'api-test.echo.nasa.gov')
+    t.is(e.statusCode, 422)
+    t.end();
+  });
+});
+
+
 // TODO: write tests for
 //  - when CMR is down
-//  - when username/password is incorrect
 
 test.after(() => {
   S3.get.restore();
