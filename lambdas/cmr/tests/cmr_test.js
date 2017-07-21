@@ -50,7 +50,6 @@ test.cb.serial('should succeed if cmr correctly identifies the xml as invalid', 
   S3.get.restore();
   sinon.stub(S3, 'get').callsFake(() => ({ Body: invalidMetaXML }));
   handler(payload, {}, (e) => {
-    console.log(e)
     t.truthy(e);
     t.end();
   });
@@ -60,14 +59,12 @@ test.cb.serial('should succeed if cmr correctly identifies the xml as valid', (t
   S3.get.restore();
   sinon.stub(S3, 'get').callsFake(() => ({ Body: validMetaXML }));
   handler(payload, {}, (e) => {
-    console.log(e)
     t.falsy(e);
     t.end();
   });
 });
 
 // TODO: write tests for
-//  - when metadata fails CMR validation
 //  - when CMR is down
 //  - when username/password is incorrect
 
