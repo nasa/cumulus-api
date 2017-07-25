@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import { S3 } from 'cumulus-common/aws-helpers';
 import cmrjs from 'cumulus-common/cmrjs';
 const utils = require('cumulus-common/cmrjs/utils.js')
+const got = require('got')
 import { handler } from '../index';
 import payload from './data/payload.json';
 const fs = require('fs');
@@ -73,11 +74,9 @@ test.cb.serial('should succeed if cmr correctly identifies the xml as valid', (t
   });
 });
 
-test.cb.serial('should succeed if program throws a 401 error when username and password are incorrect', (t) => {
+test.cb.serial('should succeed if program throws a 422 error when username and password are incorrect', (t) => {
   var newPayload = JSON.parse(JSON.stringify(payload));
   t.is(newPayload.meta.granules[granuleId].published, false);
-  S3.get.restore();
-  sinon.stub(S3, 'get').callsFake(() => ({ Body: validMetaXML }));
   const fakeUpdateToken = utils.updateToken
   sinon.stub(utils, 'updateToken').callsFake((cmrProvider, clientId) => fakeUpdateToken(cmrProvider, clientId, 'fakeUser', 'fakePassword'))
   handler(newPayload, {}, (e) => {
@@ -87,9 +86,16 @@ test.cb.serial('should succeed if program throws a 401 error when username and p
   });
 });
 
-
-// TODO: write tests for
-//  - when CMR is down
+test.cb.serial('should succeed if program throws a timed out error when cmr is inaccesible', (t) => {
+  var newPayload = JSON.parse(JSON.stringify(payload));
+  t.is(newPayload.meta.granules[granuleId].published, false);
+  utils.updateToken.restore()
+  sinon.stub(utils, 'getUrl').callsFake(() => ('https://does.not.exist.nasa.gov/'))
+  handler(newPayload, {}, (e,r) => {
+    t.is(e.code, 'ETIMEDOUT')
+    t.end();
+  });
+});
 
 test.after(() => {
   S3.get.restore();
