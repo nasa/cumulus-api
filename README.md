@@ -1,6 +1,6 @@
-## Cumulus-api
+## [DEPRECATED] Cumulus-api
 
-[![CircleCI](https://circleci.com/gh/cumulus-nasa/cumulus-api.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/cumulus-api)
+**This repository is not longer developered. The code is moved to [here](https://github.com/cumulus-nasa/cumulus). We only use this repository to keep track of Development Seed's Cumulus related issues and backlog.**
 
 Cumulus-api is the gateway to the Cumulus platform. Ultimately, everything that needs to be configured on Cumulus would be handled by the cumulus-api. All the metrics and status of the Cumulus as a platform is also accessible through the cumulus-api.
 
