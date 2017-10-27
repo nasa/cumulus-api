@@ -1,6 +1,6 @@
 ## [DEPRECATED] Cumulus-api
 
-**This repository is not longer developered. The code is moved to [here](https://github.com/cumulus-nasa/cumulus). We only use this repository to keep track of Development Seed's Cumulus related issues and backlog.**
+### This repository is not longer developed. The code is moved to [cumulus-nasa/cumulus](https://github.com/cumulus-nasa/cumulus)
 
 Cumulus-api is the gateway to the Cumulus platform. Ultimately, everything that needs to be configured on Cumulus would be handled by the cumulus-api. All the metrics and status of the Cumulus as a platform is also accessible through the cumulus-api.
 
