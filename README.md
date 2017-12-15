@@ -1,6 +1,6 @@
 ## Cumulus API Docs
 
-[![CircleCI](https://circleci.com/gh/cumulus-nasa/cumulus-api.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/cumulus-api)
+[![CircleCI](https://circleci.com/gh/cumulus-nasa/cumulus-api/tree/master.svg?style=svg&circle-token=da48de71f4b14f1d435851cb5d7a845d3e88fbdd)](https://circleci.com/gh/cumulus-nasa/cumulus-api/tree/master)
 
 Cumulus API documentaion: https://cumulus-nasa.github.io/cumulus-api
 
