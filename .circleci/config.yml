@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9.3
+    working_directory: ~/cumulus-api
+    steps:
+      - checkout
+
+      # restore cache
+      - restore_cache:
+          keys:
+            - cumulus-api-{{ .Branch }}-{{ checksum "package.json" }}
+
+      - run:
+          name: Installing Dependencies
+          command: |
+          npm install
+
+      # save node_module and yarn-cache folders
+      - save_cache:
+          key: cumulus-api-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/cumulus-api/node_modules
+
+      - deploy:
+          name: deploy documentation to gh-pages 
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              npm run build
+              npm run deploy
+            fi

@@ -1,0 +1,68 @@
+## Authorization header
+
+Whenever a request is made to the Cumulus API, it must contain an OAuth token from [EarthData Login](https://urs.earthdata.nasa.gov).
+
+The token is included in requests using the `Authorization` header.
+
+If no token is provided, the Cumulus API server will respond with an error, requesting credentials. If an incorrect token is provided, the server will respond with a separate error noting this.
+
+#### Authentication example
+
+```curl
+#! /bin/sh
+
+ORIGIN=$(dirname $CUMULUS_BASEURL)
+LOGIN_URL="$CUMULUS_BASEURL/token"
+
+# create a base64 hash of your login credentials
+AUTH=$(printf "$EARTHDATA_USERNAME:$EARTHDATA_PASSWORD" | base64)
+
+# Request the Earthdata url with client id and redirect uri to use with Cumulus
+AUTHORIZE_URL=$(curl -s -i ${LOGIN_URL} | grep location | sed -e "s/^location: //");
+
+# Request an authorization grant code
+TOKEN_URL=$(curl -s -i -X POST \
+  -F "credentials=${AUTH}" \
+  -H "Origin: ${ORIGIN}" \
+  ${AUTHORIZE_URL%$'\r'} | grep Location | sed -e "s/^Location: //")
+
+# Request the token through the CUMULUS API url that's returned from Earthdata
+# Response is a JSON object of the form { token: String }
+# This uses the cli tool jq to parse the JSON and get the token string
+# More info on jq: https://stedolan.github.io/jq/
+TOKEN=$(curl -s ${TOKEN_URL%$'\r'} | jq -r '.token')
+
+echo $TOKEN
+```
+
+```python
+import os
+
+from cumulus_api import CumulusApi
+
+CUMULUS_BASEURL = os.environ["CUMULUS_BASEURL"]
+EARTHDATA_USERNAME = os.environ["EARTHDATA_USERNAME"]
+EARTHDATA_PASSWORD = os.environ["EARTHDATA_PASSWORD"]
+
+api = CumulusApi(CUMULUS_BASEURL)
+
+token = api.login(EARTHDATA_USERNAME, EARTHDATA_PASSWORD)
+print token
+```
+
+```javascript
+var Cumulus = require('../../api-client-js')
+
+var api = new Cumulus({
+  baseUrl: process.env.CUMULUS_BASEURL
+})
+
+var options = {
+  username: process.env.EARTHDATA_USERNAME,
+  password: process.env.EARTHDATA_PASSWORD
+}
+
+api.login(options, function (err, token) {
+  console.log('token', token)
+})
+```

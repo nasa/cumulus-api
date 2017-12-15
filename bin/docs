@@ -1,0 +1,65 @@
+#!/bin/bash
+
+copy_docs() {
+    echo 'Copying API content and custom template to DocBox'
+    rm -rf node_modules/docbox/content
+    ln -s $(pwd)/content $(pwd)/node_modules/docbox/content
+    cp template/src/components/app.js node_modules/docbox/src/components/app.js
+    cp template/src/custom/* node_modules/docbox/src/custom/
+}
+
+# Serves docbox
+serve() {
+    cd node_modules/docbox || exit
+    npm start
+}
+
+build() {
+    cd node_modules/docbox || exit
+    rm -rf build
+    mkdir -p build
+    npm run build
+    cp -r css build/
+    cp index.html build/
+    cp bundle.js build/
+}
+
+deploy() {
+    cd node_modules/docbox/build || exit
+    git init
+    git config user.name "Dvseed"
+    git config user.email "info@developmentseed.org"
+    git config commit.gpgsign "false"
+    git add css bundle.js index.html
+    git commit -m "Automated to gh-pages"
+    git push --force --quiet git@github.com:cumulus-nasa/cumulus-api.git master:gh-pages
+    rm -rf .git/
+}
+
+while [[ $1 ]]
+do
+    case "$1" in
+        serve)
+            copy_docs
+            serve
+            exit 0
+            ;;
+        copy)
+            copy_docs
+            exit 0
+            ;;
+        build)
+            copy_docs
+            build
+            exit 0
+            ;;
+        deploy)
+            deploy
+            exit 0
+            ;;
+        *)
+            echo 'Argument(s) not supported'
+            exit 0
+            ;;
+    esac
+done

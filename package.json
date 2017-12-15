@@ -1,0 +1,34 @@
+{
+  "name": "cumulus-api",
+  "version": "0.1.0",
+  "description": "Cumulus API Docs",
+  "main": "handler.js",
+  "scripts": {
+    "bootstrap": "./bin/docs install",
+    "serve": "./bin/docs serve",
+    "build": "./bin/docs build",
+    "deploy": "./bin/docs deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cumulus-nasa/cumulus-api.git"
+  },
+  "author": "Development Seed",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/cumulus-nasa/cumulus-api/issues"
+  },
+  "homepage": "https://github.com/cumulus-nasa/cumulus-api#readme",
+  "dependencies": {
+    "docbox": "^1.0.8"
+  },
+  "devDependencies": {
+    "babel-register": "^6.3.13",
+    "budo": "^10.0.0",
+    "cz-conventional-changelog": "2.0.0",
+    "expect": "^21.0.2",
+    "mocha": "^3.2.0",
+    "to-vfile": "^2.0.0",
+    "uglify-js": "^3.0.27"
+  }
+}
