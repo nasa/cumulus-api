@@ -22,6 +22,11 @@ jobs:
           paths:
             - ~/cumulus-api/node_modules
 
+
+      - add_ssh_keys:
+          fingerprints:
+            - "f0:14:60:b4:84:71:90:db:a5:16:86:ac:21:79:67:8e"
+
       - deploy:
           name: deploy documentation to gh-pages 
           command: |
