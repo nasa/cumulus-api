@@ -9,7 +9,7 @@ GET /logs
 #### Example request
 
 ```curl
-$ curl https://example.com/logs?limit=5 --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/logs?limit=5 --header 'Authorization: Bearer ReplceWithTheToken'
 ```
 
 #### Example response
@@ -73,7 +73,7 @@ $ curl https://example.com/logs?limit=5 --header 'Authorization: Basic Base64Enc
 #### Example request for errors
 
 ```curl
-$ curl https://example.com/logs?level=error --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/logs?level=error --header 'Authorization: Bearer ReplceWithTheToken'
 ```
 
 #### Example response for errors

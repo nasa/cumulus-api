@@ -9,7 +9,7 @@ GET /collections
 #### Example request
 
 ```curl
-$ curl https://example.com/collections --header 'Authorization: Basic AccessToken'
+$ curl https://example.com/collections --header 'Authorization: Bearer AccessToken'
 ```
 
 #### Example response
@@ -142,7 +142,7 @@ GET /collections/{collectionName}
 #### Example request
 
 ```curl
-$ curl https://example.com/collections/AST_L1A__version__003 --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/collections/AST_L1A__version__003 --header 'Authorization: Bearer ReplceWithTheToken'
 ```
 
 #### Example response
@@ -264,7 +264,7 @@ POST /collections
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/collections --header 'Authorization: Basic Y3VtdWx1czp0ZXN0dXNlcg==' --data '{
+$ curl --request POST https://example.com/collections --header 'Authorization: Bearer ReplaceWithToken' --data '{
     "changedBy": "Jane Smith",
     "cmrProvider": "MY_DAAC",
     "collectionName": "MY_COLLECTION",
@@ -372,7 +372,7 @@ PUT /collections
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/collections/MY_COLLECTION --header 'Authorization: Basic Base64EncodedCredentials' --data '{
+$ curl --request PUT https://example.com/collections/MY_COLLECTION --header 'Authorization: Bearer ReplceWithTheToken' --data '{
     "providers": ["ANOTHER_PROVIDER"]
 }'
 ```
@@ -437,7 +437,7 @@ DELETE /collections/{collectionName}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/collections/MY_COLLECTION --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl --request DELETE https://example.com/collections/MY_COLLECTION --header 'Authorization: Bearer ReplceWithTheToken'
 
 ```
 
