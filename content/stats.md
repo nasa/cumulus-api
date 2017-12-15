@@ -9,7 +9,7 @@ GET /stats
 #### Example Request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/stats --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/stats --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example success response
@@ -181,7 +181,7 @@ GET /stats/histogram
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Basic Base64EncodedCredentials'
+curl 'https://example.com/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -246,7 +246,7 @@ GET /stats/aggregate
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Basic Base64EncodedCredentials'
+curl 'https://example.com/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -291,7 +291,7 @@ GET /stats/average
 #### Example request
 
 ```curl
-curl 'https://cumulus.developmentseed.org/api/dev/stats/average?field=duration&type=granules' --header 'Authorization: Basic Base64EncodedCredentials'
+curl 'https://example.com/stats/average?field=duration&type=granules' --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response

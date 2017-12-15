@@ -9,7 +9,7 @@ GET /granules
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/granules --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/granules --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -176,7 +176,7 @@ GET /granules/{granuleID}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -332,7 +332,7 @@ PUT /granules/{granuleID}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "reprocess"}'
+$ curl --request PUT https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "reprocess"}'
 ```
 
 #### Example response
@@ -488,7 +488,7 @@ PUT /granules/{granuleID}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "reingest"}'
+$ curl --request PUT https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "reingest"}'
 ```
 
 #### Example response
@@ -644,7 +644,7 @@ PUT /granules/{granuleID}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "removeFromCmr"}'
+$ curl --request PUT https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -800,7 +800,7 @@ DELETE /granules/{granuleID}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Basic Base64EncodedCredentials'
 
 ```
 

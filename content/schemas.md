@@ -13,7 +13,7 @@ GET /schemas/{type}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/schemas/provider --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/schemas/provider --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response

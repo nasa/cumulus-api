@@ -9,7 +9,7 @@ GET /providers
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/providers --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -55,7 +55,7 @@ GET /providers/{name}
 #### Example request
 
 ```curl
-$ curl https://cumulus.developmentseed.org/api/dev/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl https://example.com/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Basic Base64EncodedCredentials'
 ```
 
 #### Example response
@@ -90,7 +90,7 @@ POST /providers
 #### Example request
 
 ```curl
-$ curl --request POST https://cumulus.developmentseed.org/api/dev/providers --header 'Authorization: Basic Base64EncodedCredentials' --data '{
+$ curl --request POST https://example.com/providers --header 'Authorization: Basic Base64EncodedCredentials' --data '{
     "changedBy": "Cumulus Dashboard",
     "createdAt": 1491941727851,
     "host": "https://www.example.gov",
@@ -133,7 +133,7 @@ PUT /providers
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{
     "host": "https://www.example.co.uk"
 }'
 ```
@@ -166,7 +166,7 @@ PUT /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "restart"}'
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "restart"}'
 ```
 
 #### Example response
@@ -197,7 +197,7 @@ PUT /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request PUT https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "stop"}'
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials' --data '{"action": "stop"}'
 ```
 
 #### Example response
@@ -228,7 +228,7 @@ DELETE /providers/{name}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://cumulus.developmentseed.org/api/dev/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials'
+$ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Basic Base64EncodedCredentials'
 
 ```
 
