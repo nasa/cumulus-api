@@ -9,155 +9,41 @@ GET /stats
 #### Example Request
 
 ```curl
-$ curl https://example.com/stats --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl https://example.com/stats --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example success response
 
 ```json
 {
-  "errors": {
-    "dateFrom": "1970-01-18T06:25:29+00:00",
-    "dateTo": "2017-04-12T04:55:27+00:00",
-    "value": 158,
-    "aggregation": "count",
-    "unit": "error"
-  },
-  "collections": {
-    "dateFrom": "1970-01-01T12:00:00+00:00",
-    "dateTo": "2017-04-12T04:55:27+00:00",
-    "value": 4,
-    "aggregation": "count",
-    "unit": "collection"
-  },
-  "processingTime": {
-    "dateFrom": "1970-01-18T06:25:29+00:00",
-    "dateTo": "2017-04-12T04:55:27+00:00",
-    "value": 54.05747180514865,
-    "aggregation": "average",
-    "unit": "second"
-  },
-  "granules": {
-    "dateFrom": "1970-01-18T06:25:29+00:00",
-    "dateTo": "2017-04-12T04:55:27+00:00",
-    "value": 36,
-    "aggregation": "count",
-    "unit": "granule"
-  },
-  "resources": [
-    {
-      "s3": [
-        {
-          "bucket": "cumulus-private",
-          "Sum": 770681495866,
-          "Unit": "Bytes",
-          "Timestamp": {}
-        },
-        {
-          "bucket": "cumulus-public",
-          "Sum": 1625772229,
-          "Unit": "Bytes",
-          "Timestamp": {}
-        },
-        {
-          "bucket": "cumulus-protected",
-          "Sum": 2720993174445,
-          "Unit": "Bytes",
-          "Timestamp": {}
-        },
-        {
-          "bucket": "cumulus-internal",
-          "Sum": 2688662529050,
-          "Unit": "Bytes",
-          "Timestamp": {}
-        }
-      ],
-      "createdAt": 1492016051264,
-      "instances": [
-        {
-          "pendingTasks": 0,
-          "availableMemory": 6450,
-          "availableCpu": 1993,
-          "id": "i-084ebffda1e5f4f6c",
-          "runningTasks": 4,
-          "status": "ACTIVE"
-        },
-        {
-          "pendingTasks": 0,
-          "availableMemory": 6450,
-          "availableCpu": 1993,
-          "id": "i-04e019987a688d0ed",
-          "runningTasks": 4,
-          "status": "ACTIVE"
-        }
-      ],
-      "queues": [
-        {
-          "messagesAvailable": "0",
-          "name": "cumulus-api-lpdaac-dev-PDRsQueue",
-          "messagesInFlight": "0"
-        },
-        {
-          "messagesAvailable": "0",
-          "name": "cumulus-api-lpdaac-dev-GranulesQueue",
-          "messagesInFlight": "0"
-        },
-        {
-          "messagesAvailable": "0",
-          "name": "cumulus-api-lpdaac-dev-ProcessingQueue",
-          "messagesInFlight": "0"
-        },
-        {
-          "messagesAvailable": "562",
-          "name": "cumulus-api-lpdaac-dev-DispatcherFailedQueue",
-          "messagesInFlight": "0"
-        }
-      ],
-      "services": [
-        {
-          "pendingCount": 0,
-          "desiredCount": 1,
-          "name": "cumulus-api-lpdaac-dev-discoverPdrsECSService-6YW4ICJMNAT1",
-          "runningCount": 1,
-          "status": "ACTIVE"
-        },
-        {
-          "pendingCount": 0,
-          "desiredCount": 1,
-          "name": "cumulus-api-lpdaac-dev-ecsrunnerECSService-UNZYDBT4VQG",
-          "runningCount": 1,
-          "status": "ACTIVE"
-        },
-        {
-          "pendingCount": 0,
-          "desiredCount": 4,
-          "name": "cumulus-api-lpdaac-dev-ingestGranulesECSService-14DH5QS8SBT1C",
-          "runningCount": 4,
-          "status": "ACTIVE"
-        },
-        {
-          "pendingCount": 0,
-          "desiredCount": 1,
-          "name": "cumulus-api-lpdaac-dev-parsePdrsECSService-13TX7LIJHUUWG",
-          "runningCount": 1,
-          "status": "ACTIVE"
-        },
-        {
-          "pendingCount": 0,
-          "desiredCount": 1,
-          "name": "cumulus-api-lpdaac-dev-jobsECSService-Z6ZGBLE2C83T",
-          "runningCount": 1,
-          "status": "ACTIVE"
-        }
-      ],
-      "tasks": {
-        "pendingTasks": 0,
-        "runningTasks": 8
-      },
-      "updatedAt": 1492016051264,
-      "timestamp": "2017-04-12T16:54:09.508Z"
+    "errors": {
+        "dateFrom": "1970-01-18T12:36:59+00:00",
+        "dateTo": "2017-12-26T04:38:15+00:00",
+        "value": 2,
+        "aggregation": "count",
+        "unit": "error"
+    },
+    "collections": {
+        "dateFrom": "1970-01-01T12:00:00+00:00",
+        "dateTo": "2017-12-26T04:38:15+00:00",
+        "value": 3,
+        "aggregation": "count",
+        "unit": "collection"
+    },
+    "processingTime": {
+        "dateFrom": "1970-01-18T12:36:59+00:00",
+        "dateTo": "2017-12-26T04:38:15+00:00",
+        "value": null,
+        "aggregation": "average",
+        "unit": "second"
+    },
+    "granules": {
+        "dateFrom": "1970-01-18T12:36:59+00:00",
+        "dateTo": "2017-12-26T04:38:15+00:00",
+        "value": 8,
+        "aggregation": "count",
+        "unit": "granule"
     }
-  ]
 }
 ```
 
@@ -181,7 +67,7 @@ GET /stats/histogram
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Bearer ReplceWithTheToken'
+curl 'https://example.com/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -246,7 +132,7 @@ GET /stats/aggregate
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Bearer ReplceWithTheToken'
+curl 'https://example.com/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -291,7 +177,7 @@ GET /stats/average
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/average?field=duration&type=granules' --header 'Authorization: Bearer ReplceWithTheToken'
+curl 'https://example.com/stats/average?field=duration&type=granules' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
