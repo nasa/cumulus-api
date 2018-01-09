@@ -16,118 +16,70 @@ $ curl https://example.com/collections --header 'Authorization: Bearer AccessTok
 
 ```json
 {
-  "meta": {
-    "name": "cumulus-api",
-    "table": "cumulus-api-lpdaac-dev-CollectionsTable",
-    "limit": 1,
-    "page": 1,
-    "count": 3
-  },
-  "results": [
-    {
-      "createdAt": 123123413214,
-      "changedBy": "Cumulus Dashboard",
-      "cmrProvider": "CUMULUS",
-      "recipe": {
-        "cmr": {
-          "config": {}
-        },
-        "archive": {
-          "config": {}
-        },
-        "processStep": {
-          "description": "new-updated-value",
-          "config": {
-            "image": "asterProcessing",
-            "outputFiles": [
-              "processed-hdf5",
-              "thumbnail-1",
-              "meta-xml"
+    "meta": {
+        "name": "cumulus-api",
+        "stack": "lpdaac-cumulus",
+        "table": "collection",
+        "limit": 1,
+        "page": 1,
+        "count": 3
+    },
+    "results": [
+        {
+            "name": "MOD11A1",
+            "version": "006",
+            "dataType": "MOD11A1",
+            "process": "modis",
+            "provider_path": "/",
+            "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
+            "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "files": [
+                {
+                    "bucket": "protected",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf"
+                },
+                {
+                    "bucket": "private",
+                    "regex": "^BROWSE\\.MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$",
+                    "sampleFileName": "BROWSE.MOD11A1.A2017025.h21v00.006.2017034065104.hdf"
+                },
+                {
+                    "bucket": "private",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf\\.met$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf.met"
+                },
+                {
+                    "bucket": "protected",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.cmr\\.xml$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.cmr.xml"
+                },
+                {
+                    "bucket": "public",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_2\\.jpg$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_2.jpg"
+                },
+                {
+                    "bucket": "public",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg"
+                }
             ],
-            "inputFiles": [
-              "origin-hdf5",
-              "origin-thumbnail"
-            ]
-          }
-        },
-        "order": [
-          "processStep",
-          "archive",
-          "cmr"
-        ]
-      },
-      "providers": [
-        "LPDAAC_HTTP_MODIS"
-      ],
-      "collectionName": "AST_L1A__version__003",
-      "granuleDefinition": {
-        "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-        "neededForProcessing": [
-          "origin-hdf5",
-          "origin-thumbnail"
-        ],
-        "sampleFileName": "pg-PR1A0000-2016121001_001_011",
-        "files": {
-          "origin-hdf5": {
-            "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-            "access": "private",
-            "sampleFileName": "pg-PR1A0000-2016121001_000_001",
-            "source": "sips"
-          },
-          "processed-hdf5": {
-            "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-            "access": "protected",
-            "sampleFileName": "AST_L1A_00301052017002700_02242017094829.hdf",
-            "source": "cumulus"
-          },
-          "origin-thumbnail": {
-            "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-            "access": "private",
-            "sampleFileName": "pg-BR1A0000-2016121001_000_001",
-            "source": "sips"
-          },
-          "meta-xml": {
-            "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
-            "access": "protected",
-            "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
-            "source": "cumulus"
-          },
-          "thumbnail-2": {
-            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
-            "access": "public",
-            "sampleFileName": "AST_L1A_00301052017002700_02242017094829_2.jpg",
-            "source": "cumulus"
-          },
-          "thumbnail-1": {
-            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
-            "access": "public",
-            "sampleFileName": "AST_L1A_00301052017002700_02242017094829_1.jpg",
-            "source": "cumulus"
-          },
-          "thumbnail-3": {
-            "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
-            "access": "public",
-            "sampleFileName": "AST_L1A_00301052017002700_02242017094829_3.jpg",
-            "source": "cumulus"
-          }
-        },
-        "granuleIdExtraction": "^pg-[P|B]R(1A.*)$"
-      },
-      "updatedAt": 1491926329531,
-      "timestamp": "2017-04-11T15:58:50.839Z",
-      "granulesStatus": {
-        "ingesting": 0,
-        "cmr": 0,
-        "processing": 0,
-        "completed": 26,
-        "failed": 1,
-        "archiving": 0
-      },
-      "averageDuration": 119.51745898907001,
-      "granules": 27,
-      "progress": 100
-    }
-  ]
+            "timestamp": 1513020427284,
+            "createdAt": 1510761441174,
+            "updatedAt": 1513020427162,
+            "edpa": true,
+            "some_other_field": "field",
+            "duplicateHandling": "skip",
+            "stats": {
+                "running": 0,
+                "completed": 6,
+                "failed": 1,
+                "total": 7
+            }
+        }
+    ]
 }
 ```
 
@@ -136,120 +88,70 @@ $ curl https://example.com/collections --header 'Authorization: Bearer AccessTok
 Retrieve a single collection.
 
 ```endpoint
-GET /collections/{collectionName}
+GET /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/collections/AST_L1A__version__003 --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
 
 ```json
 {
-    "averageDuration": 119.51745898907001,
-    "changedBy": "Cumulus Dashboard",
-    "cmrProvider": "CUMULUS",
-    "collectionName": "AST_L1A__version__003",
-    "createdAt": 123123413214,
-    "granuleDefinition": {
-        "files": {
-            "meta-xml": {
-                "access": "protected",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
-                "source": "cumulus"
-            },
-            "origin-hdf5": {
-                "access": "private",
-                "regex": "^(pg-PR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-                "sampleFileName": "pg-PR1A0000-2016121001_000_001",
-                "source": "sips"
-            },
-            "origin-thumbnail": {
-                "access": "private",
-                "regex": "^(pg-BR1A[0-9]{4}-[0-9]{10}_[0-9]{3}_[0-9]{3})$",
-                "sampleFileName": "pg-BR1A0000-2016121001_000_001",
-                "source": "sips"
-            },
-            "processed-hdf5": {
-                "access": "protected",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\.hdf$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829.hdf",
-                "source": "cumulus"
-            },
-            "thumbnail-1": {
-                "access": "public",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\_1.jpg$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829_1.jpg",
-                "source": "cumulus"
-            },
-            "thumbnail-2": {
-                "access": "public",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\_2.jpg$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829_2.jpg",
-                "source": "cumulus"
-            },
-            "thumbnail-3": {
-                "access": "public",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\_3.jpg$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829_3.jpg",
-                "source": "cumulus"
-            }
+    "process": "modis",
+    "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
+    "version": "006",
+    "dataType": "MOD11A1",
+    "some_other_field": "field",
+    "createdAt": 1510761441174,
+    "edpa": true,
+    "name": "MOD11A1",
+    "duplicateHandling": "skip",
+    "provider_path": "/",
+    "files": [
+        {
+            "bucket": "protected",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$"
         },
-        "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-        "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-        "neededForProcessing": [
-            "origin-hdf5",
-            "origin-thumbnail"
-        ],
-        "sampleFileName": "pg-PR1A0000-2016121001_001_011"
-    },
-    "granules": 27,
-    "granulesStatus": {
-        "archiving": 0,
-        "cmr": 0,
-        "completed": 26,
-        "failed": 1,
-        "ingesting": 0,
-        "processing": 0
-    },
-    "progress": 100,
-    "providers": [
-        "LPDAAC_HTTP_MODIS"
-    ],
-    "recipe": {
-        "archive": {
-            "config": {}
+        {
+            "bucket": "private",
+            "sampleFileName": "BROWSE.MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "regex": "^BROWSE\\.MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$"
         },
-        "cmr": {
-            "config": {}
+        {
+            "bucket": "private",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf.met",
+            "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf\\.met$"
         },
-        "order": [
-            "processStep",
-            "archive",
-            "cmr"
-        ],
-        "processStep": {
-            "config": {
-                "image": "asterProcessing",
-                "inputFiles": [
-                    "origin-hdf5",
-                    "origin-thumbnail"
-                ],
-                "outputFiles": [
-                    "processed-hdf5",
-                    "thumbnail-1",
-                    "meta-xml"
-                ]
-            },
-            "description": "new-updated-value"
+        {
+            "bucket": "protected",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.cmr.xml",
+            "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.cmr\\.xml$"
+        },
+        {
+            "bucket": "public",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_2.jpg",
+            "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_2\\.jpg$"
+        },
+        {
+            "bucket": "public",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg",
+            "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$"
         }
-    },
-    "timestamp": "2017-04-11T15:58:50.839Z",
-    "updatedAt": 1491926329531
+    ],
+    "updatedAt": 1513020427162,
+    "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
+    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+    "stats": {
+        "running": 0,
+        "completed": 6,
+        "failed": 1,
+        "total": 7
+    }
 }
 ```
 
@@ -267,25 +169,18 @@ POST /collections
 $ curl --request POST https://example.com/collections --header 'Authorization: Bearer ReplaceWithToken' --data '{
     "changedBy": "Jane Smith",
     "cmrProvider": "MY_DAAC",
-    "collectionName": "MY_COLLECTION",
+    "name": "MY_COLLECTION",
+    "version": "1",
     "createdAt": 1491946535919,
-    "granuleDefinition": {
-        "files": {
-            "foobar": {
-                "_id": "foobar",
-                "access": "private",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
-                "source": "sips"
-            }
-        },
-        "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-        "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-        "neededForProcessing": [
-            "foobar"
-        ],
-        "sampleFileName": "pg-PR1A0000-2016121001_001_011"
-    },
+    "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
+    "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
+    "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+     "files": [
+        {
+            "bucket": "protected",
+            "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+            "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
+        }],
     "providers": [
         "MY_DAAC_SATELLITE"
     ],
@@ -313,36 +208,29 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
 
 ```json
 {
-    "detail": "Record saved",
+    "message": "Record saved",
     "record": {
         "changedBy": "Jane Smith",
         "cmrProvider": "MY_DAAC",
-        "collectionName": "MY_COLLECTION",
+        "name": "MY_COLLECTION",
+        "version": "1",
         "createdAt": 1491946535919,
-        "granuleDefinition": {
-            "files": {
-                "foobar": {
-                    "access": "private",
-                    "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
-                    "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
-                    "source": "sips"
-                }
-            },
-            "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-            "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-            "neededForProcessing": [
-                "foobar"
-            ],
-            "sampleFileName": "pg-PR1A0000-2016121001_001_011"
-        },
+        "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
+        "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
+        "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+        "files": [
+            {
+                "bucket": "protected",
+                "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+                "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
+            }
+        ],
         "providers": [
             "MY_DAAC_SATELLITE"
         ],
         "recipe": {
             "order": [
-                "processStep",
-                "archive",
-                "cmr"
+                "archive"
             ],
             "processStep": {
                 "config": {
@@ -356,7 +244,10 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
                 }
             }
         },
-        "updatedAt": 1491946697898
+        "updatedAt": 1513960696308,
+        "provider_path": "/",
+        "duplicateHandling": "replace",
+        "timestamp": 1513960696736
     }
 }
 ```
@@ -366,13 +257,15 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
 Update values for a collection. Can accept the whole collection object, or just a subset of fields, the ones that are being updated.
 
 ```endpoint
-PUT /collections
+PUT /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/collections/MY_COLLECTION --header 'Authorization: Bearer ReplceWithTheToken' --data '{
+$ curl --request PUT https://example.com/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+	"name": "MY_COLLECTION",
+	"version": "1",
     "providers": ["ANOTHER_PROVIDER"]
 }'
 ```
@@ -381,48 +274,44 @@ $ curl --request PUT https://example.com/collections/MY_COLLECTION --header 'Aut
 
 ```json
 {
-    "changedBy": "Jane Smith",
-    "cmrProvider": "MY_DAAC",
-    "collectionName": "MY_COLLECTION",
-    "createdAt": 1491946535919,
-    "granuleDefinition": {
-        "files": {
-            "foobar": {
-                "access": "private",
-                "regex": "^AST_L1A_[\\d]*_[\\d]*\\.meta\\.xml$",
-                "sampleFileName": "AST_L1A_00301052017002700_02242017094829.meta.xml",
-                "source": "sips"
-            }
-        },
-        "granuleId": "^1A[\\d]{4}-[\\d]{10}_[\\d]{3}_[\\d]{3}$",
-        "granuleIdExtraction": "^pg-[P|B]R(1A.*)$",
-        "neededForProcessing": [
-            "foobar"
-        ],
-        "sampleFileName": "pg-PR1A0000-2016121001_001_011"
-    },
-    "providers": [
-        "ANOTHER_PROVIDER"
-    ],
+    "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
+    "version": "1",
     "recipe": {
-        "order": [
-            "processStep",
-            "archive",
-            "cmr"
-        ],
         "processStep": {
             "config": {
-                "image": "asterProcessing",
                 "inputFiles": [
                     "foobar"
                 ],
+                "image": "asterProcessing",
                 "outputFiles": [
                     "foobar"
                 ]
             }
-        }
+        },
+        "order": [
+            "archive"
+        ]
     },
-    "updatedAt": 1491947364863
+    "cmrProvider": "MY_DAAC",
+    "providers": [
+        "ANOTHER_PROVIDER"
+    ],
+    "createdAt": 1491946535919,
+    "changedBy": "Jane Smith",
+    "name": "MY_COLLECTION",
+    "duplicateHandling": "replace",
+    "provider_path": "/",
+    "files": [
+        {
+            "bucket": "protected",
+            "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+            "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
+        }
+    ],
+    "updatedAt": 1514304825894,
+    "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
+    "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+    "timestamp": 1514304826284
 }
 ```
 
@@ -431,13 +320,13 @@ $ curl --request PUT https://example.com/collections/MY_COLLECTION --header 'Aut
 Delete a collection from Cumulus, but not from CMR. All related granules in Cumulus must have already been deleted from Cumulus.
 
 ```endpoint
-DELETE /collections/{collectionName}
+DELETE /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/collections/MY_COLLECTION --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl --request DELETE https://example.com/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
@@ -445,6 +334,6 @@ $ curl --request DELETE https://example.com/collections/MY_COLLECTION --header '
 
 ```json
 {
-  "detail": "Record deleted"
+  "message": "Record deleted"
 }
 ```

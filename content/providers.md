@@ -9,38 +9,30 @@ GET /providers
 #### Example request
 
 ```curl
-$ curl https://example.com/providers --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
 
 ```json
 {
-  "meta": {
-    "name": "cumulus-api",
-    "table": "cumulus-api-lpdaac-prod-ProvidersTable",
-    "limit": 1,
-    "page": 1,
-    "count": 4
-  },
-  "results": [
-    {
-      "createdAt": 1491939230662,
-      "path": "/TEST_B/Cumulus/MODIS/PDR/",
-      "protocol": "http",
-      "regex": {
-        "MOD11A1__version__006": "(MOD11A1\\.(.*))\\.hdf"
-      },
-      "host": "https://e4ftl01.cr.usgs.gov:40521",
-      "name": "LPDAAC_HTTP_MODIS",
-      "isActive": true,
-      "providerName": "LP DAAC",
-      "status": "ingesting",
-      "updatedAt": 1491940611371,
-      "timestamp": "2017-04-11T19:56:53.863Z",
-      "lastTimeIngestedAt": 1491940611371
-    }
-  ]
+    "meta": {
+        "name": "cumulus-api",
+        "stack": "lpdaac-cumulus",
+        "table": "provider",
+        "limit": 1,
+        "page": 1,
+        "count": 2
+    },
+    "results": [
+        {
+            "id": "LP_TS2_DataPool",
+            "globalConnectionLimit": 10,
+            "protocol": "http",
+            "host": "https://e4ftl01.cr.usgs.gov:40521/",
+            "timestamp": 1508861082226
+        }
+    ]
 }
 ```
 
@@ -49,33 +41,25 @@ $ curl https://example.com/providers --header 'Authorization: Bearer ReplceWithT
 Retrieve a single provider.
 
 ```endpoint
-GET /providers/{name}
+GET /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl https://example.com/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
 
 ```json
 {
-  "createdAt": 1491939230662,
-  "path": "/TEST_B/Cumulus/MODIS/PDR/",
-  "protocol": "http",
-  "regex": {
-    "MOD11A1__version__006": "(MOD11A1\\.(.*))\\.hdf"
-  },
-  "host": "https://e4ftl01.cr.usgs.gov:40521",
-  "name": "LPDAAC_HTTP_MODIS",
-  "isActive": true,
-  "providerName": "LP DAAC",
-  "status": "ingesting",
-  "updatedAt": 1491940551376,
-  "timestamp": "2017-04-11T19:55:53.960Z",
-  "lastTimeIngestedAt": 1491940551376
+    "createdAt": 1508861081785,
+    "id": "LP_TS2_DataPool",
+    "host": "https://e4ftl01.cr.usgs.gov:40521/",
+    "globalConnectionLimit": 10,
+    "updatedAt": 1508861081785,
+    "protocol": "http"
 }
 ```
 
@@ -90,11 +74,11 @@ POST /providers
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/providers --header 'Authorization: Bearer ReplceWithTheToken' --data '{
+$ curl --request POST https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "changedBy": "Cumulus Dashboard",
     "createdAt": 1491941727851,
     "host": "https://www.example.gov",
-    "name": "MY_DAAC_SATELLITE",
+    "id": "MY_DAAC_SATELLITE",
     "path": "/satellite/pdrs",
     "protocol": "http",
     "providerName": "MY_DAAC",
@@ -106,18 +90,15 @@ $ curl --request POST https://example.com/providers --header 'Authorization: Bea
 
 ```json
 {
-    "detail": "Record saved",
+    "message": "Record saved",
     "record": {
         "createdAt": 1491941727851,
         "host": "https://www.example.gov",
-        "isActive": false,
-        "name": "MY_DAAC_SATELLITE",
-        "path": "/satellite/pdrs",
+        "id": "MY_DAAC_SATELLITE",
         "protocol": "http",
-        "providerName": "MY_DAAC",
-        "regex": {},
-        "status": "stopped",
-        "updatedAt": 1491943167416
+        "updatedAt": 1513956150733,
+        "globalConnectionLimit": 10,
+        "timestamp": 1513956151186
     }
 }
 ```
@@ -133,7 +114,7 @@ PUT /providers
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplceWithTheToken' --data '{
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "host": "https://www.example.co.uk"
 }'
 ```
@@ -143,15 +124,12 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 ```json
 {
     "createdAt": 1491941727851,
+    "id": "MY_DAAC_SATELLITE",
     "host": "https://www.example.co.uk",
-    "isActive": false,
-    "name": "MY_DAAC_SATELLITE",
-    "path": "/satellite/pdrs",
+    "globalConnectionLimit": 10,
+    "updatedAt": 1513956150733,
     "protocol": "http",
-    "providerName": "MY_DAAC",
-    "regex": {},
-    "status": "stopped",
-    "updatedAt": 1491944299059
+    "timestamp": 1513956555713
 }
 ```
 
@@ -160,13 +138,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Restart a provider. If the provider's `status` value had been `stopped` or `failed`, it will leave that status and return to searching for new PDRs to process.
 
 ```endpoint
-PUT /providers/{name}
+PUT /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplceWithTheToken' --data '{"action": "restart"}'
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "restart"}'
 ```
 
 #### Example response
@@ -174,15 +152,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 ```json
 {
     "createdAt": 1491941727851,
-    "host": "https://www.example.gov",
-    "isActive": true,
-    "name": "MY_DAAC_SATELLITE",
-    "path": "/satellite/pdrs",
+    "id": "MY_DAAC_SATELLITE",
+    "host": "https://www.example.co.uk",
+    "globalConnectionLimit": 10,
+    "updatedAt": 1513956555642,
     "protocol": "http",
-    "providerName": "MY_DAAC",
-    "regex": {},
-    "status": "ingesting",
-    "updatedAt": 1491945342808
+    "action": "restart",
+    "timestamp": 1513956779541
 }
 ```
 
@@ -191,29 +167,27 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Set a provider's `status` to `stopped`. This halts all processing of granules associated with the provider.
 
 ```endpoint
-PUT /providers/{name}
+PUT /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplceWithTheToken' --data '{"action": "stop"}'
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "stop"}'
 ```
 
 #### Example response
 
 ```json
 {
-    "createdAt": 1491941727851,
-    "host": "https://www.example.gov",
-    "isActive": false,
-    "name": "MY_DAAC_SATELLITE",
-    "path": "/satellite/pdrs",
+    "action": "stop",
+    "host": "https://www.example.co.uk",
+    "updatedAt": 1513956779503,
     "protocol": "http",
-    "providerName": "MY_DAAC",
-    "regex": {},
-    "status": "stopped",
-    "updatedAt": 1491945512946
+    "createdAt": 1491941727851,
+    "id": "MY_DAAC_SATELLITE",
+    "globalConnectionLimit": 10,
+    "timestamp": 1513956816160
 }
 ```
 
@@ -222,13 +196,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.
 
 ```endpoint
-DELETE /providers/{name}
+DELETE /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
@@ -236,6 +210,6 @@ $ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header
 
 ```json
 {
-  "detail": "Record deleted"
+  "message": "Record deleted"
 }
 ```
