@@ -28,6 +28,9 @@ module.exports =
   '# PDRs\n' +
   fs.readFileSync('./content/pdrs.md', 'utf8') + '\n' +
 
+  '# Rules\n' + 
+  fs.readFileSync('./content/rules.md', 'utf8') + '\n' +
+
   '# Stats\n' +
   fs.readFileSync('./content/stats.md', 'utf8') + '\n' +
 

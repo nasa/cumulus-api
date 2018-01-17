@@ -9,7 +9,7 @@ GET /collections
 #### Example request
 
 ```curl
-$ curl https://example.com/collections --header 'Authorization: Bearer AccessToken'
+$ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
