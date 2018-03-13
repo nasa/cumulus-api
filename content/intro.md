@@ -28,12 +28,10 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 
 The Cumulus API uses multiple versions. The defult version can be reached using `{API_URL}/{query}`
 
-```curl
-$ curl https://example.com/providers
-```
+Example:
+`$ curl https://example.com/providers`
 
 To use any version other than the default, include the version number in the path before the query endpoint. `{API_URL}/{version}/{query}`
 
-```curl
-$ curl https://example.com/v1/providers
-```
+Example:
+`$ curl https://example.com/v1/providers`

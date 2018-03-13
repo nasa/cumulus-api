@@ -1,12 +1,10 @@
 ## Token
 
-Returns a bearer token using oAuth with [EarthData Login](https://urs.earthdata.nasa.gov) service
+Returns a bearer token using oAuth with [EarthData Login](https://urs.earthdata.nasa.gov) service using the default API or a versioned API
 
 ```endpoint
 GET /token
 ```
-
-Recieve the token using a different version of the API
 
 ```endpoint
 GET /v1/token
