@@ -6,6 +6,12 @@ Retrieve a summary of various metrics for all of the Cumulus engine.
 GET /stats
 ```
 
+Retrieve metrics for all of the Cumulus engine using a different version of the API
+
+```endpoint
+GET /v1/stats
+```
+
 #### Example Request
 
 ```curl
@@ -51,6 +57,8 @@ $ curl https://example.com/stats --header 'Authorization: Bearer ReplaceWithTheT
 
 Retrieve metrics over various time periods, to produce a histogram for dashboards.
 
+Retrieve metrics to produce a histogram using a different version of the API
+
 Accepts the following query parameters, _in addition to_ the regular filter parameters:
 
 | query string parameter | description |
@@ -62,6 +70,10 @@ Accepts the following query parameters, _in addition to_ the regular filter para
 
 ```endpoint
 GET /stats/histogram
+```
+
+```endpoint
+GET /v1/stats/histogram
 ```
 
 #### Example request
@@ -129,6 +141,10 @@ Count the value frequencies for a given field, for a given type of record in Cum
 GET /stats/aggregate
 ```
 
+```endpoint
+GET /v1/stats/aggregate
+```
+
 #### Example request
 
 ```curl
@@ -172,6 +188,10 @@ Calculate the average value and other summary statistics for a given numeric fie
 
 ```endpoint
 GET /stats/average
+```
+
+```endpoint
+GET /v1/stats/average
 ```
 
 #### Example request

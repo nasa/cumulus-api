@@ -6,6 +6,12 @@ List rules in the Cumulus system.
 GET /rules
 ```
 
+List rules using a different version of the API
+
+```endpoint
+GET /v1/rules
+```
+
 #### Example request
 
 ```curl

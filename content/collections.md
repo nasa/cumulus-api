@@ -6,6 +6,12 @@ List collections in the Cumulus system.
 GET /collections
 ```
 
+List collections using a different version of the API
+
+```endpoint
+GET /v1/collections
+```
+
 #### Example request
 
 ```curl

@@ -1,6 +1,6 @@
 ## Retrieve schema
 
-Retrieve the data schema for a particular type Cumulus record.
+Retrieve the data schema for a particular type of Cumulus record from the default API or a versioned API.
 
 This schema describes the expected format of a record's JSON object when retrieving from Cumulus, as well as a summary of what each field may contain. The schema response can also be used to determine which fields are required when creating a new record using the API.
 
@@ -8,6 +8,10 @@ Supported `type` values are `provider`, `collection`, `granule`, and `pdr`.
 
 ```endpoint
 GET /schemas/{type}
+```
+
+```endpoint
+GET /v1/schemas/{type}
 ```
 
 #### Example request

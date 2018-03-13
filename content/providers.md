@@ -6,6 +6,12 @@ List providers in the Cumulus system.
 GET /providers
 ```
 
+List providers using a different version of the API
+
+```endpoint
+GET /v1/providers
+```
+
 #### Example request
 
 ```curl

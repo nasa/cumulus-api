@@ -6,6 +6,12 @@ List PDRs in the Cumulus system.
 GET /pdrs
 ```
 
+List pdrs using a different version of the API
+
+```endpoint
+GET /v1/pdrs
+```
+
 #### Example request
 
 ```curl

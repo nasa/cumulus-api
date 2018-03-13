@@ -6,6 +6,12 @@ Returns a bearer token using oAuth with [EarthData Login](https://urs.earthdata.
 GET /token
 ```
 
+Recieve the token using a different version of the API
+
+```endpoint
+GET /v1/token
+```
+
 ### Query Parameters
 
 | query string parameter | description |

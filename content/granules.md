@@ -6,6 +6,12 @@ List granules in the Cumulus system.
 GET /granules
 ```
 
+List granules using a different version of the API
+
+```endpoint
+GET /v1/granules
+```
+
 #### Example request
 
 ```curl

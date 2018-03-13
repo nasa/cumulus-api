@@ -6,6 +6,12 @@ List processing logs from the Cumulus engine. A log's `level` field may be eithe
 GET /logs
 ```
 
+Add the version number in front of the endpoint to retrieve logs using the versioned API.
+
+```endpoint
+GET /v1/logs
+```
+
 #### Example request
 
 ```curl
