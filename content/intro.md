@@ -25,13 +25,3 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 | `{fieldName}__in={value1, value2}` | field matches _one of_ the values in the comma-separated list |
 | `{fieldName}__exists={true|false}` | field exists or doesn't exist in the record |
 | `q="fieldName:(1 TO 2) AND fieldName2: (3 To 4)"` | arbitrary Apache Lucene query syntax, _not needed for most uses of the API_; if the `q` parameter is used, all other query parameters will be ignored, besides `limit`, `page`, and `fields` |
-
-The Cumulus API uses multiple versions. The defult version can be reached using `{API_URL}/{query}`
-
-Example:
-`$ curl https://example.com/providers`
-
-To use any version other than the default, include the version number in the path before the query endpoint. `{API_URL}/{version}/{query}`
-
-Example:
-`$ curl https://example.com/v1/providers`
