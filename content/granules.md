@@ -3,13 +3,13 @@
 List granules in the Cumulus system.
 
 ```endpoint
-GET /granules
+GET /v1/granules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -101,13 +101,13 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
 Retrieve a single granule.
 
 ```endpoint
-GET /granules/{granuleId}
+GET /v1/granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -188,13 +188,13 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
 Reingest a granule. This causes the granule to re-download to Cumulus from source, and begin processing from scratch.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /v1/granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "reingest"}'
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "reingest"}'
 ```
 
 #### Example response
@@ -212,13 +212,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /v1/granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "removeFromCmr"}'
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -236,13 +236,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
 ```endpoint
-DELETE /granules/{granuleId}
+DELETE /v1/granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/v1/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

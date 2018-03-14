@@ -3,13 +3,13 @@
 List providers in the Cumulus system.
 
 ```endpoint
-GET /providers
+GET /v1/providers
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -41,13 +41,13 @@ $ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWith
 Retrieve a single provider.
 
 ```endpoint
-GET /providers/{id}
+GET /v1/providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -68,13 +68,13 @@ $ curl https://example.com/providers/LPDAAC_HTTP_MODIS --header 'Authorization: 
 Create a provider.
 
 ```endpoint
-POST /providers
+POST /v1/providers
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "changedBy": "Cumulus Dashboard",
     "createdAt": 1491941727851,
     "host": "https://www.example.gov",
@@ -108,13 +108,13 @@ $ curl --request POST https://example.com/providers --header 'Authorization: Bea
 Update values for a provider. Can accept the whole provider object, or just a subset of fields, the ones that are being updated.
 
 ```endpoint
-PUT /providers
+PUT /v1/providers
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "host": "https://www.example.co.uk"
 }'
 ```
@@ -138,13 +138,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Restart a provider. If the provider's `status` value had been `stopped` or `failed`, it will leave that status and return to searching for new PDRs to process.
 
 ```endpoint
-PUT /providers/{id}
+PUT /v1/providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "restart"}'
+$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "restart"}'
 ```
 
 #### Example response
@@ -167,13 +167,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Set a provider's `status` to `stopped`. This halts all processing of granules associated with the provider.
 
 ```endpoint
-PUT /providers/{id}
+PUT /v1/providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "stop"}'
+$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "stop"}'
 ```
 
 #### Example response
@@ -196,13 +196,13 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
 Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.
 
 ```endpoint
-DELETE /providers/{id}
+DELETE /v1/providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

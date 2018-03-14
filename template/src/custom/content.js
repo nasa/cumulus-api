@@ -13,6 +13,9 @@ module.exports =
   '# Introduction\n' +
   fs.readFileSync('./content/intro.md', 'utf8') + '\n' +
 
+  '# Versioning\n' +
+  fs.readFileSync('./content/version.md', 'utf8') + '\n' +
+
   '# Authentication\n' +
   fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
 

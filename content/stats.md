@@ -3,13 +3,13 @@
 Retrieve a summary of various metrics for all of the Cumulus engine.
 
 ```endpoint
-GET /stats
+GET /v1/stats
 ```
 
 #### Example Request
 
 ```curl
-$ curl https://example.com/stats --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/stats --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example success response
@@ -61,13 +61,13 @@ Accepts the following query parameters, _in addition to_ the regular filter para
 | `format={ElasticSearch date format}` | display format for the datetime in the response, accepts any [ElasticSearch date format](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html); default is `yyyy-MM-dd` |
 
 ```endpoint
-GET /stats/histogram
+GET /v1/stats/histogram
 ```
 
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Bearer ReplaceWithTheToken'
+curl 'https://example.com/v1/stats/histogram?interval=day&status=completed&type=granules&updatedAt__from=2017-04-05T12:59:35-04:00' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -126,13 +126,13 @@ Count the value frequencies for a given field, for a given type of record in Cum
 | `field={fieldName}` | which field to count frequencies for; no default |
 
 ```endpoint
-GET /stats/aggregate
+GET /v1/stats/aggregate
 ```
 
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Bearer ReplaceWithTheToken'
+curl 'https://example.com/v1/stats/aggregate?field=status&type=pdrs' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -171,13 +171,13 @@ Calculate the average value and other summary statistics for a given numeric fie
 | `field={fieldName}` | which field to count frequencies for, must be numeric; no default |
 
 ```endpoint
-GET /stats/average
+GET /v1/stats/average
 ```
 
 #### Example request
 
 ```curl
-curl 'https://example.com/stats/average?field=duration&type=granules' --header 'Authorization: Bearer ReplaceWithTheToken'
+curl 'https://example.com/v1/stats/average?field=duration&type=granules' --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response

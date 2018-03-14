@@ -3,13 +3,13 @@
 List rules in the Cumulus system.
 
 ```endpoint
-GET /rules
+GET /v1/rules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/rules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -49,13 +49,13 @@ $ curl https://example.com/rules --header 'Authorization: Bearer ReplaceWithTheT
 Retrieve a single rule.
 
 ```endpoint
-GET /rules/{name}
+GET /v1/rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -84,13 +84,13 @@ $ curl https://example.com/rules/repeat --header 'Authorization: Bearer ReplaceW
 Create a rule.
 
 ```endpoint
-POST /rules
+POST /v1/rules
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/rules --header 'Authorization: Bearer ReplaceWithToken' --data '{
+$ curl --request POST https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithToken' --data '{
     "workflow": "DiscoverPdrs",
     "collection": {
         "name": "AST_L1A",
@@ -135,21 +135,24 @@ $ curl --request POST https://example.com/rules --header 'Authorization: Bearer 
 
 ## Update rule
 
-Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated.
+Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties.
 
 ```endpoint
-PUT /rules/{name}
+PUT /v1/rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"state": "ENABLED"}'
+$ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"state": "ENABLED"}'
 ```
 
 #### Example response
 
 ```json
+{
+  "state": "ENABLED"
+}
 ```
 
 ## Delete rule
@@ -157,13 +160,13 @@ $ curl --request PUT https://example.com/rules/repeat_test --header 'Authorizati
 Delete a rule from Cumulus.
 
 ```endpoint
-DELETE /rules/{name}
+DELETE /v1/rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

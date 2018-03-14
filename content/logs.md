@@ -3,13 +3,13 @@
 List processing logs from the Cumulus engine. A log's `level` field may be either `info` or `error`.
 
 ```endpoint
-GET /logs
+GET /v1/logs
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/logs?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/logs?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -117,7 +117,7 @@ $ curl https://example.com/logs?limit=5 --header 'Authorization: Bearer ReplaceW
 #### Example request for errors
 
 ```curl
-$ curl https://example.com/logs?level=50 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/logs?level=50 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response for errors
