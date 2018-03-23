@@ -151,7 +151,20 @@ $ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authoriz
 
 ```json
 {
-  "state": "ENABLED"
+    "workflow": "DiscoverPdrs",
+    "collection": {
+        "name": "AST_L1A",
+        "version": "003"
+    },
+    "updatedAt": 1521755265130,
+    "createdAt": 1510903518741,
+    "provider": "local",
+    "name": "repeat_test",
+    "rule": {
+        "type": "scheduled",
+        "value": "rate(5 minutes)"
+    },
+    "state": "ENABLED"
 }
 ```
 
