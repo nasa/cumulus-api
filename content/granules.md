@@ -207,7 +207,27 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 }
 ```
 
-## Remove granule
+## Move a granule
+
+Move a granule from one location on S3 to another.
+
+```endpoint
+PUT /v1/granules/{granuleId}
+```
+
+#### Example request
+
+```curl
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "move", "destination": { "bucket": "s3-bucket", "filepath": "new/filepath/" }}'
+```
+
+#### Example response
+
+```json
+
+```
+
+## Remove granule from CMR
 
 Remove a Cumulus granule from CMR.
 
