@@ -224,7 +224,11 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006
 #### Example response
 
 ```json
-
+{
+  "granuleId": "MOD11A1.A2017137.h19v16.006.2017138085750",
+  "action": "move",
+  "status": "SUCCESS"
+}
 ```
 
 ## Remove granule from CMR
