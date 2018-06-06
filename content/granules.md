@@ -209,7 +209,7 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 
 ## Move a granule
 
-Move a granule from one location on S3 to another.
+Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
 PUT /v1/granules/{granuleId}
@@ -218,7 +218,7 @@ PUT /v1/granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "move", "destination": { "bucket": "s3-bucket", "filepath": "new/filepath/" }}'
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
