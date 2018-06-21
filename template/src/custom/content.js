@@ -41,5 +41,8 @@ module.exports =
   fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
 
   '# Schemas\n' +
-  fs.readFileSync('./content/schemas.md', 'utf8') + '\n'
+  fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
+
+  '# Reconciliation Reports\n' +
+  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n'
 ;
