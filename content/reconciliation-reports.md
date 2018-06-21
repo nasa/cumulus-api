@@ -28,7 +28,7 @@ $ curl https://example.com/v1/reconciliationReports --header 'Authorization: Bea
 }
 ```
 
-## Retrieve reconciliation reports
+## Retrieve reconciliation report
 
 Retrieve a single reconciliation report.
 
