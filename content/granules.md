@@ -209,7 +209,7 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 
 ## Apply workflow to granule
 
-Apply the named workflow to the granule. Optional parameters include selecting input or output from the previous execution and optional override objects to override `meta` and `payload` in the new execution input message.
+Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
 PUT /v1/granules/{granuleid}
@@ -218,7 +218,7 @@ PUT /v1/granules/{granuleid}
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow", "messageSource": "output", "metaOverride": { "updatedField": "updatedValue" }, "payloadOverride": { "updatedField": "updatedValue" } }'
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
