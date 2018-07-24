@@ -207,6 +207,30 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 }
 ```
 
+## Apply workflow to granule
+
+Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
+
+```endpoint
+PUT /v1/granules/{granuleid}
+```
+
+#### Example request
+
+```curl
+$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+```
+
+#### Example response
+
+```json
+{
+    "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
+    "action": "applyWorkflow inPlaceWorkflow",
+    "status": "SUCCESS"
+}
+```
+
 ## Move a granule
 
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
