@@ -40,6 +40,9 @@ module.exports =
   '# Logs\n' +
   fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
 
+  '# Executions\n' +
+  fs.readFileSync('./content/executions.md', 'utf8') + '\n' +
+
   '# Schemas\n' +
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
 
