@@ -149,3 +149,79 @@ $ curl https://example.com/v1/logs?level=50 --header 'Authorization: Bearer Repl
     ]
 }
 ```
+
+## Retrieve Logs
+
+Retrieve all logs from a specific execution.
+
+```endpoint
+GET /v1/logs/{executionName}
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/v1/logs/93e5e049-89aa-47e5-900d-0eec87327260?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+{
+    "meta": {
+        "name": "cumulus-api",
+        "stack": "test-src-integration",
+        "table": "logs",
+        "limit": 5,
+        "page": 1,
+        "count": 10
+    },
+    "results": [
+        {
+            "level": 30,
+            "executions": "93e5e049-89aa-47e5-900d-0eec87327260",
+            "timestamp": "2018-08-15T19:23:57.752Z",
+            "sender": "test-src-integration-PostToCmr",
+            "version": "$LATEST",
+            "message": "Published MOD09GQ.A8009365.7JQhni.006.6594428626875 to the CMR. conceptId: G1223210348-CUMULUS",
+            "RequestId": "05712fb1-5593-4640-b5a3-a99db41d8003"
+        },
+        {
+            "level": 30,
+            "executions": "93e5e049-89aa-47e5-900d-0eec87327260",
+            "timestamp": "2018-08-15T19:23:42.054Z",
+            "sender": "test-src-integration-SyncGranuleNoVpc",
+            "version": "$LATEST",
+            "message": "uploaded s3://cumulus-test-sandbox-internal/file-staging/test-src-integration/MOD09GQ___006/MOD09GQ.A8009365.7JQhni.006.6594428626875.hdf",
+            "RequestId": "a20698f3-a9a1-4e64-acbf-09ef77827fbc"
+        },
+        {
+            "level": 30,
+            "executions": "93e5e049-89aa-47e5-900d-0eec87327260",
+            "timestamp": "2018-08-15T19:23:41.913Z",
+            "sender": "test-src-integration-SyncGranuleNoVpc",
+            "version": "$LATEST",
+            "message": "Finishing downloading s3://cumulus-test-sandbox-internal/cumulus-test-data/pdrs/MOD09GQ.A8009365.7JQhni.006.6594428626875.hdf",
+            "RequestId": "a20698f3-a9a1-4e64-acbf-09ef77827fbc"
+        },
+        {
+            "level": 30,
+            "executions": "93e5e049-89aa-47e5-900d-0eec87327260",
+            "timestamp": "2018-08-15T19:23:41.888Z",
+            "sender": "test-src-integration-SyncGranuleNoVpc",
+            "version": "$LATEST",
+            "message": "uploaded s3://cumulus-test-sandbox-internal/file-staging/test-src-integration/MOD09GQ___006/MOD09GQ.A8009365.7JQhni.006.6594428626875_ndvi.jpg",
+            "RequestId": "a20698f3-a9a1-4e64-acbf-09ef77827fbc"
+        },
+        {
+            "level": 30,
+            "executions": "93e5e049-89aa-47e5-900d-0eec87327260",
+            "timestamp": "2018-08-15T19:23:41.886Z",
+            "sender": "test-src-integration-SyncGranuleNoVpc",
+            "version": "$LATEST",
+            "message": "uploaded s3://cumulus-test-sandbox-internal/file-staging/test-src-integration/MOD09GQ___006/MOD09GQ.A8009365.7JQhni.006.6594428626875.hdf.met",
+            "RequestId": "a20698f3-a9a1-4e64-acbf-09ef77827fbc"
+        }
+    ]
+}
+```
