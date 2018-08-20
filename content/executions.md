@@ -95,7 +95,27 @@ $ curl https://example.com/v1/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --
     "updatedAt": 1534441782302,
     "status": "completed",
     "timestamp": 1534441782302,
-    "tasks": {??},
+    "tasks":
+    {
+        "MoveGranuleStep":
+        {
+            "name": "test-src-integration-MoveGranules",
+            "arn": "arn:aws:lambda:us-east-1:596205514284:function:test-src-integration-MoveGranules",
+            "version": "$LATEST"
+        },
+        "ProcessingStep":
+        {
+            "name": "test-src-integration-FakeProcessing",
+            "arn": "arn:aws:lambda:us-east-1:596205514284:function:test-src-integration-FakeProcessing",
+            "version": "$LATEST"
+        },
+        "StopStatus":
+        {
+            "name": "test-src-integration-SfSnsReport",
+            "arn": "arn:aws:lambda:us-east-1:596205514284:function:test-src-integration-SfSnsReport",
+            "version": "$LATEST"
+        }
+    },
     "createdAt": 1534441752026,
     "duration": 30.276,
     "name": "cff1266e-ef36-664f-a649-3a4d26bd1735",
@@ -131,33 +151,46 @@ $ curl https://example.com/v1/executions/status/arn:aws:states:us-east-1:5962055
 {
     "execution":
     {
-        "executionArn": "arn:aws:states:us-east-1:596205514284:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2",
-        "stateMachineArn": "arn:aws:states:us-east-1:596205514284:stateMachine:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv",
+        "executionArn": "arn:aws:states:us-east-1:596205514284:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl4sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2",
+        "stateMachineArn": "arn:aws:states:us-east-1:596205514284:stateMachine:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl4sgv",
         "name": "d0a6584b-bea6-476e-a745-c1feb2ad00b2",
         "status": "SUCCEEDED",
         "startDate": "2018-08-16T18:39:32.209Z",
         "stopDate": "2018-08-16T18:39:59.089Z",
         "input":
         {
-            // Full input for execution
+            "foo": "input"
         },
         "output":
         {
-            // Full output for execution
+            "bar": "output"
         }
     },
     "executionHistory":
     {
-        "events": [] // Array of events in the execution
+        "events":
+        [
+            {
+                "taskName": "foo bar 1"
+            },
+            {
+                "taskName": "foo bar 2"
+            }
+        ]
     },
     "stateMachine":
     {
-        "stateMachineArn": "arn:aws:states:us-east-1:596205514284:stateMachine:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv",
-        "name": "TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv",
+        "stateMachineArn": "arn:aws:states:us-east-1:596205514284:stateMachine:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl4sgv",
+        "name": "TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl4sgv",
         "status": "ACTIVE",
         "definition":
         {
-            // definition of state machine
+            "Comment": "Ingest Granule",
+            "StartAt": "First State",
+            "States":
+            {
+                "First State": {}
+            }
         },
         "roleArn": "arn:aws:iam::596205514284:role/test-src-integration-steprole",
         "creationDate": "2018-06-11T16:08:17.533Z"
