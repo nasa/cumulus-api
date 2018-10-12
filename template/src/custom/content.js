@@ -43,6 +43,9 @@ module.exports =
   '# Executions\n' +
   fs.readFileSync('./content/executions.md', 'utf8') + '\n' +
 
+  '# Workflows\n' +
+  fs.readFileSync('./content/workflows.md', 'utf8') + '\n' +
+
   '# Schemas\n' +
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
 
