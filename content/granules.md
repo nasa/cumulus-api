@@ -199,7 +199,7 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 
 #### Example response
 
-A warning message is included if the collection's duplicateHandling is not set to 'replace'.
+A warning message is included in the response if the collection's duplicateHandling is not set to 'replace'.
 
 ```json
 {
