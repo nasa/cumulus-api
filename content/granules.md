@@ -185,7 +185,7 @@ $ curl https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755
 
 ## Reingest granule
 
-Reingest a granule. This causes the granule to re-download to Cumulus from source, and begin processing from scratch.
+Reingest a granule. This causes the granule to re-download to Cumulus from source, and begin processing from scratch.  Reingesting a granule will overwrite existing granule files.
 
 ```endpoint
 PUT /v1/granules/{granuleId}
@@ -199,11 +199,14 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006
 
 #### Example response
 
+A warning message is included in the response if the collection's duplicateHandling is not set to 'replace'.
+
 ```json
 {
     "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
     "action": "reingest",
-    "status": "SUCCESS"
+    "status": "SUCCESS",
+    "warning": "The granule files may be overwritten"
 }
 ```
 
