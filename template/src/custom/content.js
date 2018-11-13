@@ -31,7 +31,7 @@ module.exports =
   '# PDRs\n' +
   fs.readFileSync('./content/pdrs.md', 'utf8') + '\n' +
 
-  '# Rules\n' + 
+  '# Rules\n' +
   fs.readFileSync('./content/rules.md', 'utf8') + '\n' +
 
   '# Stats\n' +
@@ -50,5 +50,8 @@ module.exports =
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
 
   '# Reconciliation Reports\n' +
-  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n'
+  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n' +
+
+  '# Instance Metadata\n' +
+  fs.readFileSync('./content/instance-meta.md') + '\n'
 ;
