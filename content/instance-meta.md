@@ -10,7 +10,7 @@ GET /instanceMeta
 
 #### Example Request
 ```curl
-$ curl https://example.com/instanceMeta
+$ curl https://example.com/instanceMeta --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example Response
