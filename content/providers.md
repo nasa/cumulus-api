@@ -65,7 +65,7 @@ $ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorizatio
 
 ## Create provider
 
-Create a provider.
+Create a provider. For more information on creating providers and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#providers).
 
 ```endpoint
 POST /v1/providers

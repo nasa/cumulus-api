@@ -157,7 +157,7 @@ $ curl https://example.com/v1/collections/MOD11A1/006 --header 'Authorization: B
 
 ## Create collection
 
-Create a collection.
+Create a collection. For more information on creating collections and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections).
 
 ```endpoint
 POST /v1/collections

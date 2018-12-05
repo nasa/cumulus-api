@@ -81,7 +81,7 @@ $ curl https://example.com/v1/rules/repeat --header 'Authorization: Bearer Repla
 
 ## Create rule
 
-Create a rule.
+Create a rule. For more information on creating rules and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#rules).
 
 ```endpoint
 POST /v1/rules
@@ -136,6 +136,8 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
 ## Update rule
 
 Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties.
+
+Note: in the case of `onetime` rules the only update request allowed is to re-run the rule with a request body of `{"action": "rerun"}`.
 
 ```endpoint
 PUT /v1/rules/{name}
