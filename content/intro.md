@@ -1,6 +1,6 @@
 ## Cumulus API
 
-The Cumulus API allows developers to interact with the [Cumulus Framework](https://github.com/cumulus-nasa/cumulus), such as monitoring status or creating, editing, and deleting records. This is the same API that powers the [Cumulus dashboard](https://github.com/cumulus-nasa/cumulus-dashboard).
+The Cumulus API allows developers to interact with the [Cumulus Framework](https://github.com/nasa/cumulus), such as monitoring status or creating, editing, and deleting records. This is the same API that powers the [Cumulus dashboard](https://github.com/nasa/cumulus-dashboard).
 
 By utilizing this API, a developer can integrate with the Cumulus framework in any language or environment; although interacting with Cumulus through the Cumulus dashboard may be appropriate for many end users, for some use cases it's best to have the flexibility of a web-accessible API.
 
