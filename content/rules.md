@@ -83,6 +83,22 @@ $ curl https://example.com/v1/rules/repeat --header 'Authorization: Bearer Repla
 
 Create a rule. For more information on creating rules and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#rules).
 
+Overview of the schema fields:
+
+| Field | Value | Description |
+| --- | --- | --- |
+| `name` | `string` | rule name (letters, numbers, underscores only) |
+| `state` | `"DISABLED" | "ENABLED"` | rule state (default: ENABLED) |
+| `workflow` | `string` | name of workflow started by the rule |
+| `rule` | `Object` | rule object |
+| `-- rule.type` | `"onetime"|"scheduled"|"kinesis"|"sns"` | rule trigger type |
+| `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN | required value differs by type |
+| `provider` | `string` | provider record provided to workflow (optional) |
+| `collection` | `Object` | collection record provided to workflow (optional) |
+| `-- collection.name` | `string` | collection name |
+| `-- collection.version` | `string` | collection version |
+| `meta` | `Object` | contents to add to workflow input's `meta` field |
+
 ```endpoint
 POST /v1/rules
 ```
@@ -96,14 +112,13 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
         "name": "AST_L1A",
         "version": "003"
     },
-    "updatedAt": 1511232462507,
-    "createdAt": 1510903518741,
     "provider": "local",
     "name": "repeat_test",
     "rule": {
         "type": "scheduled",
         "value": "rate(5 minutes)"
     },
+    meta: { "publish": false },
     "state": "DISABLED"
 }'
 ```
@@ -119,7 +134,6 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
             "name": "AST_L1A",
             "version": "003"
         },
-        "updatedAt": 1515966212264,
         "createdAt": 1510903518741,
         "provider": "local",
         "name": "repeat_test",
@@ -127,17 +141,21 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
             "type": "scheduled",
             "value": "rate(5 minutes)"
         },
+        "meta": { "publish": false },
         "state": "DISABLED",
-        "timestamp": 1515966212713
     }
 }
 ```
 
 ## Update rule
 
-Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties.
+Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties. For a field reference see the ["Create rule"](#create-rule) section.
 
-Note: in the case of `onetime` rules the only update request allowed is to re-run the rule with a request body of `{"action": "rerun"}`.
+Special case:
+
+| Field | Value | Description |
+| --- | --- | --- |
+| `action` | `"rerun"` | rerun a `onetime` rule, which cannot otherwise be updated |
 
 ```endpoint
 PUT /v1/rules/{name}
@@ -168,6 +186,12 @@ $ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authoriz
     },
     "state": "ENABLED"
 }
+```
+
+#### Rerun request (`onetime`-rule special case)
+
+```curl
+$ curl --request PUT https://example.com/v1/rules/my_onetime_rule --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "rerun"}'
 ```
 
 ## Delete rule
