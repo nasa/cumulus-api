@@ -18,7 +18,7 @@ $ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceW
 {
     "meta": {
         "name": "cumulus-api",
-        "stack": "lpdaac-cumulus",
+        "stack": "daac-cumulus",
         "table": "provider",
         "limit": 1,
         "page": 1,
@@ -26,10 +26,10 @@ $ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceW
     },
     "results": [
         {
-            "id": "LP_TS2_DataPool",
+            "id": "HTTP_MODIS",
             "globalConnectionLimit": 10,
             "protocol": "http",
-            "host": "https://e4ftl01.cr.usgs.gov:40521/",
+            "host": "https://data.modis.gov/",
             "timestamp": 1508861082226
         }
     ]
@@ -47,7 +47,7 @@ GET /v1/providers/{id}
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/providers/HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -55,8 +55,8 @@ $ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorizatio
 ```json
 {
     "createdAt": 1508861081785,
-    "id": "LP_TS2_DataPool",
-    "host": "https://e4ftl01.cr.usgs.gov:40521/",
+    "id": "HTTP_MODIS",
+    "host": "https://data.modis.gov/",
     "globalConnectionLimit": 10,
     "updatedAt": 1508861081785,
     "protocol": "http"
@@ -67,6 +67,17 @@ $ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorizatio
 
 Create a provider. For more information on creating providers and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#providers).
 
+Overview of the schema fields:
+
+| Field | Value | Description |
+| --- | --- | --- |
+| `id` | `string` | provider id/name |
+| `protocol` | `"s3"|"http"|"https"|ftp` | file transfer (sync) protocol |
+| `host` | `string` | provider host endpoint |
+| `globalConnectionLimit` | `number` | limit to number of concurrent connections |
+| `username` | `string` | ftp username |
+| `password` | `string` | ftp password |
+
 ```endpoint
 POST /v1/providers
 ```
@@ -75,14 +86,10 @@ POST /v1/providers
 
 ```curl
 $ curl --request POST https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
-    "changedBy": "Cumulus Dashboard",
-    "createdAt": 1491941727851,
     "host": "https://www.example.gov",
     "id": "MY_DAAC_SATELLITE",
-    "path": "/satellite/pdrs",
     "protocol": "http",
-    "providerName": "MY_DAAC",
-    "updatedAt": 1491941727851
+    "globalConnectionLimit": 10
 }'
 ```
 
@@ -96,7 +103,6 @@ $ curl --request POST https://example.com/v1/providers --header 'Authorization: 
         "host": "https://www.example.gov",
         "id": "MY_DAAC_SATELLITE",
         "protocol": "http",
-        "updatedAt": 1513956150733,
         "globalConnectionLimit": 10,
         "timestamp": 1513956151186
     }
