@@ -172,7 +172,7 @@ Overview of the schema fields:
 | `granuleId` | `string (regex)` | regex to match granule IDs |
 | `granuleIdExtraction` | `string (regex)` | regex to extract ID from files |
 | `sampleFileName` | `string` | sample filename for granule ID |
-| `files` | `array` | array of file specifications |
+| `files` | `array` | array of file specification objects |
 | `-- file.bucket` | `string` | file destination bucket |
 | `-- file.regex` | `string (regex)` | regex to match file names |
 | `-- file.sampleFileName` | `string` | sample filename |
