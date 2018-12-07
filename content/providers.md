@@ -139,64 +139,6 @@ $ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header
 }
 ```
 
-## Restart provider
-
-Restart a provider. If the provider's `status` value had been `stopped` or `failed`, it will leave that status and return to searching for new PDRs to process.
-
-```endpoint
-PUT /v1/providers/{id}
-```
-
-#### Example request
-
-```curl
-$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "restart"}'
-```
-
-#### Example response
-
-```json
-{
-    "createdAt": 1491941727851,
-    "id": "MY_DAAC_SATELLITE",
-    "host": "https://www.example.co.uk",
-    "globalConnectionLimit": 10,
-    "updatedAt": 1513956555642,
-    "protocol": "http",
-    "action": "restart",
-    "timestamp": 1513956779541
-}
-```
-
-## Stop provider
-
-Set a provider's `status` to `stopped`. This halts all processing of granules associated with the provider.
-
-```endpoint
-PUT /v1/providers/{id}
-```
-
-#### Example request
-
-```curl
-$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "stop"}'
-```
-
-#### Example response
-
-```json
-{
-    "action": "stop",
-    "host": "https://www.example.co.uk",
-    "updatedAt": 1513956779503,
-    "protocol": "http",
-    "createdAt": 1491941727851,
-    "id": "MY_DAAC_SATELLITE",
-    "globalConnectionLimit": 10,
-    "timestamp": 1513956816160
-}
-```
-
 ## Delete provider
 
 Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.
