@@ -157,7 +157,26 @@ $ curl https://example.com/v1/collections/MOD11A1/006 --header 'Authorization: B
 
 ## Create collection
 
-Create a collection. For more information on creating collections and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections).
+Create a collection. For more information on creating collections and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections). A collection generally includes, but is not limited to, the fields listed below.
+
+Overview of the schema fields:
+
+| Field | Value | Description |
+| --- | --- | --- |
+| `name` | `string` | collection name |
+| `version` | `string` | collection version |
+| `dataType` | `string` | matches collection with PDR datatype |
+| `duplicateHandling` | `"replace" | "version" | "skip" | "error"` | duplicate handling protocol |
+| `process` | `string` | process choice step variable |
+| `provider_path` | `string` | path of remote files to sync |
+| `granuleId` | `string (regex)` | regex to match granule IDs |
+| `granuleIdExtraction` | `string (regex)` | regex to extract ID from files |
+| `sampleFileName` | `string` | sample filename for granule ID |
+| `files` | `array` | array of file specifications |
+| `-- file.bucket` | `string` | file destination bucket |
+| `-- file.regex` | `string (regex)` | regex to match file names |
+| `-- file.sampleFileName` | `string` | sample filename |
+| `-- file.url_path` | `string` | s3 prefix template |
 
 ```endpoint
 POST /v1/collections
@@ -167,40 +186,24 @@ POST /v1/collections
 
 ```curl
 $ curl --request POST https://example.com/v1/collections --header 'Authorization: Bearer ReplaceWithToken' --data '{
-    "changedBy": "Jane Smith",
-    "cmrProvider": "MY_DAAC",
-    "name": "MY_COLLECTION",
-    "version": "1",
-    "createdAt": 1491946535919,
-    "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
-    "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
-    "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
-     "files": [
-        {
-            "bucket": "protected",
-            "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
-            "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
-        }],
-    "providers": [
-        "MY_DAAC_SATELLITE"
-    ],
-    "recipe": {
-        "order": [
-            "archive"
-        ],
-        "processStep": {
-            "config": {
-                "image": "asterProcessing",
-                "inputFiles": [
-                    "foobar"
-                ],
-                "outputFiles": [
-                    "foobar"
-                ]
-            }
-        }
-    },
-    "updatedAt": 1491946535919
+  "name": "MOD09GQ",
+  "version": "006",
+  "dataType": "MOD09GQ",
+  "process": "modis",
+  "duplicateHandling": "replace",
+  "provider_path": "cumulus-test-data/pdrs",
+  "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
+  "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
+  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+  "files": [
+    {
+      "bucket": "protected",
+      "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
+      "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+      "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
+    }
+  ]
 }'
 ```
 
@@ -210,51 +213,32 @@ $ curl --request POST https://example.com/v1/collections --header 'Authorization
 {
     "message": "Record saved",
     "record": {
-        "changedBy": "Jane Smith",
-        "cmrProvider": "MY_DAAC",
-        "name": "MY_COLLECTION",
-        "version": "1",
-        "createdAt": 1491946535919,
-        "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
-        "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
-        "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
+        "name": "MOD09GQ",
+        "version": "006",
+        "dataType": "MOD09GQ",
+        "duplicateHandling": "replace",
+        "process": "modis",
+        "provider_path": "cumulus-test-data/pdrs",
+        "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
+        "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
+        "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+        "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
         "files": [
             {
                 "bucket": "protected",
-                "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
-                "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
+                "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
+                "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+                "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
             }
         ],
-        "providers": [
-            "MY_DAAC_SATELLITE"
-        ],
-        "recipe": {
-            "order": [
-                "archive"
-            ],
-            "processStep": {
-                "config": {
-                    "image": "asterProcessing",
-                    "inputFiles": [
-                        "foobar"
-                    ],
-                    "outputFiles": [
-                        "foobar"
-                    ]
-                }
-            }
-        },
-        "updatedAt": 1513960696308,
-        "provider_path": "/",
-        "duplicateHandling": "replace",
-        "timestamp": 1513960696736
+        "createdAt": 1491946535919,
     }
 }
 ```
 
 ## Update collection
 
-Update values for a collection. Can accept the whole collection object, or just a subset of fields, the ones that are being updated.
+Update values for a collection. Can accept the whole collection object, or just a subset of fields with updated values. For a field reference see the ["Create collection"](#create-collection) section.
 
 ```endpoint
 PUT /v1/collections/{name}/{version}
@@ -264,9 +248,9 @@ PUT /v1/collections/{name}/{version}
 
 ```curl
 $ curl --request PUT https://example.com/v1/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
-	"name": "MY_COLLECTION",
-	"version": "1",
-    "providers": ["ANOTHER_PROVIDER"]
+	"duplicateHandling": "error",
+    "provider_path": "new-path/test-data"
+    "newNeededField": "myCustomFieldValue"
 }'
 ```
 
@@ -274,44 +258,27 @@ $ curl --request PUT https://example.com/v1/collections/MY_COLLECTION/1 --header
 
 ```json
 {
-    "granuleIdExtraction": "(MY_COLLECTION\\..*)\\.hdf",
-    "version": "1",
-    "recipe": {
-        "processStep": {
-            "config": {
-                "inputFiles": [
-                    "foobar"
-                ],
-                "image": "asterProcessing",
-                "outputFiles": [
-                    "foobar"
-                ]
-            }
-        },
-        "order": [
-            "archive"
-        ]
-    },
-    "cmrProvider": "MY_DAAC",
-    "providers": [
-        "ANOTHER_PROVIDER"
-    ],
-    "createdAt": 1491946535919,
-    "changedBy": "Jane Smith",
-    "name": "MY_COLLECTION",
-    "duplicateHandling": "replace",
-    "provider_path": "/",
+    "name": "MOD09GQ",
+    "version": "006",
+    "dataType": "MOD09GQ",
+    "duplicateHandling": "error",
+    "newNeededField": "myCustomFieldValue",
+    "process": "modis",
+    "provider_path": "new_path/test-data",
+    "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
+    "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
+    "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+    "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
     "files": [
         {
             "bucket": "protected",
-            "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
-            "regex": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}\\.hdf$"
+            "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
+            "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+            "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
         }
     ],
-    "updatedAt": 1514304825894,
-    "granuleId": "^MY_COLLECTION\\.A[\\d]{7}\\.[\\S]{6}\\.1.[\\d]{13}$",
-    "sampleFileName": "MY_COLLECTION.A2017025.h21v00.1.2017034065104.hdf",
-    "timestamp": 1514304826284
+    "createdAt": 1491946535919,
+    "updatedAt": 1514304825894
 }
 ```
 
@@ -326,7 +293,7 @@ DELETE /v1/collections/{name}/{version}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/v1/collections/MOD09GQ/006 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
