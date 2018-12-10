@@ -1,6 +1,6 @@
 ## Token
 
-Returns a bearer token using oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service.
+Returns a bearer token using oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service. The token will be returned as a [JWT (JSON Web Token)](https://jwt.io/introduction/).
 
 ```endpoint
 GET /v1/token
@@ -22,9 +22,62 @@ $ curl https://example.com/v1/token
 #### Example response
 
 ```json
-{"token":"22374aa80353a781dabcbaadba8a7fc0fa51f3b435f1578256604f1b4d451686"}
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}
 ```
 
+## Refresh token
+
+Refreshes a bearer token received from oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service. The token will be returned as a [JWT (JSON Web Token)](https://jwt.io/introduction/).
+
+```endpoint
+POST /v1/refresh
+```
+
+### Request body
+
+| parameter | type | required | description |
+| ----- | --- | -- | ----------- |
+| `token` | string | `true` | The JWT received from the `/token` endpoint to refresh |
+
+
+#### Example request
+
+```curl
+$ curl --request POST https://example.com/v1/refresh --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
+```
+
+#### Example response
+
+```json
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDcxMjk4ODEzIn0.vO6RlSRo47kkH15_muoUYNvv74fRzFxs7FlmVaarHlc"}
+```
+
+## Delete token
+
+Delete the record for an access token received from oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service.
+
+```endpoint
+POST /v1/revokeToken
+```
+
+### Request body
+
+| parameter | type | required | description |
+| ----- | --- | -- | ----------- |
+| `token` | string | `true` | The JWT containing access token information to delete |
+
+
+#### Example request
+
+```curl
+$ curl --request POST https://example.com/v1/revokeToken --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
+```
+
+#### Example response
+
+```json
+{"message": "Token record was deleted"}
+```
 
 ## Authorization header
 
