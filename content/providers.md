@@ -18,7 +18,7 @@ $ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceW
 {
     "meta": {
         "name": "cumulus-api",
-        "stack": "lpdaac-cumulus",
+        "stack": "daac-cumulus",
         "table": "provider",
         "limit": 1,
         "page": 1,
@@ -26,10 +26,10 @@ $ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceW
     },
     "results": [
         {
-            "id": "LP_TS2_DataPool",
+            "id": "HTTP_MODIS",
             "globalConnectionLimit": 10,
             "protocol": "http",
-            "host": "https://e4ftl01.cr.usgs.gov:40521/",
+            "host": "https://data.modis.gov/",
             "timestamp": 1508861082226
         }
     ]
@@ -47,7 +47,7 @@ GET /v1/providers/{id}
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/v1/providers/HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -55,8 +55,8 @@ $ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorizatio
 ```json
 {
     "createdAt": 1508861081785,
-    "id": "LP_TS2_DataPool",
-    "host": "https://e4ftl01.cr.usgs.gov:40521/",
+    "id": "HTTP_MODIS",
+    "host": "https://data.modis.gov/",
     "globalConnectionLimit": 10,
     "updatedAt": 1508861081785,
     "protocol": "http"
@@ -65,7 +65,21 @@ $ curl https://example.com/v1/providers/LPDAAC_HTTP_MODIS --header 'Authorizatio
 
 ## Create provider
 
-Create a provider.
+Create a provider. For more information on creating providers and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#providers).
+
+Overview of the schema fields:
+
+| Field | Value | Description |
+| --- | --- | --- |
+| `id` | `string` | provider id/name |
+| `protocol` | `"s3"`&vert;`"http"`&vert;`"https"`&vert;`"ftp"` | file transfer (sync) protocol |
+| `host` | `string` | provider host endpoint |
+| `port` | `number` | provider host port |
+| `globalConnectionLimit` | `number` | limit to number of concurrent connections |
+| `username` | `string` | provider connection username |
+| `password` | `string` | provider connection password |
+| `privateKey` | `string` | filename assumed to be in s3://bucketInternal/stackName/crypto |
+| `cmKeyId` | `string` | AWS KMS Customer Master Key arn or alias |
 
 ```endpoint
 POST /v1/providers
@@ -75,14 +89,10 @@ POST /v1/providers
 
 ```curl
 $ curl --request POST https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
-    "changedBy": "Cumulus Dashboard",
-    "createdAt": 1491941727851,
     "host": "https://www.example.gov",
     "id": "MY_DAAC_SATELLITE",
-    "path": "/satellite/pdrs",
     "protocol": "http",
-    "providerName": "MY_DAAC",
-    "updatedAt": 1491941727851
+    "globalConnectionLimit": 10
 }'
 ```
 
@@ -96,7 +106,6 @@ $ curl --request POST https://example.com/v1/providers --header 'Authorization: 
         "host": "https://www.example.gov",
         "id": "MY_DAAC_SATELLITE",
         "protocol": "http",
-        "updatedAt": 1513956150733,
         "globalConnectionLimit": 10,
         "timestamp": 1513956151186
     }
@@ -130,64 +139,6 @@ $ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header
     "updatedAt": 1513956150733,
     "protocol": "http",
     "timestamp": 1513956555713
-}
-```
-
-## Restart provider
-
-Restart a provider. If the provider's `status` value had been `stopped` or `failed`, it will leave that status and return to searching for new PDRs to process.
-
-```endpoint
-PUT /v1/providers/{id}
-```
-
-#### Example request
-
-```curl
-$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "restart"}'
-```
-
-#### Example response
-
-```json
-{
-    "createdAt": 1491941727851,
-    "id": "MY_DAAC_SATELLITE",
-    "host": "https://www.example.co.uk",
-    "globalConnectionLimit": 10,
-    "updatedAt": 1513956555642,
-    "protocol": "http",
-    "action": "restart",
-    "timestamp": 1513956779541
-}
-```
-
-## Stop provider
-
-Set a provider's `status` to `stopped`. This halts all processing of granules associated with the provider.
-
-```endpoint
-PUT /v1/providers/{id}
-```
-
-#### Example request
-
-```curl
-$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "stop"}'
-```
-
-#### Example response
-
-```json
-{
-    "action": "stop",
-    "host": "https://www.example.co.uk",
-    "updatedAt": 1513956779503,
-    "protocol": "http",
-    "createdAt": 1491941727851,
-    "id": "MY_DAAC_SATELLITE",
-    "globalConnectionLimit": 10,
-    "timestamp": 1513956816160
 }
 ```
 
