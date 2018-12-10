@@ -166,12 +166,13 @@ Overview of the schema fields:
 | `name` | `string` | collection name |
 | `version` | `string` | collection version |
 | `dataType` | `string` | matches collection with PDR datatype |
-| `duplicateHandling` | `"replace" | "version" | "skip" | "error"` | duplicate handling protocol |
+| `duplicateHandling` | `"replace"/"version"/"skip"/"error"` | duplicate handling protocol |
 | `process` | `string` | process choice step variable |
 | `provider_path` | `string` | path of remote files to sync |
 | `granuleId` | `string (regex)` | regex to match granule IDs |
 | `granuleIdExtraction` | `string (regex)` | regex to extract ID from files |
 | `sampleFileName` | `string` | sample filename for granule ID |
+| `url_path` | `string` | s3 prefix template |
 | `files` | `array` | array of file specification objects |
 | `-- file.bucket` | `string` | file destination bucket |
 | `-- file.regex` | `string (regex)` | regex to match file names |

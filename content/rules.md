@@ -88,16 +88,19 @@ Overview of the schema fields:
 | Field | Value | Description |
 | --- | --- | --- |
 | `name` | `string` | rule name (letters, numbers, underscores only) |
-| `state` | `"DISABLED" | "ENABLED"` | rule state (default: ENABLED) |
+| `state` | `"DISABLED"/"ENABLED"` | rule state (default: ENABLED) |
 | `workflow` | `string` | name of workflow started by the rule |
 | `rule` | `Object` | rule object |
-| `-- rule.type` | `"onetime"|"scheduled"|"kinesis"|"sns"` | rule trigger type |
+| `-- rule.type` | `"onetime"/"scheduled"/"kinesis"/"sns"` | rule trigger type |
 | `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN | required value differs by type |
+| `-- rule.arn` | `string` | `kinesis` scheduled event arn |
+| `-- rule.logEventArn` | `string` | `kinesis` scheduled log event arn |
 | `provider` | `string` | provider record provided to workflow (optional) |
 | `collection` | `Object` | collection record provided to workflow (optional) |
 | `-- collection.name` | `string` | collection name |
 | `-- collection.version` | `string` | collection version |
 | `meta` | `Object` | contents to add to workflow input's `meta` field |
+| `tags` | `array` | Optional tags (for search) |
 
 ```endpoint
 POST /v1/rules

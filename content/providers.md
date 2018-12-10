@@ -72,11 +72,14 @@ Overview of the schema fields:
 | Field | Value | Description |
 | --- | --- | --- |
 | `id` | `string` | provider id/name |
-| `protocol` | `"s3"|"http"|"https"|ftp` | file transfer (sync) protocol |
+| `protocol` | `"s3"/"http"/"https"/"ftp"` | file transfer (sync) protocol |
 | `host` | `string` | provider host endpoint |
+| `port` | `number` | provider host port |
 | `globalConnectionLimit` | `number` | limit to number of concurrent connections |
-| `username` | `string` | ftp username |
-| `password` | `string` | ftp password |
+| `username` | `string` | provider connection username |
+| `password` | `string` | provider connection password |
+| `privateKey` | `string` | filename assumed to be in s3://bucketInternal/stackName/crypto |
+| `cmKeyId` | `string` | AWS KMS Customer Master Key arn or alias |
 
 ```endpoint
 POST /v1/providers
