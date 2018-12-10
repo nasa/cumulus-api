@@ -166,7 +166,7 @@ Overview of the schema fields:
 | `name` | `string` | collection name |
 | `version` | `string` | collection version |
 | `dataType` | `string` | matches collection with PDR datatype |
-| `duplicateHandling` | `"replace"/"version"/"skip"/"error"` | duplicate handling protocol |
+| `duplicateHandling` | `"replace"`&vert;`"version"`&vert;`"skip"`&vert;`"error"` | duplicate handling protocol |
 | `process` | `string` | process choice step variable |
 | `provider_path` | `string` | path of remote files to sync |
 | `granuleId` | `string (regex)` | regex to match granule IDs |

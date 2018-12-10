@@ -72,7 +72,7 @@ Overview of the schema fields:
 | Field | Value | Description |
 | --- | --- | --- |
 | `id` | `string` | provider id/name |
-| `protocol` | `"s3"/"http"/"https"/"ftp"` | file transfer (sync) protocol |
+| `protocol` | `"s3"`&vert;`"http"`&vert;`"https"`&vert;`"ftp"` | file transfer (sync) protocol |
 | `host` | `string` | provider host endpoint |
 | `port` | `number` | provider host port |
 | `globalConnectionLimit` | `number` | limit to number of concurrent connections |
