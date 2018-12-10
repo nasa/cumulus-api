@@ -155,7 +155,7 @@ Special case:
 
 | Field | Value | Description |
 | --- | --- | --- |
-| `action` | `"rerun"` | rerun a `onetime` rule, which cannot otherwise be updated |
+| `action` | `"rerun"` | rerun rule (`onetime` rule only) |
 
 ```endpoint
 PUT /v1/rules/{name}
