@@ -108,7 +108,7 @@ TOKEN_URL=$(curl -s -i -X POST \
 # Response is a JSON object of the form { token: String }
 # This uses the cli tool jq to parse the JSON and get the token string
 # More info on jq: https://stedolan.github.io/jq/
-TOKEN=$(curl -s ${TOKEN_URL%$'\r'} | jq -r '.token')
+TOKEN=$(curl -s ${TOKEN_URL%$'\r'} | jq -r '.message.token')
 
 echo $TOKEN
 ```

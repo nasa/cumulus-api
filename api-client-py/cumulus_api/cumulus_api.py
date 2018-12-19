@@ -40,5 +40,5 @@ class CumulusApi(object):
 
         # get the access token for use in future requests
         token_response = requests.get(grant_code_url)
-        self.access_token = token_response.json()['token']
+        self.access_token = token_response.json()['message']['token']
         return self.access_token
