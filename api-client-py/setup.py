@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='cumulus_api',
     version='1.0.0',
-    url='https://github.com/cumulus-nasa/cumulus_api.py',
+    url='https://github.com/nasa/cumulus_api.py',
     author='',
     author_email='',
     description='',
