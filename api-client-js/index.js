@@ -118,8 +118,8 @@ class CumulusApi {
         .catch(reject)
         .then((res) => {
           var body = JSON.parse(res.body)
-          this.token = body.token
-          resolve(body.token)
+          this.token = body.message.token
+          resolve(body.message.token)
         })
     })
   }
