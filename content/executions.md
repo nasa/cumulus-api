@@ -126,7 +126,9 @@ $ curl https://example.com/v1/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --
         "Error": "Unknown Error",
         "Cause": "None"
     },
-    "type": "IngestGranule"
+    "type": "IngestGranule",
+    "originalPayload": { "somePayloadKey": "object containing payload at execution start" },
+    "finalPayload": { "somePayloadKey" : "object containing the last reported payload from an execution" }
 }
 ```
 
