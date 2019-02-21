@@ -17,7 +17,7 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
 ```json
 {
     "meta": {
-        "fileName": "cumulus-api",
+        "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
         "table": "granule",
         "limit": 1,
