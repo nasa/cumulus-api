@@ -30,7 +30,7 @@ $ curl https://example.com/s3credentials --header 'Authorization: Bearer Replace
 
 ##### Non-NGAP deployments
 
-For non-NGAP deployments that wish to provide temporary credentials, you must provide the name of a lambda available to your stack either by over-riding the default `sts_credentials_lambda` or by setting the environment variable STSCredentialsLambda on your API.  Your lambda function must take an payload object as described below and return [AWS.Credentials](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Credentials.html) appropriate to your use case probably via the [AWS Security Token Service](https://docs.aws.amazon.com/STS/latest/APIReference/Welcome.html).
+For non-NGAP deployments that wish to provide temporary credentials, you must provide the name of a lambda available to your stack either by overriding the default `sts_credentials_lambda` or by setting the environment variable STSCredentialsLambda on your API.  Your lambda function must take an payload object as described below and return [AWS.Credentials](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Credentials.html) appropriate to your use case probably via the [AWS Security Token Service](https://docs.aws.amazon.com/STS/latest/APIReference/Welcome.html).
 
 sample `sts_credentials_lambda` payload:
 ```json
