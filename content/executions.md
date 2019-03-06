@@ -135,7 +135,7 @@ $ curl https://example.com/v1/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --
 
 ## Retrieve Execution Status
 
-Retrieve details and status of a specific execution. This also return details of the state machine.
+Retrieve details and status of a specific execution. This also returns execution history and details of the state machine when the execution exists in Step Function API.
 
 ```endpoint
 GET /v1/executions/status/{executionArn}
