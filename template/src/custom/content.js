@@ -56,5 +56,8 @@ module.exports =
   fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n' +
 
   '# Instance Metadata\n' +
-  fs.readFileSync('./content/instance-meta.md') + '\n'
+  fs.readFileSync('./content/instance-meta.md') + '\n' +
+
+  '# Dashboard\n' +
+  fs.readFileSync('./content/dashboard.md') + '\n'
 ;
