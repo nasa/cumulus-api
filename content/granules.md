@@ -82,7 +82,7 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
                     "bucket": "cumulus-devseed-protected",
                     "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
                     "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
-                    "fileType": "browse",
+                    "fileType": "metadata",
                     "name": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
                 },
                 {
