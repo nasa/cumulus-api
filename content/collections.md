@@ -178,7 +178,7 @@ Overview of the schema fields:
 | `-- file.regex` | `string (regex)` | regex to match file names |
 | `-- file.sampleFileName` | `string` | sample filename |
 | `-- file.url_path` | `string` | s3 prefix template |
-| `-- file.fileType` | `string` | Granule File fileType mapping |
+| `-- file.fileType` | `string` | granule file fileType mapping |
 
 ```endpoint
 POST /v1/collections
