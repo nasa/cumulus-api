@@ -6,6 +6,7 @@ copy_docs() {
     ln -s $(pwd)/content $(pwd)/node_modules/docbox/content
     cp template/src/components/app.js node_modules/docbox/src/components/app.js
     cp template/src/custom/* node_modules/docbox/src/custom/
+    cp template/defaults/* node_modules/docbox/
 }
 
 # Serves docbox
