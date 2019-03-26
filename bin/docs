@@ -32,7 +32,7 @@ deploy() {
     git config user.email "info@developmentseed.org"
     git config commit.gpgsign "false"
     git add css bundle.js index.html
-    git commit -m "Automated to gh-pages"
+    git commit -m "Automated to gh-pages [skip ci]"
     git push --force --quiet git@github.com:nasa/cumulus-api.git master:gh-pages
     rm -rf .git/
 }
