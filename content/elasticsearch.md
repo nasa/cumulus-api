@@ -218,9 +218,9 @@ $ curl https://example.com/v1/elasticsearch/reindex-status --header 'Authorizati
 
 ## Change Index
 
-Change index switches Cumulus to point to the new destination index, rather than the source index. You may choose to delete your source index during this operation using the `deleteSource` parameter.
+Change index switches Cumulus to point to the new index, rather than the current index. You may choose to delete your current index during this operation using the `deleteSource` parameter, which defaults to `false`.
 
-`sourceIndex` and `destIndex` are required parameters.
+`currentIndex` and `newIndex` are required parameters.
 
 In the context of reindex, you'd call `change-index`, following reindex completion to start using the new index with no downtime.
 
@@ -229,8 +229,8 @@ In the context of reindex, you'd call `change-index`, following reindex completi
 ```curl
 $ curl --request POST https://example.com/v1/elasticsearch/change-index --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
   "aliasName": "cumulus-alias",
-  "sourceIndex": "cumulus-4-4-2019",
-  "destIndex": "cumulus-new-index",
+  "currentIndex": "cumulus-4-4-2019",
+  "newIndex": "cumulus-4-16-2019",
   "deleteSource": false
 }'
 ```
