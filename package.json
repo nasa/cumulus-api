@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/nasa/cumulus-api#readme",
   "dependencies": {
-    "docbox": "^1.0.8"
+    "docbox": "^1.0.11"
   },
   "devDependencies": {
     "babel-register": "^6.3.13",
