@@ -8,7 +8,7 @@ Cumulus uses [index aliases](https://www.elastic.co/guide/en/elasticsearch/refer
 
 The reindex command creates a new index and reindexes the source index to the new, destination index. This uses the [Elasticsearch reindex functionality](https://www.elastic.co/guide/en/elasticsearch/reference/5.3/docs-reindex.html), but includes setting up the new index.
 
-Note that there will now be two copies of your index. Your Cumulus instance will still point to the old copy until you perform the `change-reindex` function described below.
+Note that there will now be two copies of your index. Your Cumulus instance will still point to the old copy until you perform the `change-index` function described below.
 
 An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`). If you specify a destination index name, it must be an index that does not already exist in your cluster.
 
