@@ -1,6 +1,6 @@
 ## Distribution Metrics
 
-The Cumulus API provides information about recent distributionApi performance.
+The Cumulus API provides information about recent distribution API performance.
 
 `GET` requests to the `distributionMetrics` endpoint return a json object with the `distributionApi`'s previous 24 hour total number of errors and successes.
 
