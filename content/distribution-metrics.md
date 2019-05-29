@@ -21,7 +21,7 @@ Dimension: Stack // with Value: prefix
 ```
 
 
-The standard and suggested way to publish custom metrics is use the [`@cumulus/s3-access-metrics`](https://github.com/nasa/cumulus/tree/master/packages/s3-access-metrics) package.  It is a independently deployed stack that you must configure to read the server access logs for your cumulus instance.
+The standard and suggested way to publish custom metrics is to use the [`@cumulus/s3-access-metrics`](https://github.com/nasa/cumulus/tree/master/packages/s3-access-metrics) package.  It is a independently deployed stack that you must configure to read the server access logs for your cumulus instance.
 
 
 
