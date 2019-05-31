@@ -53,13 +53,16 @@ module.exports =
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
 
   '# Reconciliation Reports\n' +
-  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n' +
+  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') +  '\n' +
+
+  '# Distribution Metrics\n' +
+  fs.readFileSync('./content/distribution-metrics.md') + '\n' +
 
   '# Instance Metadata\n' +
   fs.readFileSync('./content/instance-meta.md') + '\n' +
 
   '# Elasticsearch\n' +
-  fs.readFileSync('./content/elasticsearch.md') + '\n'
+  fs.readFileSync('./content/elasticsearch.md') + '\n' +
 
   '# Dashboard\n' +
   fs.readFileSync('./content/dashboard.md') + '\n'
