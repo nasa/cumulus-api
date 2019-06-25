@@ -236,9 +236,9 @@ In the context of reindex, you'd call `change-index`, following reindex completi
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/elasticsearch/change-index --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://733kumasia.execute-api.us-east-1.amazonaws.com/dev/elasticsearch/change-index --data '{
   "aliasName": "cumulus-alias",
-  "currentIndex": "cumulus-4-4-2019",
+  "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
   "deleteSource": false
 }'
@@ -248,4 +248,64 @@ $ curl --request POST https://example.com/v1/elasticsearch/change-index --header
 
 ```json
 { "message": "Reindex success - alias cumulus now pointing to cumulus-4-12-2019" }
+```
+
+## Index from Database
+
+In case of corruption of your Elasticsearch index, you can reindex your data from the database. This will include collections, executions, granules, pdrs, providers, and rules. Logs will not be indexed since they are not stored in the database.
+
+You can specify an index (should be empty) or if no index name is specified, a default with the format of 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`) will be used. If the specified index does not exist, it will be created.
+
+It is recommended that workflow rules be turned off, as any data ingested into the database during this operation cannot be guaranteed to make it into the new index. Following the completion of the index, you will need to use the change index operation to switch your Elasticsearch to point to the new instance.
+
+Indexing is an async operation, so an operation id will be returned. You can query the status using the `asyncoperations` GET endoint with the operation id.
+
+#### Example request
+
+```curl
+$ curl --request POST https://example.com/v1/elasticsearch/index-from-database --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+  "indexName": "recovery-index"
+}'
+```
+
+#### Example response
+
+```json
+{"message":"Indexing database to recovery-index. Operation id: 8f4d35ba-c858-40ae-93f0-4465f54a911d"}
+```
+
+#### Example request - operation status
+
+```curl
+$ curl https://example.com/v1/asyncoperations/8f4d35ba-c858-40ae-93f0-4465f54a911d
+```
+
+#### Example response - operation status
+
+```json
+{
+   "id":"8f4d35ba-c858-40ae-93f0-4465f54a911d",
+   "status":"SUCCEEDED",
+   "taskArn":"arn:aws:ecs:us-east-1:XXXXXXXXXXXX:task/dc41ff2b-e610-4f7a-8c63-48b48ceb7160",
+   "output":"\"Index from database complete\""
+}
+```
+
+## Indices Status
+
+Use the indices-status endpoint to view information about your elasticsearch indices. This endpoint will return the information for the [indices call](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/cat-indices.html) in the Elasticsearch API.
+
+#### Example request
+
+```curl
+$ curl  https://example.com/v1/elasticsearch/indices-status --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+yellow open .kibana           yxBUTswHSr2ecec8y1szEg 1 1      1   0   3.1kb   3.1kb
+yellow open cumulus-2019-6-21 ELpdxYVKSc-VvNxlNjmMUA 5 1    700 225   2.5mb   2.5mb
+yellow open cumulus-2019-6-24 lmylLkTsQJWIVYFJcftMqQ 5 1    700   0     4mb     4mb
+yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.3mb
 ```
