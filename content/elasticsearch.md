@@ -236,7 +236,7 @@ In the context of reindex, you'd call `change-index`, following reindex completi
 #### Example request
 
 ```curl
-$ curl --request POST https://733kumasia.execute-api.us-east-1.amazonaws.com/dev/elasticsearch/change-index --data '{
+$ curl --request POST https://example.com/v1/dev/elasticsearch/change-index --data '{
   "aliasName": "cumulus-alias",
   "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
@@ -308,4 +308,20 @@ yellow open .kibana           yxBUTswHSr2ecec8y1szEg 1 1      1   0   3.1kb   3.
 yellow open cumulus-2019-6-21 ELpdxYVKSc-VvNxlNjmMUA 5 1    700 225   2.5mb   2.5mb
 yellow open cumulus-2019-6-24 lmylLkTsQJWIVYFJcftMqQ 5 1    700   0     4mb     4mb
 yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.3mb
+```
+
+## Current Index
+
+Get the current aliased index being used by the Cumulus Elasticsearch instance.
+
+#### Example request
+
+```curl
+$ curl  https://example.com/v1/elasticsearch/current-index --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+["cumulus-2019-6-24"]
 ```
