@@ -55,6 +55,9 @@ module.exports =
   '# Reconciliation Reports\n' +
   fs.readFileSync('./content/reconciliation-reports.md', 'utf8') +  '\n' +
 
+  '# EMS Reports\n' +
+  fs.readFileSync('./content/ems.md', 'utf8') +  '\n' +
+
   '# Distribution Metrics\n' +
   fs.readFileSync('./content/distribution-metrics.md') + '\n' +
 
