@@ -7,7 +7,7 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `reportType` | `Y` | `"metadata"`&vert;`"ingest"`&vert;`"distribution"` | type of report |
-| `startTime` | `N` | `string` | report startTime in format YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss, if startTime and endTime are not specified, then reports for previous day will be generated |
+| `startTime` | `N` | `string` | report startTime in format YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss <br>If startTime and endTime are not specified, the reports for previous day will be generated |
 | `endTime` | `N` | `string` | report endTime in format YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss |
 
 ```endpoint
