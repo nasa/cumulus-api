@@ -58,9 +58,6 @@ module.exports =
   '# EMS Reports\n' +
   fs.readFileSync('./content/ems.md', 'utf8') +  '\n' +
 
-  '# Distribution Metrics\n' +
-  fs.readFileSync('./content/distribution-metrics.md') + '\n' +
-
   '# Instance Metadata\n' +
   fs.readFileSync('./content/instance-meta.md') + '\n' +
 
