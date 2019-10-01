@@ -43,7 +43,7 @@ POST /refresh
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/refresh --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
+$ curl --request POST https://example.com/refresh --header 'Content-Type: application/json' --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
 ```
 
 #### Example response
