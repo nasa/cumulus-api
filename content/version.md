@@ -10,7 +10,7 @@ To use any version, include the version number in the path before the query endp
 
 #### Example Request
 ```curl
-$ curl https://example.com/v1/version
+$ curl https://example.com/version
 ```
 
 #### Example Response

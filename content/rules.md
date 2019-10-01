@@ -3,13 +3,13 @@
 List rules in the Cumulus system.
 
 ```endpoint
-GET /v1/rules
+GET /rules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/rules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -49,13 +49,13 @@ $ curl https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithT
 Retrieve a single rule.
 
 ```endpoint
-GET /v1/rules/{name}
+GET /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -103,13 +103,13 @@ Overview of the schema fields:
 | `tags` | `array` | Optional tags (for search) |
 
 ```endpoint
-POST /v1/rules
+POST /rules
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithToken' --data '{
+$ curl --request POST https://example.com/rules --header 'Authorization: Bearer ReplaceWithToken' --header 'Content-Type: application/json' --data '{
     "workflow": "DiscoverPdrs",
     "collection": {
         "name": "AST_L1A",
@@ -121,7 +121,7 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
         "type": "scheduled",
         "value": "rate(5 minutes)"
     },
-    meta: { "publish": false },
+    "meta": { "publish": false },
     "state": "DISABLED"
 }'
 ```
@@ -161,13 +161,13 @@ Special case:
 | `action` | `"rerun"` | rerun rule (`onetime` rule only) |
 
 ```endpoint
-PUT /v1/rules/{name}
+PUT /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"state": "ENABLED"}'
+$ curl --request PUT https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"state": "ENABLED"}'
 ```
 
 #### Example response
@@ -194,7 +194,7 @@ $ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authoriz
 #### Rerun request (`onetime`-rule special case)
 
 ```curl
-$ curl --request PUT https://example.com/v1/rules/my_onetime_rule --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "rerun"}'
+$ curl --request PUT https://example.com/rules/my_onetime_rule --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "rerun"}'
 ```
 
 ## Delete rule
@@ -202,13 +202,13 @@ $ curl --request PUT https://example.com/v1/rules/my_onetime_rule --header 'Auth
 Delete a rule from Cumulus.
 
 ```endpoint
-DELETE /v1/rules/{name}
+DELETE /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

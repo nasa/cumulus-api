@@ -3,7 +3,7 @@
 Returns a bearer token using oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service. The token will be returned as a [JWT (JSON Web Token)](https://jwt.io/introduction/).
 
 ```endpoint
-GET /v1/token
+GET /token
 ```
 
 ### Query Parameters
@@ -16,7 +16,7 @@ GET /v1/token
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/token
+$ curl https://example.com/token
 ```
 
 #### Example response
@@ -30,7 +30,7 @@ $ curl https://example.com/v1/token
 Refreshes a bearer token received from oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service. The token will be returned as a [JWT (JSON Web Token)](https://jwt.io/introduction/).
 
 ```endpoint
-POST /v1/refresh
+POST /refresh
 ```
 
 ### Request body
@@ -43,7 +43,7 @@ POST /v1/refresh
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/refresh --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
+$ curl --request POST https://example.com/refresh --data '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'
 ```
 
 #### Example response
@@ -57,7 +57,7 @@ $ curl --request POST https://example.com/v1/refresh --data '{"token":"eyJhbGciO
 Delete the record for an access token received from oAuth with [Earthdata Login](https://urs.earthdata.nasa.gov) service.
 
 ```endpoint
-DELETE /v1/tokenDelete/{token}
+DELETE /tokenDelete/{token}
 ```
 
 `token` is the JWT containing access token information to delete
@@ -65,7 +65,7 @@ DELETE /v1/tokenDelete/{token}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/tokenDelete/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY
+$ curl --request DELETE https://example.com/tokenDelete/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY
 ```
 
 #### Example response

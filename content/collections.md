@@ -3,13 +3,13 @@
 List collections in the Cumulus system.
 
 ```endpoint
-GET /v1/collections
+GET /collections
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/collections --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -88,13 +88,13 @@ $ curl https://example.com/v1/collections --header 'Authorization: Bearer Replac
 Retrieve a single collection.
 
 ```endpoint
-GET /v1/collections/{name}/{version}
+GET /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/collections/MOD11A1/006 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -181,13 +181,13 @@ Overview of the schema fields:
 | `-- file.fileType` | `string` | granule file fileType mapping |
 
 ```endpoint
-POST /v1/collections
+POST /collections
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/collections --header 'Authorization: Bearer ReplaceWithToken' --data '{
+$ curl --request POST https://example.com/collections --header 'Authorization: Bearer ReplaceWithToken' --header 'Content-Type: application/json' --data '{
   "name": "MOD09GQ",
   "version": "006",
   "dataType": "MOD09GQ",
@@ -243,13 +243,13 @@ $ curl --request POST https://example.com/v1/collections --header 'Authorization
 Update values for a collection. Can accept the whole collection object, or just a subset of fields with updated values. For a field reference see the ["Create collection"](#create-collection) section.
 
 ```endpoint
-PUT /v1/collections/{name}/{version}
+PUT /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request PUT https://example.com/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
 	"duplicateHandling": "error",
     "provider_path": "new-path/test-data"
     "newNeededField": "myCustomFieldValue"
@@ -289,13 +289,13 @@ $ curl --request PUT https://example.com/v1/collections/MY_COLLECTION/1 --header
 Delete a collection from Cumulus, but not from CMR. All related granules in Cumulus must have already been deleted from Cumulus.
 
 ```endpoint
-DELETE /v1/collections/{name}/{version}
+DELETE /collections/{name}/{version}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/collections/MOD09GQ/006 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/collections/MOD09GQ/006 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

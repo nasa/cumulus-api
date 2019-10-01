@@ -1,15 +1,15 @@
 ## Get Granule CSV file
 
-Get a CSV file of all the granule in the Cumulus database. 
+Get a CSV file of all the granule in the Cumulus database.
 
 ```endpoint
-GET /v1/granule-csv
+GET /granule-csv
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/granule-csv --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granule-csv --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
