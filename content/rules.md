@@ -150,9 +150,15 @@ $ curl --request POST https://example.com/rules --header 'Authorization: Bearer 
 }
 ```
 
-## Update rule
+## Update/replace rule
 
-Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties. For a field reference see the ["Create rule"](#create-rule) section.
+Update/replace an existing rule. Expects payload to specify the entire
+rule object, and will completely replace the existing rule with the
+specified payload. For a field reference see ["Create rule"](#create-rule).
+
+Returns status 200 on successful replacement, 400 if the `name` property in the
+payload does not match the corresponding value in the resource URI, or 404 if
+there is no rule with the specified name.
 
 Special case:
 
@@ -167,27 +173,40 @@ PUT /rules/{name}
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"state": "ENABLED"}'
+$ curl --request PUT https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
+  "name": "repeat_test",
+  "workflow": "DiscoverPdrs",
+  "collection": {
+    "name": "AST_L1A",
+    "version": "003"
+  },
+  "provider": "local",
+  "rule": {
+    "type": "scheduled",
+    "value": "rate(5 minutes)"
+  },
+  "state": "ENABLED"
+}'
 ```
 
-#### Example response
+#### Example successful response
 
 ```json
 {
-    "workflow": "DiscoverPdrs",
-    "collection": {
-        "name": "AST_L1A",
-        "version": "003"
-    },
-    "updatedAt": 1521755265130,
-    "createdAt": 1510903518741,
-    "provider": "local",
-    "name": "repeat_test",
-    "rule": {
-        "type": "scheduled",
-        "value": "rate(5 minutes)"
-    },
-    "state": "ENABLED"
+  "name": "repeat_test",
+  "workflow": "DiscoverPdrs",
+  "collection": {
+    "name": "AST_L1A",
+    "version": "003"
+  },
+  "updatedAt": 1521755265130,
+  "createdAt": 1510903518741,
+  "provider": "local",
+  "rule": {
+    "type": "scheduled",
+    "value": "rate(5 minutes)"
+  },
+  "state": "ENABLED"
 }
 ```
 
