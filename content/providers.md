@@ -112,33 +112,43 @@ $ curl --request POST https://example.com/providers --header 'Authorization: Bea
 }
 ```
 
-## Update provider
+## Update/replace provider
 
-Update values for a provider. Can accept the whole provider object, or just a subset of fields, the ones that are being updated.
+Update/replace an existing provider. Expects payload to specify the entire
+provider object, and will completely replace the existing provider with the
+specified payload. For a field reference see
+["Create provider"](#create-provider).
+
+Returns status 200 on successful replacement, 400 if the `id` property in the
+payload does not match the corresponding value in the resource URI, or 404 if
+there is no provider with the specified ID.
 
 ```endpoint
-PUT /providers
+PUT /providers/{id}
 ```
 
 #### Example request
 
 ```curl
 $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
-    "host": "https://www.example.co.uk"
+  "id": "MY_DAAC_SATELLITE",
+  "host": "https://www.example.co.uk",
+  "globalConnectionLimit": 10,
+  "protocol": "http"
 }'
 ```
 
-#### Example response
+#### Example successful response
 
 ```json
 {
-    "createdAt": 1491941727851,
-    "id": "MY_DAAC_SATELLITE",
-    "host": "https://www.example.co.uk",
-    "globalConnectionLimit": 10,
-    "updatedAt": 1513956150733,
-    "protocol": "http",
-    "timestamp": 1513956555713
+  "createdAt": 1491941727851,
+  "id": "MY_DAAC_SATELLITE",
+  "host": "https://www.example.co.uk",
+  "globalConnectionLimit": 10,
+  "updatedAt": 1513956150733,
+  "protocol": "http",
+  "timestamp": 1513956555713
 }
 ```
 

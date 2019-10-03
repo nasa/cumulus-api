@@ -233,14 +233,21 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
                 "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
             }
         ],
-        "createdAt": 1491946535919,
+        "createdAt": 1491946535919
     }
 }
 ```
 
-## Update collection
+## Update/replace collection
 
-Update values for a collection. Can accept the whole collection object, or just a subset of fields with updated values. For a field reference see the ["Create collection"](#create-collection) section.
+Update/replace an existing collection. Expects payload to specify the entire
+collection object, and will completely replace the existing collection with the
+specified payload. For a field reference see
+["Create collection"](#create-collection).
+
+Returns status 200 on successful replacement, 400 if the `name` or `version`
+property in the payload does not match the corresponding value in the resource
+URI, or 404 if there is no collection with the specified name and version.
 
 ```endpoint
 PUT /collections/{name}/{version}
@@ -249,38 +256,54 @@ PUT /collections/{name}/{version}
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/collections/MY_COLLECTION/1 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
-	"duplicateHandling": "error",
-    "provider_path": "new-path/test-data"
-    "newNeededField": "myCustomFieldValue"
+$ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
+  "name": "MOD09GQ",
+  "version": "006",
+  "dataType": "MOD09GQ",
+  "duplicateHandling": "error",
+  "newNeededField": "myCustomFieldValue",
+  "process": "modis",
+  "provider_path": "new_path/test-data",
+  "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
+  "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
+  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+  "files": [
+    {
+      "bucket": "protected",
+      "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
+      "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+      "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
+    }
+  ]
 }'
 ```
 
-#### Example response
+#### Example successful response
 
 ```json
 {
-    "name": "MOD09GQ",
-    "version": "006",
-    "dataType": "MOD09GQ",
-    "duplicateHandling": "error",
-    "newNeededField": "myCustomFieldValue",
-    "process": "modis",
-    "provider_path": "new_path/test-data",
-    "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
-    "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-    "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
-    "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
-    "files": [
-        {
-            "bucket": "protected",
-            "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
-            "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
-            "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
-        }
-    ],
-    "createdAt": 1491946535919,
-    "updatedAt": 1514304825894
+  "name": "MOD09GQ",
+  "version": "006",
+  "dataType": "MOD09GQ",
+  "duplicateHandling": "error",
+  "newNeededField": "myCustomFieldValue",
+  "process": "modis",
+  "provider_path": "new_path/test-data",
+  "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
+  "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
+  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+  "files": [
+    {
+      "bucket": "protected",
+      "regex": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}\\.hdf$",
+      "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
+      "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{extractYear(cmrMetadata.Granule.Temporal.RangeDateTime.BeginningDateTime)}/{substring(file.name, 0, 3)}"
+    }
+  ],
+  "createdAt": 1491946535919,
+  "updatedAt": 1514304825894
 }
 ```
 
