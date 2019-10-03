@@ -3,13 +3,13 @@
 List reconciliation reports in the Cumulus system.
 
 ```endpoint
-GET /v1/reconciliationReports
+GET /reconciliationReports
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/reconciliationReports --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -33,13 +33,13 @@ $ curl https://example.com/v1/reconciliationReports --header 'Authorization: Bea
 Retrieve a single reconciliation report.
 
 ```endpoint
-GET /v1/reconciliationReports/{name}
+GET /reconciliationReports/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/reconciliationReports/report-2019-03-05T15:34:30.508Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/reconciliationReports/report-2019-03-05T15:34:30.508Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -132,13 +132,13 @@ $ curl https://example.com/v1/reconciliationReports/report-2019-03-05T15:34:30.5
 Create a new reconciliation report.
 
 ```endpoint
-POST /v1/reconciliationReports
+POST /reconciliationReports
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken'
+$ curl --request POST https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken'
 ```
 
 #### Example response
@@ -155,13 +155,13 @@ $ curl --request POST https://example.com/v1/reconciliationReports --header 'Aut
 Delete a reconciliation report from Cumulus.
 
 ```endpoint
-DELETE /v1/reconciliationReports/{name}
+DELETE /reconciliationReports/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/reconciliationReports/report-2018-06-20T20:58:38.883Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/reconciliationReports/report-2018-06-20T20:58:38.883Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response

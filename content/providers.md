@@ -3,13 +3,13 @@
 List providers in the Cumulus system.
 
 ```endpoint
-GET /v1/providers
+GET /providers
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -41,13 +41,13 @@ $ curl https://example.com/v1/providers --header 'Authorization: Bearer ReplaceW
 Retrieve a single provider.
 
 ```endpoint
-GET /v1/providers/{id}
+GET /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/providers/HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/providers/HTTP_MODIS --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -82,13 +82,13 @@ Overview of the schema fields:
 | `cmKeyId` | `string` | AWS KMS Customer Master Key arn or alias |
 
 ```endpoint
-POST /v1/providers
+POST /providers
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/providers --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/providers --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
     "host": "https://www.example.gov",
     "id": "MY_DAAC_SATELLITE",
     "protocol": "http",
@@ -117,13 +117,13 @@ $ curl --request POST https://example.com/v1/providers --header 'Authorization: 
 Update values for a provider. Can accept the whole provider object, or just a subset of fields, the ones that are being updated.
 
 ```endpoint
-PUT /v1/providers
+PUT /providers
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
     "host": "https://www.example.co.uk"
 }'
 ```
@@ -147,13 +147,13 @@ $ curl --request PUT https://example.com/v1/providers/MY_DAAC_SATELLITE --header
 Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.
 
 ```endpoint
-DELETE /v1/providers/{id}
+DELETE /providers/{id}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/providers/MY_DAAC_SATELLITE --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

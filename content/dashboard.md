@@ -3,7 +3,7 @@
 Serve the dashboard from an S3 bucket.
 
 ```endpoint
-GET /v1/dashboard/{bucket}/{key}
+GET /dashboard/{bucket}/{key}
 ```
 
 This is a way to serve the Cumulus dashboard in a browser from an S3 bucket without making the bucket or files public.
@@ -16,5 +16,5 @@ To use this:
 #### Example request
 
 ```
-https://example.com/v1/dashboard/dashboard-bucket/index.html
+https://example.com/dashboard/dashboard-bucket/index.html
 ```

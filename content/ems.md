@@ -12,19 +12,19 @@ Overview of the request fields:
 | `collectionId` | `N` | `string` | collectionId of the report records <br>This field can be specified when report type is `metadata` or `ingest` |
 
 ```endpoint
-POST /v1/ems
+POST /ems
 ```
 
 #### Example requests
 
 ```curl
-$ curl https://example.com/v1/ems --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl https://example.com/ems --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "reportType": "metadata"
 }'
 ```
 
 ```curl
-$ curl https://example.com/v1/ems --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl https://example.com/ems --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
     "reportType": "ingest",
     "startTime": "2019-06-27",
     "endTime": "2019-06-29",

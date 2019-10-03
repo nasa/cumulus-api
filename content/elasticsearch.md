@@ -17,7 +17,7 @@ Since reindex can be a long running operation, the `reindex-status` endpoint mus
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/elasticsearch/reindex --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request POST https://example.com/elasticsearch/reindex --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 
@@ -30,7 +30,7 @@ $ curl --request POST https://example.com/v1/elasticsearch/reindex --header 'Aut
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/elasticsearch/reindex --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/elasticsearch/reindex --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
   "aliasName": "cumulus-alias",
   "sourceIndex": "cumulus-4-4-2019",
   "destIndex": "cumulus-new-index"
@@ -54,7 +54,7 @@ The `elasticsearchStatus` shows the number of documents in each index which can 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/elasticsearch/reindex-status --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/elasticsearch/reindex-status --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example responses
@@ -236,7 +236,7 @@ In the context of reindex, you'd call `change-index`, following reindex completi
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/dev/elasticsearch/change-index --data '{
+$ curl --request POST https://example.com/dev/elasticsearch/change-index --header 'Content-Type: application/json' --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
   "aliasName": "cumulus-alias",
   "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
@@ -263,7 +263,7 @@ Indexing is an async operation, so an operation id will be returned. You can que
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/elasticsearch/index-from-database --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/elasticsearch/index-from-database --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
   "indexName": "recovery-index"
 }'
 ```
@@ -277,7 +277,7 @@ $ curl --request POST https://example.com/v1/elasticsearch/index-from-database -
 #### Example request - operation status
 
 ```curl
-$ curl https://example.com/v1/asyncoperations/8f4d35ba-c858-40ae-93f0-4465f54a911d
+$ curl --header 'Authorization: Bearer ReplaceWithTheToken' https://example.com/asyncoperations/8f4d35ba-c858-40ae-93f0-4465f54a911d
 ```
 
 #### Example response - operation status
@@ -298,7 +298,7 @@ Use the indices-status endpoint to view information about your elasticsearch ind
 #### Example request
 
 ```curl
-$ curl  https://example.com/v1/elasticsearch/indices-status --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl  https://example.com/elasticsearch/indices-status --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -317,7 +317,7 @@ Get the current aliased index being used by the Cumulus Elasticsearch instance.
 #### Example request
 
 ```curl
-$ curl  https://example.com/v1/elasticsearch/current-index --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl  https://example.com/elasticsearch/current-index --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
