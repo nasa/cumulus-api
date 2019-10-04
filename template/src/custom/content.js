@@ -19,6 +19,9 @@ module.exports =
   '# Authentication\n' +
   fs.readFileSync('./content/auth.md', 'utf8') + '\n' +
 
+  '# SAML Authentication\n' +
+  fs.readFileSync('./content/samlAuth.md', 'utf8') + '\n' +
+
   '# Providers\n' +
   fs.readFileSync('./content/providers.md', 'utf8') + '\n' +
 
