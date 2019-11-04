@@ -91,8 +91,8 @@ Overview of the schema fields:
 | `state` | `"DISABLED"`&vert;`"ENABLED"` | rule state (default: ENABLED) |
 | `workflow` | `string` | name of workflow started by the rule |
 | `rule` | `Object` | rule object |
-| `-- rule.type` | `"onetime"`&vert;`"scheduled"`&vert;`"kinesis"`&vert;`"sns"` | rule trigger type |
-| `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN | required value differs by type |
+| `-- rule.type` | `"onetime"`&vert;`"scheduled"`&vert;`"kinesis"`&vert;`"sns"`&vert;`"sqs"` | rule trigger type |
+| `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN<br>`sqs`: SQS queue URL | required value differs by type |
 | `-- rule.arn` | `string` | `kinesis` scheduled event arn |
 | `-- rule.logEventArn` | `string` | `kinesis` scheduled log event arn |
 | `provider` | `string` | provider record provided to workflow (optional) |
