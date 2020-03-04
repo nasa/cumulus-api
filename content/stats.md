@@ -1,6 +1,6 @@
 ## Summary
 
-Retrieve a summary of various metrics for all of the Cumulus engine.
+Retrieve a summary of statistics around the granules in the system. The `collections` returned are the number of distinct collections for the granules active during the given time period, defaulted to the last day if none is specified.
 
 ```endpoint
 GET /stats
