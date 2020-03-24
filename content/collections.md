@@ -83,6 +83,93 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
 }
 ```
 
+## List collections with active granules
+
+List collections in the Cumulus system that have active associated granules.
+
+Filtering by date/time will return collections with granules that were updated during that time period.
+
+```endpoint
+GET /collections/active
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/collections/active --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+{
+    "meta": {
+        "name": "cumulus-api",
+        "stack": "lpdaac-cumulus",
+        "table": "collection",
+        "limit": 1,
+        "page": 1,
+        "count": 3
+    },
+    "results": [
+        {
+            "name": "MOD11A1",
+            "version": "006",
+            "dataType": "MOD11A1",
+            "process": "modis",
+            "provider_path": "/",
+            "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
+            "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
+            "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "files": [
+                {
+                    "bucket": "protected",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf"
+                },
+                {
+                    "bucket": "private",
+                    "regex": "^BROWSE\\.MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf$",
+                    "sampleFileName": "BROWSE.MOD11A1.A2017025.h21v00.006.2017034065104.hdf"
+                },
+                {
+                    "bucket": "private",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.hdf\\.met$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf.met"
+                },
+                {
+                    "bucket": "protected",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}\\.cmr\\.xml$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.cmr.xml"
+                },
+                {
+                    "bucket": "public",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_2\\.jpg$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_2.jpg"
+                },
+                {
+                    "bucket": "public",
+                    "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$",
+                    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg"
+                }
+            ],
+            "timestamp": 1513020427284,
+            "createdAt": 1510761441174,
+            "updatedAt": 1513020427162,
+            "edpa": true,
+            "some_other_field": "field",
+            "duplicateHandling": "skip",
+            "stats": {
+                "running": 0,
+                "completed": 6,
+                "failed": 1,
+                "total": 7
+            }
+        }
+    ]
+}
+```
+
 ## Retrieve collection
 
 Retrieve a single collection.
