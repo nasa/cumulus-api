@@ -83,20 +83,20 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
 }
 ```
 
-## List collections with active granules
+## List collections with granules
 
-List collections in the Cumulus system that have active associated granules.
+List collections in the Cumulus system that have associated granules.
 
-Filtering by date/time will return collections with granules that were updated during that time period.
+If time parameters are specified, the query will return collections that have granules that have been updated in that time frame.
 
 ```endpoint
-GET /collections/active
+GET /collections/granules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/collections/active --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/collections/granules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
