@@ -1,6 +1,10 @@
 ## List async operations
 
-List async operations in the Cumulus system.
+Async operations are long-running requests serviced by the Cumulus API.
+
+These tend to be bulk operations. Examples include bulk granule operations and replaying ingest notifications.
+
+This endpoint lists async operations in the Cumulus system.
 
 ```endpoint
 GET /asyncOperations
