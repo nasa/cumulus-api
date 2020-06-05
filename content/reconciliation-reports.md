@@ -18,12 +18,31 @@ $ curl https://example.com/reconciliationReports --header 'Authorization: Bearer
 {
     "meta": {
         "name": "cumulus-api",
-        "stack": "lpdaac-cumulus"
+        "stack": "lpdaac-cumulus",
+        "table": "reconciliationReport",
+        "limit": 2,
+        "page": 1,
+        "count": 7
     },
     "results": [
-        "report-2018-04-20T20:58:38.883Z.json",
-        "report-2018-05-20T20:58:38.883Z.json",
-        "report-2019-03-05T15:34:30.508Z.json"
+        {
+            "createdAt": 1589824212102,
+            "name": "inventoryReport-20200518T175012101",
+            "location": "s3://lpdaac-internal/lpdaac-cumulus/reconciliation-reports/inventoryReport-20200518T175012101.json",
+            "type": "Inventory",
+            "status": "Generated",
+            "updatedAt": 1589824218825,
+            "timestamp": 1589824219329
+        },
+        {
+            "createdAt": 1589596344305,
+            "name": "inventoryReport-20200516T023224305",
+            "location": "s3://lpdaac-internal/lpdaac-cumulus/reconciliation-reports/inventoryReport-20200516T023224305.json",
+            "type": "Inventory",
+            "status": "Generated",
+            "updatedAt": 1589596352010,
+            "timestamp": 1589596352356
+        }
     ]
 }
 ```
@@ -39,7 +58,7 @@ GET /reconciliationReports/{name}
 #### Example request
 
 ```curl
-$ curl https://example.com/reconciliationReports/report-2019-03-05T15:34:30.508Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430508 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -161,7 +180,7 @@ DELETE /reconciliationReports/{name}
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/reconciliationReports/report-2018-06-20T20:58:38.883Z.json --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/reconciliationReports/inventoryReport-20180620T205838883 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
