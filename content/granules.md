@@ -388,6 +388,8 @@ curl -X POST
 }
 ```
 
+Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
+
 ## Bulk Delete
 
 Bulk delete the provided granules. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
@@ -461,3 +463,5 @@ curl -X POST
     "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
 }
 ```
+
+Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
