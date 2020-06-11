@@ -153,11 +153,23 @@ Create a new reconciliation report.
 ```endpoint
 POST /reconciliationReports
 ```
+### Request body
+
+| parameter | type | required | description |
+| ----- | --- | -- | ----------- |
+| `startTimestamp` | string | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
+| `endTimestamp` | string | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.  |
+
+
+*NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields.
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken'
+$ curl --request POST https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken' [--data '{
+  "startTimestamp: 1269993600000
+  "endTimestamp: 1350000000000
+}']
 ```
 
 #### Example response
