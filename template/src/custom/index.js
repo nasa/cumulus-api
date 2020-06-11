@@ -13,7 +13,7 @@ module.exports.brandNames = {
 /**
  * Classes that define the top-left brand box.
  */
-module.exports.brandClasses = 'fill-red';
+module.exports.brandClasses = 'fill-blue';
 
 
 /**
