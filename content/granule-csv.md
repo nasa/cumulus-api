@@ -15,7 +15,7 @@ $ curl https://example.com/granule-csv --header 'Authorization: Bearer ReplaceWi
 #### Example response
 
 ``` json
-|granuleUr                                |collectionId |createdAt               |startDateTime           |endDateTime             |
-|MOD11A1.A2017137.h20v17.006.2017138085755|MOD11A1___006|2000-05-28T19:50:20.920Z|2001-01-01T00:00:00.000Z|2001-01-01T00:00:00.100Z|
-|MOD11A1.A2017137.h20v17.006.2017138085766|MOD11A1___006|2000-05-28T19:50:20.757Z|2001-01-01T00:00:00.200Z|2001-01-01T00:00:00.300Z|
+"granuleUr","collectionId","createdAt","startDateTime","endDateTime","status","updatedAt","published"
+"MOD14A1.A9506271.IvEJsu.006.8359924290786","MOD14A1___006","2020-05-18T20:15:54.525Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-05-18T20:16:02.473Z",false
+"MYD13Q1.A9663671.0zkwKH.006.9812354158395","MYD13Q1___006","2020-07-06T19:46:19.957Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-07-06T19:46:57.054Z",true
 ```
