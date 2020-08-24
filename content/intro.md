@@ -16,7 +16,9 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 | `page={number}` | page number, 1-indexed; default is `1` |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
 | `order={asc|desc}` | whether to sort in `asc` or `desc` order |
-| `prefix={value}` | `startsWith` search of the `granuleId`, `status`, `pdrName`, `collectionName`, and `userName` fields |
+| `sort_key[]={-fieldName1}&sort_key[]={fieldName2}` | One or more sort keys can be specified using the sort_key[] parameter. The order used impacts searching. Fields can be prepended with a `-` to sort in descending order or a `+` to sort in ascending. Ascending order is the default. The + must be escaped with %2B|
+| `prefix={value}` | `startsWith` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
+| `infix={value}` | `includes` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
 | `fields={fieldName1, fieldName2}` | which fields to return, separated by a comma |
 | `{fieldName}={value}` | exact value match for the given field |
 | `{fieldName}__from={number}`  | for numeric fields, field value must be greater than the given number |
