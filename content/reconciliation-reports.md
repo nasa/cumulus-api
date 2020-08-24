@@ -166,9 +166,9 @@ POST /reconciliationReports
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken' [--data '{
-  "startTimestamp: 1269993600000
-  "endTimestamp: 1350000000000
+$ curl --request POST https://example.com/reconciliationReports --header 'Authorization: Bearer ReplaceWithToken' --header 'Content-Type: application/json' [--data '{
+  "startTimestamp": 1269993600000
+  "endTimestamp": 1350000000000
 }']
 ```
 
