@@ -159,6 +159,7 @@ POST /reconciliationReports
 | ----- | --- | -- | ----------- |
 | `startTimestamp` | string | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | string | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.  |
+| `reportType` | string | `false` | The type of report to run. Options are `GranuleNotFound` or `Inventory`. Default is `Inventory` |
 
 
 *NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields.
