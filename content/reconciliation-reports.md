@@ -71,8 +71,16 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
     "reportEndTime": "2019-03-05T15:34:37.243Z",
     "status": "SUCCESS",
     "error": null,
+    "type": "Inventory",
     "filesInCumulus": {
         "okCount": 40,
+        "okCountByGranule": {
+          "MOD09GQ.A2016358.h13v04.006.2016360104606": 10,
+          "MYD13Q1.A2017297.h19v10.006.2017313221303": 10,
+          "MOD09GQ.A3518809.ln_rVr.006.7962927138074": 10,
+          "MOD09GQ.A8768252.HC4ddD.006.2077696236118": 5,
+          "MOD09GQ.A8722843.GTk5A3.006.4026909316904": 5
+        },
         "onlyInS3": [
             "s3://cumulus-test-sandbox-protected/MOD09GQ.A2016358.h13v04.006.2016360104606.cmr.xml",
             "s3://cumulus-test-sandbox-private/BROWSE.MYD13Q1.A2017297.h19v10.006.2017313221201.hdf"
@@ -145,6 +153,89 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
             }
         ]
     }
+}
+```
+
+##### Granule Not Found Report
+
+```json
+{
+  "createStartTime": "2020-08-28T18:33:50.525Z",
+  "createEndTime": "2020-08-28T18:34:16.646Z",
+  "status": "SUCCESS",
+  "reportType": "Granule Not Found",
+  "filesInCumulus": {
+    "okCount": 20,
+    "okCountByGranule": {
+      "MOD09GQ.A2770300.W1_V5Z.006.7853319756315": 2,
+      "MOD09GQ.A7682091.QtZjhI.006.1218763030745": 3,
+      "MOD09GQ.A9536857.bV1q4A.006.0980635705136": 3,
+      "MOD09GQ.A7790080.xLPpTZ.006.2292724247258": 3,
+      "MOD09GQ.A3769578.tlqq7j.006.4434181201872": 3,
+      "MOD09GQ.A5423294.RFOrMI.006.8677601711674": 3,
+      "MOD09GQ.A8837603.fb2Vhw.006.3950746589733": 3
+    },
+    "onlyInS3": [
+      "s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593122280799/MOD09GQ.A6921412.znLBqe.006.9673856807617.hdf.met",
+      "s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593122597517/MOD09GQ.A1201557.d6tP2Y.006.7482431709753.hdf.met",
+      "s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593198955197/MOD09GQ.A7375038.gm1irM.006.1317280710645.hdf.met",
+      "s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122280799/MOD09GQ.A6921412.znLBqe.006.9673856807617.hdf",
+      "s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122597517/MOD09GQ.A1201557.d6tP2Y.006.7482431709753.hdf",
+      "s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122881446/MOD09GQ.A2708681.CFkGhW.006.7154000014360.hdf"
+    ],
+    "onlyInDynamoDb": [
+      {
+        "uri": "s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593178175944/MOD09GQ.A2770300.W1_V5Z.006.7853319756315.hdf.met",
+        "granuleId": "MOD09GQ.A2770300.W1_V5Z.006.7853319756315"
+      }
+    ]
+  },
+  "collectionsInCumulusCmr": {
+    "okCount": 0,
+    "onlyInCumulus": [
+      "MOD09GQ_test-test-data-1593122280799___006",
+      "MOD09GQ_test-test-data-1593122597517___006",
+      "MOD09GQ_test-test-data-1593122881446___006",
+      "MOD09GQ_test-test-data-1593178175944___006",
+      "MOD09GQ_test-test-data-1593198739991___006",
+      "MOD09GQ_test-test-data-1593198955197___006",
+      "MOD09GQ_test-test-data-1593199179316___006",
+      "MOD09GQ_test-test-data-1593199379860___006",
+      "MOD09GQ_test-test-data-1593199548454___006",
+      "MOD09GQ_test-test-data-1593199742089___006",
+      "MOD09GQ_test-test-data-1593199934835___006"
+    ],
+    "onlyInCmr": [
+      "A2_RainOcn_NRT___0",
+      "A2_SI12_NRT___0",
+      "A2_SI25_NRT___0",
+      "A2_SI6_NRT___0",
+      "AST_L1A___003",
+      "CMR44JK___001",
+      "L2_HR_PIXC___000",
+      "L2_HR_PIXC___1",
+      "MCD43A1___006",
+      "MOD09GQ___006",
+      "MOD11A1___006",
+      "MOD14A1___006",
+      "MUR-JPL-L4-GLOB-v4.1___1",
+      "MYD09A1___006",
+      "MYD13A1___006",
+      "MYD13Q1___006",
+      "hs3avaps___1",
+      "hs3wwlln___1"
+    ]
+  },
+  "granulesInCumulusCmr": {
+    "okCount": 0,
+    "onlyInCumulus": [],
+    "onlyInCmr": []
+  },
+  "filesInCumulusCmr": {
+    "okCount": 0,
+    "onlyInCumulus": [],
+    "onlyInCmr": []
+  }
 }
 ```
 
