@@ -447,12 +447,15 @@ POST /reconciliationReports
 | `reportName` | `string` | `false` | Report name. |
 | `reportType` | `"Inventory"`&vert;`"Internal"`&vert;`"GranuleNotFound"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
-| `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.  |
-| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings |
+| `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
+| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. Cannot be used with GranuleId |
+| `granuleId` | [`string`|`array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. Cannot be used with CollectionId |
 | `provider` | `string` | `false` | provider name for comparison of granule holdings |
 | `granuleId` | `string` | `false` | granuleId for comparison of granule holdings |
 
 *NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields.
+*NOTE*: Adding a granuleId input will result in an one way report for collections.
+*NOTE*: Internal reports alllow both collectionId and GranuleId in same request.
 
 #### Example request
 
