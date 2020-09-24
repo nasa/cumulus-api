@@ -448,7 +448,7 @@ POST /reconciliationReports
 | `reportType` | `"Inventory"`&vert;`"Internal"`&vert;`"GranuleNotFound"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.  |
-| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings |
+| `collectionId` | `string` or `array` | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings |
 | `provider` | `string` or `array` | `false` | provider name (or array of providers) for comparison of granule holdings |
 | `granuleId` | `string` | `false` | granuleId for comparison of granule holdings |
 
