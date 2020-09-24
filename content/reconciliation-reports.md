@@ -449,7 +449,7 @@ POST /reconciliationReports
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.  |
 | `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings |
-| `provider` | `string` | `false` | provider name for comparison of granule holdings |
+| `provider` | `string` or `array` | `false` | provider name (or array of providers) for comparison of granule holdings |
 | `granuleId` | `string` | `false` | granuleId for comparison of granule holdings |
 
 *NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields.
