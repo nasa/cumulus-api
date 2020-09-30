@@ -71,7 +71,7 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
     "reportEndTime": "2019-03-05T15:34:37.243Z",
     "status": "SUCCESS",
     "error": null,
-    "type": "Inventory",
+    "reportType": "Inventory",
     "filesInCumulus": {
         "okCount": 40,
         "okCountByGranule": {
@@ -445,17 +445,17 @@ POST /reconciliationReports
 | parameter | value | required | description |
 | ----- | --- | -- | ----------- |
 | `reportName` | `string` | `false` | Report name. |
-| `reportType` | `"Inventory"`&vert;`"Internal"`&vert;`"GranuleNotFound"` | `false` | Report type (default Inventory) |
+| `reportType` | `"Inventory"`&vert;`"Internal"`&vert;`"Granule Not Found"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
-| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. Cannot be used with GranuleId |
-| `granuleId` | [`string`|`array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. Cannot be used with CollectionId |
+| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
+| `granuleId` | [`string`|`array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. |
 | `provider` | `string` | `false` | provider name for comparison of granule holdings |
 | `granuleId` | `string` | `false` | granuleId for comparison of granule holdings |
 
-*NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields.
-*NOTE*: Adding a granuleId input will result in an one way report for collections.
-*NOTE*: Internal reports alllow both collectionId and GranuleId in same request.
+*NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields for `Inventory` and `Granule Not Found` reports.
+*NOTE*: Adding a granuleId input will result in an one way report for collections for `Inventory` and `Granule Not Found` reports.
+*NOTE*: `Inventory` and `Granule Not Found` reports only alllow one of the parameters (`collectionId`, `granuleId`, `provider`) in same request.
 
 #### Example request
 
