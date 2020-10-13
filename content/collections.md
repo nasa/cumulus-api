@@ -2,6 +2,8 @@
 
 List collections in the Cumulus system.
 
+If the query includes a value for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
+
 ```endpoint
 GET /collections
 ```
@@ -88,6 +90,8 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
 List collections in the Cumulus system that have active associated granules.
 
 If time parameters are specified, the query will return collections that have granules that have been updated in that time frame.
+
+If the query includes a value for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
 
 ```endpoint
 GET /collections/active
