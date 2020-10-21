@@ -4,6 +4,8 @@ List collections in the Cumulus system.
 
 If the query includes a value of `true` for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
 
+If the query includes a value of `true` for `includeStats`, cumulus will compute and include the granule aggregation statistics in each collection's return value.
+
 ```endpoint
 GET /collections
 ```
@@ -92,6 +94,8 @@ List collections in the Cumulus system that have active associated granules.
 If time parameters are specified, the query will return collections that have granules that have been updated in that time frame.
 
 If the query includes a value of `true` for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
+
+If the query includes a value of `true` for `includeStats`, cumulus will compute and include the granule aggregation statistics in each collection's return value.
 
 ```endpoint
 GET /collections/active
