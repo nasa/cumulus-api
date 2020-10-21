@@ -7,13 +7,13 @@ This schema describes the expected format of a record's JSON object when retriev
 Supported `type` values are `provider`, `collection`, `granule`, and `pdr`.
 
 ```endpoint
-GET /v1/schemas/{type}
+GET /schemas/{type}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/schemas/provider --header 'Authorization: Bearer ReplceWithTheToken'
+$ curl https://example.com/schemas/provider --header 'Authorization: Bearer ReplceWithTheToken'
 ```
 
 #### Example response

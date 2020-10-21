@@ -3,13 +3,13 @@
 List workflows in the Cumulus system.
 
 ```endpoint
-GET /v1/workflows
+GET /workflows
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/workflows --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/workflows --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -103,13 +103,13 @@ $ curl https://example.com/v1/workflows --header 'Authorization: Bearer ReplaceW
 Retrieve a single workflow.
 
 ```endpoint
-GET /v1/workflow/{name}
+GET /workflow/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/workflows/HelloWorldWorkflow --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/workflows/HelloWorldWorkflow --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response

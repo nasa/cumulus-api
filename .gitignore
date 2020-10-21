@@ -4,3 +4,4 @@ npm-debug.log
 .DS_Store
 .swo
 package-lock.json
+.idea/

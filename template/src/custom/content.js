@@ -40,18 +40,36 @@ module.exports =
   '# Logs\n' +
   fs.readFileSync('./content/logs.md', 'utf8') + '\n' +
 
+  '# Granule CSV\n' +
+  fs.readFileSync('./content/granule-csv.md', 'utf8') + '\n' +
+
   '# Executions\n' +
   fs.readFileSync('./content/executions.md', 'utf8') + '\n' +
 
   '# Workflows\n' +
   fs.readFileSync('./content/workflows.md', 'utf8') + '\n' +
 
+  '# Async Operations\n' +
+  fs.readFileSync('./content/async-operations.md', 'utf8') + '\n' +
+
+  '# Replays\n' +
+  fs.readFileSync('./content/replays.md', 'utf8') + '\n' +
+
   '# Schemas\n' +
   fs.readFileSync('./content/schemas.md', 'utf8') + '\n' +
 
   '# Reconciliation Reports\n' +
-  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') + '\n' +
+  fs.readFileSync('./content/reconciliation-reports.md', 'utf8') +  '\n' +
+
+  '# EMS Reports\n' +
+  fs.readFileSync('./content/ems.md', 'utf8') +  '\n' +
 
   '# Instance Metadata\n' +
-  fs.readFileSync('./content/instance-meta.md') + '\n'
+  fs.readFileSync('./content/instance-meta.md') + '\n' +
+
+  '# Elasticsearch\n' +
+  fs.readFileSync('./content/elasticsearch.md') + '\n' +
+
+  '# Dashboard\n' +
+  fs.readFileSync('./content/dashboard.md') + '\n'
 ;

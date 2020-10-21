@@ -3,13 +3,13 @@
 List granules in the Cumulus system.
 
 ```endpoint
-GET /v1/granules
+GET /granules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -38,6 +38,7 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
                     "checksum": 964704694,
                     "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
                     "fileSize": 1447347,
+                    "fileType": "data",
                     "checksumType": "CKSUM",
                     "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
                 },
@@ -46,6 +47,7 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
                     "checksum": 121318124,
                     "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
                     "fileSize": 22559,
+                    "fileType": "metadata",
                     "checksumType": "CKSUM",
                     "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
                 },
@@ -54,27 +56,26 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
                     "checksum": 2188150664,
                     "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
                     "fileSize": 18118,
+                    "fileType": "data",
                     "checksumType": "CKSUM",
                     "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
                 },
                 {
-                    "bucket": "cumulus-devseed-protected",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
-                },
-                {
                     "bucket": "cumulus-devseed-public",
                     "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
+                    "fileType": "browse",
                     "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
                 },
                 {
                     "bucket": "cumulus-devseed-protected",
                     "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
+                    "fileType": "metadata",
                     "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
                 },
                 {
                     "bucket": "cumulus-devseed-public",
                     "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
+                    "fileType": "browse",
                     "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
                 }
             ],
@@ -94,13 +95,13 @@ $ curl https://example.com/v1/granules --header 'Authorization: Bearer ReplaceWi
 Retrieve a single granule.
 
 ```endpoint
-GET /v1/granules/{granuleId}
+GET /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -174,13 +175,13 @@ $ curl https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755
 Reingest a granule. This causes the granule to re-download to Cumulus from source, and begin processing from scratch.  Reingesting a granule will overwrite existing granule files.
 
 ```endpoint
-PUT /v1/granules/{granuleId}
+PUT /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "reingest"}'
+$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "reingest"}'
 ```
 
 #### Example response
@@ -201,13 +202,13 @@ A warning message is included in the response if the collection's duplicateHandl
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /v1/granules/{granuleid}
+PUT /granules/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -225,13 +226,13 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /v1/granules/{granuleId}
+PUT /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -249,13 +250,13 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /v1/granules/{granuleId}
+PUT /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "removeFromCmr"}'
+$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -273,13 +274,13 @@ $ curl --request PUT https://example.com/v1/granules/MOD11A1.A2017137.h19v16.006
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
 ```endpoint
-DELETE /v1/granules/{granuleId}
+DELETE /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
@@ -290,3 +291,157 @@ $ curl --request DELETE https://example.com/v1/granules/1A0000-2016121001_002_00
   "detail": "Record deleted"
 }
 ```
+
+## Bulk Operations
+
+Apply a workflow to the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+
+Overview of the request fields:
+
+| Field | Required | Value | Description |
+| --- | --- | --- | --- |
+| `workflow` | `Y` | `string` | Worfklow to be applied to all granules |
+| `queueName` | `N` | `string` | Queue to process Granules in |
+| `ids` | `Y` - if no `query` | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `query` | `Y` - if no `ids` | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
+| `index` | `Y` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+
+
+```endpoint
+POST /granules/bulk
+```
+
+#### Example request with Elasticsearch query generated by Kibana:
+
+```curl
+$ curl --request POST \
+    https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --data '{
+        "workflowName": "HelloWorldWorkflow",
+        index: "index-in-es",
+        query": {
+            "size": 500,
+            "query": {
+                "filter": [
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "should": [{"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"}}],
+                                        "minimum_should_match": 1
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "should": [{"match": {"status": "FAILED"}}],
+                                        "minimum_should_match": 1
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "should": [],
+                "must_not": []
+            }
+        }
+    }'
+```
+
+#### Example request with given Granule IDs:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "workflowName": "HelloWorldWorkflow"}'
+```
+
+#### Example response
+
+```json
+{
+    "createdAt": 1574730504000,
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
+    "updatedAt": 1574730504762,
+    "status": "RUNNING",
+    "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+}
+```
+
+Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
+
+## Bulk Delete
+
+Bulk delete the provided granules. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+
+Overview of the request fields:
+
+| Field | Required | Value | Description |
+| --- | --- | --- | --- |
+| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
+| `ids` | `Y` - if no `query` | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `query` | `Y` - if no `ids` | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
+| `index` | `Y` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+
+```endpoint
+POST /granules/bulkDelete
+```
+
+#### Example request with Elasticsearch query generated by Kibana:
+
+```curl
+$ curl --request POST \
+    https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --data '{
+        "forceRemoveFromCmr": true,
+        index: "index-in-es",
+        query": {
+            "size": 500,
+            "query": {
+                "filter": [
+                    {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "should": [{"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"}}],
+                                        "minimum_should_match": 1
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "should": [{"match": {"status": "FAILED"}}],
+                                        "minimum_should_match": 1
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "should": [],
+                "must_not": []
+            }
+        }
+    }'
+```
+
+#### Example request with given Granule IDs:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "forceRemoveFromCmr": true}'
+```
+
+#### Example response
+
+```json
+{
+    "createdAt": 1574730504000,
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
+    "updatedAt": 1574730504762,
+    "status": "RUNNING",
+    "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+}
+```
+
+Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.

@@ -16,7 +16,9 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 | `page={number}` | page number, 1-indexed; default is `1` |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
 | `order={asc|desc}` | whether to sort in `asc` or `desc` order |
-| `prefix={value}` | `startsWith` search of the `granuleId`, `status`, `pdrName`, `collectionName`, and `userName` fields |
+| `sort_key[]={-fieldName1}&sort_key[]={fieldName2}` | One or more sort keys can be specified using the sort_key[] parameter. The order used impacts searching. Fields can be prepended with a `-` to sort in descending order or a `+` to sort in ascending. Ascending order is the default. The + must be escaped with %2B|
+| `prefix={value}` | `startsWith` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
+| `infix={value}` | `includes` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
 | `fields={fieldName1, fieldName2}` | which fields to return, separated by a comma |
 | `{fieldName}={value}` | exact value match for the given field |
 | `{fieldName}__from={number}`  | for numeric fields, field value must be greater than the given number |
@@ -24,4 +26,7 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 | `{fieldName}__not={value}` | field does not match the given value |
 | `{fieldName}__in={value1, value2}` | field matches _one of_ the values in the comma-separated list |
 | `{fieldName}__exists={true|false}` | field exists or doesn't exist in the record |
-| `q="fieldName:(1 TO 2) AND fieldName2: (3 To 4)"` | arbitrary Apache Lucene query syntax, _not needed for most uses of the API_; if the `q` parameter is used, all other query parameters will be ignored, besides `limit`, `page`, and `fields` |
+| `q="fieldName:[1 TO 2] AND fieldName2:[3 TO 4]"` | arbitrary Apache [Lucene query syntax], _not needed for most uses of the API_; if the `q` parameter is used, all other query parameters will be ignored, besides `limit`, `page`, and `fields` |
+
+[Lucene query syntax]:
+  https://www.elastic.co/guide/en/kibana/current/lucene-query.html

@@ -3,13 +3,13 @@
 List PDRs in the Cumulus system.
 
 ```endpoint
-GET /v1/pdrs
+GET /pdrs
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/pdrs --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/pdrs --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -53,13 +53,13 @@ $ curl https://example.com/v1/pdrs --header 'Authorization: Bearer ReplaceWithTh
 Retrieve a single PDR.
 
 ```endpoint
-GET /v1/pdrs/{pdrName}
+GET /pdrs/{pdrName}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/pdrs/7970bff5-128a-489f-b43c-de4ad7834ce5.PDR --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/pdrs/7970bff5-128a-489f-b43c-de4ad7834ce5.PDR --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -92,13 +92,13 @@ $ curl https://example.com/v1/pdrs/7970bff5-128a-489f-b43c-de4ad7834ce5.PDR --he
 Delete a PDR from Cumulus. Its granules will remain, and the PDR may be re-discovered and re-ingested/re-processed from scratch in the future.
 
 ```endpoint
-DELETE /v1/pdrs/{pdrName}
+DELETE /pdrs/{pdrName}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/pdrs/good_25grans.PDR --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/pdrs/good_25grans.PDR --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

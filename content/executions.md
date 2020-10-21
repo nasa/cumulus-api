@@ -2,13 +2,13 @@
 List executions.
 
 ```endpoint
-GET /v1/executions
+GET /executions
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/executions?limit=3 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -78,13 +78,13 @@ $ curl https://example.com/v1/executions?limit=3 --header 'Authorization: Bearer
 Retrieve details for a specific execution.
 
 ```endpoint
-GET /v1/executions/{executionName}
+GET /executions/{executionName}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -135,16 +135,16 @@ $ curl https://example.com/v1/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --
 
 ## Retrieve Execution Status
 
-Retrieve details and status of a specific execution. This also return details of the state machine.
+Retrieve details and status of a specific execution. This also returns execution history and details of the state machine when the execution exists in Step Function API.
 
 ```endpoint
-GET /v1/executions/status/{executionArn}
+GET /executions/status/{executionArn}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/executions/status/arn:aws:states:us-east-1:596205514284:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/executions/status/arn:aws:states:us-east-1:596205514284:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response

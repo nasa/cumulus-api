@@ -14,19 +14,19 @@
     "url": "git+https://github.com/nasa/cumulus-api.git"
   },
   "author": "Development Seed",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/nasa/cumulus-api/issues"
   },
   "homepage": "https://github.com/nasa/cumulus-api#readme",
   "dependencies": {
-    "docbox": "^1.0.8"
+    "docbox": "^1.0.11"
   },
   "devDependencies": {
     "babel-register": "^6.3.13",
-    "budo": "^10.0.0",
+    "budo": "^11.6.3",
     "cz-conventional-changelog": "2.0.0",
-    "expect": "^21.0.2",
+    "expect": "^25.0.0",
     "to-vfile": "^2.0.0",
     "uglify-js": "^3.0.27"
   }

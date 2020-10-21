@@ -3,13 +3,13 @@
 List rules in the Cumulus system.
 
 ```endpoint
-GET /v1/rules
+GET /rules
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/rules --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -49,13 +49,13 @@ $ curl https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithT
 Retrieve a single rule.
 
 ```endpoint
-GET /v1/rules/{name}
+GET /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/rules/repeat --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -91,8 +91,8 @@ Overview of the schema fields:
 | `state` | `"DISABLED"`&vert;`"ENABLED"` | rule state (default: ENABLED) |
 | `workflow` | `string` | name of workflow started by the rule |
 | `rule` | `Object` | rule object |
-| `-- rule.type` | `"onetime"`&vert;`"scheduled"`&vert;`"kinesis"`&vert;`"sns"` | rule trigger type |
-| `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN | required value differs by type |
+| `-- rule.type` | `"onetime"`&vert;`"scheduled"`&vert;`"kinesis"`&vert;`"sns"`&vert;`"sqs"` | rule trigger type |
+| `-- rule.value` | `onetime`: N/A<br>`scheduled`: cron-type or rate expression<br>`kinesis`: Kinesis stream ARN<br>`sns`: SNS topic ARN<br>`sqs`: SQS queue URL | required value differs by type |
 | `-- rule.arn` | `string` | `kinesis` scheduled event arn |
 | `-- rule.logEventArn` | `string` | `kinesis` scheduled log event arn |
 | `provider` | `string` | provider record provided to workflow (optional) |
@@ -103,13 +103,13 @@ Overview of the schema fields:
 | `tags` | `array` | Optional tags (for search) |
 
 ```endpoint
-POST /v1/rules
+POST /rules
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/v1/rules --header 'Authorization: Bearer ReplaceWithToken' --data '{
+$ curl --request POST https://example.com/rules --header 'Authorization: Bearer ReplaceWithToken' --header 'Content-Type: application/json' --data '{
     "workflow": "DiscoverPdrs",
     "collection": {
         "name": "AST_L1A",
@@ -121,7 +121,7 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
         "type": "scheduled",
         "value": "rate(5 minutes)"
     },
-    meta: { "publish": false },
+    "meta": { "publish": false },
     "state": "DISABLED"
 }'
 ```
@@ -150,9 +150,15 @@ $ curl --request POST https://example.com/v1/rules --header 'Authorization: Bear
 }
 ```
 
-## Update rule
+## Update/replace rule
 
-Update rules for a collection. Can accept the whole rule object, or just a subset of fields, the ones that are being updated. Returns a mapping of the updated properties. For a field reference see the ["Create rule"](#create-rule) section.
+Update/replace an existing rule. Expects payload to specify the entire
+rule object, and will completely replace the existing rule with the
+specified payload. For a field reference see ["Create rule"](#create-rule).
+
+Returns status 200 on successful replacement, 400 if the `name` property in the
+payload does not match the corresponding value in the resource URI, or 404 if
+there is no rule with the specified name.
 
 Special case:
 
@@ -161,40 +167,53 @@ Special case:
 | `action` | `"rerun"` | rerun rule (`onetime` rule only) |
 
 ```endpoint
-PUT /v1/rules/{name}
+PUT /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"state": "ENABLED"}'
+$ curl --request PUT https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
+  "name": "repeat_test",
+  "workflow": "DiscoverPdrs",
+  "collection": {
+    "name": "AST_L1A",
+    "version": "003"
+  },
+  "provider": "local",
+  "rule": {
+    "type": "scheduled",
+    "value": "rate(5 minutes)"
+  },
+  "state": "ENABLED"
+}'
 ```
 
-#### Example response
+#### Example successful response
 
 ```json
 {
-    "workflow": "DiscoverPdrs",
-    "collection": {
-        "name": "AST_L1A",
-        "version": "003"
-    },
-    "updatedAt": 1521755265130,
-    "createdAt": 1510903518741,
-    "provider": "local",
-    "name": "repeat_test",
-    "rule": {
-        "type": "scheduled",
-        "value": "rate(5 minutes)"
-    },
-    "state": "ENABLED"
+  "name": "repeat_test",
+  "workflow": "DiscoverPdrs",
+  "collection": {
+    "name": "AST_L1A",
+    "version": "003"
+  },
+  "updatedAt": 1521755265130,
+  "createdAt": 1510903518741,
+  "provider": "local",
+  "rule": {
+    "type": "scheduled",
+    "value": "rate(5 minutes)"
+  },
+  "state": "ENABLED"
 }
 ```
 
 #### Rerun request (`onetime`-rule special case)
 
 ```curl
-$ curl --request PUT https://example.com/v1/rules/my_onetime_rule --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"action": "rerun"}'
+$ curl --request PUT https://example.com/rules/my_onetime_rule --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "rerun"}'
 ```
 
 ## Delete rule
@@ -202,13 +221,13 @@ $ curl --request PUT https://example.com/v1/rules/my_onetime_rule --header 'Auth
 Delete a rule from Cumulus.
 
 ```endpoint
-DELETE /v1/rules/{name}
+DELETE /rules/{name}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/v1/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/rules/repeat_test --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 

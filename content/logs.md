@@ -1,15 +1,21 @@
 ## List logs
 
-List processing logs from the Cumulus engine. A log's `level` field may be either `info` or `error`.
+List processing logs from the Cumulus engine. A log's `level` field should be specified by their string value and be one of:
+* fatal (60)
+* error (50)
+* warn (40)
+* info (30)
+* debug (20)
+* trace (10)
 
 ```endpoint
-GET /v1/logs
+GET /logs
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/logs?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/logs?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -117,7 +123,7 @@ $ curl https://example.com/v1/logs?limit=5 --header 'Authorization: Bearer Repla
 #### Example request for errors
 
 ```curl
-$ curl https://example.com/v1/logs?level=50 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/logs?level=error --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response for errors
@@ -155,13 +161,13 @@ $ curl https://example.com/v1/logs?level=50 --header 'Authorization: Bearer Repl
 Retrieve all logs from a specific execution.
 
 ```endpoint
-GET /v1/logs/{executionName}
+GET /logs/{executionName}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/v1/logs/93e5e049-89aa-47e5-900d-0eec87327260?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/logs/93e5e049-89aa-47e5-900d-0eec87327260?limit=5 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
