@@ -339,8 +339,8 @@ $ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
         "workflowName": "HelloWorldWorkflow",
-        index: "index-in-es",
-        query": {
+        "index": "index-in-es",
+        "query": {
             "size": 500,
             "query": {
                 "filter": [
@@ -416,8 +416,8 @@ $ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
         "forceRemoveFromCmr": true,
-        index: "index-in-es",
-        query": {
+        "index": "index-in-es",
+        "query": {
             "size": 500,
             "query": {
                 "filter": [
@@ -492,8 +492,8 @@ $ curl --request POST \
     https://example.com/granules/bulkReingest --header 'Authorization: Bearer ReplaceWithTheToken' \
   --header 'Content-Type: application/json' \
   --data '{
-        index: "index-in-es",
-        query": {
+        "index": "index-in-es",
+        "query": {
             "size": 500,
             "query": {
                 "filter": [
