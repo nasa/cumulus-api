@@ -35,61 +35,48 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
             "files": [
                 {
                     "bucket": "cumulus-devseed-protected",
-                    "path": "/TEST_B/Cumulus/MODIS/DATA",
-                    "checksumValue": 964704694,
-                    "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+                    "checksum": 964704694,
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
                     "fileSize": 1447347,
                     "fileType": "data",
                     "checksumType": "CKSUM",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "url_path": ""
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
                 },
                 {
                     "bucket": "cumulus-devseed-private",
-                    "path": "/TEST_B/Cumulus/MODIS/DATA",
-                    "checksumValue": 121318124,
-                    "filename": "s3://cumulus-devseed-private/MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
+                    "checksum": 121318124,
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
                     "fileSize": 22559,
                     "fileType": "metadata",
                     "checksumType": "CKSUM",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
-                    "url_path": ""
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
                 },
                 {
                     "bucket": "cumulus-devseed-private",
-                    "path": "/TEST_B/Cumulus/MODIS/DATA",
-                    "checksumValue": 2188150664,
-                    "filename": "s3://cumulus-devseed-private/BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+                    "checksum": 2188150664,
+                    "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
                     "fileSize": 18118,
                     "fileType": "data",
                     "checksumType": "CKSUM",
-                    "name": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "url_path": ""
-                },
-                {
-                    "bucket": "cumulus-devseed-protected",
-                    "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileType": "data",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
+                    "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
                 },
                 {
                     "bucket": "cumulus-devseed-public",
-                    "filename": "s3://cumulus-devseed-public/MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
                     "fileType": "browse",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
                 },
                 {
                     "bucket": "cumulus-devseed-protected",
-                    "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
-                    "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
                     "fileType": "metadata",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
                 },
                 {
                     "bucket": "cumulus-devseed-public",
-                    "filename": "s3://cumulus-devseed-public/MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
                     "fileType": "browse",
-                    "name": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
                 }
             ],
             "error": null,
@@ -130,54 +117,47 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
     "files": [
         {
             "bucket": "cumulus-devseed-protected",
-            "path": "/TEST_B/Cumulus/MODIS/DATA",
-            "checksumValue": 964704694,
-            "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+            "checksum": 964704694,
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
             "fileSize": 1447347,
             "checksumType": "CKSUM",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-            "url_path": ""
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
         },
         {
             "bucket": "cumulus-devseed-private",
-            "path": "/TEST_B/Cumulus/MODIS/DATA",
-            "checksumValue": 121318124,
-            "filename": "s3://cumulus-devseed-private/MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
+            "checksum": 121318124,
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
             "fileSize": 22559,
             "checksumType": "CKSUM",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
-            "url_path": ""
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
         },
         {
             "bucket": "cumulus-devseed-private",
-            "path": "/TEST_B/Cumulus/MODIS/DATA",
-            "checksumValue": 2188150664,
-            "filename": "s3://cumulus-devseed-private/BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+            "checksum": 2188150664,
+            "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
             "fileSize": 18118,
             "checksumType": "CKSUM",
-            "name": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-            "url_path": ""
+            "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
         },
         {
             "bucket": "cumulus-devseed-protected",
-            "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
         },
         {
             "bucket": "cumulus-devseed-public",
-            "filename": "s3://cumulus-devseed-public/MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
         },
         {
             "bucket": "cumulus-devseed-protected",
-            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
-            "filename": "s3://cumulus-devseed-protected/MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
         },
         {
             "bucket": "cumulus-devseed-public",
-            "filename": "s3://cumulus-devseed-public/MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
-            "name": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
+            "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
+            "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
         }
     ],
     "error": null,
