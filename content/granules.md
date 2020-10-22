@@ -302,9 +302,9 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Worfklow to be applied to all granules |
 | `queueName` | `N` | `string` | Queue to process Granules in |
-| `ids` | `Y` - if no `query` | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `Y` - if no `ids` | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
-| `index` | `Y` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
+| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
 
 ```endpoint
@@ -380,9 +380,9 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
-| `ids` | `Y` - if no `query` | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `Y` - if no `ids` | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
-| `index` | `Y` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
+| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
 ```endpoint
 POST /granules/bulkDelete
