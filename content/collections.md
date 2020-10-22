@@ -76,12 +76,6 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
             "edpa": true,
             "some_other_field": "field",
             "duplicateHandling": "skip",
-            "stats": {
-                "running": 0,
-                "completed": 6,
-                "failed": 1,
-                "total": 7
-            }
         }
     ]
 }
@@ -104,7 +98,7 @@ GET /collections/active
 #### Example request
 
 ```curl
-$ curl https://example.com/collections/active --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/collections/active?includeStats=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -241,12 +235,6 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "updatedAt": 1513020427162,
     "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
     "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
-    "stats": {
-        "running": 0,
-        "completed": 6,
-        "failed": 1,
-        "total": 7
-    }
 }
 ```
 
