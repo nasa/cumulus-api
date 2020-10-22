@@ -4,6 +4,8 @@ List collections in the Cumulus system.
 
 If the query includes a value of `true` for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
 
+If the query includes a value of `true` for `includeStats`, cumulus will compute and include the granule aggregation statistics in each collection's return value.
+
 ```endpoint
 GET /collections
 ```
@@ -74,12 +76,6 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
             "edpa": true,
             "some_other_field": "field",
             "duplicateHandling": "skip",
-            "stats": {
-                "running": 0,
-                "completed": 6,
-                "failed": 1,
-                "total": 7
-            }
         }
     ]
 }
@@ -93,6 +89,8 @@ If time parameters are specified, the query will return collections that have gr
 
 If the query includes a value of `true` for `getMMT`, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under `MMTLink`
 
+If the query includes a value of `true` for `includeStats`, cumulus will compute and include the granule aggregation statistics in each collection's return value.
+
 ```endpoint
 GET /collections/active
 ```
@@ -100,7 +98,7 @@ GET /collections/active
 #### Example request
 
 ```curl
-$ curl https://example.com/collections/active --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/collections/active?includeStats=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -237,12 +235,6 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "updatedAt": 1513020427162,
     "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
     "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
-    "stats": {
-        "running": 0,
-        "completed": 6,
-        "failed": 1,
-        "total": 7
-    }
 }
 ```
 
