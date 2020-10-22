@@ -458,7 +458,7 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `ids` | `Y` - if no `query` | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `Y` - if no `ids` | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
-| `index` | `Y` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
 
 ```endpoint
