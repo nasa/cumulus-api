@@ -433,6 +433,14 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
 }
 ```
 
+##### Granule Inventory Report
+
+``` json
+"granuleUr","collectionId","createdAt","startDateTime","endDateTime","status","updatedAt","published"
+"MOD14A1.A9506271.IvEJsu.006.8359924290786","MOD14A1___006","2020-05-18T20:15:54.525Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-05-18T20:16:02.473Z",false
+"MYD13Q1.A9663671.0zkwKH.006.9812354158395","MYD13Q1___006","2020-07-06T19:46:19.957Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-07-06T19:46:57.054Z",true
+```
+
 ## Create reconciliation report
 
 Create a new reconciliation report.
@@ -445,7 +453,7 @@ POST /reconciliationReports
 | parameter | value | required | description |
 | ----- | --- | -- | ----------- |
 | `reportName` | `string` | `false` | Report name. |
-| `reportType` | `"Inventory"`&vert;`"Internal"`&vert;`"Granule Not Found"` | `false` | Report type (default Inventory) |
+| `reportType` | `"Granule Inventory"`&vert;`"Granule Not Found"`&vert;`"Internal"`&vert;`"Inventory"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
 | `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
