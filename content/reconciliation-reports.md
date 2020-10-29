@@ -456,14 +456,18 @@ POST /reconciliationReports
 | `reportType` | `"Granule Inventory"`&vert;`"Granule Not Found"`&vert;`"Internal"`&vert;`"Inventory"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
-| `collectionId` | [`string`|`array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
-| `granuleId` | [`string`|`array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. |
+| `collectionId` | [`string | array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
+| `granuleId` | [`string | array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. |
 | `provider` | `string` | `false` | provider name for comparison of granule holdings |
-| `granuleId` | `string` | `false` | granuleId for comparison of granule holdings |
+| `status` | `string` | `false` | status filter for Granule Inventory reports |
 
 *NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields for `Inventory` and `Granule Not Found` reports.
+
 *NOTE*: Adding a granuleId input will result in an one way report for collections for `Inventory` and `Granule Not Found` reports.
+
 *NOTE*: `Inventory` and `Granule Not Found` reports only alllow one of the parameters (`collectionId`, `granuleId`, `provider`) in same request.
+
+*NOTE*: `Granule Inventory` reports can be filtered with the following parameters: (`collectionId`, `granuleId`, `status`). If `granuleId` is a string or single value array, it will search for granules with granuleIds containing that substring.
 
 #### Example request
 
