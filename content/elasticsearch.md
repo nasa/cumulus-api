@@ -10,7 +10,7 @@ The reindex command creates a new index and reindexes the source index to the ne
 
 Note that there will now be two copies of your index. Your Cumulus instance will still point to the old copy until you perform the `change-index` function described below.
 
-An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`). If you specify a destination index name, it must be an index that does not already exist in your cluster.
+An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`).
 
 Since reindex can be a long running operation, the `reindex-status` endpoint must be queried to see if the operation has completed.
 
@@ -227,7 +227,7 @@ $ curl https://example.com/elasticsearch/reindex-status --header 'Authorization:
 
 ## Change Index
 
-Change index switches the Elasticsearch index to point to the new index, rather than the current index. You may choose to delete your current index during this operation using the `deleteSource` parameter, which defaults to `false`. If you are using the default index created by Cumulus, this will switch your Cumulus instance to the new index and you will see those changes immediately via the API and dashboard.
+Change index switches the Elasticsearch index to point to the new index, rather than the current index. You may choose to delete your current index during this operation using the `deleteSource` parameter, which defaults to `false`. If you are using the default index created by Cumulus, this will switch your Cumulus instance to the new index and you will see those changes immediately via the API and dashboard. If `newIndex` does not exist, an index with that name will be created.
 
 `currentIndex` and `newIndex` are required parameters.
 
