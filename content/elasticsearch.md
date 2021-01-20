@@ -14,6 +14,14 @@ An alias should not be specified unless you have a specific alias configured. If
 
 Since reindex can be a long running operation, the `reindex-status` endpoint must be queried to see if the operation has completed.
 
+Overview of request fields:
+
+| parameter | value | required | description |
+| ----- | --- | -- | ----------- |
+| `aliasName` | `string` | `false` | Alias to reindex from. Will be used if `sourceIndex` is not provided. Will default to the default alias if not provided. |
+| `sourceIndex` | `string `| `false` | Index to reindex from |
+| `destIndex` | `string` | `true` | Index to reindex to |
+
 #### Example request
 
 ```curl
@@ -232,6 +240,15 @@ Change index switches the Elasticsearch index to point to the new index, rather 
 `currentIndex` and `newIndex` are required parameters.
 
 In the context of reindex, you'd call `change-index`, following reindex completion to start using the new index with no downtime.
+
+Overview of the request fields:
+
+| parameter | value | required | description |
+| ----- | --- | -- | ----------- |
+| `aliasName` | `string` | `false` | Alias to use for `newIndex`. Will be the default index if not provided |
+| `currentIndex` | `string `| `true` | Index to change the alias from |
+| `newIndex` | `string` | `true` | Index to change alias to |
+| `deleteSource` | `boolean` | `false` | If set to `true` it will delete the index provided in `currentIndex` |
 
 #### Example request
 
