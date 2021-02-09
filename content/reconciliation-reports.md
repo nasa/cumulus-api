@@ -63,6 +63,20 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
 
 #### Example responses
 
+```json
+{
+  "presignedS3Url": "https://example.amazonaws.com/example",
+  "data": "report data, see examples below for each report type"
+}
+```
+
+```json
+{
+  "presignedS3Url": "https://example.amazonaws.com/example",
+  "data": "Error: Report examplereport exceeded maximum allowed payload size"
+}
+```
+
 ##### Inventory Report
 
 ```json
@@ -458,7 +472,7 @@ POST /reconciliationReports
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
 | `collectionId` | [`string | array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
 | `granuleId` | [`string | array`] | `false` | granuleId (or array of granuleIds) for use for comparison of collection and granule holdings. |
-| `provider` | `string` | `false` | provider name for comparison of granule holdings |
+| `provider` | [`string | array`] | `false` | provider name (or array of providers) for comparison of granule holdings |
 | `status` | `string` | `false` | status filter for Granule Inventory reports |
 
 *NOTE*: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields for `Inventory` and `Granule Not Found` reports.
