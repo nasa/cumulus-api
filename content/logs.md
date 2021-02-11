@@ -1,5 +1,8 @@
 ## List logs
 
+**Note:** This endpoint will only work if logs are being delivered to the Metrics system. Otherwise it will
+return a 400 Error.
+
 List processing logs from the Cumulus engine. A log's `level` field should be specified by their string value and be one of:
 * fatal (60)
 * error (50)
@@ -157,6 +160,9 @@ $ curl https://example.com/logs?level=error --header 'Authorization: Bearer Repl
 ```
 
 ## Retrieve Logs
+
+**Note:** This endpoint will only work if logs are being delivered to the Metrics system. Otherwise it will
+return a 400 Error.
 
 Retrieve all logs from a specific execution.
 
