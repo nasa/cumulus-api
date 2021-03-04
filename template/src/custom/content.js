@@ -71,5 +71,8 @@ module.exports =
   fs.readFileSync('./content/elasticsearch.md') + '\n' +
 
   '# Dashboard\n' +
-  fs.readFileSync('./content/dashboard.md') + '\n'
+  fs.readFileSync('./content/dashboard.md') + '\n' +
+
+  '# ORCA\n' +
+  fs.readFileSync('./content/orca.md', 'utf8') +  '\n'
 ;
