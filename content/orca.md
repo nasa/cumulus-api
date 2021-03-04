@@ -6,8 +6,8 @@ Query may include the following query parameters:
 
 | query string parameter | description |
 | --- | --- |
-| `granuleId={granuleId}` | query the recovery requests for the given granuleId |
-| `asyncOperationId={asyncOperationId}` | query the recovery requests for the given asyncOperationId |
+| `granuleId={granuleId}` | query the recovery requests for a given granuleId |
+| `asyncOperationId={asyncOperationId}` | query the recovery requests for a given asyncOperationId |
 
 ```endpoint
 GET /orca
