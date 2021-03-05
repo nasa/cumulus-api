@@ -10,16 +10,16 @@ Query may include the following query parameters:
 | `asyncOperationId={asyncOperationId}` | query the recovery requests for a given asyncOperationId |
 
 ```endpoint
-GET /orca
+GET /orca/recovery
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/orca --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/orca/recovery --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 ```curl
-$ curl https://example.com/orca?granuleId=123456 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/orca/recovery?granuleId=123456 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
