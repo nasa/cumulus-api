@@ -2,7 +2,7 @@
 
 This endpoint lists ORCA recovery request status.
 
-Query may include the following query parameters:
+Query must include one or both of the following query parameters:
 
 | query string parameter | description |
 | --- | --- |
@@ -16,7 +16,7 @@ GET /orca/recovery
 #### Example request
 
 ```curl
-$ curl https://example.com/orca/recovery --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/orca/recovery?asyncOperationId=0eb8e809-8790-5409-1239-bcd9e8d28b8e --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 ```curl
 $ curl https://example.com/orca/recovery?granuleId=123456 --header 'Authorization: Bearer ReplaceWithTheToken'
