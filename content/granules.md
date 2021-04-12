@@ -1,6 +1,7 @@
 ## List granules
 
 List granules in the Cumulus system.
+If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
 
 ```endpoint
 GET /granules
@@ -93,6 +94,7 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
 ## Retrieve granule
 
 Retrieve a single granule.
+If the query includes a value of `true` for `getRecoveryStatus`, the result granule will include `recoveryStatus` when applicable.
 
 ```endpoint
 GET /granules/{granuleId}
