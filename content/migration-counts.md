@@ -12,7 +12,7 @@ The query uses the following optional parameters:
 | dbConcurrency | Sets max number of parallel collections reports  the script will run at a time.  Default 20 |
 | dbMaxPool | Sets the maximum number of connections the database pool has available.   Modifying this may result in unexpected failures.    Default is 20 |
 | reportPath | Sets the path location for the tool to write a copy of the lambda payload to S3 |
-| reportBucket | Sets the bucket used for reporting.  If this argument is used a `reportPath` must be set to generate a report |
+| reportBucket | Sets the bucket used for reporting.  If this argument is used, a `reportPath` must be set to generate a report |
 
 ```endpoint
 POST /migrationCounts
