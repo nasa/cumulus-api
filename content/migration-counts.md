@@ -8,7 +8,7 @@ The query uses the following optional parameters:
 
 | parameter | description |
 | --- | --- |
-| cutoffSeconds | Number of seconds prior to this execution to 'cutoff' reconciliation queries.  This allows in-progress/other in-flight operations time to complete and propagate to ElasticSearch/Dynamo/Postgres.  Default is 3600|
+| cutoffSeconds | Sets the number of seconds prior to this execution to 'cutoff' reconciliation queries.  This allows in-progress or other in-flight operations time to complete and propagate to ElasticSearch/Dynamo/Postgres.  Default is 3600|
 | dbConcurrency | Sets max number of parallel collections reports  the script will run at a time.  Default 20 |
 | dbMaxPool | Sets the maximum number of connections the database pool has available.   Modifying this may result in unexpected failures.    Default is 20 |
 | reportPath | Sets the path location for the tool to write a copy of the lambda payload to S3 |
