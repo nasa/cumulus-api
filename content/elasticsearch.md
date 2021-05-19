@@ -10,7 +10,7 @@ The reindex command creates a new index and reindexes the source index to the ne
 
 Note that there will now be two copies of your index. Your Cumulus instance will still point to the old copy until you perform the `change-index` function described below.
 
-An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`).
+An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`). If you specify a destination index name, it must be an index that does not already exist in your cluster.  The destination index must be different than the source index or the operation will fail.
 
 Since reindex can be a long running operation, the `reindex-status` endpoint must be queried to see if the operation has completed.
 
@@ -253,7 +253,7 @@ Overview of the request fields:
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/dev/elasticsearch/change-index --header 'Content-Type: application/json' --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/elasticsearch/change-index --header 'Content-Type: application/json' --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
   "aliasName": "cumulus-alias",
   "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
