@@ -253,7 +253,7 @@ Overview of the request fields:
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/dev/elasticsearch/change-index --header 'Content-Type: application/json' --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+$ curl --request POST https://example.com/elasticsearch/change-index --header 'Content-Type: application/json' --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
   "aliasName": "cumulus-alias",
   "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
