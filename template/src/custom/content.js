@@ -74,5 +74,8 @@ module.exports =
   fs.readFileSync('./content/dashboard.md') + '\n' +
 
   '# ORCA\n' +
-  fs.readFileSync('./content/orca.md', 'utf8') +  '\n'
+  fs.readFileSync('./content/orca.md', 'utf8') +  '\n' +
+
+  '# Postgres Migration Count\n' +
+  fs.readFileSync('./content/migration-counts.md') + '\n'
 ;
