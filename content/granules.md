@@ -32,7 +32,7 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
             "collectionId": "MOD11A1___006",
             "status": "completed",
             "provider": "LP_TS2_DataPool",
-            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
+            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
             "files": [
                 {
                     "bucket": "cumulus-devseed-protected",
@@ -115,7 +115,7 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
     "collectionId": "MOD11A1___006",
     "status": "completed",
     "provider": "LP_TS2_DataPool",
-    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
+    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
     "files": [
         {
             "bucket": "cumulus-devseed-protected",
@@ -174,7 +174,25 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
 
 ## Reingest granule
 
-Reingest a granule. This causes the granule to re-download to Cumulus from source, and begin processing from scratch.  Reingesting a granule will overwrite existing granule files.
+Reingest a granule. This causes the granule to re-download to Cumulus from
+source, and begin processing from scratch.  Reingesting a granule will
+overwrite existing granule files.
+
+You trigger the reingest by posting with the data's `action` set to `reingest`.
+
+A reingest request may also include one optional parameters, either
+`executionArn` or `workflowName`.  Use of one of these will cause the reingest
+occur, but before running the ingest, a different original payload is found
+from existing executions and used in place of the most recent execution.  This
+has the result of allowing you to reingest a granule with any of it's previous
+inputs.  If `executionArn` is specified, the originalMessage is pulled directly
+from that execution.  When `workflowName` is specified, the database is search
+to find all of the executions with that workflowName that were run on the
+granuleid, and the most recent originalMessage is pulled and used for the
+reingest.  Remember only to supply either `executionArn` or `workflowName`, if
+both are present, workflowName is ignored and executionArn is used to determing
+the input message to the reingest.
+
 
 ```endpoint
 PUT /granules/{granuleId}
@@ -183,12 +201,18 @@ PUT /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "reingest"}'
+$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+       --header 'Authorization: Bearer ReplaceWithTheToken'
+       --header 'Content-Type: application/json'
+       --data '{"action": "reingest",
+               ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
+               ["workflowName": "TheWorkflowName"] }'
 ```
 
 #### Example response
 
-A warning message is included in the response if the collection's duplicateHandling is not set to 'replace'.
+A warning message is included in the response if the collection's
+duplicateHandling is not set to 'replace'.
 
 ```json
 {
@@ -367,7 +391,7 @@ curl -X POST
     "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
     "updatedAt": 1574730504762,
     "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
 }
 ```
 
@@ -444,7 +468,7 @@ curl -X POST
     "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
     "updatedAt": 1574730504762,
     "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "taskArn": "arn:aws:ecs:us-east-1:111111111111123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
 }
 ```
 
@@ -461,6 +485,10 @@ Overview of the request fields:
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+
+
+An optional data parameter of `executionArn` is also available to allow you to override the input message to the reingest. If `executionArn` is specified, the original message is pulled directly
+from that execution and used in reingest.
 
 
 ```endpoint
@@ -505,11 +533,16 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granule IDs and executionArn optional parameter:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkReingest --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"]}'
+  https://example.com/granules/bulkReingest
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+   --data '{
+        "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
+        "executionArn": "arn:aws:states:us-east-1:1234567890123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520",
+        }'
 ```
 
 #### Example response
@@ -521,7 +554,7 @@ curl -X POST
     "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
     "operationType": "Bulk Granule Reingest",
     "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:111111111111:task/d481e76e-f5fc-9c1c-2411-fa13779b111a",
+    "taskArn": "arn:aws:ecs:us-east-1:111111111111123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a",
     "updatedAt": 1574730504762
 }
 ```
