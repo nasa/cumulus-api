@@ -115,7 +115,7 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
     "collectionId": "MOD11A1___006",
     "status": "completed",
     "provider": "LP_TS2_DataPool",
-    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
+    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
     "files": [
         {
             "bucket": "cumulus-devseed-protected",
@@ -487,8 +487,8 @@ Overview of the request fields:
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
 
-An optional data parameter of `executionArn` is also available to allow you to override the input message to the reingest. If `executionArn` is specified, the original message is pulled directly
-from that execution and used in reingest.
+An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
+by finding the most recent execution of the workflowName assocated with the granuleId.
 
 
 ```endpoint
@@ -533,15 +533,15 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and executionArn optional parameter:
+#### Example request with given Granule IDs and optional workflow parameter:
 
 ```curl
 curl -X POST
   https://example.com/granules/bulkReingest
   --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
-   --data '{
+  --data '{
         "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
-        "executionArn": "arn:aws:states:us-east-1:1234567890123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520",
+        "workflow": "workflowName",
         }'
 ```
 
