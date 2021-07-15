@@ -203,13 +203,13 @@ $ curl https://example.com/executions/status/arn:aws:states:us-east-1:5962055142
 
 ## Search Executions By Granules
 
-Return executions associated with specific granule ids. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+Return executions associated with specific granules. Granules can be sent as a list of granule objects containing granuleIds and collectionIds or as an Elasticsearch query to the Metrics' Elasticsearch.
 
 Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<Object>` | List of granules to process. Each granule must contain a granuleId and collectionId |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules with which to search. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
@@ -221,7 +221,7 @@ POST /executions/search-by-granules
 
 ```curl
 $ curl --request POST \
-    https://example.com/executions/search-by-granules --header 'Authorization: Bearer ReplaceWithTheToken' \
+    https://example.com/executions/search-by-granules?limit=3 --header 'Authorization: Bearer ReplaceWithTheToken' \
   --header 'Content-Type: application/json' \
   --data '{
         "index": "index-in-es",
@@ -240,7 +240,7 @@ $ curl --request POST \
                                 },
                                 {
                                     "bool": {
-                                        "should": [{"match": {"status": "FAILED"}}],
+                                        "should": [{"match": {"collectionId": "MOD09GQ__006"}}],
                                         "minimum_should_match": 1
                                     }
                                 }
@@ -259,7 +259,7 @@ $ curl --request POST \
 
 ```curl
 curl -X POST
-  https://example.com/executions/search-by-granules --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"]}'
+  https://example.com/executions/search-by-granules?limit=3 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": [{ "granuleId":"MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD09GQ__006"]}'
 ```
 
 #### Example response
