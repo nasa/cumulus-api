@@ -210,6 +210,8 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `granules` | `yes` - if `query` not present | `Array<Object>` | List of granules to process. Each granule must contain a granuleId and collectionId |
+| -- `granule.granuleId` | `yes` - if using `granules` | `string` | GranuleId for a granule |
+| -- `granule.collectionId` | `yes` - if using `granules` | `string` | CollectionId for a granule |
 | `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules with which to search. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
@@ -255,7 +257,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
@@ -329,6 +331,8 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `granules` | `yes` - if `query` not present | `Array<Object>` | List of granules to process. Each granule must contain a granuleId and collectionId |
+| -- `granule.granuleId` | `yes` - if using `granules` | `string` | GranuleId for a granule |
+| -- `granule.collectionId` | `yes` - if using `granules` | `string` | CollectionId for a granule |
 | `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules with which to search. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
@@ -374,7 +378,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
