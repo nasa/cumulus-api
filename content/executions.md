@@ -395,7 +395,7 @@ $ curl --request POST \
 
 ## Create execution
 
-Create an execution. An execution generally includes, but is not limited to, the fields listed below.
+Create an execution. An execution generally includes the fields listed below.
 
 Overview of the schema fields:
 
@@ -412,7 +412,7 @@ Overview of the schema fields:
 | `name` | `string` | `yes` | execution name |
 | `originalPayload` | `object` | `no` | the original payload for this execution |
 | `parentArn` | `string` | `no` | arn of the parent execution |
-| `status` | `string` | `yes` | the execution status, enum: ['running', 'completed', 'failed', 'unknown'] |
+| `status` | `string` | `yes` | the execution status, possible values: `running`, `completed`, `failed`, `unknown` |
 | `tasks` | `object` | `no` | the tasks for this execution |
 | `type` | `string` | `no` | the workflow name, e.g. IngestGranule |
 | `timestamp` | `number` | `no` | the timestamp for this execution |
