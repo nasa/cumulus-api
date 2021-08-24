@@ -402,9 +402,9 @@ Overview of the schema fields:
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `arn` | `string` | `yes` | execution arn (this field is unique) |
-| `asyncOperationId` | `string` | `no` | id of the associated async operation |
-| `collectionId` | `string` | `no` | collectionId of the associated collection |
-| `cumulusVersion` | `string` | `no` | cumulus version for the execution |
+| `asyncOperationId` | `string` | `no` | `id` of the associated async operation |
+| `collectionId` | `string` | `no` | collectionId of the associated collection (e.g. `<name>___<version>` where `<name>` is the collection name and `<version>` is the collection version) |
+| `cumulusVersion` | `string` | `no` | cumulus version for the execution (e.g. `9.0.0`) |
 | `duration` | `number` | `no` | duration of the execution |
 | `error` | `object` | `no` | the error details in case of a failed execution |
 | `execution` | `string` | `no` | the execution page url on AWS console |
