@@ -465,42 +465,7 @@ $ curl --request POST https://example.com/executions --header 'Authorization: Be
 
 ```json
 {
-    "message": "Record saved",
-    "record": {
-        "arn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
-        "asyncOperationId": "c4ece1f9-dca0-42f8-be77-da43b9b25918",
-        "collectionId": "MOD09GQ___006",
-        "cumulusVersion": "1.2.3",
-        "error": {},
-        "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
-        "name": "cff1266e-ef36-664f-a649-3a4d26bd1735",
-        "originalPayload": {
-            "somePayloadKey": "object containing payload at execution start"
-        },
-        "parentArn": "arn:aws:states:us-east-1:123456789012:execution:test-src-integration-ParsePdr:59edd6a4-5187-4865-b3c3-71ebcf76d7a1",
-        "status": "running",
-        "tasks": {
-            "MoveGranuleStep": {
-                "name": "test-src-integration-MoveGranules",
-                "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-MoveGranules",
-                "version": "$LATEST"
-            },
-            "ProcessingStep": {
-                "name": "test-src-integration-FakeProcessing",
-                "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-FakeProcessing",
-                "version": "$LATEST"
-            },
-            "StopStatus": {
-                "name": "test-src-integration-SfSnsReport",
-                "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-SfSnsReport",
-                "version": "$LATEST"
-            }
-        },
-        "type": "IngestGranule",
-        "timestamp": 1513020462156,
-        "updatedAt": 1629493795532,
-        "createdAt": 1629493795532
-    }
+    "message": "Successfully wrote execution with arn arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"
 }
 ```
 
@@ -565,43 +530,7 @@ $ curl --request PUT https://example.com/executions/arn:aws:states:us-east-1:123
 
 ```json
 {
-    "arn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
-    "asyncOperationId": "c4ece1f9-dca0-42f8-be77-da43b9b25918",
-    "collectionId": "MOD09GQ___006",
-    "cumulusVersion": "1.2.3",
-    "duration": 30.276,
-    "error": {},
-    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
-    "finalPayload": {
-        "somePayloadKey": "object containing the last reported payload from an execution"
-    },
-    "name": "cff1266e-ef36-664f-a649-3a4d26bd1735",
-    "originalPayload": {
-        "somePayloadKey": "object containing payload at execution start"
-    },
-    "parentArn": "arn:aws:states:us-east-1:123456789012:execution:test-src-integration-ParsePdr:59edd6a4-5187-4865-b3c3-71ebcf76d7a1",
-    "status": "completed",
-    "tasks": {
-        "MoveGranuleStep": {
-            "name": "test-src-integration-MoveGranules",
-            "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-MoveGranules",
-            "version": "$LATEST"
-        },
-        "ProcessingStep": {
-            "name": "test-src-integration-FakeProcessing",
-            "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-FakeProcessing",
-            "version": "$LATEST"
-        },
-        "StopStatus": {
-            "name": "test-src-integration-SfSnsReport",
-            "arn": "arn:aws:lambda:us-east-1:123456789012:function:test-src-integration-SfSnsReport",
-            "version": "$LATEST"
-        }
-    },
-    "type": "IngestGranule",
-    "timestamp": 1513020462156,
-    "updatedAt": 1630502387848,
-    "createdAt": 1629493795532
+    "message": "Successfully updated execution with arn arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"
 }
 ```
 
