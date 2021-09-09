@@ -244,8 +244,8 @@ parts of the granule and the existing granule values will be overwritten by the
 modified portions.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
-Returns status 200 on successful replacement, 400 if the `granuleId` can not be
-found in the database, or when the granuleId in the payload does not match the
+Returns status 200 on successful replacement, 404 if the `granuleId` can not be
+found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
 
 
