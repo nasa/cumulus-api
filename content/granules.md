@@ -172,6 +172,118 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
 }
 ```
 
+## Create Granule
+
+Create a granule. A `granule` can have the following fields.
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `beginningDateTime` | `string`| `no` | The time when the granule's temporal coverage begins,
+| `cmrLink` | `string`| `no` | link to CMR,
+| `collectionId` | `string`| `yes` | Collection associated with the granule,
+| `createdAt` | `integer`| `no` | Time granule record was created (now),
+| `duration` | `number`| `no` | Ingest duration milliseconds,
+| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends,
+| `error` | `object`| `no` | The error details for this granule,
+| `execution` | `string`| `no` | Step Function Execution URL,
+| `files` | `array`| `no` | Files associated with the granule,
+| `granuleId` | `string`| `yes` | Granule ID,
+| `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database,
+| `pdrName` | `string`| `no` | PDR associated with the granule,
+| `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time,
+| `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time,
+| `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes,
+| `productionDateTime` | `string`| `no` | The date and time a specific granule was produced by a PGE,
+| `provider` | `string`| `no` | Granule's provider,
+| `published` | `boolean`| `no` | If granule is published to CMR,
+| `queryFields` | `object`| `no` | Arbitrary query fields assigned to the granule,
+| `status` | `string`| `yes` | Ingest status of the granule one of ['running', 'completed', 'failed'],
+| `timeToArchive` | `number`| `no` | Time to post to CMR in seconds,
+| `timeToPreprocess` | `number`| `no` |  Time to sync granule in seconds,
+| `timestamp` | `integer`| `no` | Timestamp for granule record (now),
+| `updatedAt` | `integer`| `no` | Update Time for granule (now),
+
+```endpoint
+POST /granules
+```
+#### Example request
+```curl
+$ curl --request POST https://example.com/granules \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "granuleId": "granuleId.A19990103.006.1000",
+  "collectionId": "collectionName___006",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId/A19990103.006.1000.hdf"
+    }
+  ],
+  "execution": "https://console.aws.amazon.com/states/home?region=us-west-2#/executions/details/arn:aws:states:us-east-1:123456789012:execution:stackName-IngestGranule:402cf5e0-c206-46f8-8c5e-0b964ef92ef3",
+  "status": "completed",
+  "productVolume": 5339,
+  "published": false,
+  "error": {},
+  "duration": 6000
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully wrote granule with Granule Id: granuleId.A19990103.006.1000"
+}
+```
+
+## Update or replace granule
+
+Update/replace an existing granules. Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.  The same fields are available as are for [creating a
+granule.](#create-granule).
+
+Returns status 200 on successful replacement, 400 if the `granuleId` can not be
+found in the database, or when the granuleId in the payload does not match the
+corresponding value in the resource URI.
+
+
+```endpoint
+PUT /granules/{granuleId}
+```
+
+#### Example request
+
+```curl
+$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000 \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "granuleId": "granuleId.A19990103.006.1000",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId/A19990103.006.1000.hdf"
+    },
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId/A19990103.006.1000.jpg"
+    }
+  ],
+  "status": "running",
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully updated granule with Granule Id: granuleId.A19990103.006.1000"
+}
+```
+
+
 ## Reingest granule
 
 Reingest a granule. This causes the granule to re-download to Cumulus from
