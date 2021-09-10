@@ -271,7 +271,7 @@ $ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
       "key": "granuleId/A19990103.006.1000.jpg"
     }
   ],
-  "status": "running",
+  "status": "running"
   }'
 ```
 
