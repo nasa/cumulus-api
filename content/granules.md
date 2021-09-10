@@ -178,7 +178,7 @@ Create a granule. A `granule` can have the following fields.
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `beginningDateTime` | `string`| `no` | The time when the granule's temporal coverage begins,
+| `beginningDateTime` | `string`| `no` | The time when the granule's temporal coverage begins |
 | `cmrLink` | `string`| `no` | link to CMR,
 | `collectionId` | `string`| `yes` | Collection associated with the granule,
 | `createdAt` | `integer`| `no` | Time granule record was created (now),
