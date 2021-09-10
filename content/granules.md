@@ -188,13 +188,13 @@ The request should have the following fields.
 | `executionArn` | `string` | Execution arn |
 
 ```endpoint
-POST /granules/{granuleId}/execution
+POST /granules/{granuleId}/executions
 ```
 
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/execution \
+$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
