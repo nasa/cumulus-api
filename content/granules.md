@@ -256,7 +256,7 @@ PUT /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
