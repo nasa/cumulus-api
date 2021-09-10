@@ -181,7 +181,7 @@ value in the resource URI.
 
 The request should have the following fields.
 
-| Field | Type | Required | Description |
+| Field | Type | Description |
 | --- | --- | --- |
 | `collectionId` | `string` | Collection associated with the granule (e.g. `<name>___<version>` where `<name>` is the collection name and `<version>` is the collection version) |
 | `granuleId` | `string` | Granule ID |
