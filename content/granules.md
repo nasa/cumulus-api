@@ -322,7 +322,6 @@ $ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/
 }
 ```
 
-
 ## Reingest granule
 
 Reingest a granule. This causes the granule to re-download to Cumulus from
