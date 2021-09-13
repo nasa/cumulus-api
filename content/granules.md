@@ -225,7 +225,8 @@ $ curl --request POST https://example.com/granules \
   "files": [
     {
       "bucket": "stack-protected",
-      "key": "granuleId.A20200113.006.1005.hdf"
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
     }
   ],
   "lastUpdateDateTime":"2021-09-12T15:10:01.000Z",
@@ -279,11 +280,13 @@ $ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
   "files": [
     {
       "bucket": "stack-protected",
-      "key": "granuleId/A20200113.006.1005.hdf"
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
     },
     {
       "bucket": "stack-protected",
-      "key": "granuleId/A20200113.006.1005.jpg"
+      "key": "granuleId.A20200113.006.1005.jpg",
+      "fileName": "granuleId.A20200113.006.1005.jpg"
     }
   ],
   "duration": 1000,
