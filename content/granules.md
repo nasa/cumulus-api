@@ -282,6 +282,45 @@ $ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
     "message": "Successfully updated granule with Granule Id: granuleId.A19990103.006.1000"
 }
 ```
+## Associate execution
+
+Associate an execution with a granule. Returns status 200 on successful
+association, 404 if the granule or execution can not be found in the database,
+or 400 when the granuleId in the payload does not match the corresponding
+value in the resource URI.
+
+The request should have the following fields.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `collectionId` | `string` | Collection associated with the granule (e.g. `<name>___<version>` where `<name>` is the collection name and `<version>` is the collection version) |
+| `granuleId` | `string` | Granule ID |
+| `executionArn` | `string` | Execution arn |
+
+```endpoint
+POST /granules/{granuleId}/executions
+```
+
+#### Example request
+
+```curl
+$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "granuleId": "granuleId.A19990103.006.1000",
+  "collectionId": "MOD09GQ___006",
+  "executionArn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully associated execution arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 with granule granuleId granuleId.A19990103.006.1000 collectionId MOD09GQ___006"
+}
+```
 
 
 ## Reingest granule
