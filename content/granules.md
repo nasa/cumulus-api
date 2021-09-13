@@ -172,9 +172,139 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
 }
 ```
 
+## Create Granule
+
+Create a granule. A `granule` can have the following fields.
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `beginningDateTime` | `string`| `no` | The time when the granule's temporal coverage begins |
+| `cmrLink` | `string`| `no` | link to CMR |
+| `collectionId` | `string`| `yes` | Collection associated with the granule |
+| `createdAt` | `integer`| `no` | Time granule record was created (now) |
+| `duration` | `number`| `no` | Ingest duration milliseconds |
+| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends |
+| `error` | `object`| `no` | The error details for this granule |
+| `execution` | `string`| `no` | Step Function Execution URL |
+| `files` | `array`| `no` | Files associated with the granule |
+| `granuleId` | `string`| `yes` | Granule ID |
+| `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database |
+| `pdrName` | `string`| `no` | PDR associated with the granule |
+| `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time |
+| `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time |
+| `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes |
+| `productionDateTime` | `string`| `no` | The date and time a specific granule was produced by a PGE |
+| `provider` | `string`| `no` | Granule's provider |
+| `published` | `boolean`| `no` | If granule is published to CMR |
+| `queryFields` | `object`| `no` | Arbitrary query fields assigned to the granule |
+| `status` | `string`| `yes` | Ingest status of the granule one of ['running', 'completed', 'failed'] |
+| `timeToArchive` | `number`| `no` | Time to post to CMR in seconds |
+| `timeToPreprocess` | `number`| `no` |  Time to sync granule in seconds |
+| `timestamp` | `integer`| `no` | Timestamp for granule record (now) |
+| `updatedAt` | `integer`| `no` | Update Time for granule (now) |
+
+```endpoint
+POST /granules
+```
+#### Example request
+```curl
+$ curl --request POST https://example.com/granules \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "granuleId": "granuleId.A20200113.006.1005",
+  "collectionId": "alpha___006",
+  "status": "running",
+  "beginningDateTime": "1995-01-01T00:00:00.000Z",
+  "cmrLink": "https://mmt.uat.earthdata.nasa.gov/collections/C1237256734-CUMULUS",
+  "createdAt": 1631547286190,
+  "duration": 60000,
+  "endingDateTime": "2021-09-13T00:00:00.000Z",
+  "error": {},
+  "execution": "https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestStepFunction2:cff1266e-ef36-664f-ff00-3a4d26bd1735",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
+    }
+  ],
+  "lastUpdateDateTime":"2021-09-12T15:10:01.000Z",
+  "pdrName": "aPdrName",
+  "processingEndDateTime": "2020-10-13T23:59:59.999Z",
+  "processingStartDateTime": "2020-10-13T00:00:00.000Z",
+  "productVolume": 59632353,
+  "productionDateTime": "2020-10-14T15:40:05.546Z",
+  "provider": "s3-local",
+  "published": true,
+  "queryFields": {"custom": "values can go here"},
+  "timeToArchive": 5001,
+  "timeToPreprocess": 3240,
+  "timestamp":1631547675248,
+  "updatedAt":1631547675248
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully wrote granule with Granule Id: granuleId.A20200113.006.1005"
+}
+```
+
+## Update or replace granule
+
+Update/replace an existing granules. Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.  The same fields are available as are for [creating a
+granule.](#create-granule).
+
+Returns status 200 on successful replacement, 404 if the `granuleId` can not be
+found in the database, or 400 when the granuleId in the payload does not match the
+corresponding value in the resource URI.
+
+
+```endpoint
+PUT /granules/{granuleId}
+```
+
+#### Example request
+
+```curl
+$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "granuleId": "granuleId.A20200113.006.1005",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
+    },
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.jpg",
+      "fileName": "granuleId.A20200113.006.1005.jpg"
+    }
+  ],
+  "duration": 1000,
+  "status": "completed"
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully updated granule with Granule Id: granuleId.A20200113.006.1005"
+}
+```
+
 ## Associate execution
 
-Associate an execution with a granule. Returns status 200 on successful 
+Associate an execution with a granule. Returns status 200 on successful
 association, 404 if the granule or execution can not be found in the database,
 or 400 when the granuleId in the payload does not match the corresponding
 value in the resource URI.
