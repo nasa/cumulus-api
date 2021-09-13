@@ -212,20 +212,35 @@ $ curl --request POST https://example.com/granules \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
-  "granuleId": "granuleId.A19990103.006.1000",
-  "collectionId": "collectionName___006",
+    "granuleId": "granuleId.A20200113.006.1005",
+  "collectionId": "alpha___006",
+  "status": "running",
+  "beginningDateTime": "1995-01-01T00:00:00.000Z",
+  "cmrLink": "https://mmt.uat.earthdata.nasa.gov/collections/C1237256734-CUMULUS",
+  "createdAt": 1631547286190,
+  "duration": 60000,
+  "endingDateTime": "2021-09-13T00:00:00.000Z",
+  "error": {},
+  "execution": "https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestStepFunction2:cff1266e-ef36-664f-ff00-3a4d26bd1735",
   "files": [
     {
       "bucket": "stack-protected",
-      "key": "granuleId/A19990103.006.1000.hdf"
+      "key": "granuleId.A20200113.006.1005.hdf"
     }
   ],
-  "execution": "https://console.aws.amazon.com/states/home?region=us-west-2#/executions/details/arn:aws:states:us-east-1:123456789012:execution:stackName-IngestGranule:402cf5e0-c206-46f8-8c5e-0b964ef92ef3",
-  "status": "completed",
-  "productVolume": 5339,
-  "published": false,
-  "error": {},
-  "duration": 6000
+  "lastUpdateDateTime":"2021-09-12T15:10:01.000Z",
+  "pdrName": "aPdrName",
+  "processingEndDateTime": "2020-10-13T23:59:59.999Z",
+  "processingStartDateTime": "2020-10-13T00:00:00.000Z",
+  "productVolume": 59632353,
+  "productionDateTime": "2020-10-14T15:40:05.546Z",
+  "provider": "s3-local",
+  "published": true,
+  "queryFields": {"custom": "values can go here"},
+  "timeToArchive": 5001,
+  "timeToPreprocess": 3240,
+  "timestamp":1631547675248,
+  "updatedAt":1631547675248
   }'
 ```
 
@@ -233,7 +248,7 @@ $ curl --request POST https://example.com/granules \
 
 ```json
 {
-    "message": "Successfully wrote granule with Granule Id: granuleId.A19990103.006.1000"
+    "message": "Successfully wrote granule with Granule Id: granuleId.A20200113.006.1005"
 }
 ```
 
@@ -260,18 +275,19 @@ $ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
-  "granuleId": "granuleId.A19990103.006.1000",
+  "granuleId": "granuleId.A20200113.006.1005",
   "files": [
     {
       "bucket": "stack-protected",
-      "key": "granuleId/A19990103.006.1000.hdf"
+      "key": "granuleId/A20200113.006.1005.hdf"
     },
     {
       "bucket": "stack-protected",
-      "key": "granuleId/A19990103.006.1000.jpg"
+      "key": "granuleId/A20200113.006.1005.jpg"
     }
   ],
-  "status": "running"
+  "duration": 1000,
+  "status": "completed"
   }'
 ```
 
@@ -279,9 +295,10 @@ $ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
 
 ```json
 {
-    "message": "Successfully updated granule with Granule Id: granuleId.A19990103.006.1000"
+    "message": "Successfully updated granule with Granule Id: granuleId.A20200113.006.1005"
 }
 ```
+
 ## Associate execution
 
 Associate an execution with a granule. Returns status 200 on successful
