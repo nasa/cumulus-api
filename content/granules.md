@@ -179,29 +179,29 @@ Create a granule. A `granule` can have the following fields.
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `beginningDateTime` | `string`| `no` | The time when the granule's temporal coverage begins |
-| `cmrLink` | `string`| `no` | link to CMR,
-| `collectionId` | `string`| `yes` | Collection associated with the granule,
-| `createdAt` | `integer`| `no` | Time granule record was created (now),
-| `duration` | `number`| `no` | Ingest duration milliseconds,
-| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends,
-| `error` | `object`| `no` | The error details for this granule,
-| `execution` | `string`| `no` | Step Function Execution URL,
-| `files` | `array`| `no` | Files associated with the granule,
-| `granuleId` | `string`| `yes` | Granule ID,
-| `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database,
-| `pdrName` | `string`| `no` | PDR associated with the granule,
-| `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time,
-| `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time,
-| `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes,
-| `productionDateTime` | `string`| `no` | The date and time a specific granule was produced by a PGE,
-| `provider` | `string`| `no` | Granule's provider,
-| `published` | `boolean`| `no` | If granule is published to CMR,
-| `queryFields` | `object`| `no` | Arbitrary query fields assigned to the granule,
-| `status` | `string`| `yes` | Ingest status of the granule one of ['running', 'completed', 'failed'],
-| `timeToArchive` | `number`| `no` | Time to post to CMR in seconds,
-| `timeToPreprocess` | `number`| `no` |  Time to sync granule in seconds,
-| `timestamp` | `integer`| `no` | Timestamp for granule record (now),
-| `updatedAt` | `integer`| `no` | Update Time for granule (now),
+| `cmrLink` | `string`| `no` | link to CMR |
+| `collectionId` | `string`| `yes` | Collection associated with the granule |
+| `createdAt` | `integer`| `no` | Time granule record was created (now) |
+| `duration` | `number`| `no` | Ingest duration milliseconds |
+| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends |
+| `error` | `object`| `no` | The error details for this granule |
+| `execution` | `string`| `no` | Step Function Execution URL |
+| `files` | `array`| `no` | Files associated with the granule |
+| `granuleId` | `string`| `yes` | Granule ID |
+| `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database |
+| `pdrName` | `string`| `no` | PDR associated with the granule |
+| `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time |
+| `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time |
+| `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes |
+| `productionDateTime` | `string`| `no` | The date and time a specific granule was produced by a PGE |
+| `provider` | `string`| `no` | Granule's provider |
+| `published` | `boolean`| `no` | If granule is published to CMR |
+| `queryFields` | `object`| `no` | Arbitrary query fields assigned to the granule |
+| `status` | `string`| `yes` | Ingest status of the granule one of ['running', 'completed', 'failed'] |
+| `timeToArchive` | `number`| `no` | Time to post to CMR in seconds |
+| `timeToPreprocess` | `number`| `no` |  Time to sync granule in seconds |
+| `timestamp` | `integer`| `no` | Timestamp for granule record (now) |
+| `updatedAt` | `integer`| `no` | Update Time for granule (now) |
 
 ```endpoint
 POST /granules
