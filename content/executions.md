@@ -78,13 +78,13 @@ $ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer Re
 Retrieve details for a specific execution.
 
 ```endpoint
-GET /executions/{executionName}
+GET /executions/{executionArn}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/executions/cff1266e-ef36-664f-a649-3a4d26bd1735 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
