@@ -360,7 +360,7 @@ from that execution.  When `workflowName` is specified, the database is search
 to find all of the executions with that workflowName that were run on the
 granuleid, and the most recent originalMessage is pulled and used for the
 reingest.  Remember only to supply either `executionArn` or `workflowName`, if
-both are present, workflowName is ignored and executionArn is used to determing
+both are present, workflowName is ignored and executionArn is used to determining
 the input message to the reingest.
 
 
@@ -496,7 +496,7 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `workflow` | `Y` | `string` | Worfklow to be applied to all granules |
+| `workflow` | `Y` | `string` | Workflow to be applied to all granules |
 | `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
@@ -659,7 +659,7 @@ Overview of the request fields:
 
 
 An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
-by finding the most recent execution of the workflowName assocated with the granuleId.
+by finding the most recent execution of the workflowName associated with the granuleId.
 
 
 ```endpoint

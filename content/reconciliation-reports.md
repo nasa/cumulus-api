@@ -479,7 +479,7 @@ POST /reconciliationReports
 
 *NOTE*: Adding a granuleId input will result in an one way report for collections for `Inventory` and `Granule Not Found` reports.
 
-*NOTE*: `Inventory` and `Granule Not Found` reports only alllow one of the parameters (`collectionId`, `granuleId`, `provider`) in same request.
+*NOTE*: `Inventory` and `Granule Not Found` reports only allow one of the parameters (`collectionId`, `granuleId`, `provider`) in same request.
 
 *NOTE*: `Granule Inventory` reports can be filtered with the following parameters: (`collectionId`, `granuleId`, `status`). If `granuleId` is a string or single value array, it will search for granules with granuleIds containing that substring.
 

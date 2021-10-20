@@ -275,7 +275,7 @@ You can specify an index (should be empty) or if no index name is specified, a d
 
 It is recommended that workflow rules be turned off, as any data ingested into the database during this operation cannot be guaranteed to make it into the new index. Following the completion of the index, you will need to use the change index operation to switch your Elasticsearch to point to the new instance.
 
-Indexing is an async operation, so an operation id will be returned. You can query the status using the `asyncoperations` GET endoint with the operation id.
+Indexing is an async operation, so an operation id will be returned. You can query the status using the `asyncoperations` GET endpoint with the operation id.
 
 #### Example request
 
