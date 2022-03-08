@@ -80,6 +80,8 @@ Overview of the schema fields:
 | `password` | `string` | provider connection password |
 | `privateKey` | `string` | filename assumed to be in s3://bucketInternal/stackName/crypto |
 | `cmKeyId` | `string` | AWS KMS Customer Master Key arn or alias |
+| `allowedRedirects` | `Array<string>` | Only hosts in this list will have the provider username/password forwarded for authentication. Entries should be specified as host.com or host.com:7000 if redirect port is different than the provider port. |
+| `certificateUri` | `string` | Optional SSL Certificate S3 URI for custom or self-signed SSL (TLS) certificate |
 
 ```endpoint
 POST /providers

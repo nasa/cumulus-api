@@ -447,6 +447,136 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
 }
 ```
 
+##### ORCA Backup Report
+
+```json
+{
+  "collectionIds": [
+    "MYD13Q1___006",
+    "MOD09GQ___006"
+  ],
+  "createEndTime": "2022-02-11T19:13:41.986Z",
+  "createStartTime": "2022-02-11T19:13:41.153Z",
+  "granuleIds": [
+    "MYD13Q1.A3194547.tnYsne.006.8400707913298",
+    "MYD13Q1.A2655880.GOWVT9.006.3531712476486",
+    "MOD09GQ.A8858216.Y6HJnu.006.6168319936421"
+  ],
+  "providers": [
+    "modas_provider",
+    "s3_provider"
+  ],
+  "reportEndTime": "2022-02-11T19:12:25.000Z",
+  "reportType": "ORCA Backup",
+  "status": "SUCCESS",
+  "granules": {
+    "okCount": 0,
+    "cumulusCount": 2,
+    "orcaCount": 2,
+    "okFilesCount": 5,
+    "conflictFilesCount": 6,
+    "withConflicts": [
+      {
+        "okFilesCount": 4,
+        "granuleId": "MYD13Q1.A3194547.tnYsne.006.8400707913298",
+        "collectionId": "MYD13Q1___006",
+        "provider": "s3_provider",
+        "createdAt": 1644606673827,
+        "updatedAt": 1644606718024,
+        "conflictFiles": [
+          {
+            "fileName": "MYD13Q1.A3194547.tnYsne.006.8400707913298.cmr.xml",
+            "bucket": "cumulus-test-sandbox-protected-2",
+            "key": "MYD13Q1___006/MYD/MYD13Q1.A3194547.tnYsne.006.8400707913298.cmr.xml",
+            "reason": "shouldBeExcludedFromOrca"
+          },
+          {
+            "fileName": "BROWSE.MYD13Q1.A3194547.tnYsne.006.8400707913298.1.jpg2",
+            "bucket": "cumulus-test-sandbox-public",
+            "key": "MYD13Q1___006/BRO/BROWSE.MYD13Q1.A3194547.tnYsne.006.8400707913298.1.jpg2",
+            "reason": "onlyInCumulus"
+          },
+          {
+            "fileName": "BROWSE.MYD13Q1.A3194547.tnYsne.006.8400707913298.1.jpg",
+            "bucket": "cumulus-test-sandbox-public",
+            "key": "MYD13Q1___006/BRO/BROWSE.MYD13Q1.A3194547.tnYsne.006.8400707913298.1.jpg",
+            "orcaBucket": "cumulus-test-sandbox-orca-glacier",
+            "reason": "onlyInOrca"
+          }
+        ]
+      }
+    ],
+    "onlyInCumulus": [
+      {
+        "okFilesCount": 1,
+        "granuleId": "MYD13Q1.A2655880.GOWVT9.006.3531712476486",
+        "collectionId": "MYD13Q1___006",
+        "provider": "s3_provider",
+        "createdAt": 1644606673656,
+        "updatedAt": 1644606683360,
+        "conflictFiles": [
+          {
+            "fileName": "MYD13Q1.A2655880.GOWVT9.006.3531712476486.hdf",
+            "bucket": "cumulus-test-sandbox-protected",
+            "key": "MYD13Q1___006/2017/MYD/MYD13Q1.A2655880.GOWVT9.006.3531712476486.hdf",
+            "reason": "onlyInCumulus"
+          },
+          {
+            "fileName": "BROWSE.MYD13Q1.A2655880.GOWVT9.006.3531712476486.hdf",
+            "bucket": "cumulus-test-sandbox-private",
+            "key": "MYD13Q1___006/BRO/BROWSE.MYD13Q1.A2655880.GOWVT9.006.3531712476486.hdf",
+            "reason": "onlyInCumulus"
+          },
+          {
+            "fileName": "BROWSE.MYD13Q1.A2655880.GOWVT9.006.3531712476486.1.jpg",
+            "bucket": "cumulus-test-sandbox-public",
+            "key": "MYD13Q1___006/BRO/BROWSE.MYD13Q1.A2655880.GOWVT9.006.3531712476486.1.jpg",
+            "reason": "onlyInCumulus"
+          },
+          {
+            "fileName": "MYD13Q1.A2655880.GOWVT9.006.3531712476486.cmr.xml",
+            "bucket": "cumulus-test-sandbox-protected-2",
+            "key": "MYD13Q1___006/MYD/MYD13Q1.A2655880.GOWVT9.006.3531712476486.cmr.xml",
+            "reason": "onlyInCumulus"
+          }
+        ]
+      }
+    ],
+    "onlyInOrca": [
+      {
+        "granuleId": "MOD09GQ.A8858216.Y6HJnu.006.6168319936421",
+        "provider": "s3_provider",
+        "collectionId": "MOD09GQ___006",
+        "createdAt": 1643920768281,
+        "conflictFiles": [
+          {
+            "bucket": "cumulus-test-sandbox-protected",
+            "key": "MOD09GQ___006/2017/MOD/MOD09GQ.A8858216.Y6HJnu.006.6168319936421.hdf",
+            "fileName": "MOD09GQ.A8858216.Y6HJnu.006.6168319936421.hdf",
+            "orcaBucket": "cumulus-test-sandbox-orca-glacier",
+            "reason": "onlyInOrca"
+          },
+          {
+            "bucket": "cumulus-test-sandbox-public",
+            "key": "MOD09GQ___006/MOD/MOD09GQ.A8858216.Y6HJnu.006.6168319936421_ndvi.jpg",
+            "fileName": "MOD09GQ.A8858216.Y6HJnu.006.6168319936421_ndvi.jpg",
+            "orcaBucket": "cumulus-test-sandbox-orca-glacier",
+            "reason": "onlyInOrca"
+          },
+          {
+            "bucket": "cumulus-test-sandbox-protected-2",
+            "key": "MOD09GQ___006/MOD/MOD09GQ.A8858216.Y6HJnu.006.6168319936421.cmr.xml",
+            "fileName": "MOD09GQ.A8858216.Y6HJnu.006.6168319936421.cmr.xml",
+            "orcaBucket": "cumulus-test-sandbox-orca-glacier",
+            "reason": "onlyInOrca"
+          }
+        ]
+      }
+    ]
+  }
+}
+````
+
 ##### Granule Inventory Report
 
 ``` json
@@ -467,7 +597,7 @@ POST /reconciliationReports
 | parameter | value | required | description |
 | ----- | --- | -- | ----------- |
 | `reportName` | `string` | `false` | Report name. |
-| `reportType` | `"Granule Inventory"`&vert;`"Granule Not Found"`&vert;`"Internal"`&vert;`"Inventory"` | `false` | Report type (default Inventory) |
+| `reportType` | `"Granule Inventory"`&vert;`"Granule Not Found"`&vert;`"Internal"`&vert;`"Inventory"`&vert;`"ORCA Backup"` | `false` | Report type (default Inventory) |
 | `startTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data older than this will be ignored in the generated report.  |
 | `endTimestamp` | `string` | `false` | Any input valid for a JS Date contstructor. Data newer than this will be ignored in the generated report.|
 | `collectionId` | [`string | array`] | `false` | collectionId (or array of collectionIds) for comparison of collection and granule holdings. |
