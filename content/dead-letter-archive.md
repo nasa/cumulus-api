@@ -1,6 +1,6 @@
 ## Recover cumulus messages
 
-Endpoint provides a mechanism for recovery of S3 sfEventSqsToDbRecords dead letter objects (created as described in the [Core Documentation](https://nasa.github.io/cumulus/docs/features/dead_letter_archive)). The endpoint will invoke an async operation that will attempt to process all of the records in the specified location.
+Endpoint provides a mechanism for recovery of S3 sfEventSqsToDbRecords dead letter objects (created as described in the [Core Documentation](https://nasa.github.io/cumulus/docs/features/dead_letter_archive)). The endpoint will invoke an async operation that will attempt to process all of the objects in the specified location.
 
 The endpoint by default will process all all records contained in the S3 objects from the default storage location on the S3 system bucket under the prefix of `<stackName>/dead-letter-archive/sqs/`. However, it is likely useful to process a subset of those objects, which you can do by moving the desired subset of objects to a new path on S3 and then specifying that new path using the `path` parameter to the endpoint request.
 
