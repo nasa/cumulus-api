@@ -77,5 +77,8 @@ module.exports =
   fs.readFileSync('./content/orca.md', 'utf8') +  '\n' +
 
   '# Postgres Migration Count\n' +
-  fs.readFileSync('./content/migration-counts.md') + '\n'
+  fs.readFileSync('./content/migration-counts.md') + '\n' +
+
+  '# Dead Letter Archive\n' +
+  fs.readFileSync('./content/dead-letter-archive.md') + '\n'
 ;
