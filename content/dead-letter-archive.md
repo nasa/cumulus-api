@@ -1,18 +1,18 @@
 ## Recover cumulus messages
 
-Endpoint provides a mechanism for recovery of S3 sfEventSqsToDbRecords dead letter objects (created as described in the [Core Documentation](https://nasa.github.io/cumulus/docs/features/dead_letter_archive)).   The endpoint will invoke an async operation that will attempt to process all of the records in the specified location.
+Endpoint provides a mechanism for recovery of S3 sfEventSqsToDbRecords dead letter objects (created as described in the [Core Documentation](https://nasa.github.io/cumulus/docs/features/dead_letter_archive)). The endpoint will invoke an async operation that will attempt to process all of the records in the specified location.
 
-The endpoint by default will process all records from the default storage location on the S3 system bucket `<stackName>/dead-letter-archive/sqs/`, however it is likely useful to process a subset of those granules by moving the records to process to another prefix on S3
+The endpoint by default will process all records from the default storage location on the S3 system bucket `<stackName>/dead-letter-archive/sqs/`, however it is likely useful to process a subset of those granules by moving the records to process to another prefix on S3.
 
 The query uses the following optional parameters:
 
 | parameter | description |
 | --- | --- |
-| bucket | The bucket to read records from. Default the Core system bucket|
-| path | The S3 prefix (path) to read DLQ records from.  Defaults to `<stackName>/dead-letter-archive/sqs/`|
+| bucket | The bucket to read records from. Defaults to the Core system bucket|
+| path | The S3 prefix (path) to read DLQ records from. Defaults to `<stackName>/dead-letter-archive/sqs/`|
 
 ```endpoint
-POST /deadLetterARchive/recoverCumulusMessages
+POST /deadLetterArchive/recoverCumulusMessages
 ```
 
 #### Example request
