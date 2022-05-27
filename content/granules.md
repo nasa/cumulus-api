@@ -557,11 +557,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "updatedAt": 1574730504762,
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 
@@ -634,11 +630,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "updatedAt": 1574730504762,
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 
@@ -720,13 +712,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "description": "Bulk granule reingest run on 2 granules",
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "operationType": "Bulk Granule Reingest",
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a",
-    "updatedAt": 1574730504762
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 

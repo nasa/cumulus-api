@@ -631,13 +631,7 @@ $ curl --request POST https://example.com/reconciliationReports --header 'Author
 
 ```json
 {
-  "createdAt": 1623256106616,
-  "updatedAt": 1623256106616,
-  "id": "bb7059f4-0cd8-4205-8857-fb0e6b68b3e4",
-  "status": "RUNNING",
-  "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/stackname-CumulusECSCluster/656b2c8203c4488e9feffff38beb4be5",
-  "description": "Create Reconciliation Report",
-  "operationType": "Reconciliation Report"
+  "id": "bb7059f4-0cd8-4205-8857-fb0e6b68b3e4"
 }
 ```
 
