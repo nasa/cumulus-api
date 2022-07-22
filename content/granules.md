@@ -97,13 +97,13 @@ Retrieve a single granule.
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
 
 ```endpoint
-GET /granules/{granuleId}
+GET /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -253,6 +253,7 @@ $ curl --request POST https://example.com/granules \
 }
 ```
 
+
 ## Update or replace granule
 
 Update/replace an existing granules. Expects payload to contain the modified
@@ -266,13 +267,13 @@ corresponding value in the resource URI.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PUT https://example.com/granules/MOD11A1___006/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -363,15 +364,14 @@ reingest.  Remember only to supply either `executionArn` or `workflowName`, if
 both are present, workflowName is ignored and executionArn is used to determing
 the input message to the reingest.
 
-
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
        --data '{"action": "reingest",
@@ -398,13 +398,13 @@ duplicateHandling is not set to 'replace'.
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /granules/{granuleid}
+PUT /granules/{collectionId}/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -422,13 +422,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -446,13 +446,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -470,13 +470,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
 ```endpoint
-DELETE /granules/{granuleId}
+DELETE /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/granules/MOD11A1___006/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
