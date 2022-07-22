@@ -261,7 +261,7 @@ parts of the granule and the existing granule values will be overwritten by the
 modified portions.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
-Returns status 200 on successful replacement, 404 if the `granuleId` can not be
+Returns status 200 on successful replacement, 404 if the granule or collection can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
 
@@ -278,6 +278,7 @@ $ curl --request PUT https://example.com/granules/MOD11A1___006/granuleId.A19990
   --header 'Content-Type: application/json' \
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
+  "collectionId": "MOD11A1___006",
   "files": [
     {
       "bucket": "stack-protected",
@@ -623,7 +624,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granule and Collection IDs:
 
 ```curl
 curl -X POST
@@ -702,7 +703,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and optional workflow parameter:
+#### Example request with Granule and Collection IDs and optional workflow parameter:
 
 ```curl
 curl -X POST
