@@ -14,6 +14,7 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 | -----  | ----------- |
 | `limit={number}` | number of records to be returned by the API call; default is `1`, maximum is `100` |
 | `page={number}` | page number, 1-indexed; default is `1` |
+| `searchContext={value}` | searchContext value returned by a previous query, must be included on subsequent queries to maintain the context. Allows listing past 10,000 results. |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
 | `order={asc|desc}` | whether to sort in `asc` or `desc` order |
 | `sort_key[]={-fieldName1}&sort_key[]={fieldName2}` | One or more sort keys can be specified using the sort_key[] parameter. The order used impacts searching. Fields can be prepended with a `-` to sort in descending order or a `+` to sort in ascending. Ascending order is the default. The + must be escaped with %2B|
