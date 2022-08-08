@@ -95,7 +95,7 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
 ## List granules with searchContext
 
 List granules in the Cumulus system with searchContext from a previous query.
-Must include all of previous query's sort, order, or sort_key query string parameters.
+Must include all of previous query's `sort`, `order`, or `sort_key` query string parameters.
 Must not include `from` and `to` query string parameters.
 
 ```endpoint
