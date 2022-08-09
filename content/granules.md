@@ -97,13 +97,13 @@ Retrieve a single granule.
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
 
 ```endpoint
-GET /granules/{granuleId}
+GET /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h20v17.006.2017138085755 --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -253,6 +253,7 @@ $ curl --request POST https://example.com/granules \
 }
 ```
 
+
 ## Update or replace granule
 
 Update/replace an existing granules. Expects payload to contain the modified
@@ -260,23 +261,24 @@ parts of the granule and the existing granule values will be overwritten by the
 modified portions.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
-Returns status 200 on successful replacement, 404 if the `granuleId` can not be
+Returns status 200 on successful replacement, 404 if the granule or collection can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PUT https://example.com/granules/MOD11A1___006/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
+  "collectionId": "MOD11A1___006",
   "files": [
     {
       "bucket": "stack-protected",
@@ -363,15 +365,14 @@ reingest.  Remember only to supply either `executionArn` or `workflowName`, if
 both are present, workflowName is ignored and executionArn is used to determing
 the input message to the reingest.
 
-
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
        --data '{"action": "reingest",
@@ -398,13 +399,13 @@ duplicateHandling is not set to 'replace'.
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /granules/{granuleid}
+PUT /granules/{collectionId}/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -422,13 +423,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -446,13 +447,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PUT https://example.com/granules/MOD11A1___006/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -470,13 +471,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
 ```endpoint
-DELETE /granules/{granuleId}
+DELETE /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl --request DELETE https://example.com/granules/MOD11A1___006/1A0000-2016121001_002_001 --header 'Authorization: Bearer ReplaceWithTheToken'
 
 ```
 
@@ -498,7 +499,7 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Worfklow to be applied to all granules |
 | `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<string>` | List of granules to process. A granule here is a set of unique identifiers that identify a granule, granuleId + collectionId e.g. `{ granuleId: xxx, collectionId: yyy }`. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
@@ -525,7 +526,9 @@ $ curl --request POST \
                             "filter": [
                                 {
                                     "bool": {
-                                        "should": [{"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"}}],
+                                        "should": [
+                                            {"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006"}}
+                                        ],
                                         "minimum_should_match": 1
                                     }
                                 },
@@ -546,11 +549,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granule and Collection IDs:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "workflowName": "HelloWorldWorkflow"}'
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": [{ granuleId: "MOD09GQ.A2016358.h13v04.006.2016360104606", collectionId: "MOD11A1___006"}], "workflowName": "HelloWorldWorkflow"}'
 ```
 
 #### Example response
@@ -572,7 +575,7 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<string>` | List of granules to process. A granule here is a set of unique identifiers that identify a granule, granuleId + collectionId e.g. `{ granuleId: xxx, collectionId: yyy }`. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 
@@ -598,7 +601,9 @@ $ curl --request POST \
                             "filter": [
                                 {
                                     "bool": {
-                                        "should": [{"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"}}],
+                                        "should": [
+                                            {"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006"}}
+                                        ],
                                         "minimum_should_match": 1
                                     }
                                 },
@@ -619,11 +624,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granule and Collection IDs:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "forceRemoveFromCmr": true}'
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [{ granuleId: "MOD09GQ.A2016358.h13v04.006.2016360104606", collectionId: "MOD11A1___006"}], "forceRemoveFromCmr": true}'
 ```
 
 #### Example response
@@ -644,7 +649,7 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<string>` | List of granules to process. A granule here is a set of unique identifiers that identify a granule, granuleId + collectionId e.g. `{ granuleId: xxx, collectionId: yyy }`. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
@@ -675,7 +680,9 @@ $ curl --request POST \
                             "filter": [
                                 {
                                     "bool": {
-                                        "should": [{"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"}}],
+                                        "should": [
+                                            {"match": {"granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006"}}
+                                        ],
                                         "minimum_should_match": 1
                                     }
                                 },
@@ -696,14 +703,14 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and optional workflow parameter:
+#### Example request with Granule and Collection IDs and optional workflow parameter:
 
 ```curl
 curl -X POST
   https://example.com/granules/bulkReingest
   --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
   --data '{
-        "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
+        "granules": [{ granuleId: "MOD09GQ.A2016358.h13v04.006.2016360104606", collectionId: "MOD11A1___006"}],
         "workflow": "workflowName",
         }'
 ```
