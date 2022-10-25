@@ -151,6 +151,22 @@ $ curl https://example.com/executions/status/arn:aws:states:us-east-1:1234567890
 
 ```json
 {
+  "presignedS3Url": "https://example.amazonaws.com/example",
+  "data": "Execution status data, see example below"
+}
+```
+
+```json
+{
+  "presignedS3Url": "https://example.amazonaws.com/example",
+  "data": "Error: Execution Status for execution123 exceeded maximum allowed payload size"
+}
+```
+
+#### Execution status
+
+```json
+{
     "execution":
     {
         "executionArn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl4sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2",
