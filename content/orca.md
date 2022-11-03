@@ -10,6 +10,6 @@ POST /orca
 
 ```curl
 $ curl --request POST https://example.com/orca/recovery/granules --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'  --data '{
-  "granule_id": "MOD14A1.061.H5V12.2020312.141531789"
+  "granuleId": "MOD14A1.061.H5V12.2020312.141531789"
 }'
 ```
