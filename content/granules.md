@@ -279,7 +279,7 @@ Create a granule. A `granule` can have the following fields.
 | `collectionId` | `string`| `yes` | Collection associated with the granule |
 | `createdAt` | `integer`| `no` | Time granule record was created (now) |
 | `duration` | `number`| `no` | Ingest duration milliseconds |
-| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends |
+| `endingDateTime` | `string`| `no` | The time when the granule's temporal coverage ends |
 | `error` | `object`| `no` | The error details for this granule |
 | `execution` | `string`| `no` | Step Function Execution URL |
 | `files` | `array`| `no` | Files associated with the granule |
@@ -351,15 +351,54 @@ $ curl --request POST https://example.com/granules \
 
 ## Update or replace granule
 
-Update/replace an existing granules. Expects payload to contain the modified
-parts of the granule and the existing granule values will be overwritten by the
-modified portions.  The same fields are available as are for [creating a
+Updates or creates an existing granule.
+
+This endpoint functions with PATCH behavior in that missing fields are preserved
+on update.  Expects payload to contain the modified parts of the granule and the
+existing granule values will be overwritten by the modified portions.
+Undefined values that are not required by this API (e.g. `createdAt`) but are required by
+the schema will be set to default values.
+
+**Please note this endpoint will be being moved to the `PATCH` HTTP request
+method in a future release**
+
+Values with NULL set will be removed from the object, unless the field is not
+nullable/removable in which case an error will be returned.   In cases where default
+values are applied on null.
+
+| Field | Nullable | Null Default |
+| --- | --- | --- |
+| `beginningDateTime` | `yes` | Value will be removed |
+| `cmrLink` | `yes` | Value will be removed |
+| `collectionId` | `no` | Value will be removed |
+| `createdAt` | `yes` | Current Date |
+| `duration` | `yes` | Value will be removed |
+| `endingDateTime` | `yes` | Value will be removed |
+| `error` | `yes` | {} |
+| `execution` | `no` | Value will be removed |
+| `files` | `yes` | '[]' - will remove all associated files, granule will return undefined |
+| `granuleId` | `no` | Value will be removed |
+| `lastUpdateDateTime` | `yes` | Value will be removed |
+| `pdrName` | `yes` | Value will be removed |
+| `processingEndDateTime` | `yes` | Value will be removed |
+| `processingStartDateTime` | `yes` | Value will be removed |
+| `productVolume` | `yes` | Value will be removed |
+| `productionDateTime` | `yes` | Value will be removed |
+| `provider` | `yes` | Value will be removed |
+| `published` | `yes` | false |
+| `queryFields` | `yes`  | Value will be removed |
+| `status` | `no` | Value will be removed |
+| `timeToArchive` | `yes` | Value will be removed |
+| `timeToPreprocess` | `yes` | Value will be removed |
+| `timestamp` | `yes` | Current time value |
+| `updatedAt` | `no` | Value will be removed |
+
+ The same fields are available as are for [creating a
 granule.](#create-granule).
 
 Returns status 200 on successful replacement, 404 if the `granuleId` can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
-
 
 ```endpoint
 PUT /granules/{granuleId}
