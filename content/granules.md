@@ -23,7 +23,103 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
         "table": "granule",
         "limit": 1,
         "page": 1,
-        "count": 8
+        "count": 8,
+        "searchContext": "%5B%221577836800000%22%5D",
+    },
+    "results": [
+        {
+            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
+            "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
+            "collectionId": "MOD11A1___006",
+            "status": "completed",
+            "provider": "LP_TS2_DataPool",
+            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
+            "files": [
+                {
+                    "bucket": "cumulus-devseed-protected",
+                    "checksum": 964704694,
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+                    "fileSize": 1447347,
+                    "fileType": "data",
+                    "checksumType": "CKSUM",
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
+                },
+                {
+                    "bucket": "cumulus-devseed-private",
+                    "checksum": 121318124,
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
+                    "fileSize": 22559,
+                    "fileType": "metadata",
+                    "checksumType": "CKSUM",
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
+                },
+                {
+                    "bucket": "cumulus-devseed-private",
+                    "checksum": 2188150664,
+                    "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
+                    "fileSize": 18118,
+                    "fileType": "data",
+                    "checksumType": "CKSUM",
+                    "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
+                },
+                {
+                    "bucket": "cumulus-devseed-public",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
+                    "fileType": "browse",
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
+                },
+                {
+                    "bucket": "cumulus-devseed-protected",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
+                    "fileType": "metadata",
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
+                },
+                {
+                    "bucket": "cumulus-devseed-public",
+                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
+                    "fileType": "browse",
+                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
+                }
+            ],
+            "error": null,
+            "createdAt": 1513020455831,
+            "timestamp": 1513020462156,
+            "published": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS",
+            "duration": 6.325,
+            "cmrLink": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS"
+        }
+    ]
+}
+```
+
+## List granules with searchContext
+
+List granules in the Cumulus system with searchContext from a previous query.
+Must include all of previous query's `sort`, `order`, or `sort_key` query string parameters.
+Must not include `from` and `to` query string parameters.
+
+```endpoint
+GET /granules
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/granules?searchContext=%5B%221577836800000%22%5D --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+{
+    "meta": {
+        "name": "cumulus-api",
+        "stack": "lpdaac-cumulus",
+        "table": "granule",
+        "limit": 1,
+        "page": 1,
+        "count": 8,
+        "searchContext": "%5B%221606780899999%22%5D",
     },
     "results": [
         {
@@ -557,11 +653,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "updatedAt": 1574730504762,
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 
@@ -634,11 +726,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "updatedAt": 1574730504762,
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a"
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 
@@ -720,13 +808,7 @@ curl -X POST
 
 ```json
 {
-    "createdAt": 1574730504000,
-    "description": "Bulk granule reingest run on 2 granules",
-    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e",
-    "operationType": "Bulk Granule Reingest",
-    "status": "RUNNING",
-    "taskArn": "arn:aws:ecs:us-east-1:123456789012:task/d481e76e-f5fc-9c1c-2411-fa13779b111a",
-    "updatedAt": 1574730504762
+    "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
 

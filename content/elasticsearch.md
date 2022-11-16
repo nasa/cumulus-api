@@ -273,6 +273,18 @@ In case of corruption of your Elasticsearch index, you can reindex your data fro
 
 You can specify an index (should be empty) or if no index name is specified, a default with the format of 'cumulus-year-month-day' with today's date (e.g. `cumulus-4-12-2019`) will be used. If the specified index does not exist, it will be created.
 
+You may optionally specify the following request fields:
+
+| parameter | value | required | description |
+| ----- | --- | -- | ----------- |
+| `postgresResultPageSize` | `number` | `false` | Number of records to pull per database query for index to Elasticsearch   Defaults 1000 |
+| `postgresConnectionPoolSize` | `number `| `false` | Max number of connections to postgres database to allocate.   Defaults to 10|
+| `esRequestConcurrency` | `number` | `false` | Maximum concurrency of writes to Elasticsearch Defaults to 10|
+| `indexName` | `string` | `false` | Name of index to re-index to.   Defaults to `cumulus-dd-mm-yyyy` |
+
+
+
+
 It is recommended that workflow rules be turned off, as any data ingested into the database during this operation cannot be guaranteed to make it into the new index. Following the completion of the index, you will need to use the change index operation to switch your Elasticsearch to point to the new instance.
 
 Indexing is an async operation, so an operation id will be returned. You can query the status using the `asyncoperations` GET endpoint with the operation id.
