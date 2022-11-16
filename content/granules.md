@@ -354,10 +354,11 @@ $ curl --request POST https://example.com/granules \
 Updates or creates an existing granule.
 
 This endpoint functions with PATCH behavior in that missing fields are preserved
-on update.  Expects payload to contain the modified parts of the granule and the
-existing granule values will be overwritten by the modified portions.
+on update.  
+
 Undefined values that are not required by this API (e.g. `createdAt`) but are required by
-the schema will be set to default values.
+the schema will be set to default values if unset and not already present in
+case of granule update.
 
 **Please note this endpoint will be being moved to the `PATCH` HTTP request
 method in a future release**
