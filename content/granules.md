@@ -360,6 +360,8 @@ Returns status 200 on successful replacement, 404 if the `granuleId` can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
 
+**Please note that a granule's `collectionId` is not modifiable.** 
+
 
 ```endpoint
 PUT /granules/{granuleId}
