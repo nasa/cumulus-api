@@ -363,8 +363,8 @@ the schema will be set to default values.
 method in a future release**
 
 Values with NULL set will be removed from the object, unless the field is not
-nullable/removable in which case an error will be returned.   In cases where default
-values are applied on null.
+nullable/removable in which case an error will be returned.  In some cases, a
+default value will be set on deletion, according to the following table:
 
 | Field | Nullable | Null Default |
 | --- | --- | --- |
