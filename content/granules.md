@@ -362,13 +362,13 @@ corresponding value in the resource URI.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -461,13 +461,13 @@ the input message to the reingest.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
        --data '{"action": "reingest",
@@ -494,13 +494,13 @@ duplicateHandling is not set to 'replace'.
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /granules/{granuleid}
+PATCH /granules/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -518,13 +518,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -542,13 +542,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
