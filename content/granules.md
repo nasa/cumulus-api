@@ -351,6 +351,14 @@ $ curl --request POST https://example.com/granules \
 
 ## Update or replace granule
 
+**Please note** -- In versions of CUMULUS prior to release v14.1.x these
+endpoints were listed as PUT requests.  Their function is identical, if you're
+a prior release, please substitute a `PUT` request in place of a `PATCH` request
+in the following documentation.
+
+In future versions of Core the existing `PUT` endpoint logic will be updated to
+more closely match correct REST PUT behavior (update via overwrite).
+
 Update/replace an existing granules. Expects payload to contain the modified
 parts of the granule and the existing granule values will be overwritten by the
 modified portions.  The same fields are available as are for [creating a
