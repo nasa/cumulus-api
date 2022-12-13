@@ -349,25 +349,68 @@ $ curl --request POST https://example.com/granules \
 }
 ```
 
-## Update or replace granule
+## Replace granule
 
-**Please note** -- In versions of CUMULUS prior to release v14.1.x these
-endpoints were listed as PUT requests.  Their function is identical, if you're
-a prior release, please substitute a `PUT` request in place of a `PATCH` request
-in the following documentation.
-
-In future versions of Core the existing `PUT` endpoint logic will be updated to
-more closely match correct REST PUT behavior (update via overwrite).
-
-Update/replace an existing granules. Expects payload to contain the modified
+Replace an existing granule.  Expects payload to contain the modified
 parts of the granule and the existing granule values will be overwritten by the
-modified portions.  The same fields are available as are for [creating a
+modified portions.   Any unspecified values will be removed, and for appropriate
+fields replaced with defaults.    Executions associated will not be modified if
+not specified.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
-Returns status 200 on successful replacement, 404 if the `granuleId` can not be
-found in the database, or 400 when the granuleId in the payload does not match the
-corresponding value in the resource URI.
 
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.
+
+**Please note** -- In versions of CUMULUS prior to release v15 PUT endpoint were
+identical to PATCH requests.
+
+### Example request
+
+```curl
+$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "granuleId": "granuleId.A20200113.006.1005",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
+    },
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.jpg",
+      "fileName": "granuleId.A20200113.006.1005.jpg"
+    }
+  ],
+  "duration": 1000,
+  "status": "completed"
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully updated granule with Granule Id: granuleId.A20200113.006.1005"
+}
+```
+
+## Update granule
+
+Update an existing granule.  Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.   Unspecified keys will be retained.    Keys set to `null`
+will be removed.    Executions may not be disassociated from the granule via
+`null` deletion.  The same fields are available as are for [creating a
+granule.](#create-granule).
+
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.
 
 ```endpoint
 PATCH /granules/{granuleId}
