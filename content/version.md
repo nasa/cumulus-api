@@ -17,7 +17,7 @@ $ curl https://example.com/version
 ```json
 {
     "response_version": "v2",
-    "api_version": "2.0.0"
+    "api_version": "15.0.0"
 }
 ```
 
