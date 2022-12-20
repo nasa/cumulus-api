@@ -597,6 +597,7 @@ Overview of the request fields:
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `timeout` | N | `string` | Timeout for Elasticsearch search operation, defaults to 60 seconds. Refer to official Elasticsearch docs for time units (e.g. 's' for seconds, 'm' for minutes) |
 
 
 ```endpoint
@@ -744,6 +745,7 @@ Overview of the request fields:
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
+| `timeout` | N | `string` | Timeout for Elasticsearch search operation, defaults to 60 seconds. Refer to official Elasticsearch docs for time units (e.g. 's' for seconds, 'm' for minutes) |
 
 
 An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
