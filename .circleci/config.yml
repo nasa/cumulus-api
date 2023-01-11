@@ -30,7 +30,7 @@ jobs:
       - deploy:
           name: deploy documentation to gh-pages 
           command: |
-            if [ "${CIRCLE_BRANCH}" == "CUMULUS-3140" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               npm run build
               npm run deploy
             fi
