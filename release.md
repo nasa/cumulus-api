@@ -34,7 +34,7 @@ e.g.:
     git push origin v9.1.0
 ```
 
-### 3. Generate the API documentation
+### 3. Generate the API document
 
 ```bash
     npm install
@@ -46,17 +46,19 @@ e.g.:
     npm run build v9.1.0
 ```
 
-### 4. View and commit the generated document
+You can view the generated API document with `npm run serve-all`.
 
-```bash
-    npm run serve-all
-```
+### 4. Add the new API document
+
+Add the new API document link to `website/index.html`, e.g. `<p><a href="v9.1.0"">v9.1.0"</a></p>`,
+and add to the commit with `git add website/index.html`.
+
 ```bash
     git add website/vMAJOR.MINOR.PATCH
     git commit -m "Release MAJOR.MINOR.PATCH"
 
 e.g.:
-    git add website/v9.1.0
+    git add website/v9.1.0 website/index.html
     git commit -m "Release 9.1.0"
 ```
 
