@@ -6,6 +6,7 @@
   "scripts": {
     "bootstrap": "./bin/docs install",
     "serve": "./bin/docs serve",
+    "serve-all": "budo --dir website --live",
     "build": "./bin/docs build",
     "deploy": "./bin/docs deploy"
   },
