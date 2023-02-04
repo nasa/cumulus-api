@@ -593,10 +593,11 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Workflow to be applied to all granules |
-| `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output |
+| `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 
 
 ```endpoint
@@ -667,10 +668,13 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given |
+| `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation. |
+| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
+| `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output |
+| `maxDbConnections` | `N` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` |
 
 ```endpoint
 POST /granules/bulkDelete
@@ -741,8 +745,9 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
+| `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 
 
