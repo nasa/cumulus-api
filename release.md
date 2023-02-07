@@ -11,8 +11,9 @@ for the patch version).
 
 ```shell
     git checkout -b release-MAJOR.MINOR.x
-
+```
 e.g.:
+```shell
     git checkout -b release-9.1.x
 ```
 
@@ -34,8 +35,9 @@ tag:
 ```bash
     git tag -a vMAJOR.MINOR.PATCH -m "Release MAJOR.MINOR.PATCH"
     git push origin vMAJOR.MINOR.PATCH
-
+```
 e.g.:
+```shell
     git tag -a v9.1.0 -m "Release 9.1.0"
     git push origin v9.1.0
 ```
@@ -47,8 +49,9 @@ e.g.:
 ```
 ```bash
     npm run build vMAJOR.MINOR.PATCH
-
+```
 e.g.:
+```shell
     npm run build v9.1.0
 ```
 
@@ -63,8 +66,9 @@ website/index.html`.
 ```bash
     git add website/vMAJOR.MINOR.PATCH
     git commit -m "Release MAJOR.MINOR.PATCH"
-
+```
 e.g.:
+```shell
     git add website/v9.1.0 website/index.html
     git commit -m "Release 9.1.0"
 ```
