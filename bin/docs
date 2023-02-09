@@ -16,22 +16,30 @@ serve() {
 }
 
 build() {
-    cd node_modules/docbox || exit
+    RELEASE=$1
+    rm -rf website/unreleased
+    pushd node_modules/docbox || exit
     rm -rf build
     mkdir -p build
     npm run build
     cp -r css build/
     cp index.html build/
     cp bundle.js build/
+    popd
+    cp -r node_modules/docbox/build website/unreleased
+    if [ "$RELEASE" ]
+    then
+      cp -r node_modules/docbox/build "website/$RELEASE"
+    fi
 }
 
 deploy() {
-    cd node_modules/docbox/build || exit
+    cd website || exit
     git init
     git config user.name "Dvseed"
     git config user.email "info@developmentseed.org"
     git config commit.gpgsign "false"
-    git add css bundle.js index.html
+    git add .
     git commit -m "Automated to gh-pages [skip ci]"
     git push --force --quiet git@github.com:nasa/cumulus-api.git master:gh-pages
     rm -rf .git/
@@ -51,7 +59,7 @@ do
             ;;
         build)
             copy_docs
-            build
+            build $2
             exit 0
             ;;
         deploy)
