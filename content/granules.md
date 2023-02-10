@@ -279,7 +279,7 @@ Create a granule. A `granule` can have the following fields.
 | `collectionId` | `string`| `yes` | Collection associated with the granule |
 | `createdAt` | `integer`| `no` | Time granule record was created (now) |
 | `duration` | `number`| `no` | Ingest duration milliseconds |
-| `endingDateTime` | `string`| `no` | The time when the graule's temporal coverage ends |
+| `endingDateTime` | `string`| `no` | The time when the granule's temporal coverage ends |
 | `error` | `object`| `no` | The error details for this granule |
 | `execution` | `string`| `no` | Step Function Execution URL |
 | `files` | `array`| `no` | Files associated with the granule |
@@ -351,24 +351,64 @@ $ curl --request POST https://example.com/granules \
 
 ## Update or replace granule
 
-Update/replace an existing granules. Expects payload to contain the modified
-parts of the granule and the existing granule values will be overwritten by the
-modified portions.  The same fields are available as are for [creating a
+Updates or creates an existing granule.
+
+This endpoint functions with PATCH behavior in that missing fields are preserved
+on update.  
+
+Undefined values that are not required by this API (e.g. `createdAt`) but are required by
+the schema will be set to default values if unset and not already present in
+case of granule update.
+
+**Please note this endpoint will be being moved to the `PATCH` HTTP request
+method in a future release**
+
+Values with NULL set will be removed from the object, unless the field is not
+nullable/removable in which case an error will be returned.  In some cases, a
+default value will be set on deletion, according to the following table:
+
+| Field | Nullable | Null Default |
+| --- | --- | --- |
+| `beginningDateTime` | `yes` | Value will be removed |
+| `cmrLink` | `yes` | Value will be removed |
+| `collectionId` | `no` | Value will be removed |
+| `createdAt` | `yes` | Current Date |
+| `duration` | `yes` | Value will be removed |
+| `endingDateTime` | `yes` | Value will be removed |
+| `error` | `yes` | {} |
+| `execution` | `no` | Value will be removed |
+| `files` | `yes` | '[]' - will remove all associated files, granule will return undefined |
+| `granuleId` | `no` | Value will be removed |
+| `lastUpdateDateTime` | `yes` | Value will be removed |
+| `pdrName` | `yes` | Value will be removed |
+| `processingEndDateTime` | `yes` | Value will be removed |
+| `processingStartDateTime` | `yes` | Value will be removed |
+| `productVolume` | `yes` | Value will be removed |
+| `productionDateTime` | `yes` | Value will be removed |
+| `provider` | `yes` | Value will be removed |
+| `published` | `yes` | false |
+| `queryFields` | `yes`  | Value will be removed |
+| `status` | `no` | Value will be removed |
+| `timeToArchive` | `yes` | Value will be removed |
+| `timeToPreprocess` | `yes` | Value will be removed |
+| `timestamp` | `yes` | Current time value |
+| `updatedAt` | `no` | Value will be removed |
+
+ The same fields are available as are for [creating a
 granule.](#create-granule).
 
 Returns status 200 on successful replacement, 404 if the `granuleId` can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
 
-
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -461,13 +501,13 @@ the input message to the reingest.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
        --data '{"action": "reingest",
@@ -494,13 +534,13 @@ duplicateHandling is not set to 'replace'.
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /granules/{granuleid}
+PATCH /granules/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -518,13 +558,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -542,13 +582,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
