@@ -402,13 +402,13 @@ found in the database, or 400 when the granuleId in the payload does not match t
 corresponding value in the resource URI.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+$ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --data '{
@@ -501,13 +501,13 @@ the input message to the reingest.
 
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
        --data '{"action": "reingest",
@@ -534,13 +534,13 @@ duplicateHandling is not set to 'replace'.
 Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.
 
 ```endpoint
-PUT /granules/{granuleid}
+PATCH /granules/{granuleid}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -558,13 +558,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -582,13 +582,13 @@ $ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.20
 Remove a Cumulus granule from CMR.
 
 ```endpoint
-PUT /granules/{granuleId}
+PATCH /granules/{granuleId}
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -633,10 +633,11 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Workflow to be applied to all granules |
-| `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
 | `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 
 
 ```endpoint
@@ -707,10 +708,13 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given |
+| `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
+| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
+| `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `maxDbConnections` | `N` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
 
 ```endpoint
 POST /granules/bulkDelete
@@ -781,10 +785,10 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
+| `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
-
 
 An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
 by finding the most recent execution of the workflowName associated with the granuleId.
