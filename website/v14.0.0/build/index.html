@@ -10,7 +10,7 @@
     <link href='css/railscasts.css' rel='stylesheet' />
   </head>
   <body>
-    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="-357006138"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">Introduction</div><a href="#cumulus-api" class="line-height15 pad0x pad00y quiet block " data-reactid="7">Cumulus API</a><div class="small pad0x quiet space-top1" data-reactid="8">Versioning</div><a href="#versioning-1" class="line-height15 pad0x pad00y quiet block " data-reactid="9">Versioning</a><div class="small pad0x quiet space-top1" data-reactid="10">Authentication</div><a href="#token" class="line-height15 pad0x pad00y quiet block " data-reactid="11">Token</a><a href="#refresh-token" class="line-height15 pad0x pad00y quiet block " data-reactid="12">Refresh token</a><a href="#delete-token" class="line-height15 pad0x pad00y quiet block " data-reactid="13">Delete token</a><a href="#authorization-header" class="line-height15 pad0x pad00y quiet block " data-reactid="14">Authorization header</a><div class="small pad0x quiet space-top1" data-reactid="15">Providers</div><a href="#list-providers" class="line-height15 pad0x pad00y quiet block " data-reactid="16">List providers</a><a href="#retrieve-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="17">Retrieve provider</a><a href="#create-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="18">Create provider</a><a href="#updatereplace-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="19">Update/replace provider</a><a href="#delete-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="20">Delete provider</a><div class="small pad0x quiet space-top1" data-reactid="21">Collections</div><a href="#list-collections" class="line-height15 pad0x pad00y quiet block " data-reactid="22">List collections</a><a href="#list-collections-with-active-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="23">List collections with active granules</a><a href="#retrieve-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="24">Retrieve collection</a><a href="#create-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="25">Create collection</a><a href="#updatereplace-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="26">Update/replace collection</a><a href="#delete-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="27">Delete collection</a><div class="small pad0x quiet space-top1" data-reactid="28">Granules</div><a href="#list-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="29">List granules</a><a href="#list-granules-with-searchcontext" class="line-height15 pad0x pad00y quiet block " data-reactid="30">List granules with searchContext</a><a href="#retrieve-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="31">Retrieve granule</a><a href="#create-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="32">Create Granule</a><a href="#update-or-replace-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="33">Update or replace granule</a><a href="#associate-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="34">Associate execution</a><a href="#reingest-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="35">Reingest granule</a><a href="#apply-workflow-to-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="36">Apply workflow to granule</a><a href="#move-a-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="37">Move a granule</a><a href="#remove-granule-from-cmr" class="line-height15 pad0x pad00y quiet block " data-reactid="38">Remove granule from CMR</a><a href="#delete-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="39">Delete granule</a><a href="#bulk-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="40">Bulk Operations</a><a href="#bulk-delete" class="line-height15 pad0x pad00y quiet block " data-reactid="41">Bulk Delete</a><a href="#bulk-reingest" class="line-height15 pad0x pad00y quiet block " data-reactid="42">Bulk Reingest</a><div class="small pad0x quiet space-top1" data-reactid="43">PDRs</div><a href="#list-pdrs" class="line-height15 pad0x pad00y quiet block " data-reactid="44">List PDRs</a><a href="#retrieve-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="45">Retrieve PDR</a><a href="#delete-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="46">Delete PDR</a><div class="small pad0x quiet space-top1" data-reactid="47">Rules</div><a href="#list-rules" class="line-height15 pad0x pad00y quiet block " data-reactid="48">List rules</a><a href="#retrieve-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="49">Retrieve rule</a><a href="#create-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="50">Create rule</a><a href="#updatereplace-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="51">Update/replace rule</a><a href="#delete-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="52">Delete rule</a><div class="small pad0x quiet space-top1" data-reactid="53">Stats</div><a href="#summary" class="line-height15 pad0x pad00y quiet block " data-reactid="54">Summary</a><a href="#count" class="line-height15 pad0x pad00y quiet block " data-reactid="55">Count</a><div class="small pad0x quiet space-top1" data-reactid="56">Logs</div><a href="#list-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="57">List logs</a><a href="#retrieve-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="58">Retrieve Logs</a><div class="small pad0x quiet space-top1" data-reactid="59">Granule CSV</div><a href="#get-granule-csv-file" class="line-height15 pad0x pad00y quiet block " data-reactid="60">Get Granule CSV file</a><div class="small pad0x quiet space-top1" data-reactid="61">Executions</div><a href="#list-executions" class="line-height15 pad0x pad00y quiet block " data-reactid="62">List executions</a><a href="#retrieve-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="63">Retrieve Execution</a><a href="#retrieve-execution-status" class="line-height15 pad0x pad00y quiet block " data-reactid="64">Retrieve Execution Status</a><a href="#search-executions-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="65">Search Executions By Granules</a><a href="#workflows-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="66">Workflows By Granules</a><a href="#create-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="67">Create execution</a><a href="#update-or-replace-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="68">Update or replace execution</a><a href="#delete-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="69">Delete execution</a><div class="small pad0x quiet space-top1" data-reactid="70">Workflows</div><a href="#list-workflows" class="line-height15 pad0x pad00y quiet block " data-reactid="71">List workflows</a><a href="#retrieve-workflow" class="line-height15 pad0x pad00y quiet block " data-reactid="72">Retrieve workflow</a><div class="small pad0x quiet space-top1" data-reactid="73">Async Operations</div><a href="#list-async-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="74">List async operations</a><a href="#retrieve-async-operation" class="line-height15 pad0x pad00y quiet block " data-reactid="75">Retrieve async operation</a><div class="small pad0x quiet space-top1" data-reactid="76">Replays</div><a href="#ingest-replays" class="line-height15 pad0x pad00y quiet block " data-reactid="77">Ingest Replays</a><div class="small pad0x quiet space-top1" data-reactid="78">Schemas</div><a href="#retrieve-schema" class="line-height15 pad0x pad00y quiet block " data-reactid="79">Retrieve schema</a><div class="small pad0x quiet space-top1" data-reactid="80">Reconciliation Reports</div><a href="#list-reconciliation-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="81">List reconciliation reports</a><a href="#retrieve-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="82">Retrieve reconciliation report</a><a href="#create-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="83">Create reconciliation report</a><a href="#delete-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="84">Delete reconciliation report</a><div class="small pad0x quiet space-top1" data-reactid="85">EMS Reports</div><a href="#create-ems-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="86">Create EMS reports</a><div class="small pad0x quiet space-top1" data-reactid="87">Instance Metadata</div><a href="#instance-metadata-1" class="line-height15 pad0x pad00y quiet block " data-reactid="88">Instance Metadata</a><div class="small pad0x quiet space-top1" data-reactid="89">Elasticsearch</div><a href="#elasticsearch-1" class="line-height15 pad0x pad00y quiet block " data-reactid="90">Elasticsearch</a><a href="#reindex" class="line-height15 pad0x pad00y quiet block " data-reactid="91">Reindex</a><a href="#reindex-status" class="line-height15 pad0x pad00y quiet block " data-reactid="92">Reindex Status</a><a href="#change-index" class="line-height15 pad0x pad00y quiet block " data-reactid="93">Change Index</a><a href="#index-from-database" class="line-height15 pad0x pad00y quiet block " data-reactid="94">Index from Database</a><a href="#indices-status" class="line-height15 pad0x pad00y quiet block " data-reactid="95">Indices Status</a><a href="#current-index" class="line-height15 pad0x pad00y quiet block " data-reactid="96">Current Index</a><div class="small pad0x quiet space-top1" data-reactid="97">Dashboard</div><a href="#serve-the-dashboard-from-a-bucket" class="line-height15 pad0x pad00y quiet block " data-reactid="98">Serve the dashboard from a bucket</a><div class="small pad0x quiet space-top1" data-reactid="99">ORCA</div><a href="#orca-1" class="line-height15 pad0x pad00y quiet block " data-reactid="100">ORCA</a><div class="small pad0x quiet space-top1" data-reactid="101">Postgres Migration Count</div><a href="#migration-counts" class="line-height15 pad0x pad00y quiet block " data-reactid="102">Migration Counts</a><div class="small pad0x quiet space-top1" data-reactid="103">Dead Letter Archive</div><a href="#recover-cumulus-messages" class="line-height15 pad0x pad00y quiet block " data-reactid="104">Recover cumulus messages</a></div></div><div class="space-left16" data-reactid="105"><div class="" data-reactid="106"><div class="clearfix" data-reactid="107"><div data-title="Cumulus API" class="keyline-top section contain clearfix " data-reactid="108"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="109"><h2 id="cumulus-api">Cumulus API</h2>
+    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="-297110465"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">Introduction</div><a href="#cumulus-api" class="line-height15 pad0x pad00y quiet block " data-reactid="7">Cumulus API</a><div class="small pad0x quiet space-top1" data-reactid="8">Versioning</div><a href="#versioning-1" class="line-height15 pad0x pad00y quiet block " data-reactid="9">Versioning</a><div class="small pad0x quiet space-top1" data-reactid="10">Authentication</div><a href="#token" class="line-height15 pad0x pad00y quiet block " data-reactid="11">Token</a><a href="#refresh-token" class="line-height15 pad0x pad00y quiet block " data-reactid="12">Refresh token</a><a href="#delete-token" class="line-height15 pad0x pad00y quiet block " data-reactid="13">Delete token</a><a href="#authorization-header" class="line-height15 pad0x pad00y quiet block " data-reactid="14">Authorization header</a><div class="small pad0x quiet space-top1" data-reactid="15">Providers</div><a href="#list-providers" class="line-height15 pad0x pad00y quiet block " data-reactid="16">List providers</a><a href="#retrieve-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="17">Retrieve provider</a><a href="#create-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="18">Create provider</a><a href="#updatereplace-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="19">Update/replace provider</a><a href="#delete-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="20">Delete provider</a><div class="small pad0x quiet space-top1" data-reactid="21">Collections</div><a href="#list-collections" class="line-height15 pad0x pad00y quiet block " data-reactid="22">List collections</a><a href="#list-collections-with-active-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="23">List collections with active granules</a><a href="#retrieve-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="24">Retrieve collection</a><a href="#create-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="25">Create collection</a><a href="#updatereplace-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="26">Update/replace collection</a><a href="#delete-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="27">Delete collection</a><div class="small pad0x quiet space-top1" data-reactid="28">Granules</div><a href="#list-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="29">List granules</a><a href="#list-granules-with-searchcontext" class="line-height15 pad0x pad00y quiet block " data-reactid="30">List granules with searchContext</a><a href="#retrieve-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="31">Retrieve granule</a><a href="#create-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="32">Create Granule</a><a href="#update-or-replace-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="33">Update or replace granule</a><a href="#associate-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="34">Associate execution</a><a href="#reingest-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="35">Reingest granule</a><a href="#apply-workflow-to-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="36">Apply workflow to granule</a><a href="#move-a-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="37">Move a granule</a><a href="#remove-granule-from-cmr" class="line-height15 pad0x pad00y quiet block " data-reactid="38">Remove granule from CMR</a><a href="#delete-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="39">Delete granule</a><a href="#bulk-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="40">Bulk Operations</a><a href="#bulk-delete" class="line-height15 pad0x pad00y quiet block " data-reactid="41">Bulk Delete</a><a href="#bulk-reingest" class="line-height15 pad0x pad00y quiet block " data-reactid="42">Bulk Reingest</a><div class="small pad0x quiet space-top1" data-reactid="43">PDRs</div><a href="#list-pdrs" class="line-height15 pad0x pad00y quiet block " data-reactid="44">List PDRs</a><a href="#retrieve-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="45">Retrieve PDR</a><a href="#delete-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="46">Delete PDR</a><div class="small pad0x quiet space-top1" data-reactid="47">Rules</div><a href="#list-rules" class="line-height15 pad0x pad00y quiet block " data-reactid="48">List rules</a><a href="#retrieve-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="49">Retrieve rule</a><a href="#create-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="50">Create rule</a><a href="#updatereplace-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="51">Update/replace rule</a><a href="#delete-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="52">Delete rule</a><div class="small pad0x quiet space-top1" data-reactid="53">Stats</div><a href="#summary" class="line-height15 pad0x pad00y quiet block " data-reactid="54">Summary</a><a href="#count" class="line-height15 pad0x pad00y quiet block " data-reactid="55">Count</a><div class="small pad0x quiet space-top1" data-reactid="56">Logs</div><a href="#list-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="57">List logs</a><a href="#retrieve-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="58">Retrieve Logs</a><div class="small pad0x quiet space-top1" data-reactid="59">Granule CSV</div><a href="#get-granule-csv-file" class="line-height15 pad0x pad00y quiet block " data-reactid="60">Get Granule CSV file</a><div class="small pad0x quiet space-top1" data-reactid="61">Executions</div><a href="#list-executions" class="line-height15 pad0x pad00y quiet block " data-reactid="62">List executions</a><a href="#retrieve-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="63">Retrieve Execution</a><a href="#retrieve-execution-status" class="line-height15 pad0x pad00y quiet block " data-reactid="64">Retrieve Execution Status</a><a href="#search-executions-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="65">Search Executions By Granules</a><a href="#workflows-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="66">Workflows By Granules</a><a href="#create-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="67">Create execution</a><a href="#update-or-replace-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="68">Update or replace execution</a><a href="#delete-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="69">Delete execution</a><div class="small pad0x quiet space-top1" data-reactid="70">Workflows</div><a href="#list-workflows" class="line-height15 pad0x pad00y quiet block " data-reactid="71">List workflows</a><a href="#retrieve-workflow" class="line-height15 pad0x pad00y quiet block " data-reactid="72">Retrieve workflow</a><div class="small pad0x quiet space-top1" data-reactid="73">Async Operations</div><a href="#list-async-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="74">List async operations</a><a href="#retrieve-async-operation" class="line-height15 pad0x pad00y quiet block " data-reactid="75">Retrieve async operation</a><div class="small pad0x quiet space-top1" data-reactid="76">Replays</div><a href="#ingest-replays" class="line-height15 pad0x pad00y quiet block " data-reactid="77">Ingest Replays</a><div class="small pad0x quiet space-top1" data-reactid="78">Schemas</div><a href="#retrieve-schema" class="line-height15 pad0x pad00y quiet block " data-reactid="79">Retrieve schema</a><div class="small pad0x quiet space-top1" data-reactid="80">Reconciliation Reports</div><a href="#list-reconciliation-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="81">List reconciliation reports</a><a href="#retrieve-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="82">Retrieve reconciliation report</a><a href="#create-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="83">Create reconciliation report</a><a href="#delete-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="84">Delete reconciliation report</a><div class="small pad0x quiet space-top1" data-reactid="85">EMS Reports</div><a href="#create-ems-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="86">Create EMS reports</a><div class="small pad0x quiet space-top1" data-reactid="87">Instance Metadata</div><a href="#instance-metadata-1" class="line-height15 pad0x pad00y quiet block " data-reactid="88">Instance Metadata</a><div class="small pad0x quiet space-top1" data-reactid="89">Elasticsearch</div><a href="#elasticsearch-1" class="line-height15 pad0x pad00y quiet block " data-reactid="90">Elasticsearch</a><a href="#reindex" class="line-height15 pad0x pad00y quiet block " data-reactid="91">Reindex</a><a href="#reindex-status" class="line-height15 pad0x pad00y quiet block " data-reactid="92">Reindex Status</a><a href="#change-index" class="line-height15 pad0x pad00y quiet block " data-reactid="93">Change Index</a><a href="#index-from-database" class="line-height15 pad0x pad00y quiet block " data-reactid="94">Index from Database</a><a href="#indices-status" class="line-height15 pad0x pad00y quiet block " data-reactid="95">Indices Status</a><a href="#current-index" class="line-height15 pad0x pad00y quiet block " data-reactid="96">Current Index</a><div class="small pad0x quiet space-top1" data-reactid="97">Dashboard</div><a href="#serve-the-dashboard-from-a-bucket" class="line-height15 pad0x pad00y quiet block " data-reactid="98">Serve the dashboard from a bucket</a><div class="small pad0x quiet space-top1" data-reactid="99">ORCA</div><a href="#orca-1" class="line-height15 pad0x pad00y quiet block " data-reactid="100">ORCA</a><div class="small pad0x quiet space-top1" data-reactid="101">Postgres Migration Count</div><a href="#migration-counts" class="line-height15 pad0x pad00y quiet block " data-reactid="102">Migration Counts</a><div class="small pad0x quiet space-top1" data-reactid="103">Dead Letter Archive</div><a href="#recover-cumulus-messages" class="line-height15 pad0x pad00y quiet block " data-reactid="104">Recover cumulus messages</a></div></div><div class="space-left16" data-reactid="105"><div class="" data-reactid="106"><div class="clearfix" data-reactid="107"><div data-title="Cumulus API" class="keyline-top section contain clearfix " data-reactid="108"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="109"><h2 id="cumulus-api">Cumulus API</h2>
 <p>The Cumulus API allows developers to interact with the <a href="https://github.com/nasa/cumulus">Cumulus Framework</a>, such as monitoring status or creating, editing, and deleting records. This is the same API that powers the <a href="https://github.com/nasa/cumulus-dashboard">Cumulus dashboard</a>.</p>
 <p>By utilizing this API, a developer can integrate with the Cumulus framework in any language or environment; although interacting with Cumulus through the Cumulus dashboard may be appropriate for many end users, for some use cases it's best to have the flexibility of a web-accessible API.</p>
 <p>The API accepts and responds with JSON payloads at various HTTPS endpoints.</p>
@@ -1082,7 +1082,7 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
 <td><code>endingDateTime</code></td>
 <td><code>string</code></td>
 <td><code>no</code></td>
-<td>The time when the graule's temporal coverage ends</td>
+<td>The time when the granule's temporal coverage ends</td>
 </tr>
 <tr>
 <td><code>error</code></td>
@@ -1239,9 +1239,149 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully wrote granule with Granule Id: granuleId.A20200113.006.1005"</span>
 }</pre>
 </div></div><div data-title="Update or replace granule" class="keyline-top section contain clearfix " data-reactid="176"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="177"><h2 id="update-or-replace-granule">Update or replace granule</h2>
-<p>Update/replace an existing granules. Expects payload to contain the modified
-parts of the granule and the existing granule values will be overwritten by the
-modified portions.  The same fields are available as are for <a href="#create-granule">creating a
+<p>Updates or creates an existing granule.</p>
+<p>This endpoint functions with PATCH behavior in that missing fields are preserved
+on update.  </p>
+<p>Undefined values that are not required by this API (e.g. <code>createdAt</code>) but are required by
+the schema will be set to default values if unset and not already present in
+case of granule update.</p>
+<p><strong>Please note this endpoint will be being moved to the <code>PATCH</code> HTTP request
+method in a future release</strong></p>
+<p>Values with NULL set will be removed from the object, unless the field is not
+nullable/removable in which case an error will be returned.  In some cases, a
+default value will be set on deletion, according to the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Nullable</th>
+<th>Null Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>beginningDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>cmrLink</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>collectionId</code></td>
+<td><code>no</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>createdAt</code></td>
+<td><code>yes</code></td>
+<td>Current Date</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>endingDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td><code>yes</code></td>
+<td>{}</td>
+</tr>
+<tr>
+<td><code>execution</code></td>
+<td><code>no</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>files</code></td>
+<td><code>yes</code></td>
+<td>'[]' - will remove all associated files, granule will return undefined</td>
+</tr>
+<tr>
+<td><code>granuleId</code></td>
+<td><code>no</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>lastUpdateDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>pdrName</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>processingEndDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>processingStartDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>productVolume</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>productionDateTime</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>published</code></td>
+<td><code>yes</code></td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>queryFields</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>no</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>timeToArchive</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>timeToPreprocess</code></td>
+<td><code>yes</code></td>
+<td>Value will be removed</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td><code>yes</code></td>
+<td>Current time value</td>
+</tr>
+<tr>
+<td><code>updatedAt</code></td>
+<td><code>no</code></td>
+<td>Value will be removed</td>
+</tr>
+</tbody>
+</table>
+<p> The same fields are available as are for <a href="#create-granule">creating a
 granule.</a>.</p>
 <p>Returns status 200 on successful replacement, 404 if the <code>granuleId</code> can not be
 found in the database, or 400 when the granuleId in the payload does not match the
@@ -1339,7 +1479,7 @@ from that execution.  When <code>workflowName</code> is specified, the database 
 to find all of the executions with that workflowName that were run on the
 granuleid, and the most recent originalMessage is pulled and used for the
 reingest.  Remember only to supply either <code>executionArn</code> or <code>workflowName</code>, if
-both are present, workflowName is ignored and executionArn is used to determing
+both are present, workflowName is ignored and executionArn is used to determining
 the input message to the reingest.</p>
 <p>A warning message is included in the response if the collection's
 duplicateHandling is not set to 'replace'.</p>
@@ -1432,7 +1572,7 @@ duplicateHandling is not set to 'replace'.</p>
 <td><code>workflow</code></td>
 <td><code>Y</code></td>
 <td><code>string</code></td>
-<td>Worfklow to be applied to all granules</td>
+<td>Workflow to be applied to all granules</td>
 </tr>
 <tr>
 <td><code>queueUrl</code></td>
@@ -1633,7 +1773,7 @@ duplicateHandling is not set to 'replace'.</p>
 </tbody>
 </table>
 <p>An optional data parameter of <code>workflowName</code> is also available to allow you to override the input message to the reingest. If <code>workflowName</code> is specified, the original message is pulled directly
-by finding the most recent execution of the workflowName assocated with the granuleId.</p>
+by finding the most recent execution of the workflowName associated with the granuleId.</p>
 <p>Use the <a href="#retrieve-async-operation">Retrieve async operation</a> endpoint with the <code>id</code> in the response to determine the status of the async operation.</p>
 </div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="205"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
@@ -2460,6 +2600,15 @@ return a 400 Error.</p>
 <h4 id="example-request-41">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/executions/status/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
 <h4 id="example-response-40">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"presignedS3Url"</span>: <span class="hljs-string">"https://example.amazonaws.com/example"</span>,
+  <span class="hljs-attr">"data"</span>: <span class="hljs-string">"Execution status data, see example below"</span>
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"presignedS3Url"</span>: <span class="hljs-string">"https://example.amazonaws.com/example"</span>,
+  <span class="hljs-attr">"data"</span>: <span class="hljs-string">"Error: Execution Status for execution123 exceeded maximum allowed payload size"</span>
+}</pre>
+<h4 id="execution-status">Execution status</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"execution"</span>:
     {
@@ -3916,7 +4065,7 @@ The schema below describes the expected fields in a replay request</p>
 </table>
 <p><em>NOTE</em>: Adding a startTimestamp or endTimestamp value to the POST request will result in one way comparisons for some fields for <code>Inventory</code> and <code>Granule Not Found</code> reports.</p>
 <p><em>NOTE</em>: Adding a granuleId input will result in an one way report for collections for <code>Inventory</code> and <code>Granule Not Found</code> reports.</p>
-<p><em>NOTE</em>: <code>Inventory</code> and <code>Granule Not Found</code> reports only alllow one of the parameters (<code>collectionId</code>, <code>granuleId</code>, <code>provider</code>) in same request.</p>
+<p><em>NOTE</em>: <code>Inventory</code> and <code>Granule Not Found</code> reports only allow one of the parameters (<code>collectionId</code>, <code>granuleId</code>, <code>provider</code>) in same request.</p>
 <p><em>NOTE</em>: <code>Granule Inventory</code> reports can be filtered with the following parameters: (<code>collectionId</code>, <code>granuleId</code>, <code>status</code>). If <code>granuleId</code> is a string or single value array, it will search for granules with granuleIds containing that substring.</p>
 </div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="298"><h4 id="example-request-53">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/reconciliationReports --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
@@ -4385,7 +4534,7 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
     </div>
 <h4 id="example-request-64">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/orca/recovery/granules --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>  --data <span class="hljs-string">'{
-  "granule_id": "MOD14A1.061.H5V12.2020312.141531789"
+  "granuleId": "MOD14A1.061.H5V12.2020312.141531789"
 }'</span></pre>
 </div></div><div data-title="Migration Counts" class="keyline-top section contain clearfix " data-reactid="334"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="335"><h2 id="migration-counts">Migration Counts</h2>
 <p>This endpoint triggers a run of the postgres-migration-count-tool as an async operation of type <code>Migration Count Report</code>.</p>

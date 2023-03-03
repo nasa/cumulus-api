@@ -31,7 +31,7 @@ $ curl https://example.com/pdrs --header 'Authorization: Bearer ReplaceWithTheTo
             "status": "failed",
             "provider": "LP_TS2_DataPool",
             "progress": 0,
-            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:6ef0c52f83c549db58b3a1e50",
+            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:ACCOUNT:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:6ef0c52f83c549db58b3a1e50",
             "PANSent": false,
             "PANmessage": "N/A",
             "stats": {
@@ -71,7 +71,7 @@ $ curl https://example.com/pdrs/7970bff5-128a-489f-b43c-de4ad7834ce5.PDR --heade
     "status": "failed",
     "provider": "LP_TS2_DataPool",
     "progress": 0,
-    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:433612427488:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:6ef0c52f83c549db58b3a1e50",
+    "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:ACCOUNT:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:6ef0c52f83c549db58b3a1e50",
     "PANSent": false,
     "PANmessage": "N/A",
     "stats": {
