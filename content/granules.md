@@ -354,7 +354,7 @@ $ curl --request POST https://example.com/granules \
 Updates or creates an existing granule.
 
 This endpoint functions with PATCH behavior in that missing fields are preserved
-on update.  
+on update.
 
 Undefined values that are not required by this API (e.g. `createdAt`) but are required by
 the schema will be set to default values if unset and not already present in
@@ -400,6 +400,8 @@ granule.](#create-granule).
 Returns status 200 on successful replacement, 404 if the `granuleId` can not be
 found in the database, or 400 when the granuleId in the payload does not match the
 corresponding value in the resource URI.
+
+**Please note that a granule's `collectionId` is not modifiable.**
 
 ```endpoint
 PATCH /granules/{granuleId}
