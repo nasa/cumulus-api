@@ -24,3 +24,7 @@
   * your stylesheet by default.
   */
  @tailwind variants;
+
+ tr {
+    height: 50px;
+ }

@@ -1,24 +1,85 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=11" />
-    <link href="/cumulus-api/dist/output.css" rel="stylesheet" />
-    <title>Cumulus API</title>
-  </head>
+<html class="dark">
 
-  <body>
-    <h1 class="text-3xl font-bold underline">Testing Tailwind CSS</h1>
-    <h1>Cumulus API Docs</h1>
-    <h2>Cumulus API documentation:</h2>
-    <p>https://nasa.github.io/cumulus-api/{release}</p>
-    <h2>Available Releases:</h2>
-    <p><a href="unreleased">Unreleased</a></p>
-    <p><a href="v14.1.0">v14.1.0+</a></p>
-    <p><a href="v14.0.0">v14.0.0</a></p>
-    <p><a href="v13.4.0">v13.4.0</a></p>
-    <p><a href="v13.3.0">v13.3.0</a></p>
-    <p><a href="v13.0.0">v13.0.0</a></p>
-    <p><a href="v11.0.0">v11.0.0 (and all prior releases)</a></p>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=11" />
+  <link href="/cumulus-api/dist/output.css" rel="stylesheet" />
+  <title>Cumulus API</title>
+</head>
+
+<body class="bg-white dark:bg-black">
+  <div>
+    <!-- Navigation bar -->
+    <header class="top-0">
+      <nav class="flex h-14 items-center justify-between bg-blue px-4 py-3" aria-label="Cumulus Navigation">
+        <div class="flex lg:flex-1">
+          <a href="#" class="flex items-center justify-between">
+            <img class="h-8 w-8" src="./img/ic_cumulus_logo_white.svg" alt="NASA Cumulus Logo" />
+            <span class="not-sr-only pl-2 text-lg font-semibold leading-4 text-gray-light">Cumulus API Documentation</span>
+          </a>
+        </div>
+        <div class="lg:flex lg:gap-x-12">
+          <a href="https://nasa.github.io/cumulus-distribution-api/"
+            class="text-base font-medium leading-4 text-gray-light">Cumulus Distribution API</a>
+          <a href="https://nasa.github.io/cumulus/docs" class="text-base font-medium leading-4 text-gray-light">Cumulus Developer Docs</a>
+        </div>
+      </nav>
+    </header>
+    <!-- Heading and Description -->
+    <div class="container mt-10 px-8">
+      <div class="text-black dark:text-gray-light">
+        <h1 class="text-3xl font-bold">Cumulus API Docs</h1>
+        <p class="mt-4 text-lg leading-6">The following is the corresponding API documentation per available releases.</p>
+      </div>
+     <!-- Release Versions -->
+      <div class="w-96 p-6 my-6 mx-4">
+        <!-- Versions Header -->
+      <div class="p-4 bg-blue border border-gray-200 rounded-t-xl dark:border-gray-600 dark:bg-blue">
+        <h2 class="text-xl font-medium text-gray-light text-center">Available Versions</h2>
+      </div>
+      <!-- Table  -->
+      <div>
+        <table class="w-full table-auto bg-white dark:bg-dark-surface border-collapse border-spacing-2rounded-b-xl shadow-md">
+          <tbody>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+             <td><a href="unreleased" class="text-lg text-blue dark:text-dark-blue hover:underline">Unreleased</a><span class="bg-green-100 text-green-800 text-xs font-medium ml-2 mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400">Latest</span></td>
+            </tr>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v14.1.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v14.1.0+</a></td>
+            </tr>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v14.0.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v14.0.0</a></td>
+            </tr>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v13.4.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v13.4.0</a></td>
+            </tr>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v13.3.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v13.3.0</a></td>
+            </tr>
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v13.0.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v13.0.0</a></td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
+              <td><a href="v11.0.0" class="text-lg text-blue dark:text-dark-blue hover:underline">v11.0.0 (and all prior releases)</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Button: Back to Cumulus Developer Docs -->
+      <div class="mx-auto">
+        <div class="sm:justify-left hidden sm:mb-8 sm:flex">
+          <div
+            class="text-gray-600 dark:text-gray-light ring-gray-900/10 dark:ring-dark-blue hover:ring-gray-900/20 dark:hover:ring-dark-highlight/50 dark:bg-dark-surface/70 relative rounded-full px-3 py-1 text-sm leading-6 ring-1">
+            <span aria-hidden="true">&larr; </span>Back to
+            <a href="https://nasa.github.io/cumulus/docs" class="font-semibold text-blue dark:text-dark-blue hover:underline"><span class="absolute inset-0"
+                aria-hidden="true"></span>Cumulus Developer Docs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>
