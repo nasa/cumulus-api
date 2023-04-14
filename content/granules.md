@@ -353,8 +353,8 @@ $ curl --request POST https://example.com/granules \
 
 Replace an existing granule.  Expects payload to contain the modified
 parts of the granule and the existing granule values will be overwritten by the
-modified portions.   Any unspecified values will be removed, and for appropriate
-fields replaced with defaults.    Executions associated will not be modified if
+modified portions.   Any unspecified values will be removed, and appropriate
+fields will be replaced with defaults.    Executions associated will not be modified if
 not specified.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
