@@ -363,7 +363,7 @@ Returns status 200 on successful update, 201 on new granule creation, 404 if
 the `granuleId` can not be found in the database, or 400 when the granuleId in
 the payload does not match the corresponding value in the resource URI.
 
-**Please note** -- In versions of CUMULUS prior to release v15 PUT endpoint were
+**Please note** -- In versions of CUMULUS prior to release v15, PUT endpoint was
 identical to PATCH requests.
 
 ### Example request
