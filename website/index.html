@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=11" />
-  <link rel="icon" href="/cumulus-api/website/favicon.ico">
+  <link rel="icon" href="/cumulus-api/website/favicon.ico" />
   <link href="/cumulus-api/dist/output.css" rel="stylesheet" />
   <title>Cumulus API</title>
 </head>
@@ -14,7 +14,7 @@
     <!-- Main Navigation Bar -->
     <header class="absolute inset-x-0 top-0">
       <nav class="flex h-14 items-center justify-between bg-blue px-4 py-3" aria-label="Cumulus Navigation">
-        <div class="flex lg:flex-1 main-logo">
+        <div class="main-logo flex lg:flex-1">
           <a href="#" class="flex items-center justify-between">
             <img class="h-8 w-8" src="./img/ic_cumulus_logo_white.svg"
               alt="NASA Cumulus Logo for the Cumulus framework that includes a core, dashboard (UI), and API." />
@@ -25,7 +25,7 @@
         <div class="flex lg:hidden">
           <!-- Button: Open Menu -->
           <button type="button"
-            class="lg:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-light dark:text-gray-light mobile-menu-button"
+            class="mobile-menu-button -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-light dark:text-gray-light lg:hidden"
             aria-controls="mobile-menu" aria-expanded="false">
             <span class="sr-only">Open navigation menu</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -37,15 +37,20 @@
         </div>
         <div class="hidden lg:flex lg:gap-x-12">
           <a href="https://nasa.github.io/cumulus-distribution-api/"
-            class="flex items-center justify-between text-base font-medium leading-4 text-gray-light" target="_blank">Cumulus Distribution API <span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-            </span></a>
-          <a href="https://nasa.github.io/cumulus/docs" class="flex items-center justify-between text-base font-medium leading-4 text-gray-light" target="_blank">Cumulus
-            Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-            </span></a>
+            class="flex items-center justify-between text-base font-medium leading-4 text-gray-light"
+            target="_blank">Cumulus Distribution API
+            <span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg> </span></a>
+          <a href="https://nasa.github.io/cumulus/docs"
+            class="flex items-center justify-between text-base font-medium leading-4 text-gray-light"
+            target="_blank">Cumulus Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg> </span></a>
         </div>
       </nav>
       <!-- Mobile Menu: Show/Hide Backdrop -->
@@ -53,11 +58,11 @@
         <!-- Background backdrop, show/hide based on slide-over state. -->
         <div class="overlay fixed inset-0 z-50"></div>
         <div
-          class="flex fixed inset-y-0 right-0 top-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 dark:bg-dark-surface sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div class="lg:hidden flex">
+          class="fixed inset-y-0 right-0 top-0 z-50 flex w-full overflow-y-auto bg-white px-6 py-6 dark:bg-dark-surface sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div class="flex lg:hidden">
             <!-- Button: Close Menu -->
             <button type="button"
-              class="absolute right-3 sm:flex top-0 items-center justify-between rounded-md px-1 py-4 text-gray-700 dark:text-gray-light mobile-close-button"
+              class="mobile-close-button absolute right-3 top-0 items-center justify-between rounded-md px-1 py-4 text-gray-700 dark:text-gray-light sm:flex"
               aria-controls="mobile-menu" aria-expanded="true">
               <span class="sr-only">Close menu</span>
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -70,8 +75,8 @@
           <!-- Mobile Navigation -->
           <nav class="flow-root">
             <div class="divide-y divide-gray-500/10 font-semibold leading-7 text-gray-900 dark:text-gray-light">
-              <div class="py-6 sm:inline-flex items-center justify-center mobile-logo">
-                <a href="#" class="flex overflow-hidden rounded-lg hover:bg-gray-50  dark:hover:bg-dark-highlight/10">
+              <div class="mobile-logo items-center justify-center py-6 sm:inline-flex">
+                <a href="#" class="flex overflow-hidden rounded-lg hover:bg-gray-50 dark:hover:bg-dark-highlight/10">
                   <img class="block h-8 w-auto dark:hidden" src="./img/ic_cumulus_logo_blue.svg"
                     alt="NASA Cumulus Logo for the Cumulus framework that includes a core, dashboard (UI), and API." />
                   <img class="hidden h-8 w-auto dark:block" src="./img/ic_cumulus_logo_white.svg"
@@ -83,26 +88,29 @@
               </div>
               <div class="space-y-2 py-6">
                 <a href="https://nasa.github.io/cumulus-distribution-api/"
-                  class="sm:flex items-center block rounded-lg px-3 py-2 text-base hover:bg-gray-50  dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">Cumulus
-                  Distribution API<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                  </svg>
-                  </span></a>
+                  class="block items-center rounded-lg px-3 py-2 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue sm:flex"
+                  target="_blank">Cumulus Distribution API<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg"
+                      fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg> </span></a>
 
                 <a href="https://nasa.github.io/cumulus/docs"
-                  class="sm:flex items-center block rounded-lg px-3 py-2 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">Cumulus
-                  Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                  </svg>
-                  </span></a>
+                  class="block items-center rounded-lg px-3 py-2 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue sm:flex"
+                  target="_blank">Cumulus Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg"
+                      fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg> </span></a>
               </div>
               <div class="py-6">
                 <a href="https://github.com/nasa/cumulus#about-cumulus"
-                  class="sm:flex items-center block rounded-lg px-3 py-2.5 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">About
-                  Cumulus<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                  </svg>
-                  </span></a>
+                  class="block items-center rounded-lg px-3 py-2.5 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue sm:flex"
+                  target="_blank">About Cumulus<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg> </span></a>
               </div>
             </div>
           </nav>
@@ -131,45 +139,46 @@
           </div>
           <!-- Table  -->
           <div>
-            <table
-              class="w-full table-auto border-collapse border-spacing-2 rounded-b-xl bg-white shadow-md dark:bg-dark-surface">
+            <table class="w-full table-auto border-collapse border-spacing-2 rounded-b-xl bg-white shadow-md dark:bg-dark-surface">
               <tbody>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <!-- ***Note***: This is commented out for unreleased. Instructions: Copy this code block, paste appropriately, and then uncomment for a new release -->
+                <!--<tr class="row-release">
                   <td>
                     <a href="unreleased"
-                      class="text-lg text-blue hover:underline dark:text-dark-blue">Unreleased</a><span
-                      class="ml-2 mr-2 rounded border border-green-400 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-gray-700 dark:text-green-400">Latest</span>
+                      class="version">Unreleased</a><span
+                      class="latest-badge">Latest</span>
+                  </td>
+                </tr>-->
+                <!--/This is commented out for unreleased -->
+                <tr class="row-release">
+                  <td>
+                    <a href="v14.1.0" class="version">v14.1.0+</a><!-- Badge: Latest release --><span
+                      class="latest-badge">Latest</span><!--/Badge: Latest release -->
                   </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <tr class="row-release">
                   <td>
-                    <a href="v14.1.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v14.1.0+</a>
+                    <a href="v14.0.0" class="version">v14.0.0</a>
                   </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <tr class="row-release">
                   <td>
-                    <a href="v14.0.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v14.0.0</a>
+                    <a href="v13.4.0" class="version">v13.4.0</a>
                   </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <tr class="row-release">
                   <td>
-                    <a href="v13.4.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v13.4.0</a>
+                    <a href="v13.3.0" class="version">v13.3.0</a>
                   </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <tr class="row-release">
                   <td>
-                    <a href="v13.3.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v13.3.0</a>
+                    <a href="v13.0.0" class="version">v13.0.0</a>
                   </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
+                <tr class="row-release">
                   <td>
-                    <a href="v13.0.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v13.0.0</a>
-                  </td>
-                </tr>
-                <tr class="hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10">
-                  <td>
-                    <a href="v11.0.0" class="text-lg text-blue hover:underline dark:text-dark-blue">v11.0.0 (and all
-                      prior releases)</a>
+                    <a href="v11.0.0" class="version">v11.0.0 (and all prior releases)</a>
                   </td>
                 </tr>
               </tbody>
@@ -179,12 +188,11 @@
         <!-- Button: Back to Cumulus Developer Docs -->
         <div class="mx-auto">
           <div class="hidden sm:mb-8 sm:flex sm:justify-center lg:mb-0 lg:flex lg:justify-start">
-            <div
-              class="relative rounded-full px-3 py-1 text-base text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:bg-dark-surface/70 dark:text-gray-light dark:ring-dark-blue dark:hover:ring-dark-highlight/50">
+            <div class="relative rounded-full px-3 py-1 text-base text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:bg-dark-surface/70 dark:text-gray-light dark:ring-dark-blue dark:hover:ring-dark-highlight/50">
               <span aria-hidden="true">&larr; </span>Back to
               <a href="https://nasa.github.io/cumulus/docs"
                 class="font-semibold text-blue hover:underline dark:text-dark-blue"><span class="absolute inset-0"
-                  aria-hidden="true"></span>Cumulus Developer Docs</a>
+                aria-hidden="true"></span>Cumulus Developer Docs</a>
             </div>
           </div>
         </div>

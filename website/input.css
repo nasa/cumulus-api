@@ -25,6 +25,20 @@
   */
 @tailwind variants;
 
+@layer components {
+  .version {
+    @apply text-lg text-blue hover:underline dark:text-dark-blue;
+  }
+
+  .row-release {
+    @apply border-b hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-dark-highlight/10;
+  }
+
+  .latest-badge {
+    @apply ml-2 mr-2 rounded border border-green-400 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-gray-700 dark:text-green-400;
+  }
+}
+
 tr {
   height: 50px;
 }
