@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=11" />
+  <link rel="icon" href="/cumulus-api/website/favicon.ico">
   <link href="/cumulus-api/dist/output.css" rel="stylesheet" />
   <title>Cumulus API</title>
 </head>
@@ -11,7 +12,7 @@
 <body class="bg-white dark:bg-black">
   <div>
     <!-- Main Navigation Bar -->
-    <header class="top-0">
+    <header class="absolute inset-x-0 top-0">
       <nav class="flex h-14 items-center justify-between bg-blue px-4 py-3" aria-label="Cumulus Navigation">
         <div class="flex lg:flex-1 main-logo">
           <a href="#" class="flex items-center justify-between">
@@ -21,7 +22,7 @@
               Documentation</span>
           </a>
         </div>
-        <div class="flex">
+        <div class="flex lg:hidden">
           <!-- Button: Open Menu -->
           <button type="button"
             class="lg:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-light dark:text-gray-light mobile-menu-button"
@@ -36,21 +37,27 @@
         </div>
         <div class="hidden lg:flex lg:gap-x-12">
           <a href="https://nasa.github.io/cumulus-distribution-api/"
-            class="text-base font-medium leading-4 text-gray-light">Cumulus Distribution API</a>
-          <a href="https://nasa.github.io/cumulus/docs" class="text-base font-medium leading-4 text-gray-light">Cumulus
-            Developer Docs</a>
+            class="flex items-center justify-between text-base font-medium leading-4 text-gray-light" target="_blank">Cumulus Distribution API <span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            </span></a>
+          <a href="https://nasa.github.io/cumulus/docs" class="flex items-center justify-between text-base font-medium leading-4 text-gray-light" target="_blank">Cumulus
+            Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            </span></a>
         </div>
       </nav>
       <!-- Mobile Menu: Show/Hide Backdrop -->
-      <div class="hidden" role="dialog" aria-modal="true" id="mobile-menu">
+      <div class="lg:hidden" role="dialog" aria-modal="true" id="mobile-menu">
         <!-- Background backdrop, show/hide based on slide-over state. -->
-        <div class="fixed inset-0 z-50"></div>
+        <div class="overlay fixed inset-0 z-50"></div>
         <div
-          class="fixed inset-y-0 right-0 top-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 dark:bg-dark-surface sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          class="flex fixed inset-y-0 right-0 top-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 dark:bg-dark-surface sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div class="lg:hidden flex">
             <!-- Button: Close Menu -->
             <button type="button"
-              class="absolute right-3 flex top-0 items-center justify-between rounded-md px-1 py-4 text-gray-700 dark:text-gray-light mobile-close-button"
+              class="absolute right-3 sm:flex top-0 items-center justify-between rounded-md px-1 py-4 text-gray-700 dark:text-gray-light mobile-close-button"
               aria-controls="mobile-menu" aria-expanded="true">
               <span class="sr-only">Close menu</span>
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -64,29 +71,38 @@
           <nav class="flow-root">
             <div class="divide-y divide-gray-500/10 font-semibold leading-7 text-gray-900 dark:text-gray-light">
               <div class="py-6 sm:inline-flex items-center justify-center mobile-logo">
-                <a href="#" class="flex overflow-hidden">
+                <a href="#" class="flex overflow-hidden rounded-lg hover:bg-gray-50  dark:hover:bg-dark-highlight/10">
                   <img class="block h-8 w-auto dark:hidden" src="./img/ic_cumulus_logo_blue.svg"
                     alt="NASA Cumulus Logo for the Cumulus framework that includes a core, dashboard (UI), and API." />
                   <img class="hidden h-8 w-auto dark:block" src="./img/ic_cumulus_logo_white.svg"
                     alt="NASA Cumulus Logo for the Cumulus framework that includes a core, dashboard (UI), and API." />
                   <span
-                    class="not-sr-only -mx-1 block rounded-lg px-3 py-2 text-lg  hover:bg-gray-50 dark:text-gray-light dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue">Cumulus
+                    class="not-sr-only -mx-1 block px-3 py-2 text-lg dark:text-gray-light dark:hover:text-dark-blue">Cumulus
                     API Documentation</span>
                 </a>
               </div>
               <div class="space-y-2 py-6">
                 <a href="https://nasa.github.io/cumulus-distribution-api/"
-                  class="-mx-3 block rounded-lg px-3 py-2 text-base hover:bg-gray-50  dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue">Cumulus
-                  Distribution API</a>
+                  class="sm:flex items-center block rounded-lg px-3 py-2 text-base hover:bg-gray-50  dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">Cumulus
+                  Distribution API<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                  </span></a>
 
                 <a href="https://nasa.github.io/cumulus/docs"
-                  class="-mx-3 block rounded-lg px-3 py-2 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue">Cumulus
-                  Developer Docs</a>
+                  class="sm:flex items-center block rounded-lg px-3 py-2 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">Cumulus
+                  Developer Docs<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                  </span></a>
               </div>
               <div class="py-6">
                 <a href="https://github.com/nasa/cumulus#about-cumulus"
-                  class="-mx-3 block rounded-lg px-3 py-2.5 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue">About
-                  Cumulus</a>
+                  class="sm:flex items-center block rounded-lg px-3 py-2.5 text-base hover:bg-gray-50 dark:hover:bg-dark-highlight/10 dark:hover:text-dark-blue" target="_blank">About
+                  Cumulus<span class="ml-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                  </span></a>
               </div>
             </div>
           </nav>
@@ -95,7 +111,7 @@
       <!-- -->
     </header>
     <!-- Content -->
-    <div class="flex justify-center">
+    <div class="relative top-14 flex justify-center">
       <div class="container mt-10 px-8">
         <!-- Heading and Description -->
         <div class="text-black dark:text-gray-light sm:text-center lg:text-left">
@@ -183,11 +199,15 @@
     //Open Menu
     openBtn.addEventListener("click", () => {
       menu.classList.toggle("hidden");
+      menu.style.visibility = "visible";
+      menu.style.opacity = 1;
     });
 
     //Close Menu
     closeBtn.addEventListener("click", () => {
       menu.classList.toggle("hidden");
+      menu.style.visibility = "visible";
+      menu.style.opacity = 1;
     });
   </script>
 </body>

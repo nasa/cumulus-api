@@ -33,7 +33,12 @@ td {
   padding: 0 20px;
 }
 
-#-mobile-menu {
+#mobile-menu {
+    visibility: hidden;
     opacity: 0;
-    transition: opacity 2.5s;
+    transition: opacity 2s 0 ease;
+}
+
+.overlay {
+    background-color: rgba(0,0,0,.50);
 }
