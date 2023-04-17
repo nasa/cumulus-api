@@ -6,6 +6,7 @@
   "scripts": {
     "bootstrap": "./bin/docs install",
     "serve": "./bin/docs serve",
+    "serve-all": "budo --dir website --live",
     "build": "./bin/docs build",
     "deploy": "./bin/docs deploy"
   },
@@ -26,6 +27,7 @@
     "babel-register": "^6.3.13",
     "budo": "^11.6.3",
     "cz-conventional-changelog": "2.0.0",
+    "cross-env": "7.0.3",
     "expect": "^25.0.0",
     "to-vfile": "^2.0.0",
     "uglify-js": "^3.0.27"
