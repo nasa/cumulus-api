@@ -1,6 +1,6 @@
 ## Versioning
 
-The Cumulus API is versioned and the current version is v1. Retrieve the latest API version from Cumulus.
+The Cumulus API is versioned and the current version is v2. Retrieve the latest API version from Cumulus.
 
 ```endpoint
 GET /version
@@ -16,8 +16,8 @@ $ curl https://example.com/version
 #### Example Response
 ```json
 {
-    "response_version": "v1",
-    "api_version": "1.1.1"
+    "response_version": "v2",
+    "api_version": "15.0.0"
 }
 ```
 
