@@ -478,7 +478,7 @@ POST /granules/{granuleId}/executions
 $ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\  --data ' \ 
+  --header 'Cumulus-API-Version': '2'\ 
   --data '{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
