@@ -406,7 +406,7 @@ $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId
 Update an existing granule.  Expects payload to contain the modified
 parts of the granule and the existing granule values will be overwritten by the
 modified portions.   Unspecified keys will be retained.    Keys set to `null`
-will be removed.    Executions may not be disassociated from the granule via
+will be removed.    Executions will not be disassociated from the granule via
 `null` deletion.  The same fields are available as are for [creating a
 granule.](#create-granule).
 
