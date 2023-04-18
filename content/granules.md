@@ -606,7 +606,7 @@ PATCH /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header 'Cumulus-API-Version': '2'\  --data ' \ 
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header 'Cumulus-API-Version': '2'\
  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
 ```
 
