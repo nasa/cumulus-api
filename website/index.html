@@ -203,6 +203,7 @@
     const openBtn = document.querySelector("button.mobile-menu-button");
     const closeBtn = document.querySelector("button.mobile-close-button");
     const menu = document.querySelector("#mobile-menu");
+    const menuOverlay = document.querySelector(".overlay");
 
     //Open Menu
     openBtn.addEventListener("click", () => {
@@ -217,6 +218,13 @@
       menu.style.visibility = "visible";
       menu.style.opacity = 1;
     });
+
+    menuOverlay.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+      menu.style.visibility = "visible";
+      menu.style.opacity = 1; 
+    });
+
   </script>
 </body>
 

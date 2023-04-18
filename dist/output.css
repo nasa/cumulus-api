@@ -731,10 +731,6 @@ video {
   margin-left: 0.5rem;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
 .mt-10 {
   margin-top: 2.5rem;
 }
@@ -854,10 +850,6 @@ video {
   overflow-y: auto;
 }
 
-.rounded {
-  border-radius: 0.25rem;
-}
-
 .rounded-full {
   border-radius: 9999px;
 }
@@ -889,19 +881,9 @@ video {
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 
-.border-green-400 {
-  --tw-border-opacity: 1;
-  border-color: rgb(74 222 128 / var(--tw-border-opacity));
-}
-
 .bg-blue {
   --tw-bg-opacity: 1;
   background-color: rgb(34 118 172 / var(--tw-bg-opacity));
-}
-
-.bg-green-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(220 252 231 / var(--tw-bg-opacity));
 }
 
 .bg-white {
@@ -930,16 +912,6 @@ video {
   padding-right: 0.25rem;
 }
 
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-.px-2\.5 {
-  padding-left: 0.625rem;
-  padding-right: 0.625rem;
-}
-
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -958,16 +930,6 @@ video {
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
-}
-
-.py-0 {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
-
-.py-0\.5 {
-  padding-top: 0.125rem;
-  padding-bottom: 0.125rem;
 }
 
 .py-1 {
@@ -1028,11 +990,6 @@ video {
   line-height: 1.75rem;
 }
 
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-
 .font-bold {
   font-weight: 700;
 }
@@ -1085,11 +1042,6 @@ video {
 .text-gray-light {
   --tw-text-opacity: 1;
   color: rgb(245 246 247 / var(--tw-text-opacity));
-}
-
-.text-green-800 {
-  --tw-text-opacity: 1;
-  color: rgb(22 101 52 / var(--tw-text-opacity));
 }
 
 .shadow-md {
@@ -1163,11 +1115,6 @@ video {
     background-color: rgb(18 18 18 / 0.7);
   }
 
-  .dark\:bg-gray-700 {
-    --tw-bg-opacity: 1;
-    background-color: rgb(55 65 81 / var(--tw-bg-opacity));
-  }
-
   .dark\:text-dark-blue {
     --tw-text-opacity: 1;
     color: rgb(82 189 255 / var(--tw-text-opacity));
@@ -1176,11 +1123,6 @@ video {
   .dark\:text-gray-light {
     --tw-text-opacity: 1;
     color: rgb(245 246 247 / var(--tw-text-opacity));
-  }
-
-  .dark\:text-green-400 {
-    --tw-text-opacity: 1;
-    color: rgb(74 222 128 / var(--tw-text-opacity));
   }
 
   .dark\:ring-dark-blue {
@@ -1290,4 +1232,5 @@ td {
 
 .overlay {
   background-color: rgba(0,0,0,.50);
+  cursor: pointer;
 }

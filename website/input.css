@@ -55,4 +55,5 @@ td {
 
 .overlay {
     background-color: rgba(0,0,0,.50);
+    cursor: pointer;
 }
