@@ -526,7 +526,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
-       --header 'Cumulus-API-Version': '2'\  --data ' \ 
+       --header 'Cumulus-API-Version': '2'\
        --data '{"action": "reingest",
                ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
                ["workflowName": "TheWorkflowName"] }'
