@@ -425,7 +425,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\  --data ' \ 
+  --header 'Cumulus-API-Version': '2'\ 
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
