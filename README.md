@@ -8,7 +8,11 @@ Cumulus API documentation: https://nasa.github.io/cumulus-api
 
      $ npm install 
 
-### Build
+### Build CSS (Styling)
+
+     $ npm run build-css
+
+### Build Site
 
      $ npm run build
 
