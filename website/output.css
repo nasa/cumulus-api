@@ -88,7 +88,8 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
 abbr:where([title]) {
-  text-decoration: underline dotted;
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
 }
 
 /*
@@ -357,8 +358,7 @@ textarea {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-input:-ms-input-placeholder,
-textarea:-ms-input-placeholder {
+input::-moz-placeholder, textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
@@ -561,8 +561,7 @@ video {
 }
 
 .version:hover {
-  -webkit-text-decoration-line: underline;
-          text-decoration-line: underline;
+  text-decoration-line: underline;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -744,12 +743,10 @@ video {
 }
 
 .flex {
-  display: -ms-flexbox;
   display: flex;
 }
 
 .inline-flex {
-  display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
@@ -812,18 +809,15 @@ video {
 }
 
 .items-center {
-  -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
 }
 
 .justify-center {
-  -ms-flex-pack: center;
-      justify-content: center;
+  justify-content: center;
 }
 
 .justify-between {
-  -ms-flex-pack: justify;
-      justify-content: space-between;
+  justify-content: space-between;
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1074,8 +1068,7 @@ video {
 }
 
 .hover\:underline:hover {
-  -webkit-text-decoration-line: underline;
-          text-decoration-line: underline;
+  text-decoration-line: underline;
 }
 
 .hover\:ring-gray-900\/20:hover {
@@ -1150,12 +1143,10 @@ video {
   }
 
   .sm\:flex {
-    display: -ms-flexbox;
     display: flex;
   }
 
   .sm\:inline-flex {
-    display: -ms-inline-flexbox;
     display: inline-flex;
   }
 
@@ -1164,8 +1155,7 @@ video {
   }
 
   .sm\:justify-center {
-    -ms-flex-pack: center;
-        justify-content: center;
+    justify-content: center;
   }
 
   .sm\:text-center {
@@ -1189,7 +1179,6 @@ video {
   }
 
   .lg\:flex {
-    display: -ms-flexbox;
     display: flex;
   }
 
@@ -1198,17 +1187,16 @@ video {
   }
 
   .lg\:flex-1 {
-    -ms-flex: 1 1 0%;
-        flex: 1 1 0%;
+    flex: 1 1 0%;
   }
 
   .lg\:justify-start {
-    -ms-flex-pack: start;
-        justify-content: flex-start;
+    justify-content: flex-start;
   }
 
   .lg\:gap-x-12 {
-    column-gap: 3rem;
+    -moz-column-gap: 3rem;
+         column-gap: 3rem;
   }
 
   .lg\:text-left {
