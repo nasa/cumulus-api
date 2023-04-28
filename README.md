@@ -32,4 +32,4 @@ Cumulus API documentation: https://nasa.github.io/cumulus-api
 
 ### 🛒 Release
 
-To release a new version of Cumulus API document[read this](release.md).
+To release a new version of Cumulus API document [read this](release.md).
