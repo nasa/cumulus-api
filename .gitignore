@@ -6,3 +6,4 @@ npm-debug.log
 package-lock.json
 .idea/
 website/unreleased/
+website/output.css
