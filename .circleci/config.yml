@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:12.18.0
+      - image: circleci/node:14.18.2
     working_directory: ~/cumulus-api
     steps:
       - checkout
