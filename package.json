@@ -8,7 +8,7 @@
     "serve": "./bin/docs serve",
     "serve-all": "budo --dir website --live",
     "build": "./bin/docs build",
-    "build-css": "npx tailwindcss -i ./website/input.css -o ./website/output.css",
+    "build-css": "tailwindcss -i ./website/input.css -o ./website/output.css",
     "deploy": "./bin/docs deploy"
   },
   "repository": {
