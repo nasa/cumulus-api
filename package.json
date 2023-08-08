@@ -31,5 +31,10 @@
     "expect": "^25.0.0",
     "to-vfile": "^2.0.0",
     "uglify-js": "^3.0.27"
+  },
+  "overrides": {
+    "docbox": {
+      "ansi-regex": "6.0.1"
+    }
   }
 }
