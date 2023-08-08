@@ -18,6 +18,7 @@ serve() {
 build() {
     RELEASE=$1
     rm -rf website/unreleased
+    npm run build-css
     pushd node_modules/docbox || exit
     rm -rf build
     mkdir -p build
