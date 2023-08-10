@@ -189,11 +189,14 @@ $ curl https://example.com/granules?searchContext=%5B%221577836800000%22%5D --he
 
 ## Retrieve granule
 
-Retrieve a single granule.
+Retrieve a single granule. Two routes are currently available. The preferred query includes both a Collection ID and a Granule ID to identify a unique granule.
+
+**Please note** -- Querying by the Granule ID alone (e.g. `GET /granules/{granuleId}`) is supported but may be deprecated in the future.
+
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
 
 ```endpoint
-GET /granules/{granuleId}
+GET /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
@@ -414,9 +417,11 @@ Returns status 200 on successful update, 201 on new granule creation, 404 if
 the `granuleId` can not be found in the database, or 400 when the granuleId in
 the payload does not match the corresponding value in the resource URI.
 
+**Please note** -- Querying by the Granule ID alone (e.g. `PATCH /granules/{granuleId}`) is supported but may be deprecated in the future.
+
 
 ```endpoint
-PATCH /granules/{granuleId}
+PATCH /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
@@ -425,7 +430,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\ 
+  --header 'Cumulus-API-Version': '2'\
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -478,7 +483,7 @@ POST /granules/{granuleId}/executions
 $ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\ 
+  --header 'Cumulus-API-Version': '2'\
   --data '{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
@@ -624,8 +629,10 @@ $ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.
 
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
+**Please note** -- Querying by the Granule ID alone (e.g. `DELETE /granules/{granuleId}`) is supported but may be deprecated in the future.
+
 ```endpoint
-DELETE /granules/{granuleId}
+DELETE /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
