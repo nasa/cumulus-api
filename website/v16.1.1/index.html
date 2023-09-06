@@ -1257,7 +1257,7 @@ identical to PATCH requests.</p>
 </div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="182"><pre class='hljs'>$ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId.A19990103.006.1000 \
   --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
-  --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\  --data <span class="hljs-string">'{
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\  --data <span class="hljs-string">'{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
     {
@@ -1296,7 +1296,7 @@ the payload does not match the corresponding value in the resource URI.</p>
 <pre class='hljs'>$ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
-  --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\ 
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
   --data <span class="hljs-string">'{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -1358,7 +1358,7 @@ value in the resource URI.</p>
 <pre class='hljs'>$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
-  --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\ 
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
   --data <span class="hljs-string">'{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
@@ -1395,7 +1395,7 @@ duplicateHandling is not set to 'replace'.</p>
 <pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span>
        --header <span class="hljs-string">'Content-Type: application/json'</span>
-       --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\
+       --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
        --data <span class="hljs-string">'{"action": "reingest",
                ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
                ["workflowName": "TheWorkflowName"] }'</span></pre>
@@ -1413,7 +1413,7 @@ duplicateHandling is not set to 'replace'.</p>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleid}</span></div>
     </div>
 <h4 id="example-request-23">Example request</h4>
-<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\ --data <span class="hljs-string">'{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'</span></pre>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\ --data <span class="hljs-string">'{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'</span></pre>
 <h4 id="example-response-21">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h20v17.006.2017138085755"</span>,
@@ -1427,7 +1427,7 @@ duplicateHandling is not set to 'replace'.</p>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
     </div>
 <h4 id="example-request-24">Example request</h4>
-<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
  --data <span class="hljs-string">'{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'</span></pre>
 <h4 id="example-response-22">Example response</h4>
 <pre class='hljs'>{
@@ -1442,8 +1442,8 @@ duplicateHandling is not set to 'replace'.</p>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
     </div>
 <h4 id="example-request-25">Example request</h4>
-<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\
- --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --header <span class="hljs-string">'Cumulus-API-Version'</span>: <span class="hljs-string">'2'</span>\ --data <span class="hljs-string">'{"action": "removeFromCmr"}'</span></pre>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
+ --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\ --data <span class="hljs-string">'{"action": "removeFromCmr"}'</span></pre>
 <h4 id="example-response-23">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h19v16.006.2017138085750"</span>,

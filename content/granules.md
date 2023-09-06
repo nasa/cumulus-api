@@ -377,7 +377,7 @@ PUT /granules/{collectionId}/{granuleId}
 $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\  --data '{
+  --header 'Cumulus-API-Version: 2'\  --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
     {
@@ -430,7 +430,7 @@ PATCH /granules/{collectionId}/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\
+  --header 'Cumulus-API-Version: 2'\
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -483,7 +483,7 @@ POST /granules/{granuleId}/executions
 $ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version': '2'\
+  --header 'Cumulus-API-Version: 2'\
   --data '{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
@@ -531,7 +531,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
-       --header 'Cumulus-API-Version': '2'\
+       --header 'Cumulus-API-Version: 2'\
        --data '{"action": "reingest",
                ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
                ["workflowName": "TheWorkflowName"] }'
@@ -562,7 +562,7 @@ PATCH /granules/{granuleid}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version': '2'\ --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version: 2'\ --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -586,7 +586,7 @@ PATCH /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version': '2'\
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version: 2'\
  --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
@@ -611,8 +611,8 @@ PATCH /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header 'Cumulus-API-Version': '2'\
- --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --header 'Cumulus-API-Version': '2'\ --data '{"action": "removeFromCmr"}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header 'Cumulus-API-Version: 2'\
+ --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --header 'Cumulus-API-Version: 2'\ --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
