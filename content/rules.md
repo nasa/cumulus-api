@@ -246,8 +246,7 @@ $ curl --request PUT https://example.com/rules/my_onetime_rule \
 Update an existing rule.  Expects payload to contain the modified and/or additional
 fields of the rule and the existing rule values will be overwritten by the
 modified portions.   Unspecified keys will be retained.    Keys set to `null`
-will be removed. The same fields are available as are for [creating a
-rule.](#create-rule).
+will be removed. For a field reference see ["Create rule"](#create-rule).
 
 Returns status 200 on successful update, 400 if the `name` property in the
 payload does not match the corresponding value in the resource URI, or 404 if
