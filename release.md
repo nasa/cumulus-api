@@ -59,8 +59,7 @@ You can view the generated API document with `npm run serve-all`.
 
 ### 4. Add the new API document
 
-Add the new API document link to `website/index.html`, e.g. `<p><a
-href="v9.1.0"">v9.1.0"</a></p>`, and add to the commit with `git add
+Add the new API document link to `website/index.html`, and add to the commit with `git add
 website/index.html`.
 
 ```bash
