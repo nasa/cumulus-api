@@ -785,7 +785,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
@@ -862,7 +862,7 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and optional workflow parameter:
+#### Example request with given Granules and optional workflow parameter:
 
 ```curl
 curl -X POST
