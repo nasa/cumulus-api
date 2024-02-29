@@ -659,8 +659,8 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Workflow to be applied to all granules |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
+| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no Granules are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
 | `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
@@ -709,11 +709,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "workflowName": "HelloWorldWorkflow"}'
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "workflowName": "HelloWorldWorkflow"}'
 ```
 
 #### Example response
@@ -734,9 +734,9 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given |
+| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no Granules are given |
 | `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
@@ -785,11 +785,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "forceRemoveFromCmr": true}'
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "forceRemoveFromCmr": true}'
 ```
 
 #### Example response
@@ -810,9 +810,9 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no Granules are given. |
 | `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 
@@ -862,14 +862,14 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and optional workflow parameter:
+#### Example request with given Granules and optional workflow parameter:
 
 ```curl
 curl -X POST
   https://example.com/granules/bulkReingest
   --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
   --data '{
-        "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
+        "granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ],
         "workflow": "workflowName",
         }'
 ```
