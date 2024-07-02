@@ -189,11 +189,14 @@ $ curl https://example.com/granules?searchContext=%5B%221577836800000%22%5D --he
 
 ## Retrieve granule
 
-Retrieve a single granule.
+Retrieve a single granule. Two routes are currently available. The preferred query includes both a Collection ID and a Granule ID to identify a unique granule.
+
+**Please note** -- Querying by the Granule ID alone (e.g. `GET /granules/{granuleId}`) is supported but may be deprecated in the future.
+
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
 
 ```endpoint
-GET /granules/{granuleId}
+GET /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
@@ -349,60 +352,76 @@ $ curl --request POST https://example.com/granules \
 }
 ```
 
-## Update or replace granule
+## Replace granule
 
-Updates or creates an existing granule.
+Replace an existing granule.  Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.   Any unspecified values will be removed, and appropriate
+fields will be replaced with defaults.    Executions associated will not be modified if
+not specified.  The same fields are available as are for [creating a granule.](#create-granule).
 
-This endpoint functions with PATCH behavior in that missing fields are preserved
-on update.  
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.
 
-Undefined values that are not required by this API (e.g. `createdAt`) but are required by
-the schema will be set to default values if unset and not already present in
-case of granule update.
-
-**Please note this endpoint will be being moved to the `PATCH` HTTP request
-method in a future release**
-
-Values with NULL set will be removed from the object, unless the field is not
-nullable/removable in which case an error will be returned.  In some cases, a
-default value will be set on deletion, according to the following table:
-
-| Field | Nullable | Null Default |
-| --- | --- | --- |
-| `beginningDateTime` | `yes` | Value will be removed |
-| `cmrLink` | `yes` | Value will be removed |
-| `collectionId` | `no` | Value will be removed |
-| `createdAt` | `yes` | Current Date |
-| `duration` | `yes` | Value will be removed |
-| `endingDateTime` | `yes` | Value will be removed |
-| `error` | `yes` | {} |
-| `execution` | `no` | Value will be removed |
-| `files` | `yes` | '[]' - will remove all associated files, granule will return undefined |
-| `granuleId` | `no` | Value will be removed |
-| `lastUpdateDateTime` | `yes` | Value will be removed |
-| `pdrName` | `yes` | Value will be removed |
-| `processingEndDateTime` | `yes` | Value will be removed |
-| `processingStartDateTime` | `yes` | Value will be removed |
-| `productVolume` | `yes` | Value will be removed |
-| `productionDateTime` | `yes` | Value will be removed |
-| `provider` | `yes` | Value will be removed |
-| `published` | `yes` | false |
-| `queryFields` | `yes`  | Value will be removed |
-| `status` | `no` | Value will be removed |
-| `timeToArchive` | `yes` | Value will be removed |
-| `timeToPreprocess` | `yes` | Value will be removed |
-| `timestamp` | `yes` | Current time value |
-| `updatedAt` | `no` | Value will be removed |
-
- The same fields are available as are for [creating a
-granule.](#create-granule).
-
-Returns status 200 on successful replacement, 404 if the `granuleId` can not be
-found in the database, or 400 when the granuleId in the payload does not match the
-corresponding value in the resource URI.
+**Please note** -- In versions of CUMULUS prior to release v16, PUT endpoint was
+identical to PATCH requests.
 
 ```endpoint
-PATCH /granules/{granuleId}
+PUT /granules/{collectionId}/{granuleId}
+```
+
+### Example request
+
+```curl
+$ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId.A19990103.006.1000 \
+  --header 'Authorization: Bearer ReplaceWithToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2'\  --data '{
+  "granuleId": "granuleId.A20200113.006.1005",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
+    },
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.jpg",
+      "fileName": "granuleId.A20200113.006.1005.jpg"
+    }
+  ],
+  "duration": 1000,
+  "status": "completed"
+  }'
+```
+
+#### Example response
+
+```json
+{
+    "message": "Successfully updated granule with Granule Id: granuleId.A20200113.006.1005, CollectionId: COLLECTION___VERSION"
+}
+```
+
+## Update granule
+
+Update an existing granule.  Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.   Unspecified keys will be retained.    Keys set to `null`
+will be removed.    Executions will not be disassociated from the granule via
+`null` deletion.  The same fields are available as are for [creating a
+granule.](#create-granule).
+
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.
+
+**Please note** -- Querying by the Granule ID alone (e.g. `PATCH /granules/{granuleId}`) is supported but may be deprecated in the future.
+
+
+```endpoint
+PATCH /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
@@ -411,6 +430,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2'\
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -463,6 +483,7 @@ POST /granules/{granuleId}/executions
 $ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2'\
   --data '{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
@@ -510,6 +531,7 @@ PATCH /granules/{granuleId}
 $ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header 'Authorization: Bearer ReplaceWithTheToken'
        --header 'Content-Type: application/json'
+       --header 'Cumulus-API-Version: 2'\
        --data '{"action": "reingest",
                ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
                ["workflowName": "TheWorkflowName"] }'
@@ -540,7 +562,7 @@ PATCH /granules/{granuleid}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version: 2'\ --data '{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'
 ```
 
 #### Example response
@@ -564,7 +586,8 @@ PATCH /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'   --header 'Cumulus-API-Version: 2'\
+ --data '{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'
 ```
 
 #### Example response
@@ -588,7 +611,8 @@ PATCH /granules/{granuleId}
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"action": "removeFromCmr"}'
+$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header 'Cumulus-API-Version: 2'\
+ --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --header 'Cumulus-API-Version: 2'\ --data '{"action": "removeFromCmr"}'
 ```
 
 #### Example response
@@ -605,8 +629,10 @@ $ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.
 
 Delete a granule from Cumulus. It must _already_ be removed from CMR.
 
+**Please note** -- Querying by the Granule ID alone (e.g. `DELETE /granules/{granuleId}`) is supported but may be deprecated in the future.
+
 ```endpoint
-DELETE /granules/{granuleId}
+DELETE /granules/{collectionId}/{granuleId}
 ```
 
 #### Example request
@@ -633,8 +659,8 @@ Overview of the request fields:
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
 | `workflow` | `Y` | `string` | Workflow to be applied to all granules |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no IDs are given. |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
+| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no Granules are given. |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
 | `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
@@ -683,11 +709,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "workflowName": "HelloWorldWorkflow"}'
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "workflowName": "HelloWorldWorkflow"}'
 ```
 
 #### Example response
@@ -708,9 +734,9 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given |
+| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no Granules are given |
 | `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
@@ -759,11 +785,11 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs:
+#### Example request with given Granules:
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "forceRemoveFromCmr": true}'
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "forceRemoveFromCmr": true}'
 ```
 
 #### Example response
@@ -784,9 +810,9 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `ids` | `yes` - if `query` not present | `Array<string>` | List of IDs to process. Required if there is no Elasticsearch query provided |
+| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
 | `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given. |
+| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no Granules are given. |
 | `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 
@@ -836,14 +862,14 @@ $ curl --request POST \
     }'
 ```
 
-#### Example request with given Granule IDs and optional workflow parameter:
+#### Example request with given Granules and optional workflow parameter:
 
 ```curl
 curl -X POST
   https://example.com/granules/bulkReingest
   --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
   --data '{
-        "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
+        "granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ],
         "workflow": "workflowName",
         }'
 ```

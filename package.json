@@ -8,27 +8,38 @@
     "serve": "./bin/docs serve",
     "serve-all": "budo --dir website --live",
     "build": "./bin/docs build",
+    "build-css": "tailwindcss -i ./website/input.css -o ./website/output.css --minify",
     "deploy": "./bin/docs deploy"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nasa/cumulus-api.git"
   },
-  "author": "Development Seed",
+  "author": "https://nasa.github.io/cumulus/docs/team",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/nasa/cumulus-api/issues"
   },
   "homepage": "https://github.com/nasa/cumulus-api#readme",
   "dependencies": {
-    "docbox": "^1.0.11"
+    "autoprefixer": "^10.4.14",
+    "docbox": "^1.0.11",
+    "postcss": "^8.4.23"
   },
   "devDependencies": {
     "babel-register": "^6.3.13",
     "budo": "^11.6.3",
+    "cross-env": "7.0.3",
     "cz-conventional-changelog": "2.0.0",
     "expect": "^25.0.0",
+    "prettier": "^2.8.7",
+    "prettier-plugin-tailwindcss": "^0.2.7",
+    "tailwindcss": "^3.3.1",
     "to-vfile": "^2.0.0",
     "uglify-js": "^3.0.27"
+  },
+  "engines": {
+    "node": ">=14.18.2",
+    "npm": "8.6.0"
   }
 }

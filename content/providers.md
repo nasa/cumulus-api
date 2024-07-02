@@ -28,6 +28,7 @@ $ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWith
         {
             "id": "HTTP_MODIS",
             "globalConnectionLimit": 10,
+            "maxDownloadTime": 300,
             "protocol": "http",
             "host": "https://data.modis.gov/",
             "timestamp": 1508861082226
@@ -58,6 +59,7 @@ $ curl https://example.com/providers/HTTP_MODIS --header 'Authorization: Bearer 
     "id": "HTTP_MODIS",
     "host": "https://data.modis.gov/",
     "globalConnectionLimit": 10,
+    "maxDownloadTime": 300,
     "updatedAt": 1508861081785,
     "protocol": "http"
 }
@@ -75,7 +77,8 @@ Overview of the schema fields:
 | `protocol` | `"s3"`&vert;`"http"`&vert;`"https"`&vert;`"ftp"` | file transfer (sync) protocol |
 | `host` | `string` | provider host endpoint |
 | `port` | `number` | provider host port |
-| `globalConnectionLimit` | `number` | limit to number of concurrent connections |
+| `globalConnectionLimit` | `number` | limit to number of concurrent connections. This is the maximum number of connections Cumulus compatible ingest lambdas are expected to make to a provider. Defaults to unlimited |
+| `maxDownloadTime` | `number` | Maximum download time in seconds for all granule files on a sync granule task. The timeout is used together with globalConnectionLimit to limit concurrent downloads. |
 | `username` | `string` | provider connection username |
 | `password` | `string` | provider connection password |
 | `privateKey` | `string` | filename assumed to be in s3://bucketInternal/stackName/crypto |
@@ -94,7 +97,8 @@ $ curl --request POST https://example.com/providers --header 'Authorization: Bea
     "host": "https://www.example.gov",
     "id": "MY_DAAC_SATELLITE",
     "protocol": "http",
-    "globalConnectionLimit": 10
+    "globalConnectionLimit": 10,
+    "maxDownloadTime": 300
 }'
 ```
 
@@ -109,6 +113,7 @@ $ curl --request POST https://example.com/providers --header 'Authorization: Bea
         "id": "MY_DAAC_SATELLITE",
         "protocol": "http",
         "globalConnectionLimit": 10,
+        "maxDownloadTime": 300,
         "timestamp": 1513956151186
     }
 }
@@ -136,6 +141,7 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
   "id": "MY_DAAC_SATELLITE",
   "host": "https://www.example.co.uk",
   "globalConnectionLimit": 10,
+  "maxDownloadTime": 300,
   "protocol": "http"
 }'
 ```
@@ -148,6 +154,7 @@ $ curl --request PUT https://example.com/providers/MY_DAAC_SATELLITE --header 'A
   "id": "MY_DAAC_SATELLITE",
   "host": "https://www.example.co.uk",
   "globalConnectionLimit": 10,
+  "maxDownloadTime": 300,
   "updatedAt": 1513956150733,
   "protocol": "http",
   "timestamp": 1513956555713

@@ -5,13 +5,12 @@
     <meta http-equiv='X-UA-Compatible' content='IE=11' />
     <title>Cumulus API</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <link rel="icon" href="favicon.ico">
     <link href='css/base.css' rel='stylesheet' />
     <link href='css/style.css' rel='stylesheet' />
     <link href='css/railscasts.css' rel='stylesheet' />
   </head>
   <body>
-    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="-1036356339"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">Introduction</div><a href="#cumulus-api" class="line-height15 pad0x pad00y quiet block " data-reactid="7">Cumulus API</a><div class="small pad0x quiet space-top1" data-reactid="8">Versioning</div><a href="#versioning-1" class="line-height15 pad0x pad00y quiet block " data-reactid="9">Versioning</a><div class="small pad0x quiet space-top1" data-reactid="10">Authentication</div><a href="#token" class="line-height15 pad0x pad00y quiet block " data-reactid="11">Token</a><a href="#refresh-token" class="line-height15 pad0x pad00y quiet block " data-reactid="12">Refresh token</a><a href="#delete-token" class="line-height15 pad0x pad00y quiet block " data-reactid="13">Delete token</a><a href="#authorization-header" class="line-height15 pad0x pad00y quiet block " data-reactid="14">Authorization header</a><div class="small pad0x quiet space-top1" data-reactid="15">Providers</div><a href="#list-providers" class="line-height15 pad0x pad00y quiet block " data-reactid="16">List providers</a><a href="#retrieve-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="17">Retrieve provider</a><a href="#create-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="18">Create provider</a><a href="#updatereplace-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="19">Update/replace provider</a><a href="#delete-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="20">Delete provider</a><div class="small pad0x quiet space-top1" data-reactid="21">Collections</div><a href="#list-collections" class="line-height15 pad0x pad00y quiet block " data-reactid="22">List collections</a><a href="#list-collections-with-active-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="23">List collections with active granules</a><a href="#retrieve-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="24">Retrieve collection</a><a href="#create-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="25">Create collection</a><a href="#updatereplace-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="26">Update/replace collection</a><a href="#delete-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="27">Delete collection</a><div class="small pad0x quiet space-top1" data-reactid="28">Granules</div><a href="#list-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="29">List granules</a><a href="#list-granules-with-searchcontext" class="line-height15 pad0x pad00y quiet block " data-reactid="30">List granules with searchContext</a><a href="#retrieve-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="31">Retrieve granule</a><a href="#create-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="32">Create Granule</a><a href="#update-or-replace-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="33">Update or replace granule</a><a href="#associate-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="34">Associate execution</a><a href="#reingest-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="35">Reingest granule</a><a href="#apply-workflow-to-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="36">Apply workflow to granule</a><a href="#move-a-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="37">Move a granule</a><a href="#remove-granule-from-cmr" class="line-height15 pad0x pad00y quiet block " data-reactid="38">Remove granule from CMR</a><a href="#delete-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="39">Delete granule</a><a href="#bulk-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="40">Bulk Operations</a><a href="#bulk-delete" class="line-height15 pad0x pad00y quiet block " data-reactid="41">Bulk Delete</a><a href="#bulk-reingest" class="line-height15 pad0x pad00y quiet block " data-reactid="42">Bulk Reingest</a><div class="small pad0x quiet space-top1" data-reactid="43">PDRs</div><a href="#list-pdrs" class="line-height15 pad0x pad00y quiet block " data-reactid="44">List PDRs</a><a href="#retrieve-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="45">Retrieve PDR</a><a href="#delete-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="46">Delete PDR</a><div class="small pad0x quiet space-top1" data-reactid="47">Rules</div><a href="#list-rules" class="line-height15 pad0x pad00y quiet block " data-reactid="48">List rules</a><a href="#retrieve-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="49">Retrieve rule</a><a href="#create-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="50">Create rule</a><a href="#updatereplace-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="51">Update/replace rule</a><a href="#delete-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="52">Delete rule</a><div class="small pad0x quiet space-top1" data-reactid="53">Stats</div><a href="#summary" class="line-height15 pad0x pad00y quiet block " data-reactid="54">Summary</a><a href="#count" class="line-height15 pad0x pad00y quiet block " data-reactid="55">Count</a><div class="small pad0x quiet space-top1" data-reactid="56">Logs</div><a href="#list-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="57">List logs</a><a href="#retrieve-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="58">Retrieve Logs</a><div class="small pad0x quiet space-top1" data-reactid="59">Granule CSV</div><a href="#get-granule-csv-file" class="line-height15 pad0x pad00y quiet block " data-reactid="60">Get Granule CSV file</a><div class="small pad0x quiet space-top1" data-reactid="61">Executions</div><a href="#list-executions" class="line-height15 pad0x pad00y quiet block " data-reactid="62">List executions</a><a href="#retrieve-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="63">Retrieve Execution</a><a href="#retrieve-execution-status" class="line-height15 pad0x pad00y quiet block " data-reactid="64">Retrieve Execution Status</a><a href="#search-executions-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="65">Search Executions By Granules</a><a href="#workflows-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="66">Workflows By Granules</a><a href="#create-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="67">Create execution</a><a href="#update-or-replace-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="68">Update or replace execution</a><a href="#delete-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="69">Delete execution</a><div class="small pad0x quiet space-top1" data-reactid="70">Workflows</div><a href="#list-workflows" class="line-height15 pad0x pad00y quiet block " data-reactid="71">List workflows</a><a href="#retrieve-workflow" class="line-height15 pad0x pad00y quiet block " data-reactid="72">Retrieve workflow</a><div class="small pad0x quiet space-top1" data-reactid="73">Async Operations</div><a href="#list-async-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="74">List async operations</a><a href="#retrieve-async-operation" class="line-height15 pad0x pad00y quiet block " data-reactid="75">Retrieve async operation</a><div class="small pad0x quiet space-top1" data-reactid="76">Replays</div><a href="#ingest-replays" class="line-height15 pad0x pad00y quiet block " data-reactid="77">Ingest Replays</a><div class="small pad0x quiet space-top1" data-reactid="78">Schemas</div><a href="#retrieve-schema" class="line-height15 pad0x pad00y quiet block " data-reactid="79">Retrieve schema</a><div class="small pad0x quiet space-top1" data-reactid="80">Reconciliation Reports</div><a href="#list-reconciliation-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="81">List reconciliation reports</a><a href="#retrieve-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="82">Retrieve reconciliation report</a><a href="#create-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="83">Create reconciliation report</a><a href="#delete-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="84">Delete reconciliation report</a><div class="small pad0x quiet space-top1" data-reactid="85">EMS Reports</div><a href="#create-ems-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="86">Create EMS reports</a><div class="small pad0x quiet space-top1" data-reactid="87">Instance Metadata</div><a href="#instance-metadata-1" class="line-height15 pad0x pad00y quiet block " data-reactid="88">Instance Metadata</a><div class="small pad0x quiet space-top1" data-reactid="89">Elasticsearch</div><a href="#elasticsearch-1" class="line-height15 pad0x pad00y quiet block " data-reactid="90">Elasticsearch</a><a href="#reindex" class="line-height15 pad0x pad00y quiet block " data-reactid="91">Reindex</a><a href="#reindex-status" class="line-height15 pad0x pad00y quiet block " data-reactid="92">Reindex Status</a><a href="#change-index" class="line-height15 pad0x pad00y quiet block " data-reactid="93">Change Index</a><a href="#index-from-database" class="line-height15 pad0x pad00y quiet block " data-reactid="94">Index from Database</a><a href="#indices-status" class="line-height15 pad0x pad00y quiet block " data-reactid="95">Indices Status</a><a href="#current-index" class="line-height15 pad0x pad00y quiet block " data-reactid="96">Current Index</a><div class="small pad0x quiet space-top1" data-reactid="97">Dashboard</div><a href="#serve-the-dashboard-from-a-bucket" class="line-height15 pad0x pad00y quiet block " data-reactid="98">Serve the dashboard from a bucket</a><div class="small pad0x quiet space-top1" data-reactid="99">ORCA</div><a href="#orca-1" class="line-height15 pad0x pad00y quiet block " data-reactid="100">ORCA</a><div class="small pad0x quiet space-top1" data-reactid="101">Postgres Migration Count</div><a href="#migration-counts" class="line-height15 pad0x pad00y quiet block " data-reactid="102">Migration Counts</a><div class="small pad0x quiet space-top1" data-reactid="103">Dead Letter Archive</div><a href="#recover-cumulus-messages" class="line-height15 pad0x pad00y quiet block " data-reactid="104">Recover cumulus messages</a></div></div><div class="space-left16" data-reactid="105"><div class="" data-reactid="106"><div class="clearfix" data-reactid="107"><div data-title="Cumulus API" class="keyline-top section contain clearfix " data-reactid="108"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="109"><h2 id="cumulus-api">Cumulus API</h2>
+    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="-266814516"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">Introduction</div><a href="#cumulus-api" class="line-height15 pad0x pad00y quiet block " data-reactid="7">Cumulus API</a><div class="small pad0x quiet space-top1" data-reactid="8">Versioning</div><a href="#versioning-1" class="line-height15 pad0x pad00y quiet block " data-reactid="9">Versioning</a><div class="small pad0x quiet space-top1" data-reactid="10">Authentication</div><a href="#token" class="line-height15 pad0x pad00y quiet block " data-reactid="11">Token</a><a href="#refresh-token" class="line-height15 pad0x pad00y quiet block " data-reactid="12">Refresh token</a><a href="#delete-token" class="line-height15 pad0x pad00y quiet block " data-reactid="13">Delete token</a><a href="#authorization-header" class="line-height15 pad0x pad00y quiet block " data-reactid="14">Authorization header</a><div class="small pad0x quiet space-top1" data-reactid="15">Providers</div><a href="#list-providers" class="line-height15 pad0x pad00y quiet block " data-reactid="16">List providers</a><a href="#retrieve-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="17">Retrieve provider</a><a href="#create-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="18">Create provider</a><a href="#updatereplace-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="19">Update/replace provider</a><a href="#delete-provider" class="line-height15 pad0x pad00y quiet block " data-reactid="20">Delete provider</a><div class="small pad0x quiet space-top1" data-reactid="21">Collections</div><a href="#list-collections" class="line-height15 pad0x pad00y quiet block " data-reactid="22">List collections</a><a href="#list-collections-with-active-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="23">List collections with active granules</a><a href="#retrieve-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="24">Retrieve collection</a><a href="#create-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="25">Create collection</a><a href="#updatereplace-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="26">Update/replace collection</a><a href="#delete-collection" class="line-height15 pad0x pad00y quiet block " data-reactid="27">Delete collection</a><div class="small pad0x quiet space-top1" data-reactid="28">Granules</div><a href="#list-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="29">List granules</a><a href="#list-granules-with-searchcontext" class="line-height15 pad0x pad00y quiet block " data-reactid="30">List granules with searchContext</a><a href="#retrieve-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="31">Retrieve granule</a><a href="#create-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="32">Create Granule</a><a href="#replace-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="33">Replace granule</a><a href="#update-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="34">Update granule</a><a href="#associate-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="35">Associate execution</a><a href="#reingest-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="36">Reingest granule</a><a href="#apply-workflow-to-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="37">Apply workflow to granule</a><a href="#move-a-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="38">Move a granule</a><a href="#remove-granule-from-cmr" class="line-height15 pad0x pad00y quiet block " data-reactid="39">Remove granule from CMR</a><a href="#delete-granule" class="line-height15 pad0x pad00y quiet block " data-reactid="40">Delete granule</a><a href="#bulk-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="41">Bulk Operations</a><a href="#bulk-delete" class="line-height15 pad0x pad00y quiet block " data-reactid="42">Bulk Delete</a><a href="#bulk-reingest" class="line-height15 pad0x pad00y quiet block " data-reactid="43">Bulk Reingest</a><div class="small pad0x quiet space-top1" data-reactid="44">PDRs</div><a href="#list-pdrs" class="line-height15 pad0x pad00y quiet block " data-reactid="45">List PDRs</a><a href="#retrieve-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="46">Retrieve PDR</a><a href="#delete-pdr" class="line-height15 pad0x pad00y quiet block " data-reactid="47">Delete PDR</a><div class="small pad0x quiet space-top1" data-reactid="48">Rules</div><a href="#list-rules" class="line-height15 pad0x pad00y quiet block " data-reactid="49">List rules</a><a href="#retrieve-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="50">Retrieve rule</a><a href="#create-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="51">Create rule</a><a href="#replace-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="52">Replace rule</a><a href="#update-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="53">Update rule</a><a href="#delete-rule" class="line-height15 pad0x pad00y quiet block " data-reactid="54">Delete rule</a><div class="small pad0x quiet space-top1" data-reactid="55">Stats</div><a href="#summary" class="line-height15 pad0x pad00y quiet block " data-reactid="56">Summary</a><a href="#count" class="line-height15 pad0x pad00y quiet block " data-reactid="57">Count</a><div class="small pad0x quiet space-top1" data-reactid="58">Logs</div><a href="#list-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="59">List logs</a><a href="#retrieve-logs" class="line-height15 pad0x pad00y quiet block " data-reactid="60">Retrieve Logs</a><div class="small pad0x quiet space-top1" data-reactid="61">Granule CSV</div><a href="#get-granule-csv-file" class="line-height15 pad0x pad00y quiet block " data-reactid="62">Get Granule CSV file</a><div class="small pad0x quiet space-top1" data-reactid="63">Executions</div><a href="#list-executions" class="line-height15 pad0x pad00y quiet block " data-reactid="64">List executions</a><a href="#retrieve-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="65">Retrieve Execution</a><a href="#retrieve-execution-status" class="line-height15 pad0x pad00y quiet block " data-reactid="66">Retrieve Execution Status</a><a href="#search-executions-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="67">Search Executions By Granules</a><a href="#workflows-by-granules" class="line-height15 pad0x pad00y quiet block " data-reactid="68">Workflows By Granules</a><a href="#create-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="69">Create execution</a><a href="#update-or-replace-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="70">Update or replace execution</a><a href="#delete-execution" class="line-height15 pad0x pad00y quiet block " data-reactid="71">Delete execution</a><div class="small pad0x quiet space-top1" data-reactid="72">Workflows</div><a href="#list-workflows" class="line-height15 pad0x pad00y quiet block " data-reactid="73">List workflows</a><a href="#retrieve-workflow" class="line-height15 pad0x pad00y quiet block " data-reactid="74">Retrieve workflow</a><div class="small pad0x quiet space-top1" data-reactid="75">Async Operations</div><a href="#list-async-operations" class="line-height15 pad0x pad00y quiet block " data-reactid="76">List async operations</a><a href="#retrieve-async-operation" class="line-height15 pad0x pad00y quiet block " data-reactid="77">Retrieve async operation</a><div class="small pad0x quiet space-top1" data-reactid="78">Replays</div><a href="#ingest-replays" class="line-height15 pad0x pad00y quiet block " data-reactid="79">Ingest Replays</a><div class="small pad0x quiet space-top1" data-reactid="80">Schemas</div><a href="#retrieve-schema" class="line-height15 pad0x pad00y quiet block " data-reactid="81">Retrieve schema</a><div class="small pad0x quiet space-top1" data-reactid="82">Reconciliation Reports</div><a href="#list-reconciliation-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="83">List reconciliation reports</a><a href="#retrieve-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="84">Retrieve reconciliation report</a><a href="#create-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="85">Create reconciliation report</a><a href="#delete-reconciliation-report" class="line-height15 pad0x pad00y quiet block " data-reactid="86">Delete reconciliation report</a><div class="small pad0x quiet space-top1" data-reactid="87">EMS Reports</div><a href="#create-ems-reports" class="line-height15 pad0x pad00y quiet block " data-reactid="88">Create EMS reports</a><div class="small pad0x quiet space-top1" data-reactid="89">Instance Metadata</div><a href="#instance-metadata-1" class="line-height15 pad0x pad00y quiet block " data-reactid="90">Instance Metadata</a><div class="small pad0x quiet space-top1" data-reactid="91">Elasticsearch</div><a href="#elasticsearch-1" class="line-height15 pad0x pad00y quiet block " data-reactid="92">Elasticsearch</a><a href="#reindex" class="line-height15 pad0x pad00y quiet block " data-reactid="93">Reindex</a><a href="#reindex-status" class="line-height15 pad0x pad00y quiet block " data-reactid="94">Reindex Status</a><a href="#change-index" class="line-height15 pad0x pad00y quiet block " data-reactid="95">Change Index</a><a href="#index-from-database" class="line-height15 pad0x pad00y quiet block " data-reactid="96">Index from Database</a><a href="#indices-status" class="line-height15 pad0x pad00y quiet block " data-reactid="97">Indices Status</a><a href="#current-index" class="line-height15 pad0x pad00y quiet block " data-reactid="98">Current Index</a><div class="small pad0x quiet space-top1" data-reactid="99">Dashboard</div><a href="#serve-the-dashboard-from-a-bucket" class="line-height15 pad0x pad00y quiet block " data-reactid="100">Serve the dashboard from a bucket</a><div class="small pad0x quiet space-top1" data-reactid="101">ORCA</div><a href="#orca-1" class="line-height15 pad0x pad00y quiet block " data-reactid="102">ORCA</a><div class="small pad0x quiet space-top1" data-reactid="103">Postgres Migration Count</div><a href="#migration-counts" class="line-height15 pad0x pad00y quiet block " data-reactid="104">Migration Counts</a><div class="small pad0x quiet space-top1" data-reactid="105">Dead Letter Archive</div><a href="#recover-cumulus-messages" class="line-height15 pad0x pad00y quiet block " data-reactid="106">Recover cumulus messages</a></div></div><div class="space-left16" data-reactid="107"><div class="" data-reactid="108"><div class="clearfix" data-reactid="109"><div data-title="Cumulus API" class="keyline-top section contain clearfix " data-reactid="110"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="111"><h2 id="cumulus-api">Cumulus API</h2>
 <p>The Cumulus API allows developers to interact with the <a href="https://github.com/nasa/cumulus">Cumulus Framework</a>, such as monitoring status or creating, editing, and deleting records. This is the same API that powers the <a href="https://github.com/nasa/cumulus-dashboard">Cumulus dashboard</a>.</p>
 <p>By utilizing this API, a developer can integrate with the Cumulus framework in any language or environment; although interacting with Cumulus through the Cumulus dashboard may be appropriate for many end users, for some use cases it's best to have the flexibility of a web-accessible API.</p>
 <p>The API accepts and responds with JSON payloads at various HTTPS endpoints.</p>
@@ -91,10 +90,10 @@
 </tr>
 </tbody>
 </table>
-</div></div><div data-title="Versioning" class="keyline-top section contain clearfix " data-reactid="110"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="111"><h2 id="versioning-1">Versioning</h2>
-<p>The Cumulus API is versioned and the current version is v1. Retrieve the latest API version from Cumulus.</p>
+</div></div><div data-title="Versioning" class="keyline-top section contain clearfix " data-reactid="112"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="113"><h2 id="versioning-1">Versioning</h2>
+<p>The Cumulus API is versioned and the current version is v2. Retrieve the latest API version from Cumulus.</p>
 <p>To use any version, include the version number in the path before the query endpoint. <code>{API_URL}/{version}/{query}</code></p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="112"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="114"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/version</div>
     </div>
@@ -102,16 +101,16 @@
 <pre class='hljs'>$ curl https://example.com/version</pre>
 <h4 id="example-response">Example Response</h4>
 <pre class='hljs'>{
-    <span class="hljs-attr">"response_version"</span>: <span class="hljs-string">"v1"</span>,
-    <span class="hljs-attr">"api_version"</span>: <span class="hljs-string">"1.1.1"</span>
+    <span class="hljs-attr">"response_version"</span>: <span class="hljs-string">"v2"</span>,
+    <span class="hljs-attr">"api_version"</span>: <span class="hljs-string">"15.0.0"</span>
 }</pre>
-</div></div><div data-title="Token" class="keyline-top section contain clearfix " data-reactid="113"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="114"><h2 id="token">Token</h2>
+</div></div><div data-title="Token" class="keyline-top section contain clearfix " data-reactid="115"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="116"><h2 id="token">Token</h2>
 <p>Returns a bearer token using oAuth with <a href="https://urs.earthdata.nasa.gov">Earthdata Login</a> service. The token will be returned as a <a href="https://jwt.io/introduction/">JWT (JSON Web Token)</a>.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="115"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="117"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/token</div>
     </div>
-</div></div><div data-title="Query Parameters" class="keyline-top section contain clearfix " data-reactid="116"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="117"><h3 id="query-parameters">Query Parameters</h3>
+</div></div><div data-title="Query Parameters" class="keyline-top section contain clearfix " data-reactid="118"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="119"><h3 id="query-parameters">Query Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -126,17 +125,17 @@
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="118"><h4 id="example-request-1">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="120"><h4 id="example-request-1">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/token</pre>
 <h4 id="example-response-1">Example response</h4>
 <pre class='hljs'>{<span class="hljs-attr">"token"</span>:<span class="hljs-string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"</span>}</pre>
-</div></div><div data-title="Refresh token" class="keyline-top section contain clearfix " data-reactid="119"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="120"><h2 id="refresh-token">Refresh token</h2>
+</div></div><div data-title="Refresh token" class="keyline-top section contain clearfix " data-reactid="121"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="122"><h2 id="refresh-token">Refresh token</h2>
 <p>Refreshes a bearer token received from oAuth with <a href="https://urs.earthdata.nasa.gov">Earthdata Login</a> service. The token will be returned as a <a href="https://jwt.io/introduction/">JWT (JSON Web Token)</a>.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="121"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="123"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/refresh</div>
     </div>
-</div></div><div data-title="Request body" class="keyline-top section contain clearfix " data-reactid="122"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="123"><h3 id="request-body">Request body</h3>
+</div></div><div data-title="Request body" class="keyline-top section contain clearfix " data-reactid="124"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="125"><h3 id="request-body">Request body</h3>
 <table>
 <thead>
 <tr>
@@ -155,14 +154,14 @@
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="124"><h4 id="example-request-2">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="126"><h4 id="example-request-2">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/refresh --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY"}'</span></pre>
 <h4 id="example-response-2">Example response</h4>
 <pre class='hljs'>{<span class="hljs-attr">"token"</span>:<span class="hljs-string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDcxMjk4ODEzIn0.vO6RlSRo47kkH15_muoUYNvv74fRzFxs7FlmVaarHlc"</span>}</pre>
-</div></div><div data-title="Delete token" class="keyline-top section contain clearfix " data-reactid="125"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="126"><h2 id="delete-token">Delete token</h2>
+</div></div><div data-title="Delete token" class="keyline-top section contain clearfix " data-reactid="127"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="128"><h2 id="delete-token">Delete token</h2>
 <p>Delete the record for an access token received from oAuth with <a href="https://urs.earthdata.nasa.gov">Earthdata Login</a> service.</p>
 <p><code>token</code> is the JWT containing access token information to delete</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="127"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="129"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/tokenDelete/<span class="strong">{token}</span></div>
     </div>
@@ -170,12 +169,12 @@
 <pre class='hljs'>$ curl --request DELETE https://example.com/tokenDelete/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NUb2tlbiI6IjIyMzc0YWE4MDM1M2E3ODFkYWJjYmFhZGJhOGE3ZmMwZmE1MWYzYjQzNWYxNTc4MjU2NjA0ZjFiNGQ0NTE2ODYiLCJleHAiOiIxNTQ0NDY1MDk3ODczIn0.SxFtZ7dqp9KsUSn1uTXhWis8Il8Hig8mwLANGU3cXhY</pre>
 <h4 id="example-response-3">Example response</h4>
 <pre class='hljs'>{<span class="hljs-attr">"message"</span>: <span class="hljs-string">"Token record was deleted"</span>}</pre>
-</div></div><div data-title="Authorization header" class="keyline-top section contain clearfix " data-reactid="128"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="129"><h2 id="authorization-header">Authorization header</h2>
+</div></div><div data-title="Authorization header" class="keyline-top section contain clearfix " data-reactid="130"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="131"><h2 id="authorization-header">Authorization header</h2>
 <p>When a request is made to the Cumulus API, it must contain a bearer token generated by the API.</p>
 <p>The token is generated after the user login with <a href="https://urs.earthdata.nasa.gov">Earthdata Login</a> service.</p>
 <p>The token is included in requests using the <code>Authorization</code> header.</p>
 <p>If no token is provided, the Cumulus API server will respond with an error, requesting credentials. If an incorrect token is provided, the server will respond with a separate error noting this.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="130"><h4 id="authentication-example">Authentication example</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="132"><h4 id="authentication-example">Authentication example</h4>
 <pre class='hljs'><span class="hljs-meta">#! /bin/sh
 </span>
 ORIGIN=$(dirname <span class="hljs-variable">$CUMULUS_BASEURL</span>)
@@ -200,9 +199,9 @@ TOKEN_URL=$(curl -s -i -X POST \
 TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <span class="hljs-string">'.message.token'</span>)
 
 <span class="hljs-built_in">echo</span> <span class="hljs-variable">$TOKEN</span></pre>
-</div></div><div data-title="List providers" class="keyline-top section contain clearfix " data-reactid="131"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="132"><h2 id="list-providers">List providers</h2>
+</div></div><div data-title="List providers" class="keyline-top section contain clearfix " data-reactid="133"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="134"><h2 id="list-providers">List providers</h2>
 <p>List providers in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="133"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="135"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/providers</div>
     </div>
@@ -222,15 +221,16 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
         {
             <span class="hljs-attr">"id"</span>: <span class="hljs-string">"HTTP_MODIS"</span>,
             <span class="hljs-attr">"globalConnectionLimit"</span>: <span class="hljs-number">10</span>,
+            <span class="hljs-attr">"maxDownloadTime"</span>: <span class="hljs-number">300</span>,
             <span class="hljs-attr">"protocol"</span>: <span class="hljs-string">"http"</span>,
             <span class="hljs-attr">"host"</span>: <span class="hljs-string">"https://data.modis.gov/"</span>,
             <span class="hljs-attr">"timestamp"</span>: <span class="hljs-number">1508861082226</span>
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve provider" class="keyline-top section contain clearfix " data-reactid="134"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="135"><h2 id="retrieve-provider">Retrieve provider</h2>
+</div></div><div data-title="Retrieve provider" class="keyline-top section contain clearfix " data-reactid="136"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="137"><h2 id="retrieve-provider">Retrieve provider</h2>
 <p>Retrieve a single provider.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="136"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="138"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/providers/<span class="strong">{id}</span></div>
     </div>
@@ -242,10 +242,11 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
     <span class="hljs-attr">"id"</span>: <span class="hljs-string">"HTTP_MODIS"</span>,
     <span class="hljs-attr">"host"</span>: <span class="hljs-string">"https://data.modis.gov/"</span>,
     <span class="hljs-attr">"globalConnectionLimit"</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">"maxDownloadTime"</span>: <span class="hljs-number">300</span>,
     <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1508861081785</span>,
     <span class="hljs-attr">"protocol"</span>: <span class="hljs-string">"http"</span>
 }</pre>
-</div></div><div data-title="Create provider" class="keyline-top section contain clearfix " data-reactid="137"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="138"><h2 id="create-provider">Create provider</h2>
+</div></div><div data-title="Create provider" class="keyline-top section contain clearfix " data-reactid="139"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="140"><h2 id="create-provider">Create provider</h2>
 <p>Create a provider. For more information on creating providers and the contents of a request see <a href="https://nasa.github.io/cumulus/docs/data-cookbooks/setup#providers">the Cumulus setup documentation</a>.</p>
 <p>Overview of the schema fields:</p>
 <table>
@@ -280,7 +281,12 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
 <tr>
 <td><code>globalConnectionLimit</code></td>
 <td><code>number</code></td>
-<td>limit to number of concurrent connections</td>
+<td>limit to number of concurrent connections. This is the maximum number of connections Cumulus compatible ingest lambdas are expected to make to a provider. Defaults to unlimited</td>
+</tr>
+<tr>
+<td><code>maxDownloadTime</code></td>
+<td><code>number</code></td>
+<td>Maximum download time in seconds for all granule files on a sync granule task. The timeout is used together with globalConnectionLimit to limit concurrent downloads.</td>
 </tr>
 <tr>
 <td><code>username</code></td>
@@ -314,7 +320,7 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="139"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="141"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/providers</div>
     </div>
@@ -323,7 +329,8 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
     "host": "https://www.example.gov",
     "id": "MY_DAAC_SATELLITE",
     "protocol": "http",
-    "globalConnectionLimit": 10
+    "globalConnectionLimit": 10,
+    "maxDownloadTime": 300
 }'</span></pre>
 <h4 id="example-response-6">Example response</h4>
 <pre class='hljs'>{
@@ -334,10 +341,11 @@ TOKEN=$(curl -s <span class="hljs-variable">${TOKEN_URL%$'\r'}</span> | jq -r <s
         <span class="hljs-attr">"id"</span>: <span class="hljs-string">"MY_DAAC_SATELLITE"</span>,
         <span class="hljs-attr">"protocol"</span>: <span class="hljs-string">"http"</span>,
         <span class="hljs-attr">"globalConnectionLimit"</span>: <span class="hljs-number">10</span>,
+        <span class="hljs-attr">"maxDownloadTime"</span>: <span class="hljs-number">300</span>,
         <span class="hljs-attr">"timestamp"</span>: <span class="hljs-number">1513956151186</span>
     }
 }</pre>
-</div></div><div data-title="Update/replace provider" class="keyline-top section contain clearfix " data-reactid="140"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="141"><h2 id="updatereplace-provider">Update/replace provider</h2>
+</div></div><div data-title="Update/replace provider" class="keyline-top section contain clearfix " data-reactid="142"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="143"><h2 id="updatereplace-provider">Update/replace provider</h2>
 <p>Update/replace an existing provider. Expects payload to specify the entire
 provider object, and will completely replace the existing provider with the
 specified payload. For a field reference see
@@ -345,7 +353,7 @@ specified payload. For a field reference see
 <p>Returns status 200 on successful replacement, 400 if the <code>id</code> property in the
 payload does not match the corresponding value in the resource URI, or 404 if
 there is no provider with the specified ID.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="142"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="144"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
       <div class='pad0 code small endpoint-url'>/providers/<span class="strong">{id}</span></div>
     </div>
@@ -354,6 +362,7 @@ there is no provider with the specified ID.</p>
   "id": "MY_DAAC_SATELLITE",
   "host": "https://www.example.co.uk",
   "globalConnectionLimit": 10,
+  "maxDownloadTime": 300,
   "protocol": "http"
 }'</span></pre>
 <h4 id="example-successful-response">Example successful response</h4>
@@ -362,13 +371,14 @@ there is no provider with the specified ID.</p>
   <span class="hljs-attr">"id"</span>: <span class="hljs-string">"MY_DAAC_SATELLITE"</span>,
   <span class="hljs-attr">"host"</span>: <span class="hljs-string">"https://www.example.co.uk"</span>,
   <span class="hljs-attr">"globalConnectionLimit"</span>: <span class="hljs-number">10</span>,
+  <span class="hljs-attr">"maxDownloadTime"</span>: <span class="hljs-number">300</span>,
   <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1513956150733</span>,
   <span class="hljs-attr">"protocol"</span>: <span class="hljs-string">"http"</span>,
   <span class="hljs-attr">"timestamp"</span>: <span class="hljs-number">1513956555713</span>
 }</pre>
-</div></div><div data-title="Delete provider" class="keyline-top section contain clearfix " data-reactid="143"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="144"><h2 id="delete-provider">Delete provider</h2>
+</div></div><div data-title="Delete provider" class="keyline-top section contain clearfix " data-reactid="145"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="146"><h2 id="delete-provider">Delete provider</h2>
 <p>Delete a provider from Cumulus. The related PDRs and granules remain in the Cumulus and CMR systems.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="145"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="147"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/providers/<span class="strong">{id}</span></div>
     </div>
@@ -378,11 +388,11 @@ there is no provider with the specified ID.</p>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="List collections" class="keyline-top section contain clearfix " data-reactid="146"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="147"><h2 id="list-collections">List collections</h2>
+</div></div><div data-title="List collections" class="keyline-top section contain clearfix " data-reactid="148"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="149"><h2 id="list-collections">List collections</h2>
 <p>List collections in the Cumulus system.</p>
 <p>If the query includes a value of <code>true</code> for <code>getMMT</code>, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under <code>MMTLink</code></p>
 <p>If the query includes a value of <code>true</code> for <code>includeStats</code>, cumulus will compute and include the granule aggregation statistics in each collection's return value.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="148"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="150"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/collections</div>
     </div>
@@ -449,12 +459,12 @@ there is no provider with the specified ID.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="List collections with active granules" class="keyline-top section contain clearfix " data-reactid="149"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="150"><h2 id="list-collections-with-active-granules">List collections with active granules</h2>
+</div></div><div data-title="List collections with active granules" class="keyline-top section contain clearfix " data-reactid="151"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="152"><h2 id="list-collections-with-active-granules">List collections with active granules</h2>
 <p>List collections in the Cumulus system that have active associated granules.</p>
 <p>If time parameters are specified, the query will return collections that have granules that have been updated in that time frame.</p>
 <p>If the query includes a value of <code>true</code> for <code>getMMT</code>, cumulus will search the CMR for each collection and insert the link to the Metadata Management Tool (MMT) into each result under <code>MMTLink</code></p>
 <p>If the query includes a value of <code>true</code> for <code>includeStats</code>, cumulus will compute and include the granule aggregation statistics in each collection's return value.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="151"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="153"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/collections/active</div>
     </div>
@@ -527,9 +537,9 @@ there is no provider with the specified ID.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve collection" class="keyline-top section contain clearfix " data-reactid="152"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="153"><h2 id="retrieve-collection">Retrieve collection</h2>
+</div></div><div data-title="Retrieve collection" class="keyline-top section contain clearfix " data-reactid="154"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="155"><h2 id="retrieve-collection">Retrieve collection</h2>
 <p>Retrieve a single collection.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="154"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="156"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/collections/<span class="strong">{name}</span>/<span class="strong">{version}</span></div>
     </div>
@@ -583,7 +593,7 @@ there is no provider with the specified ID.</p>
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$"</span>,
     <span class="hljs-attr">"sampleFileName"</span>: <span class="hljs-string">"MOD11A1.A2017025.h21v00.006.2017034065104.hdf"</span>,
 }</pre>
-</div></div><div data-title="Create collection" class="keyline-top section contain clearfix " data-reactid="155"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="156"><h2 id="create-collection">Create collection</h2>
+</div></div><div data-title="Create collection" class="keyline-top section contain clearfix " data-reactid="157"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="158"><h2 id="create-collection">Create collection</h2>
 <p>Create a collection. For more information on creating collections and the contents of a request see <a href="https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections">the Cumulus setup documentation</a>. A collection generally includes, but is not limited to, the fields listed below.</p>
 <p>Overview of the schema fields:</p>
 <table>
@@ -677,7 +687,7 @@ there is no provider with the specified ID.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="157"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="159"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/collections</div>
     </div>
@@ -727,7 +737,7 @@ there is no provider with the specified ID.</p>
         <span class="hljs-attr">"createdAt"</span>: <span class="hljs-number">1491946535919</span>
     }
 }</pre>
-</div></div><div data-title="Update/replace collection" class="keyline-top section contain clearfix " data-reactid="158"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="159"><h2 id="updatereplace-collection">Update/replace collection</h2>
+</div></div><div data-title="Update/replace collection" class="keyline-top section contain clearfix " data-reactid="160"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="161"><h2 id="updatereplace-collection">Update/replace collection</h2>
 <p>Update/replace an existing collection. Expects payload to specify the entire
 collection object, and will completely replace the existing collection with the
 specified payload. For a field reference see
@@ -735,7 +745,7 @@ specified payload. For a field reference see
 <p>Returns status 200 on successful replacement, 400 if the <code>name</code> or <code>version</code>
 property in the payload does not match the corresponding value in the resource
 URI, or 404 if there is no collection with the specified name and version.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="160"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="162"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
       <div class='pad0 code small endpoint-url'>/collections/<span class="strong">{name}</span>/<span class="strong">{version}</span></div>
     </div>
@@ -785,9 +795,9 @@ URI, or 404 if there is no collection with the specified name and version.</p>
   <span class="hljs-attr">"createdAt"</span>: <span class="hljs-number">1491946535919</span>,
   <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1514304825894</span>
 }</pre>
-</div></div><div data-title="Delete collection" class="keyline-top section contain clearfix " data-reactid="161"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="162"><h2 id="delete-collection">Delete collection</h2>
+</div></div><div data-title="Delete collection" class="keyline-top section contain clearfix " data-reactid="163"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="164"><h2 id="delete-collection">Delete collection</h2>
 <p>Delete a collection from Cumulus, but not from CMR. All related granules in Cumulus must have already been deleted from Cumulus.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="163"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="165"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/collections/<span class="strong">{name}</span>/<span class="strong">{version}</span></div>
     </div>
@@ -797,10 +807,10 @@ URI, or 404 if there is no collection with the specified name and version.</p>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="List granules" class="keyline-top section contain clearfix " data-reactid="164"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="165"><h2 id="list-granules">List granules</h2>
+</div></div><div data-title="List granules" class="keyline-top section contain clearfix " data-reactid="166"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="167"><h2 id="list-granules">List granules</h2>
 <p>List granules in the Cumulus system.
 If the query includes a value of <code>true</code> for <code>getRecoveryStatus</code>, <code>recoveryStatus</code> will be included in each granule's return value when applicable.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="166"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="168"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/granules</div>
     </div>
@@ -881,11 +891,11 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
         }
     ]
 }</pre>
-</div></div><div data-title="List granules with searchContext" class="keyline-top section contain clearfix " data-reactid="167"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="168"><h2 id="list-granules-with-searchcontext">List granules with searchContext</h2>
+</div></div><div data-title="List granules with searchContext" class="keyline-top section contain clearfix " data-reactid="169"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="170"><h2 id="list-granules-with-searchcontext">List granules with searchContext</h2>
 <p>List granules in the Cumulus system with searchContext from a previous query.
 Must include all of previous query's <code>sort</code>, <code>order</code>, or <code>sort_key</code> query string parameters.
 Must not include <code>from</code> and <code>to</code> query string parameters.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="169"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="171"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/granules</div>
     </div>
@@ -966,12 +976,13 @@ Must not include <code>from</code> and <code>to</code> query string parameters.<
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve granule" class="keyline-top section contain clearfix " data-reactid="170"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="171"><h2 id="retrieve-granule">Retrieve granule</h2>
-<p>Retrieve a single granule.
-If the query includes a value of <code>true</code> for <code>getRecoveryStatus</code>, the returned granule will include <code>recoveryStatus</code> when applicable.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="172"><div class='endpoint dark fill-dark round '>
+</div></div><div data-title="Retrieve granule" class="keyline-top section contain clearfix " data-reactid="172"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="173"><h2 id="retrieve-granule">Retrieve granule</h2>
+<p>Retrieve a single granule. Two routes are currently available. The preferred query includes both a Collection ID and a Granule ID to identify a unique granule.</p>
+<p><strong>Please note</strong> -- Querying by the Granule ID alone (e.g. <code>GET /granules/{granuleId}</code>) is supported but may be deprecated in the future.</p>
+<p>If the query includes a value of <code>true</code> for <code>getRecoveryStatus</code>, the returned granule will include <code>recoveryStatus</code> when applicable.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="174"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
-      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
+      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{collectionId}</span>/<span class="strong">{granuleId}</span></div>
     </div>
 <h4 id="example-request-17">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
@@ -1037,7 +1048,7 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
     <span class="hljs-attr">"cmrLink"</span>: <span class="hljs-string">"https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS"</span>,
     <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"MOD11A1.A2017137.h20v17.006.2017138085755"</span>
 }</pre>
-</div></div><div data-title="Create Granule" class="keyline-top section contain clearfix " data-reactid="173"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="174"><h2 id="create-granule">Create Granule</h2>
+</div></div><div data-title="Create Granule" class="keyline-top section contain clearfix " data-reactid="175"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="176"><h2 id="create-granule">Create Granule</h2>
 <p>Create a granule. A <code>granule</code> can have the following fields.</p>
 <table>
 <thead>
@@ -1195,7 +1206,7 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="175"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="177"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/granules</div>
     </div>
@@ -1239,163 +1250,26 @@ If the query includes a value of <code>true</code> for <code>getRecoveryStatus</
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully wrote granule with Granule Id: granuleId.A20200113.006.1005"</span>
 }</pre>
-</div></div><div data-title="Update or replace granule" class="keyline-top section contain clearfix " data-reactid="176"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="177"><h2 id="update-or-replace-granule">Update or replace granule</h2>
-<p>Updates or creates an existing granule.</p>
-<p>This endpoint functions with PATCH behavior in that missing fields are preserved
-on update.  </p>
-<p>Undefined values that are not required by this API (e.g. <code>createdAt</code>) but are required by
-the schema will be set to default values if unset and not already present in
-case of granule update.</p>
-<p><strong>Please note this endpoint will be being moved to the <code>PATCH</code> HTTP request
-method in a future release</strong></p>
-<p>Values with NULL set will be removed from the object, unless the field is not
-nullable/removable in which case an error will be returned.  In some cases, a
-default value will be set on deletion, according to the following table:</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Nullable</th>
-<th>Null Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>beginningDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>cmrLink</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>collectionId</code></td>
-<td><code>no</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>createdAt</code></td>
-<td><code>yes</code></td>
-<td>Current Date</td>
-</tr>
-<tr>
-<td><code>duration</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>endingDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>error</code></td>
-<td><code>yes</code></td>
-<td>{}</td>
-</tr>
-<tr>
-<td><code>execution</code></td>
-<td><code>no</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>files</code></td>
-<td><code>yes</code></td>
-<td>'[]' - will remove all associated files, granule will return undefined</td>
-</tr>
-<tr>
-<td><code>granuleId</code></td>
-<td><code>no</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>lastUpdateDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>pdrName</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>processingEndDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>processingStartDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>productVolume</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>productionDateTime</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>provider</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>published</code></td>
-<td><code>yes</code></td>
-<td>false</td>
-</tr>
-<tr>
-<td><code>queryFields</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>status</code></td>
-<td><code>no</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>timeToArchive</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>timeToPreprocess</code></td>
-<td><code>yes</code></td>
-<td>Value will be removed</td>
-</tr>
-<tr>
-<td><code>timestamp</code></td>
-<td><code>yes</code></td>
-<td>Current time value</td>
-</tr>
-<tr>
-<td><code>updatedAt</code></td>
-<td><code>no</code></td>
-<td>Value will be removed</td>
-</tr>
-</tbody>
-</table>
-<p> The same fields are available as are for <a href="#create-granule">creating a
-granule.</a>.</p>
-<p>Returns status 200 on successful replacement, 404 if the <code>granuleId</code> can not be
-found in the database, or 400 when the granuleId in the payload does not match the
-corresponding value in the resource URI.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="178"><div class='endpoint dark fill-dark round '>
+</div></div><div data-title="Replace granule" class="keyline-top section contain clearfix " data-reactid="178"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="179"><h2 id="replace-granule">Replace granule</h2>
+<p>Replace an existing granule.  Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.   Any unspecified values will be removed, and appropriate
+fields will be replaced with defaults.    Executions associated will not be modified if
+not specified.  The same fields are available as are for <a href="#create-granule">creating a granule.</a>.</p>
+<p>Returns status 200 on successful update, 201 on new granule creation, 404 if
+the <code>granuleId</code> can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.</p>
+<p><strong>Please note</strong> -- In versions of CUMULUS prior to release v16, PUT endpoint was
+identical to PATCH requests.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="180"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
-      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
+      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{collectionId}</span>/<span class="strong">{granuleId}</span></div>
     </div>
-<h4 id="example-request-19">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/granules/granuleId.A19990103.006.1000 \
+</div></div><div data-title="Example request" class="keyline-top section contain clearfix " data-reactid="181"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="182"><h3 id="example-request-19">Example request</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="183"><pre class='hljs'>$ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId.A19990103.006.1000 \
   --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
-  --data <span class="hljs-string">'{
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\  --data <span class="hljs-string">'{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
     {
@@ -1414,9 +1288,50 @@ corresponding value in the resource URI.</p>
   }'</span></pre>
 <h4 id="example-response-17">Example response</h4>
 <pre class='hljs'>{
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully updated granule with Granule Id: granuleId.A20200113.006.1005, CollectionId: COLLECTION___VERSION"</span>
+}</pre>
+</div></div><div data-title="Update granule" class="keyline-top section contain clearfix " data-reactid="184"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="185"><h2 id="update-granule">Update granule</h2>
+<p>Update an existing granule.  Expects payload to contain the modified
+parts of the granule and the existing granule values will be overwritten by the
+modified portions.   Unspecified keys will be retained.    Keys set to <code>null</code>
+will be removed.    Executions will not be disassociated from the granule via
+<code>null</code> deletion.  The same fields are available as are for <a href="#create-granule">creating a
+granule.</a>.</p>
+<p>Returns status 200 on successful update, 201 on new granule creation, 404 if
+the <code>granuleId</code> can not be found in the database, or 400 when the granuleId in
+the payload does not match the corresponding value in the resource URI.</p>
+<p><strong>Please note</strong> -- Querying by the Granule ID alone (e.g. <code>PATCH /granules/{granuleId}</code>) is supported but may be deprecated in the future.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="186"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
+      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{collectionId}</span>/<span class="strong">{granuleId}</span></div>
+    </div>
+<h4 id="example-request-20">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
+  --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
+  --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
+  --data <span class="hljs-string">'{
+  "granuleId": "granuleId.A20200113.006.1005",
+  "files": [
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.hdf",
+      "fileName": "granuleId.A20200113.006.1005.hdf"
+    },
+    {
+      "bucket": "stack-protected",
+      "key": "granuleId.A20200113.006.1005.jpg",
+      "fileName": "granuleId.A20200113.006.1005.jpg"
+    }
+  ],
+  "duration": 1000,
+  "status": "completed"
+  }'</span></pre>
+<h4 id="example-response-18">Example response</h4>
+<pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully updated granule with Granule Id: granuleId.A20200113.006.1005"</span>
 }</pre>
-</div></div><div data-title="Associate execution" class="keyline-top section contain clearfix " data-reactid="179"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="180"><h2 id="associate-execution">Associate execution</h2>
+</div></div><div data-title="Associate execution" class="keyline-top section contain clearfix " data-reactid="187"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="188"><h2 id="associate-execution">Associate execution</h2>
 <p>Associate an execution with a granule. Returns status 200 on successful
 association, 404 if the granule or execution can not be found in the database,
 or 400 when the granuleId in the payload does not match the corresponding
@@ -1448,24 +1363,25 @@ value in the resource URI.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="181"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="189"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span>/executions</div>
     </div>
-<h4 id="example-request-20">Example request</h4>
+<h4 id="example-request-21">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/granules/granuleId.A19990103.006.1000/executions \
   --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
   --data <span class="hljs-string">'{
   "granuleId": "granuleId.A19990103.006.1000",
   "collectionId": "MOD09GQ___006",
   "executionArn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"
   }'</span></pre>
-<h4 id="example-response-18">Example response</h4>
+<h4 id="example-response-19">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully associated execution arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 with granule granuleId granuleId.A19990103.006.1000 collectionId MOD09GQ___006"</span>
 }</pre>
-</div></div><div data-title="Reingest granule" class="keyline-top section contain clearfix " data-reactid="182"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="183"><h2 id="reingest-granule">Reingest granule</h2>
+</div></div><div data-title="Reingest granule" class="keyline-top section contain clearfix " data-reactid="190"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="191"><h2 id="reingest-granule">Reingest granule</h2>
 <p>Reingest a granule. This causes the granule to re-download to Cumulus from
 source, and begin processing from scratch.  Reingesting a granule will
 overwrite existing granule files.</p>
@@ -1484,79 +1400,83 @@ both are present, workflowName is ignored and executionArn is used to determinin
 the input message to the reingest.</p>
 <p>A warning message is included in the response if the collection's
 duplicateHandling is not set to 'replace'.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="184"><div class='endpoint dark fill-dark round '>
-      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="192"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
     </div>
-<h4 id="example-request-21">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
+<h4 id="example-request-22">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755
        --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span>
        --header <span class="hljs-string">'Content-Type: application/json'</span>
+       --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
        --data <span class="hljs-string">'{"action": "reingest",
                ["executionArn": "arn:aws:states:us-east-1:123456789012:execution:stack-lambdaName:9da47a3b-4d85-4599-ae78-dbec2e042520"],
                ["workflowName": "TheWorkflowName"] }'</span></pre>
-<h4 id="example-response-19">Example response</h4>
+<h4 id="example-response-20">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h20v17.006.2017138085755"</span>,
     <span class="hljs-attr">"action"</span>: <span class="hljs-string">"reingest"</span>,
     <span class="hljs-attr">"status"</span>: <span class="hljs-string">"SUCCESS"</span>,
     <span class="hljs-attr">"warning"</span>: <span class="hljs-string">"The granule files may be overwritten"</span>
 }</pre>
-</div></div><div data-title="Apply workflow to granule" class="keyline-top section contain clearfix " data-reactid="185"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="186"><h2 id="apply-workflow-to-granule">Apply workflow to granule</h2>
+</div></div><div data-title="Apply workflow to granule" class="keyline-top section contain clearfix " data-reactid="193"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="194"><h2 id="apply-workflow-to-granule">Apply workflow to granule</h2>
 <p>Apply the named workflow to the granule. Workflow input will be built from template and provided entire Cumulus granule record as payload.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="187"><div class='endpoint dark fill-dark round '>
-      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="195"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleid}</span></div>
     </div>
-<h4 id="example-request-22">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'</span></pre>
-<h4 id="example-response-20">Example response</h4>
+<h4 id="example-request-23">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\ --data <span class="hljs-string">'{ "action": "applyWorkflow", "workflow": "inPlaceWorkflow" }'</span></pre>
+<h4 id="example-response-21">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h20v17.006.2017138085755"</span>,
     <span class="hljs-attr">"action"</span>: <span class="hljs-string">"applyWorkflow inPlaceWorkflow"</span>,
     <span class="hljs-attr">"status"</span>: <span class="hljs-string">"SUCCESS"</span>
 }</pre>
-</div></div><div data-title="Move a granule" class="keyline-top section contain clearfix " data-reactid="188"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="189"><h2 id="move-a-granule">Move a granule</h2>
+</div></div><div data-title="Move a granule" class="keyline-top section contain clearfix " data-reactid="196"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="197"><h2 id="move-a-granule">Move a granule</h2>
 <p>Move a granule from one location on S3 to another. Individual files are moved to specific locations by using a regex that matches their filenames.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="190"><div class='endpoint dark fill-dark round '>
-      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="198"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
     </div>
-<h4 id="example-request-23">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'</span></pre>
-<h4 id="example-response-21">Example response</h4>
+<h4 id="example-request-24">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
+ --data <span class="hljs-string">'{ "action": "move", "destinations": [{ "regex": ".*.hdf$", "bucket": "s3-bucket", "filepath": "new/filepath/" }]}'</span></pre>
+<h4 id="example-response-22">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h19v16.006.2017138085750"</span>,
   <span class="hljs-attr">"action"</span>: <span class="hljs-string">"move"</span>,
   <span class="hljs-attr">"status"</span>: <span class="hljs-string">"SUCCESS"</span>
 }</pre>
-</div></div><div data-title="Remove granule from CMR" class="keyline-top section contain clearfix " data-reactid="191"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="192"><h2 id="remove-granule-from-cmr">Remove granule from CMR</h2>
+</div></div><div data-title="Remove granule from CMR" class="keyline-top section contain clearfix " data-reactid="199"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="200"><h2 id="remove-granule-from-cmr">Remove granule from CMR</h2>
 <p>Remove a Cumulus granule from CMR.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="193"><div class='endpoint dark fill-dark round '>
-      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="201"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
       <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
     </div>
-<h4 id="example-request-24">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{"action": "removeFromCmr"}'</span></pre>
-<h4 id="example-response-22">Example response</h4>
+<h4 id="example-request-25">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/granules/MOD11A1.A2017137.h19v16.006.2017138085750   --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\
+ --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --header <span class="hljs-string">'Cumulus-API-Version: 2'</span>\ --data <span class="hljs-string">'{"action": "removeFromCmr"}'</span></pre>
+<h4 id="example-response-23">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD11A1.A2017137.h19v16.006.2017138085750"</span>,
     <span class="hljs-attr">"action"</span>: <span class="hljs-string">"removeFromCmr"</span>,
     <span class="hljs-attr">"status"</span>: <span class="hljs-string">"SUCCESS"</span>
 }</pre>
-</div></div><div data-title="Delete granule" class="keyline-top section contain clearfix " data-reactid="194"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="195"><h2 id="delete-granule">Delete granule</h2>
+</div></div><div data-title="Delete granule" class="keyline-top section contain clearfix " data-reactid="202"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="203"><h2 id="delete-granule">Delete granule</h2>
 <p>Delete a granule from Cumulus. It must <em>already</em> be removed from CMR.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="196"><div class='endpoint dark fill-dark round '>
+<p><strong>Please note</strong> -- Querying by the Granule ID alone (e.g. <code>DELETE /granules/{granuleId}</code>) is supported but may be deprecated in the future.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="204"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
-      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{granuleId}</span></div>
+      <div class='pad0 code small endpoint-url'>/granules/<span class="strong">{collectionId}</span>/<span class="strong">{granuleId}</span></div>
     </div>
-<h4 id="example-request-25">Example request</h4>
+<h4 id="example-request-26">Example request</h4>
 <pre class='hljs'>$ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-23">Example response</h4>
+<h4 id="example-response-24">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"detail"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="Bulk Operations" class="keyline-top section contain clearfix " data-reactid="197"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="198"><h2 id="bulk-operations">Bulk Operations</h2>
+</div></div><div data-title="Bulk Operations" class="keyline-top section contain clearfix " data-reactid="205"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="206"><h2 id="bulk-operations">Bulk Operations</h2>
 <p>Apply a workflow to the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -1576,12 +1496,6 @@ duplicateHandling is not set to 'replace'.</p>
 <td>Workflow to be applied to all granules</td>
 </tr>
 <tr>
-<td><code>queueUrl</code></td>
-<td><code>N</code></td>
-<td><code>string</code></td>
-<td>URL of SQS queue to use for scheduling granule workflows (e.g. <code>https://sqs.us-east-1.amazonaws.com/12345/queue-name</code>)</td>
-</tr>
-<tr>
 <td><code>ids</code></td>
 <td><code>yes</code> - if <code>query</code> not present</td>
 <td><code>Array&#x3C;string></code></td>
@@ -1599,10 +1513,22 @@ duplicateHandling is not set to 'replace'.</p>
 <td><code>string</code></td>
 <td>Elasticsearch index to search with the given query</td>
 </tr>
+<tr>
+<td><code>knexDebug</code></td>
+<td><code>N</code></td>
+<td><code>bool</code></td>
+<td>Sets knex PostgreSQL connection pool/query debug output.  Defaults to false</td>
+</tr>
+<tr>
+<td><code>queueUrl</code></td>
+<td><code>N</code></td>
+<td><code>string</code></td>
+<td>URL of SQS queue to use for scheduling granule workflows (e.g. <code>https://sqs.us-east-1.amazonaws.com/12345/queue-name</code>)</td>
+</tr>
 </tbody>
 </table>
 <p>Use the <a href="#retrieve-async-operation">Retrieve async operation</a> endpoint with the <code>id</code> in the response to determine the status of the async operation.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="199"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="207"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/granules/bulk</div>
     </div>
@@ -1644,11 +1570,11 @@ duplicateHandling is not set to 'replace'.</p>
 <h4 id="example-request-with-given-granule-ids">Example request with given Granule IDs:</h4>
 <pre class='hljs'>curl -X POST
   https://example.com/granules/bulk --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "workflowName": "HelloWorldWorkflow"}'</span></pre>
-<h4 id="example-response-24">Example response</h4>
+<h4 id="example-response-25">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"id"</span>: <span class="hljs-string">"0eb8e809-8790-5409-1239-bcd9e8d28b8e"</span>
 }</pre>
-</div></div><div data-title="Bulk Delete" class="keyline-top section contain clearfix " data-reactid="200"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="201"><h2 id="bulk-delete">Bulk Delete</h2>
+</div></div><div data-title="Bulk Delete" class="keyline-top section contain clearfix " data-reactid="208"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="209"><h2 id="bulk-delete">Bulk Delete</h2>
 <p>Bulk delete the provided granules. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -1662,22 +1588,10 @@ duplicateHandling is not set to 'replace'.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>forceRemoveFromCmr</code></td>
-<td><code>N</code></td>
-<td><code>bool</code></td>
-<td>Whether to remove published granules from CMR before deletion. <strong>You must set this value to <code>true</code> to do bulk deletion of published granules, otherwise deleting them will fail.</strong></td>
-</tr>
-<tr>
 <td><code>ids</code></td>
 <td><code>yes</code> - if <code>query</code> not present</td>
 <td><code>Array&#x3C;string></code></td>
 <td>List of IDs to process. Required if there is no Elasticsearch query provided</td>
-</tr>
-<tr>
-<td><code>query</code></td>
-<td><code>yes</code> - if <code>ids</code> not present</td>
-<td><code>Object</code></td>
-<td>Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given.</td>
 </tr>
 <tr>
 <td><code>index</code></td>
@@ -1685,10 +1599,40 @@ duplicateHandling is not set to 'replace'.</p>
 <td><code>string</code></td>
 <td>Elasticsearch index to search with the given query</td>
 </tr>
+<tr>
+<td><code>query</code></td>
+<td><code>yes</code> - if <code>ids</code> not present</td>
+<td><code>Object</code></td>
+<td>Query to Elasticsearch to determine which Granules to delete. Required if no IDs are given</td>
+</tr>
+<tr>
+<td><code>concurrency</code></td>
+<td><code>N</code></td>
+<td><code>integer</code></td>
+<td>Sets the granule concurrency for the bulk deletion operation.  Defaults to <code>10</code></td>
+</tr>
+<tr>
+<td><code>forceRemoveFromCmr</code></td>
+<td><code>N</code></td>
+<td><code>bool</code></td>
+<td>Whether to remove published granules from CMR before deletion. <strong>You must set this value to <code>true</code> to do bulk deletion of published granules, otherwise deleting them will fail.</strong></td>
+</tr>
+<tr>
+<td><code>knexDebug</code></td>
+<td><code>N</code></td>
+<td><code>bool</code></td>
+<td>Sets knex PostgreSQL connection pool/query debug output.  Defaults to false</td>
+</tr>
+<tr>
+<td><code>maxDbConnections</code></td>
+<td><code>N</code></td>
+<td><code>integer</code></td>
+<td>Sets the maximum database connections to allocate for the operation.  Defaults to <code>concurrency</code> value</td>
+</tr>
 </tbody>
 </table>
 <p>Use the <a href="#retrieve-async-operation">Retrieve async operation</a> endpoint with the <code>id</code> in the response to determine the status of the async operation.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="202"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="210"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/granules/bulkDelete</div>
     </div>
@@ -1730,11 +1674,11 @@ duplicateHandling is not set to 'replace'.</p>
 <h4 id="example-request-with-given-granule-ids-1">Example request with given Granule IDs:</h4>
 <pre class='hljs'>curl -X POST
   https://example.com/granules/bulkDelete --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --data <span class="hljs-string">'{"ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"], "forceRemoveFromCmr": true}'</span></pre>
-<h4 id="example-response-25">Example response</h4>
+<h4 id="example-response-26">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"id"</span>: <span class="hljs-string">"0eb8e809-8790-5409-1239-bcd9e8d28b8e"</span>
 }</pre>
-</div></div><div data-title="Bulk Reingest" class="keyline-top section contain clearfix " data-reactid="203"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="204"><h2 id="bulk-reingest">Bulk Reingest</h2>
+</div></div><div data-title="Bulk Reingest" class="keyline-top section contain clearfix " data-reactid="211"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="212"><h2 id="bulk-reingest">Bulk Reingest</h2>
 <p>Reingest the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -1754,16 +1698,22 @@ duplicateHandling is not set to 'replace'.</p>
 <td>List of IDs to process. Required if there is no Elasticsearch query provided</td>
 </tr>
 <tr>
+<td><code>index</code></td>
+<td><code>yes</code> - if <code>query</code> is present</td>
+<td><code>string</code></td>
+<td>Elasticsearch index to search with the given query</td>
+</tr>
+<tr>
 <td><code>query</code></td>
 <td><code>yes</code> - if <code>ids</code> not present</td>
 <td><code>Object</code></td>
 <td>Query to Elasticsearch to determine which Granules to be reingested. Required if no IDs are given.</td>
 </tr>
 <tr>
-<td><code>index</code></td>
-<td><code>yes</code> - if <code>query</code> is present</td>
-<td><code>string</code></td>
-<td>Elasticsearch index to search with the given query</td>
+<td><code>knexDebug</code></td>
+<td><code>N</code></td>
+<td><code>bool</code></td>
+<td>Sets knex postgreSQL connection pool/query debug output.  Defaults to false</td>
 </tr>
 <tr>
 <td><code>workflowName</code></td>
@@ -1776,7 +1726,7 @@ duplicateHandling is not set to 'replace'.</p>
 <p>An optional data parameter of <code>workflowName</code> is also available to allow you to override the input message to the reingest. If <code>workflowName</code> is specified, the original message is pulled directly
 by finding the most recent execution of the workflowName associated with the granuleId.</p>
 <p>Use the <a href="#retrieve-async-operation">Retrieve async operation</a> endpoint with the <code>id</code> in the response to determine the status of the async operation.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="205"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="213"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/granules/bulkReingest</div>
     </div>
@@ -1822,19 +1772,19 @@ by finding the most recent execution of the workflowName associated with the gra
         "ids": ["MOD09GQ.A2016358.h13v04.006.2016360104606"],
         "workflow": "workflowName",
         }'</span></pre>
-<h4 id="example-response-26">Example response</h4>
+<h4 id="example-response-27">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"id"</span>: <span class="hljs-string">"0eb8e809-8790-5409-1239-bcd9e8d28b8e"</span>
 }</pre>
-</div></div><div data-title="List PDRs" class="keyline-top section contain clearfix " data-reactid="206"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="207"><h2 id="list-pdrs">List PDRs</h2>
+</div></div><div data-title="List PDRs" class="keyline-top section contain clearfix " data-reactid="214"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="215"><h2 id="list-pdrs">List PDRs</h2>
 <p>List PDRs in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="208"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="216"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/pdrs</div>
     </div>
-<h4 id="example-request-26">Example request</h4>
+<h4 id="example-request-27">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/pdrs --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-27">Example response</h4>
+<h4 id="example-response-28">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -1866,15 +1816,15 @@ by finding the most recent execution of the workflowName associated with the gra
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve PDR" class="keyline-top section contain clearfix " data-reactid="209"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="210"><h2 id="retrieve-pdr">Retrieve PDR</h2>
+</div></div><div data-title="Retrieve PDR" class="keyline-top section contain clearfix " data-reactid="217"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="218"><h2 id="retrieve-pdr">Retrieve PDR</h2>
 <p>Retrieve a single PDR.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="211"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="219"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/pdrs/<span class="strong">{pdrName}</span></div>
     </div>
-<h4 id="example-request-27">Example request</h4>
+<h4 id="example-request-28">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/pdrs/7970bff5-128a-489f-b43c-de4ad7834ce5.PDR --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-28">Example response</h4>
+<h4 id="example-response-29">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"pdrName"</span>: <span class="hljs-string">"7970bff5-128a-489f-b43c-de4ad7834ce5.PDR"</span>,
     <span class="hljs-attr">"collectionId"</span>: <span class="hljs-string">"MOD11A1___006"</span>,
@@ -1895,27 +1845,27 @@ by finding the most recent execution of the workflowName associated with the gra
     <span class="hljs-attr">"duration"</span>: <span class="hljs-number">12.832</span>,
     <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"7970bff5-128a-489f-b43c-de4ad7834ce5.PDR"</span>
 }</pre>
-</div></div><div data-title="Delete PDR" class="keyline-top section contain clearfix " data-reactid="212"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="213"><h2 id="delete-pdr">Delete PDR</h2>
+</div></div><div data-title="Delete PDR" class="keyline-top section contain clearfix " data-reactid="220"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="221"><h2 id="delete-pdr">Delete PDR</h2>
 <p>Delete a PDR from Cumulus. Its granules will remain, and the PDR may be re-discovered and re-ingested/re-processed from scratch in the future.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="214"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="222"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/pdrs/<span class="strong">{pdrName}</span></div>
     </div>
-<h4 id="example-request-28">Example request</h4>
+<h4 id="example-request-29">Example request</h4>
 <pre class='hljs'>$ curl --request DELETE https://example.com/pdrs/good_25grans.PDR --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-29">Example response</h4>
+<h4 id="example-response-30">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="List rules" class="keyline-top section contain clearfix " data-reactid="215"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="216"><h2 id="list-rules">List rules</h2>
+</div></div><div data-title="List rules" class="keyline-top section contain clearfix " data-reactid="223"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="224"><h2 id="list-rules">List rules</h2>
 <p>List rules in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="217"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="225"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/rules</div>
     </div>
-<h4 id="example-request-29">Example request</h4>
+<h4 id="example-request-30">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/rules --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-30">Example response</h4>
+<h4 id="example-response-31">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -1943,15 +1893,15 @@ by finding the most recent execution of the workflowName associated with the gra
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve rule" class="keyline-top section contain clearfix " data-reactid="218"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="219"><h2 id="retrieve-rule">Retrieve rule</h2>
+</div></div><div data-title="Retrieve rule" class="keyline-top section contain clearfix " data-reactid="226"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="227"><h2 id="retrieve-rule">Retrieve rule</h2>
 <p>Retrieve a single rule.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="220"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="228"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/rules/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-30">Example request</h4>
+<h4 id="example-request-31">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/rules/repeat --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-31">Example response</h4>
+<h4 id="example-response-32">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"workflow"</span>: <span class="hljs-string">"DiscoverPdrs"</span>,
     <span class="hljs-attr">"collection"</span>: {
@@ -1968,7 +1918,7 @@ by finding the most recent execution of the workflowName associated with the gra
     },
     <span class="hljs-attr">"state"</span>: <span class="hljs-string">"DISABLED"</span>
 }</pre>
-</div></div><div data-title="Create rule" class="keyline-top section contain clearfix " data-reactid="221"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="222"><h2 id="create-rule">Create rule</h2>
+</div></div><div data-title="Create rule" class="keyline-top section contain clearfix " data-reactid="229"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="230"><h2 id="create-rule">Create rule</h2>
 <p>Create a rule. For more information on creating rules and the contents of a request see <a href="https://nasa.github.io/cumulus/docs/data-cookbooks/setup#rules">the Cumulus setup documentation</a>.</p>
 <p>Overview of the schema fields:</p>
 <table>
@@ -1976,6 +1926,7 @@ by finding the most recent execution of the workflowName associated with the gra
 <tr>
 <th>Field</th>
 <th>Value</th>
+<th>Required</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -1983,80 +1934,112 @@ by finding the most recent execution of the workflowName associated with the gra
 <tr>
 <td><code>name</code></td>
 <td><code>string</code></td>
+<td><code>yes</code></td>
 <td>rule name (letters, numbers, underscores only)</td>
 </tr>
 <tr>
 <td><code>state</code></td>
 <td><code>"DISABLED"</code>|<code>"ENABLED"</code></td>
+<td><code>yes</code></td>
 <td>rule state (default: ENABLED)</td>
 </tr>
 <tr>
 <td><code>workflow</code></td>
 <td><code>string</code></td>
+<td><code>yes</code></td>
 <td>name of workflow started by the rule</td>
 </tr>
 <tr>
 <td><code>rule</code></td>
 <td><code>Object</code></td>
+<td><code>yes</code></td>
 <td>rule object</td>
 </tr>
 <tr>
 <td><code>-- rule.type</code></td>
-<td><code>"onetime"</code>|<code>"scheduled"</code>|<code>"kinesis"</code>|<code>"sns"</code>|<code>"sqs"</code></td>
+<td><code>"onetime"</code>|<code>"scheduled"</code>|<code>"kinesis"</code>|<br><code>"sns"</code>|<code>"sqs"</code></td>
+<td><code>yes</code></td>
 <td>rule trigger type</td>
 </tr>
 <tr>
 <td><code>-- rule.value</code></td>
 <td><code>onetime</code>: N/A<br><code>scheduled</code>: cron-type or rate expression<br><code>kinesis</code>: Kinesis stream ARN<br><code>sns</code>: SNS topic ARN<br><code>sqs</code>: SQS queue URL</td>
+<td><code>no</code></td>
 <td>required value differs by type</td>
 </tr>
 <tr>
 <td><code>-- rule.arn</code></td>
 <td><code>string</code></td>
+<td><code>no</code></td>
 <td><code>kinesis</code> scheduled event arn</td>
 </tr>
 <tr>
 <td><code>-- rule.logEventArn</code></td>
 <td><code>string</code></td>
+<td><code>no</code></td>
 <td><code>kinesis</code> scheduled log event arn</td>
-</tr>
-<tr>
-<td><code>provider</code></td>
-<td><code>string</code></td>
-<td>provider record provided to workflow (optional)</td>
 </tr>
 <tr>
 <td><code>collection</code></td>
 <td><code>Object</code></td>
-<td>collection record provided to workflow (optional)</td>
+<td><code>no</code></td>
+<td>collection record provided to workflow</td>
 </tr>
 <tr>
 <td><code>-- collection.name</code></td>
 <td><code>string</code></td>
+<td><code>yes</code></td>
 <td>collection name</td>
 </tr>
 <tr>
 <td><code>-- collection.version</code></td>
 <td><code>string</code></td>
+<td><code>yes</code></td>
 <td>collection version</td>
+</tr>
+<tr>
+<td><code>executionNamePrefix</code></td>
+<td><code>string</code></td>
+<td><code>no</code></td>
+<td>Execution Name Prefix</td>
 </tr>
 <tr>
 <td><code>meta</code></td>
 <td><code>Object</code></td>
+<td><code>no</code></td>
 <td>contents to add to workflow input's <code>meta</code> field</td>
+</tr>
+<tr>
+<td><code>payload</code></td>
+<td><code>string</code></td>
+<td><code>no</code></td>
+<td>input payload to be used in onetime and scheduled rules</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td><code>string</code></td>
+<td><code>no</code></td>
+<td>provider record provided to workflow</td>
+</tr>
+<tr>
+<td><code>queueUrl</code></td>
+<td><code>string</code></td>
+<td><code>no</code></td>
+<td>queue URL for Scheduled Executions</td>
 </tr>
 <tr>
 <td><code>tags</code></td>
 <td><code>array</code></td>
-<td>Optional tags (for search)</td>
+<td><code>no</code></td>
+<td>tags (for search)</td>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="223"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="231"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/rules</div>
     </div>
-<h4 id="example-request-31">Example request</h4>
+<h4 id="example-request-32">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/rules --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
     "workflow": "DiscoverPdrs",
     "collection": {
@@ -2072,7 +2055,7 @@ by finding the most recent execution of the workflowName associated with the gra
     "meta": { "publish": false },
     "state": "DISABLED"
 }'</span></pre>
-<h4 id="example-response-32">Example response</h4>
+<h4 id="example-response-33">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record saved"</span>,
     <span class="hljs-attr">"record"</span>: {
@@ -2089,11 +2072,11 @@ by finding the most recent execution of the workflowName associated with the gra
             <span class="hljs-attr">"value"</span>: <span class="hljs-string">"rate(5 minutes)"</span>
         },
         <span class="hljs-attr">"meta"</span>: { <span class="hljs-attr">"publish"</span>: <span class="hljs-literal">false</span> },
-        <span class="hljs-attr">"state"</span>: <span class="hljs-string">"DISABLED"</span>,
+        <span class="hljs-attr">"state"</span>: <span class="hljs-string">"DISABLED"</span>
     }
 }</pre>
-</div></div><div data-title="Update/replace rule" class="keyline-top section contain clearfix " data-reactid="224"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="225"><h2 id="updatereplace-rule">Update/replace rule</h2>
-<p>Update/replace an existing rule. Expects payload to specify the entire
+</div></div><div data-title="Replace rule" class="keyline-top section contain clearfix " data-reactid="232"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="233"><h2 id="replace-rule">Replace rule</h2>
+<p>Replace an existing rule. Expects payload to specify the entire
 rule object, and will completely replace the existing rule with the
 specified payload. For a field reference see <a href="#create-rule">"Create rule"</a>.</p>
 <p>Returns status 200 on successful replacement, 400 if the <code>name</code> property in the
@@ -2112,16 +2095,20 @@ there is no rule with the specified name.</p>
 <tr>
 <td><code>action</code></td>
 <td><code>"rerun"</code></td>
-<td>rerun rule (<code>onetime</code> rule only)</td>
+<td>rerun rule (<code>onetime</code> rule only), and rule record is not replaced</td>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="226"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="234"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
       <div class='pad0 code small endpoint-url'>/rules/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-32">Example request</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/rules/repeat_test --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
+<h4 id="example-request-33">Example request</h4>
+<pre class='hljs'>$ curl --request PUT https://example.com/rules/repeat_test \
+  --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
+  --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span> \
+  --data <span class="hljs-string">'{
   "name": "repeat_test",
   "workflow": "DiscoverPdrs",
   "collection": {
@@ -2153,26 +2140,113 @@ there is no rule with the specified name.</p>
   <span class="hljs-attr">"state"</span>: <span class="hljs-string">"ENABLED"</span>
 }</pre>
 <h4 id="rerun-request-onetime-rule-special-case">Rerun request (<code>onetime</code>-rule special case)</h4>
-<pre class='hljs'>$ curl --request PUT https://example.com/rules/my_onetime_rule --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{"action": "rerun"}'</span></pre>
-</div></div><div data-title="Delete rule" class="keyline-top section contain clearfix " data-reactid="227"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="228"><h2 id="delete-rule">Delete rule</h2>
+<pre class='hljs'>$ curl --request PUT https://example.com/rules/my_onetime_rule \
+  --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
+  --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span> \
+  --data <span class="hljs-string">'{
+  "name": "repeat_test",
+  "workflow": "DiscoverPdrs",
+  "collection": {
+    "name": "AST_L1A",
+    "version": "003"
+  },
+  "provider": "local",
+  "rule": {
+    "type": "scheduled",
+    "value": "rate(5 minutes)"
+  },
+  "state": "ENABLED",
+  "action": "rerun"
+}'</span></pre>
+</div></div><div data-title="Update rule" class="keyline-top section contain clearfix " data-reactid="235"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="236"><h2 id="update-rule">Update rule</h2>
+<p>Update an existing rule.  Expects payload to contain the modified and/or additional
+fields of the rule and the existing rule values will be overwritten by the
+modified portions.   Unspecified keys will be retained.    Keys set to <code>null</code>
+will be removed. For a field reference see <a href="#create-rule">"Create rule"</a>.</p>
+<p>Returns status 200 on successful update, 400 if the <code>name</code> property in the
+payload does not match the corresponding value in the resource URI, or 404 if
+there is no rule with the specified name.</p>
+<p>Special case:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>action</code></td>
+<td><code>"rerun"</code></td>
+<td>rerun rule (<code>onetime</code> rule only), and rule record is not updated</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="237"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PATCH</div>
+      <div class='pad0 code small endpoint-url'>/rules/<span class="strong">{name}</span></div>
+    </div>
+<h4 id="example-request-34">Example request</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/rules/repeat_test \
+  --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
+  --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span> \
+  --data <span class="hljs-string">'{
+  "name": "repeat_test",
+  "workflow": "NewDiscoverPdrs",
+  "meta": {
+    "additionalKey": "additionalKeyValue"
+  },
+  "state": "ENABLED"
+}'</span></pre>
+<h4 id="example-successful-response-3">Example successful response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"repeat_test"</span>,
+  <span class="hljs-attr">"workflow"</span>: <span class="hljs-string">"NewDiscoverPdrs"</span>,
+  <span class="hljs-attr">"collection"</span>: {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"AST_L1A"</span>,
+    <span class="hljs-attr">"version"</span>: <span class="hljs-string">"003"</span>
+  },
+  <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1521755265130</span>,
+  <span class="hljs-attr">"createdAt"</span>: <span class="hljs-number">1510903518741</span>,
+  <span class="hljs-attr">"provider"</span>: <span class="hljs-string">"local"</span>,
+  <span class="hljs-attr">"rule"</span>: {
+    <span class="hljs-attr">"type"</span>: <span class="hljs-string">"scheduled"</span>,
+    <span class="hljs-attr">"value"</span>: <span class="hljs-string">"rate(5 minutes)"</span>
+  },
+  <span class="hljs-attr">"meta"</span>: {
+    <span class="hljs-attr">"publish"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"additionalKey"</span>: <span class="hljs-string">"additionalKeyValue"</span>
+  },
+  <span class="hljs-attr">"state"</span>: <span class="hljs-string">"ENABLED"</span>
+}</pre>
+<h4 id="rerun-request-onetime-rule-special-case-1">Rerun request (<code>onetime</code>-rule special case)</h4>
+<pre class='hljs'>$ curl --request PATCH https://example.com/rules/my_onetime_rule \
+  --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> \
+  --header <span class="hljs-string">'Content-Type: application/json'</span> \
+  --header <span class="hljs-string">'Cumulus-API-Version: 2'</span> \
+  --data <span class="hljs-string">'{"action": "rerun"}'</span></pre>
+</div></div><div data-title="Delete rule" class="keyline-top section contain clearfix " data-reactid="238"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="239"><h2 id="delete-rule">Delete rule</h2>
 <p>Delete a rule from Cumulus.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="229"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="240"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/rules/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-33">Example request</h4>
+<h4 id="example-request-35">Example request</h4>
 <pre class='hljs'>$ curl --request DELETE https://example.com/rules/repeat_test --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-33">Example response</h4>
+<h4 id="example-response-34">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="Summary" class="keyline-top section contain clearfix " data-reactid="230"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="231"><h2 id="summary">Summary</h2>
+</div></div><div data-title="Summary" class="keyline-top section contain clearfix " data-reactid="241"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="242"><h2 id="summary">Summary</h2>
 <p>Retrieve a summary of statistics around the granules in the system. The <code>collections</code> returned are the number of distinct collections for the granules active during the given time period, defaulted to the last day if none is specified.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="232"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="243"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/stats</div>
     </div>
-<h4 id="example-request-34">Example Request</h4>
+<h4 id="example-request-36">Example Request</h4>
 <pre class='hljs'>$ curl https://example.com/stats --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
 <h4 id="example-success-response">Example success response</h4>
 <pre class='hljs'>{
@@ -2205,7 +2279,7 @@ there is no rule with the specified name.</p>
         <span class="hljs-attr">"unit"</span>: <span class="hljs-string">"granule"</span>
     }
 }</pre>
-</div></div><div data-title="Count" class="keyline-top section contain clearfix " data-reactid="233"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="234"><h2 id="count">Count</h2>
+</div></div><div data-title="Count" class="keyline-top section contain clearfix " data-reactid="244"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="245"><h2 id="count">Count</h2>
 <p>Count the value frequencies for a given field, for a given type of record in Cumulus. Requires the following query parameters, and may include the regular filter parameters:</p>
 <table>
 <thead>
@@ -2225,13 +2299,13 @@ there is no rule with the specified name.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="235"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="246"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/stats/aggregate</div>
     </div>
-<h4 id="example-request-35">Example request</h4>
+<h4 id="example-request-37">Example request</h4>
 <pre class='hljs'>curl <span class="hljs-string">'https://example.com/stats/aggregate?field=status&amp;type=pdrs'</span> --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-34">Example response</h4>
+<h4 id="example-response-35">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"meta"</span>: {
     <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -2253,7 +2327,7 @@ there is no rule with the specified name.</p>
     }
   ]
 }</pre>
-</div></div><div data-title="List logs" class="keyline-top section contain clearfix " data-reactid="236"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="237"><h2 id="list-logs">List logs</h2>
+</div></div><div data-title="List logs" class="keyline-top section contain clearfix " data-reactid="247"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="248"><h2 id="list-logs">List logs</h2>
 <p><strong>Note:</strong> This endpoint will only work if logs are being delivered to the Metrics system. Otherwise it will
 return a 400 Error.</p>
 <p>List processing logs from the Cumulus engine. A log's <code>level</code> field should be specified by their string value and be one of:</p>
@@ -2265,13 +2339,13 @@ return a 400 Error.</p>
 <li>debug (20)</li>
 <li>trace (10)</li>
 </ul>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="238"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="249"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/logs</div>
     </div>
-<h4 id="example-request-36">Example request</h4>
+<h4 id="example-request-38">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/logs?<span class="hljs-built_in">limit</span>=5 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-35">Example response</h4>
+<h4 id="example-response-36">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -2397,17 +2471,17 @@ return a 400 Error.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve Logs" class="keyline-top section contain clearfix " data-reactid="239"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="240"><h2 id="retrieve-logs">Retrieve Logs</h2>
+</div></div><div data-title="Retrieve Logs" class="keyline-top section contain clearfix " data-reactid="250"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="251"><h2 id="retrieve-logs">Retrieve Logs</h2>
 <p><strong>Note:</strong> This endpoint will only work if logs are being delivered to the Metrics system. Otherwise it will
 return a 400 Error.</p>
 <p>Retrieve all logs from a specific execution.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="241"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="252"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/logs/<span class="strong">{executionName}</span></div>
     </div>
-<h4 id="example-request-37">Example request</h4>
+<h4 id="example-request-39">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/logs/93e5e049-89aa-47e5-900d-0eec87327260?<span class="hljs-built_in">limit</span>=5 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-36">Example response</h4>
+<h4 id="example-response-37">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -2465,27 +2539,27 @@ return a 400 Error.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Get Granule CSV file" class="keyline-top section contain clearfix " data-reactid="242"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="243"><h2 id="get-granule-csv-file">Get Granule CSV file</h2>
+</div></div><div data-title="Get Granule CSV file" class="keyline-top section contain clearfix " data-reactid="253"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="254"><h2 id="get-granule-csv-file">Get Granule CSV file</h2>
 <p>Get a CSV file of all the granule in the Cumulus database.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="244"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="255"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/granule-csv</div>
     </div>
-<h4 id="example-request-38">Example request</h4>
+<h4 id="example-request-40">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/granule-csv --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-37">Example response</h4>
+<h4 id="example-response-38">Example response</h4>
 <pre class='hljs'>"granuleUr","collectionId","createdAt","startDateTime","endDateTime","status","updatedAt","published"
 "MOD14A1.A9506271.IvEJsu.006.8359924290786","MOD14A1___006","2020-05-18T20:15:54.525Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-05-18T20:16:02.473Z",false
 "MYD13Q1.A9663671.0zkwKH.006.9812354158395","MYD13Q1___006","2020-07-06T19:46:19.957Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-07-06T19:46:57.054Z",true</pre>
-</div></div><div data-title="List executions" class="keyline-top section contain clearfix " data-reactid="245"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="246"><h2 id="list-executions">List executions</h2>
+</div></div><div data-title="List executions" class="keyline-top section contain clearfix " data-reactid="256"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="257"><h2 id="list-executions">List executions</h2>
 <p>List executions.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="247"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="258"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/executions</div>
     </div>
-<h4 id="example-request-39">Example request</h4>
+<h4 id="example-request-41">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/executions?<span class="hljs-built_in">limit</span>=3 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-38">Example response</h4>
+<h4 id="example-response-39">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"meta"</span>: {
     <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -2543,15 +2617,15 @@ return a 400 Error.</p>
     }
   ]
 }</pre>
-</div></div><div data-title="Retrieve Execution" class="keyline-top section contain clearfix " data-reactid="248"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="249"><h2 id="retrieve-execution">Retrieve Execution</h2>
+</div></div><div data-title="Retrieve Execution" class="keyline-top section contain clearfix " data-reactid="259"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="260"><h2 id="retrieve-execution">Retrieve Execution</h2>
 <p>Retrieve details for a specific execution.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="250"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="261"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/executions/<span class="strong">{executionArn}</span></div>
     </div>
-<h4 id="example-request-40">Example request</h4>
+<h4 id="example-request-42">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-39">Example response</h4>
+<h4 id="example-response-40">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"execution"</span>: <span class="hljs-string">"https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"</span>,
     <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1534441782302</span>,
@@ -2592,15 +2666,15 @@ return a 400 Error.</p>
     <span class="hljs-attr">"originalPayload"</span>: { <span class="hljs-attr">"somePayloadKey"</span>: <span class="hljs-string">"object containing payload at execution start"</span> },
     <span class="hljs-attr">"finalPayload"</span>: { <span class="hljs-attr">"somePayloadKey"</span> : <span class="hljs-string">"object containing the last reported payload from an execution"</span> }
 }</pre>
-</div></div><div data-title="Retrieve Execution Status" class="keyline-top section contain clearfix " data-reactid="251"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="252"><h2 id="retrieve-execution-status">Retrieve Execution Status</h2>
+</div></div><div data-title="Retrieve Execution Status" class="keyline-top section contain clearfix " data-reactid="262"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="263"><h2 id="retrieve-execution-status">Retrieve Execution Status</h2>
 <p>Retrieve details and status of a specific execution. This also returns execution history and details of the state machine when the execution exists in Step Function API.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="253"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="264"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/executions/status/<span class="strong">{executionArn}</span></div>
     </div>
-<h4 id="example-request-41">Example request</h4>
+<h4 id="example-request-43">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/executions/status/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl6sgv:d0a6584b-bea6-476e-a745-c1feb2ad00b2 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-40">Example response</h4>
+<h4 id="example-response-41">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"presignedS3Url"</span>: <span class="hljs-string">"https://example.amazonaws.com/example"</span>,
   <span class="hljs-attr">"data"</span>: <span class="hljs-string">"Execution status data, see example below"</span>
@@ -2658,7 +2732,7 @@ return a 400 Error.</p>
         <span class="hljs-attr">"creationDate"</span>: <span class="hljs-string">"2018-06-11T16:08:17.533Z"</span>
     }
 }</pre>
-</div></div><div data-title="Search Executions By Granules" class="keyline-top section contain clearfix " data-reactid="254"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="255"><h2 id="search-executions-by-granules">Search Executions By Granules</h2>
+</div></div><div data-title="Search Executions By Granules" class="keyline-top section contain clearfix " data-reactid="265"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="266"><h2 id="search-executions-by-granules">Search Executions By Granules</h2>
 <p>Return executions associated with specific granules. Granules can be sent as a list of granule objects containing granuleIds and collectionIds or as an Elasticsearch query to the Metrics' Elasticsearch.</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -2703,7 +2777,7 @@ return a 400 Error.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="256"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="267"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/executions/search-by-granules</div>
     </div>
@@ -2744,7 +2818,7 @@ return a 400 Error.</p>
             }
         }
     }'</span></pre>
-<h4 id="example-response-41">Example response</h4>
+<h4 id="example-response-42">Example response</h4>
 <pre class='hljs'>{
    <span class="hljs-attr">"meta"</span>: {
        <span class="hljs-attr">"count"</span>: <span class="hljs-number">3</span>
@@ -2797,7 +2871,7 @@ return a 400 Error.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Workflows By Granules" class="keyline-top section contain clearfix " data-reactid="257"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="258"><h2 id="workflows-by-granules">Workflows By Granules</h2>
+</div></div><div data-title="Workflows By Granules" class="keyline-top section contain clearfix " data-reactid="268"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="269"><h2 id="workflows-by-granules">Workflows By Granules</h2>
 <p>Return the workflows that have run on specific granules. If multiple granules are specified, it will return the intersection of workflows that have run on ALL the granules. That is, only a workflow that has been run on every inputted granule will be returned</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -2842,7 +2916,7 @@ return a 400 Error.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="259"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="270"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/executions/workflows-by-granules</div>
     </div>
@@ -2883,12 +2957,12 @@ return a 400 Error.</p>
             }
         }
     }'</span></pre>
-<h4 id="example-response-42">Example response</h4>
+<h4 id="example-response-43">Example response</h4>
 <pre class='hljs'>[
     <span class="hljs-string">"DiscoverGranules"</span>,
     <span class="hljs-string">"IngestGranules"</span>
 ]</pre>
-</div></div><div data-title="Create execution" class="keyline-top section contain clearfix " data-reactid="260"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="261"><h2 id="create-execution">Create execution</h2>
+</div></div><div data-title="Create execution" class="keyline-top section contain clearfix " data-reactid="271"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="272"><h2 id="create-execution">Create execution</h2>
 <p>Create an execution. An execution generally includes the fields listed below.</p>
 <p>Overview of the schema fields:</p>
 <table>
@@ -2993,11 +3067,11 @@ return a 400 Error.</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="262"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="273"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/executions</div>
     </div>
-<h4 id="example-request-42">Example request</h4>
+<h4 id="example-request-44">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/executions --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
     "arn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
     "asyncOperationId": "c4ece1f9-dca0-42f8-be77-da43b9b25918",
@@ -3033,11 +3107,11 @@ return a 400 Error.</p>
     "type": "IngestGranule",
     "timestamp": 1513020462156
 }'</span></pre>
-<h4 id="example-response-43">Example response</h4>
+<h4 id="example-response-44">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully wrote execution with arn arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"</span>
 }</pre>
-</div></div><div data-title="Update or replace execution" class="keyline-top section contain clearfix " data-reactid="263"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="264"><h2 id="update-or-replace-execution">Update or replace execution</h2>
+</div></div><div data-title="Update or replace execution" class="keyline-top section contain clearfix " data-reactid="274"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="275"><h2 id="update-or-replace-execution">Update or replace execution</h2>
 <p>Update/replace an existing execution. Expects payload to specify the entire
 execution object, and will completely replace the existing execution with the
 specified payload. For a field reference see
@@ -3045,11 +3119,11 @@ specified payload. For a field reference see
 <p>Returns status 200 on successful replacement, 400 if the <code>arn</code>
 property in the payload does not match the corresponding value in the resource
 URI, or 404 if there is no execution with the specified arn.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="265"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="276"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
       <div class='pad0 code small endpoint-url'>/executions/<span class="strong">{executionArn}</span></div>
     </div>
-<h4 id="example-request-43">Example request</h4>
+<h4 id="example-request-45">Example request</h4>
 <pre class='hljs'>$ curl --request PUT https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
     "arn": "arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735",
     "asyncOperationId": "c4ece1f9-dca0-42f8-be77-da43b9b25918",
@@ -3087,31 +3161,31 @@ URI, or 404 if there is no execution with the specified arn.</p>
     "type": "IngestGranule",
     "timestamp": 1513020462156
 }'</span></pre>
-<h4 id="example-response-44">Example response</h4>
+<h4 id="example-response-45">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successfully updated execution with arn arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735"</span>
 }</pre>
-</div></div><div data-title="Delete execution" class="keyline-top section contain clearfix " data-reactid="266"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="267"><h2 id="delete-execution">Delete execution</h2>
+</div></div><div data-title="Delete execution" class="keyline-top section contain clearfix " data-reactid="277"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="278"><h2 id="delete-execution">Delete execution</h2>
 <p>Delete an execution from Cumulus.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="268"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="279"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/executions/<span class="strong">{executionArn}</span></div>
     </div>
-<h4 id="example-request-44">Example request</h4>
+<h4 id="example-request-46">Example request</h4>
 <pre class='hljs'>$ curl --request DELETE https://example.com/executions/arn:aws:states:us-east-1:123456789012:execution:TestSrcIntegrationIngestGranuleStateMachine-UhCSmszl2sgv:cff1266e-ef36-664f-a649-3a4d26bd1735 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-45">Example response</h4>
+<h4 id="example-response-46">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Record deleted"</span>
 }</pre>
-</div></div><div data-title="List workflows" class="keyline-top section contain clearfix " data-reactid="269"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="270"><h2 id="list-workflows">List workflows</h2>
+</div></div><div data-title="List workflows" class="keyline-top section contain clearfix " data-reactid="280"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="281"><h2 id="list-workflows">List workflows</h2>
 <p>List workflows in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="271"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="282"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/workflows</div>
     </div>
-<h4 id="example-request-45">Example request</h4>
+<h4 id="example-request-47">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/workflows --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-46">Example response</h4>
+<h4 id="example-response-47">Example response</h4>
 <pre class='hljs'>[
     {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"TestLambdaVersionWorkflow"</span>,
@@ -3193,15 +3267,15 @@ URI, or 404 if there is no execution with the specified arn.</p>
         }
     }
 ]</pre>
-</div></div><div data-title="Retrieve workflow" class="keyline-top section contain clearfix " data-reactid="272"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="273"><h2 id="retrieve-workflow">Retrieve workflow</h2>
+</div></div><div data-title="Retrieve workflow" class="keyline-top section contain clearfix " data-reactid="283"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="284"><h2 id="retrieve-workflow">Retrieve workflow</h2>
 <p>Retrieve a single workflow.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="274"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="285"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/workflow/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-46">Example request</h4>
+<h4 id="example-request-48">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/workflows/HelloWorldWorkflow --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-47">Example response</h4>
+<h4 id="example-response-48">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"name"</span>: <span class="hljs-string">"HelloWorldWorkflow"</span>,
     <span class="hljs-attr">"template"</span>: <span class="hljs-string">"s3://cumulus-test-sandbox-internal/cumulus/workflows/HelloWorldWorkflow.json"</span>,
@@ -3239,17 +3313,17 @@ URI, or 404 if there is no execution with the specified arn.</p>
         }
     }
 }</pre>
-</div></div><div data-title="List async operations" class="keyline-top section contain clearfix " data-reactid="275"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="276"><h2 id="list-async-operations">List async operations</h2>
+</div></div><div data-title="List async operations" class="keyline-top section contain clearfix " data-reactid="286"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="287"><h2 id="list-async-operations">List async operations</h2>
 <p>Async operations are long-running requests serviced by the Cumulus API.</p>
 <p>These tend to be bulk operations. Examples include bulk granule operations and replaying ingest notifications.</p>
 <p>This endpoint lists async operations in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="277"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="288"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/asyncOperations</div>
     </div>
-<h4 id="example-request-47">Example request</h4>
+<h4 id="example-request-49">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/asyncOperations --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-48">Example response</h4>
+<h4 id="example-response-49">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -3273,15 +3347,15 @@ URI, or 404 if there is no execution with the specified arn.</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve async operation" class="keyline-top section contain clearfix " data-reactid="278"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="279"><h2 id="retrieve-async-operation">Retrieve async operation</h2>
+</div></div><div data-title="Retrieve async operation" class="keyline-top section contain clearfix " data-reactid="289"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="290"><h2 id="retrieve-async-operation">Retrieve async operation</h2>
 <p>Retrieve information about a single async operation. Useful for determining the status of an async operation.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="280"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="291"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/asyncOperations/<span class="strong">{id}</span></div>
     </div>
-<h4 id="example-request-48">Example request</h4>
+<h4 id="example-request-50">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/asyncOperations/0eb8e809-8790-5409-1239-bcd9e8d28b8e --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-49">Example response</h4>
+<h4 id="example-response-50">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"id"</span>: <span class="hljs-string">"0eb8e809-8790-5409-1239-bcd9e8d28b8e"</span>,
   <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-number">1574730504762</span>,
@@ -3290,7 +3364,7 @@ URI, or 404 if there is no execution with the specified arn.</p>
   <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Bulk granule deletion"</span>,
   <span class="hljs-attr">"operationType"</span>: <span class="hljs-string">"Bulk Granule Delete"</span>
 }</pre>
-</div></div><div data-title="Ingest Replays" class="keyline-top section contain clearfix " data-reactid="281"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="282"><h2 id="ingest-replays">Ingest Replays</h2>
+</div></div><div data-title="Ingest Replays" class="keyline-top section contain clearfix " data-reactid="292"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="293"><h2 id="ingest-replays">Ingest Replays</h2>
 <p>The Cumulus API supports requests to replay ingest notifications.
 The schema below describes the expected fields in a replay request</p>
 <table>
@@ -3335,23 +3409,23 @@ The schema below describes the expected fields in a replay request</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="283"><h4 id="example-request-49">Example Request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="294"><h4 id="example-request-51">Example Request</h4>
 <pre class='hljs'>$ curl -X POST https://example.com/replays --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --data <span class="hljs-string">'{ "type: "kinesis", "kinesisStream": "my-stream", "endTimestamp": 1567890123456, "startTimestamp": "2019-08-31T22:22:03.456Z"}'</span></pre>
-<h4 id="example-response-50">Example Response</h4>
+<h4 id="example-response-51">Example Response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"asyncOperationId"</span>: <span class="hljs-string">"208a463a-e096-4dd9-b006-e09345319ae6"</span>
 }</pre>
-</div></div><div data-title="Retrieve schema" class="keyline-top section contain clearfix " data-reactid="284"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="285"><h2 id="retrieve-schema">Retrieve schema</h2>
+</div></div><div data-title="Retrieve schema" class="keyline-top section contain clearfix " data-reactid="295"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="296"><h2 id="retrieve-schema">Retrieve schema</h2>
 <p>Retrieve the data schema for a particular type of Cumulus record.</p>
 <p>This schema describes the expected format of a record's JSON object when retrieving from Cumulus, as well as a summary of what each field may contain. The schema response can also be used to determine which fields are required when creating a new record using the API.</p>
 <p>Supported <code>type</code> values are <code>provider</code>, <code>collection</code>, <code>granule</code>, and <code>pdr</code>.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="286"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="297"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/schemas/<span class="strong">{type}</span></div>
     </div>
-<h4 id="example-request-50">Example request</h4>
+<h4 id="example-request-52">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/schemas/provider --header <span class="hljs-string">'Authorization: Bearer ReplceWithTheToken'</span></pre>
-<h4 id="example-response-51">Example response</h4>
+<h4 id="example-response-52">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"$schema"</span>: <span class="hljs-string">"http://json-schema.org/draft-04/schema#"</span>,
   <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Provider Object"</span>,
@@ -3453,15 +3527,15 @@ The schema below describes the expected fields in a replay request</p>
     <span class="hljs-string">"updatedAt"</span>
   ]
 }</pre>
-</div></div><div data-title="List reconciliation reports" class="keyline-top section contain clearfix " data-reactid="287"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="288"><h2 id="list-reconciliation-reports">List reconciliation reports</h2>
+</div></div><div data-title="List reconciliation reports" class="keyline-top section contain clearfix " data-reactid="298"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="299"><h2 id="list-reconciliation-reports">List reconciliation reports</h2>
 <p>List reconciliation reports in the Cumulus system.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="289"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="300"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/reconciliationReports</div>
     </div>
-<h4 id="example-request-51">Example request</h4>
+<h4 id="example-request-53">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/reconciliationReports --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-52">Example response</h4>
+<h4 id="example-response-53">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"meta"</span>: {
         <span class="hljs-attr">"name"</span>: <span class="hljs-string">"cumulus-api"</span>,
@@ -3492,13 +3566,13 @@ The schema below describes the expected fields in a replay request</p>
         }
     ]
 }</pre>
-</div></div><div data-title="Retrieve reconciliation report" class="keyline-top section contain clearfix " data-reactid="290"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="291"><h2 id="retrieve-reconciliation-report">Retrieve reconciliation report</h2>
+</div></div><div data-title="Retrieve reconciliation report" class="keyline-top section contain clearfix " data-reactid="301"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="302"><h2 id="retrieve-reconciliation-report">Retrieve reconciliation report</h2>
 <p>Retrieve a single reconciliation report.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="292"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="303"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/reconciliationReports/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-52">Example request</h4>
+<h4 id="example-request-54">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430508 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
 <h4 id="example-responses">Example responses</h4>
 <pre class='hljs'>{
@@ -3529,16 +3603,6 @@ The schema below describes the expected fields in a replay request</p>
             <span class="hljs-string">"s3://cumulus-test-sandbox-protected/MOD09GQ.A2016358.h13v04.006.2016360104606.cmr.xml"</span>,
             <span class="hljs-string">"s3://cumulus-test-sandbox-private/BROWSE.MYD13Q1.A2017297.h19v10.006.2017313221201.hdf"</span>
         ],
-        <span class="hljs-attr">"onlyInDynamoDb"</span>: [
-            {
-                <span class="hljs-attr">"uri"</span>: <span class="hljs-string">"s3://cumulus-test-sandbox-protected/MOD09GQ.A2016358.h13v04.006.2016360104606.hdf"</span>,
-                <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD09GQ.A2016358.h13v04.006.2016360104606"</span>
-            },
-            {
-                <span class="hljs-attr">"uri"</span>: <span class="hljs-string">"s3://cumulus-test-sandbox-private/MYD13Q1.A2017297.h19v10.006.2017313221303.hdf.met"</span>,
-                <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MYD13Q1.A2017297.h19v10.006.2017313221303"</span>
-            }
-        ]
     },
     <span class="hljs-attr">"collectionsInCumulusCmr"</span>: {
         <span class="hljs-attr">"okCount"</span>: <span class="hljs-number">1</span>,
@@ -3623,12 +3687,6 @@ The schema below describes the expected fields in a replay request</p>
       <span class="hljs-string">"s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122597517/MOD09GQ.A1201557.d6tP2Y.006.7482431709753.hdf"</span>,
       <span class="hljs-string">"s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122881446/MOD09GQ.A2708681.CFkGhW.006.7154000014360.hdf"</span>
     ],
-    <span class="hljs-attr">"onlyInDynamoDb"</span>: [
-      {
-        <span class="hljs-attr">"uri"</span>: <span class="hljs-string">"s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593178175944/MOD09GQ.A2770300.W1_V5Z.006.7853319756315.hdf.met"</span>,
-        <span class="hljs-attr">"granuleId"</span>: <span class="hljs-string">"MOD09GQ.A2770300.W1_V5Z.006.7853319756315"</span>
-      }
-    ]
   },
   <span class="hljs-attr">"collectionsInCumulusCmr"</span>: {
     <span class="hljs-attr">"okCount"</span>: <span class="hljs-number">0</span>,
@@ -3997,13 +4055,13 @@ The schema below describes the expected fields in a replay request</p>
 <pre class='hljs'>"granuleUr","collectionId","createdAt","startDateTime","endDateTime","status","updatedAt","published"
 "MOD14A1.A9506271.IvEJsu.006.8359924290786","MOD14A1___006","2020-05-18T20:15:54.525Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-05-18T20:16:02.473Z",false
 "MYD13Q1.A9663671.0zkwKH.006.9812354158395","MYD13Q1___006","2020-07-06T19:46:19.957Z","2017-10-24T00:00:00Z","2017-11-08T23:59:59Z","completed","2020-07-06T19:46:57.054Z",true</pre>
-</div></div><div data-title="Create reconciliation report" class="keyline-top section contain clearfix " data-reactid="293"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="294"><h2 id="create-reconciliation-report">Create reconciliation report</h2>
+</div></div><div data-title="Create reconciliation report" class="keyline-top section contain clearfix " data-reactid="304"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="305"><h2 id="create-reconciliation-report">Create reconciliation report</h2>
 <p>Create a new reconciliation report.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="295"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="306"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/reconciliationReports</div>
     </div>
-</div></div><div data-title="Request body" class="keyline-top section contain clearfix " data-reactid="296"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="297"><h3 id="request-body-1">Request body</h3>
+</div></div><div data-title="Request body" class="keyline-top section contain clearfix " data-reactid="307"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="308"><h3 id="request-body-1">Request body</h3>
 <table>
 <thead>
 <tr>
@@ -4068,7 +4126,7 @@ The schema below describes the expected fields in a replay request</p>
 <p><em>NOTE</em>: Adding a granuleId input will result in an one way report for collections for <code>Inventory</code> and <code>Granule Not Found</code> reports.</p>
 <p><em>NOTE</em>: <code>Inventory</code> and <code>Granule Not Found</code> reports only allow one of the parameters (<code>collectionId</code>, <code>granuleId</code>, <code>provider</code>) in same request.</p>
 <p><em>NOTE</em>: <code>Granule Inventory</code> reports can be filtered with the following parameters: (<code>collectionId</code>, <code>granuleId</code>, <code>status</code>). If <code>granuleId</code> is a string or single value array, it will search for granules with granuleIds containing that substring.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="298"><h4 id="example-request-53">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="309"><h4 id="example-request-55">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/reconciliationReports --header <span class="hljs-string">'Authorization: Bearer ReplaceWithToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
   "reportName": "ModisInventoryReport",
   "reportType": "Inventory",
@@ -4078,23 +4136,23 @@ The schema below describes the expected fields in a replay request</p>
   "provider": "MODIS",
   "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"
 }'</span></pre>
-<h4 id="example-response-53">Example response</h4>
+<h4 id="example-response-54">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"id"</span>: <span class="hljs-string">"bb7059f4-0cd8-4205-8857-fb0e6b68b3e4"</span>
 }</pre>
-</div></div><div data-title="Delete reconciliation report" class="keyline-top section contain clearfix " data-reactid="299"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="300"><h2 id="delete-reconciliation-report">Delete reconciliation report</h2>
+</div></div><div data-title="Delete reconciliation report" class="keyline-top section contain clearfix " data-reactid="310"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="311"><h2 id="delete-reconciliation-report">Delete reconciliation report</h2>
 <p>Delete a reconciliation report from Cumulus.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="301"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="312"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
       <div class='pad0 code small endpoint-url'>/reconciliationReports/<span class="strong">{name}</span></div>
     </div>
-<h4 id="example-request-54">Example request</h4>
+<h4 id="example-request-56">Example request</h4>
 <pre class='hljs'>$ curl --request DELETE https://example.com/reconciliationReports/inventoryReport-20180620T205838883 --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-54">Example response</h4>
+<h4 id="example-response-55">Example response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Report deleted"</span>
 }</pre>
-</div></div><div data-title="Create EMS reports" class="keyline-top section contain clearfix " data-reactid="302"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="303"><h2 id="create-ems-reports">Create EMS reports</h2>
+</div></div><div data-title="Create EMS reports" class="keyline-top section contain clearfix " data-reactid="313"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="314"><h2 id="create-ems-reports">Create EMS reports</h2>
 <p>Create EMS reports and send them to EMS. For more information on EMS reporting and types of reports see <a href="https://nasa.github.io/cumulus/docs/next/ems_reporting">the Cumulus EMS Reporting documentation</a>.</p>
 <p>Overview of the request fields:</p>
 <table>
@@ -4133,7 +4191,7 @@ The schema below describes the expected fields in a replay request</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="304"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="315"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/ems</div>
     </div>
@@ -4147,21 +4205,21 @@ The schema below describes the expected fields in a replay request</p>
     "endTime": "2019-06-29",
     "collectionId": "MOD14A1___006"
 }'</span></pre>
-<h4 id="example-response-55">Example response</h4>
+<h4 id="example-response-56">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Reports are being generated"</span>,
     <span class="hljs-attr">"status"</span>: <span class="hljs-number">202</span>
 }</pre>
-</div></div><div data-title="Instance Metadata" class="keyline-top section contain clearfix " data-reactid="305"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="306"><h2 id="instance-metadata-1">Instance Metadata</h2>
+</div></div><div data-title="Instance Metadata" class="keyline-top section contain clearfix " data-reactid="316"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="317"><h2 id="instance-metadata-1">Instance Metadata</h2>
 <p>The Cumulus API can provide information about its configuration.</p>
 <p>GET requests to the instance metadata endpoint return a json object with information about how the Cumulus stack is configured. It returns the CMR provider and environment as well as the stackName (prefix).</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="307"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="318"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/instanceMeta</div>
     </div>
-<h4 id="example-request-55">Example Request</h4>
+<h4 id="example-request-57">Example Request</h4>
 <pre class='hljs'>$ curl https://example.com/instanceMeta --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-56">Example Response</h4>
+<h4 id="example-response-57">Example Response</h4>
 <pre class='hljs'>{
   <span class="hljs-attr">"cmr"</span>: {
     <span class="hljs-attr">"provider"</span>: <span class="hljs-string">"CUMULUS"</span>,
@@ -4171,10 +4229,10 @@ The schema below describes the expected fields in a replay request</p>
     <span class="hljs-attr">"stackName"</span>: <span class="hljs-string">"cumulus-stack-prefix"</span>
   }
 }</pre>
-</div></div><div data-title="Elasticsearch" class="keyline-top section contain clearfix " data-reactid="308"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="309"><h2 id="elasticsearch-1">Elasticsearch</h2>
+</div></div><div data-title="Elasticsearch" class="keyline-top section contain clearfix " data-reactid="319"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="320"><h2 id="elasticsearch-1">Elasticsearch</h2>
 <p>These endpoints provide an interface into the Elasticsearch SDK to perform functions like Elasticsearch reindex.</p>
 <p>Cumulus uses <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html">index aliases</a> to allow reindexing with no downtime.</p>
-</div></div><div data-title="Reindex" class="keyline-top section contain clearfix " data-reactid="310"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="311"><h2 id="reindex">Reindex</h2>
+</div></div><div data-title="Reindex" class="keyline-top section contain clearfix " data-reactid="321"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="322"><h2 id="reindex">Reindex</h2>
 <p>The reindex command creates a new index and reindexes the source index to the new, destination index. This uses the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.3/docs-reindex.html">Elasticsearch reindex functionality</a>, but includes setting up the new index.</p>
 <p>Note that there will now be two copies of your index. Your Cumulus instance will still point to the old copy until you perform the <code>change-index</code> function described below.</p>
 <p>An alias should not be specified unless you have a specific alias configured. If a source index is not specified, it will default to the index from the alias. If you want to name the destination index something particular, you can specify a name, otherwise the destination index name will default to 'cumulus-year-month-day' with today's date (e.g. <code>cumulus-4-12-2019</code>). If you specify a destination index name, it must be an index that does not already exist in your cluster.  The destination index must be different than the source index or the operation will fail.</p>
@@ -4210,23 +4268,23 @@ The schema below describes the expected fields in a replay request</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="312"><h4 id="example-request-56">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="323"><h4 id="example-request-58">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/elasticsearch/reindex --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-57">Example response</h4>
+<h4 id="example-response-58">Example response</h4>
 <pre class='hljs'>{ <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Reindexing from cumulus-4-4-2019 to cumulus-4-12-2019. Check the reindex-status endpoint for status."</span> }</pre>
-<h4 id="example-request-57">Example request</h4>
+<h4 id="example-request-59">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/elasticsearch/reindex --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
   "aliasName": "cumulus-alias",
   "sourceIndex": "cumulus-4-4-2019",
   "destIndex": "cumulus-new-index"
 }'</span></pre>
-<h4 id="example-response-58">Example response</h4>
+<h4 id="example-response-59">Example response</h4>
 <pre class='hljs'>{ <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Reindexing from cumulus-4-4-2019 to cumulus-new-index. Check the reindex-status endpoint for status."</span> }</pre>
-</div></div><div data-title="Reindex Status" class="keyline-top section contain clearfix " data-reactid="313"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="314"><h2 id="reindex-status">Reindex Status</h2>
+</div></div><div data-title="Reindex Status" class="keyline-top section contain clearfix " data-reactid="324"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="325"><h2 id="reindex-status">Reindex Status</h2>
 <p>Reindexing can be a long running operation, so use this endpoint to get the status of your reindex and the status of your indices.</p>
 <p><code>reindexStatus.nodes</code> will be populated if there is a reindex operation currently running, <code>nodes</code> will be empty if not.</p>
 <p>The <code>elasticsearchStatus</code> shows the number of documents in each index which can be used as a sanity check for the reindex operation before switching over to the new index. Note that the active index will continue to index logs, so the number of documents in the active index will be slightly higher and continue to grow.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="315"><h4 id="example-request-58">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="326"><h4 id="example-request-60">Example request</h4>
 <pre class='hljs'>$ curl https://example.com/elasticsearch/reindex-status --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
 <h4 id="example-responses-1">Example responses</h4>
 <pre class='hljs'>{
@@ -4389,7 +4447,7 @@ The schema below describes the expected fields in a replay request</p>
         }
     }
 }</pre>
-</div></div><div data-title="Change Index" class="keyline-top section contain clearfix " data-reactid="316"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="317"><h2 id="change-index">Change Index</h2>
+</div></div><div data-title="Change Index" class="keyline-top section contain clearfix " data-reactid="327"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="328"><h2 id="change-index">Change Index</h2>
 <p>Change index switches the Elasticsearch index to point to the new index, rather than the current index. You may choose to delete your current index during this operation using the <code>deleteSource</code> parameter, which defaults to <code>false</code>. If you are using the default index created by Cumulus, this will switch your Cumulus instance to the new index and you will see those changes immediately via the API and dashboard. If <code>newIndex</code> does not exist, an index with that name will be created.</p>
 <p><code>currentIndex</code> and <code>newIndex</code> are required parameters.</p>
 <p>In the context of reindex, you'd call <code>change-index</code>, following reindex completion to start using the new index with no downtime.</p>
@@ -4430,16 +4488,16 @@ The schema below describes the expected fields in a replay request</p>
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="318"><h4 id="example-request-59">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="329"><h4 id="example-request-61">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/elasticsearch/change-index --header <span class="hljs-string">'Content-Type: application/json'</span> --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --data <span class="hljs-string">'{
   "aliasName": "cumulus-alias",
   "currentIndex": "cumulus-12-4-2019",
   "newIndex": "cumulus-4-12-2019",
   "deleteSource": false
 }'</span></pre>
-<h4 id="example-response-59">Example response</h4>
+<h4 id="example-response-60">Example response</h4>
 <pre class='hljs'>{ <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Reindex success - alias cumulus now pointing to cumulus-4-12-2019"</span> }</pre>
-</div></div><div data-title="Index from Database" class="keyline-top section contain clearfix " data-reactid="319"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="320"><h2 id="index-from-database">Index from Database</h2>
+</div></div><div data-title="Index from Database" class="keyline-top section contain clearfix " data-reactid="330"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="331"><h2 id="index-from-database">Index from Database</h2>
 <p>In case of corruption of your Elasticsearch index, you can reindex your data from the database. This will include collections, executions, granules, pdrs, providers, and rules. Logs will not be indexed since they are not stored in the database.</p>
 <p>You can specify an index (should be empty) or if no index name is specified, a default with the format of 'cumulus-year-month-day' with today's date (e.g. <code>cumulus-4-12-2019</code>) will be used. If the specified index does not exist, it will be created.</p>
 <p>You may optionally specify the following request fields:</p>
@@ -4481,11 +4539,11 @@ The schema below describes the expected fields in a replay request</p>
 </table>
 <p>It is recommended that workflow rules be turned off, as any data ingested into the database during this operation cannot be guaranteed to make it into the new index. Following the completion of the index, you will need to use the change index operation to switch your Elasticsearch to point to the new instance.</p>
 <p>Indexing is an async operation, so an operation id will be returned. You can query the status using the <code>asyncoperations</code> GET endpoint with the operation id.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="321"><h4 id="example-request-60">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="332"><h4 id="example-request-62">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/elasticsearch/index-from-database --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
   "indexName": "recovery-index"
 }'</span></pre>
-<h4 id="example-response-60">Example response</h4>
+<h4 id="example-response-61">Example response</h4>
 <pre class='hljs'>{<span class="hljs-attr">"message"</span>:<span class="hljs-string">"Indexing database to recovery-index. Operation id: 8f4d35ba-c858-40ae-93f0-4465f54a911d"</span>}</pre>
 <h4 id="example-request---operation-status">Example request - operation status</h4>
 <pre class='hljs'>$ curl --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> https://example.com/asyncoperations/8f4d35ba-c858-40ae-93f0-4465f54a911d</pre>
@@ -4496,22 +4554,22 @@ The schema below describes the expected fields in a replay request</p>
    <span class="hljs-attr">"taskArn"</span>:<span class="hljs-string">"arn:aws:ecs:us-east-1:XXXXXXXXXXXX:task/dc41ff2b-e610-4f7a-8c63-48b48ceb7160"</span>,
    <span class="hljs-attr">"output"</span>:<span class="hljs-string">"\"Index from database complete\""</span>
 }</pre>
-</div></div><div data-title="Indices Status" class="keyline-top section contain clearfix " data-reactid="322"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="323"><h2 id="indices-status">Indices Status</h2>
+</div></div><div data-title="Indices Status" class="keyline-top section contain clearfix " data-reactid="333"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="334"><h2 id="indices-status">Indices Status</h2>
 <p>Use the indices-status endpoint to view information about your elasticsearch indices. This endpoint will return the information for the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.x/cat-indices.html">indices call</a> in the Elasticsearch API.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="324"><h4 id="example-request-61">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="335"><h4 id="example-request-63">Example request</h4>
 <pre class='hljs'>$ curl  https://example.com/elasticsearch/indices-status --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-61">Example response</h4>
+<h4 id="example-response-62">Example response</h4>
 <pre class='hljs'>yellow open .kibana           yxBUTswHSr2ecec8y1szEg 1 1      1   0   3.1kb   3.1kb
 yellow open cumulus-2019-6-21 ELpdxYVKSc-VvNxlNjmMUA 5 1    700 225   2.5mb   2.5mb
 yellow open cumulus-2019-6-24 lmylLkTsQJWIVYFJcftMqQ 5 1    700   0     4mb     4mb
 yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.3mb</pre>
-</div></div><div data-title="Current Index" class="keyline-top section contain clearfix " data-reactid="325"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="326"><h2 id="current-index">Current Index</h2>
+</div></div><div data-title="Current Index" class="keyline-top section contain clearfix " data-reactid="336"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="337"><h2 id="current-index">Current Index</h2>
 <p>Get the current aliased index being used by the Cumulus Elasticsearch instance.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="327"><h4 id="example-request-62">Example request</h4>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="338"><h4 id="example-request-64">Example request</h4>
 <pre class='hljs'>$ curl  https://example.com/elasticsearch/current-index --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span></pre>
-<h4 id="example-response-62">Example response</h4>
+<h4 id="example-response-63">Example response</h4>
 <pre class='hljs'>[<span class="hljs-string">"cumulus-2019-6-24"</span>]</pre>
-</div></div><div data-title="Serve the dashboard from a bucket" class="keyline-top section contain clearfix " data-reactid="328"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="329"><h2 id="serve-the-dashboard-from-a-bucket">Serve the dashboard from a bucket</h2>
+</div></div><div data-title="Serve the dashboard from a bucket" class="keyline-top section contain clearfix " data-reactid="339"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="340"><h2 id="serve-the-dashboard-from-a-bucket">Serve the dashboard from a bucket</h2>
 <p>Serve the dashboard from an S3 bucket.</p>
 <p>This is a way to serve the Cumulus dashboard in a browser from an S3 bucket without making the bucket or files public.</p>
 <p>To use this:</p>
@@ -4522,22 +4580,22 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
 </ul>
 <pre><code>https://example.com/dashboard/dashboard-bucket/index.html
 </code></pre>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="330"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="341"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
       <div class='pad0 code small endpoint-url'>/dashboard/<span class="strong">{bucket}</span>/<span class="strong">{key}</span></div>
     </div>
-<h4 id="example-request-63">Example request</h4>
-</div></div><div data-title="ORCA" class="keyline-top section contain clearfix " data-reactid="331"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="332"><h2 id="orca-1">ORCA</h2>
+<h4 id="example-request-65">Example request</h4>
+</div></div><div data-title="ORCA" class="keyline-top section contain clearfix " data-reactid="342"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="343"><h2 id="orca-1">ORCA</h2>
 <p>This endpoint authenticates and forwards requests to the ORCA private API, and returns the response from the ORCA API.  Please refer to <a href="https://nasa.github.io/cumulus-orca/docs/developer/api/orca-api">ORCA API reference</a> on how to use ORCA API.</p>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="333"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="344"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/orca</div>
     </div>
-<h4 id="example-request-64">Example request</h4>
+<h4 id="example-request-66">Example request</h4>
 <pre class='hljs'>$ curl --request POST https://example.com/orca/recovery/granules --header <span class="hljs-string">'Authorization: Bearer ReplaceWithTheToken'</span> --header <span class="hljs-string">'Content-Type: application/json'</span>  --data <span class="hljs-string">'{
   "granuleId": "MOD14A1.061.H5V12.2020312.141531789"
 }'</span></pre>
-</div></div><div data-title="Migration Counts" class="keyline-top section contain clearfix " data-reactid="334"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="335"><h2 id="migration-counts">Migration Counts</h2>
+</div></div><div data-title="Migration Counts" class="keyline-top section contain clearfix " data-reactid="345"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="346"><h2 id="migration-counts">Migration Counts</h2>
 <p>This endpoint triggers a run of the postgres-migration-count-tool as an async operation of type <code>Migration Count Report</code>.</p>
 <p>For more information on the tool, see the <a href="https://github.com/nasa/cumulus/blob/master/lambdas/postgres-migration-count-tool/README.md">README</a></p>
 <p>The query uses the following optional parameters:</p>
@@ -4551,7 +4609,7 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
 <tbody>
 <tr>
 <td>cutoffSeconds</td>
-<td>Sets the number of seconds prior to this execution to 'cutoff' reconciliation queries.  This allows in-progress or other in-flight operations time to complete and propagate to ElasticSearch/Dynamo/Postgres.  Default is 3600</td>
+<td>Sets the number of seconds prior to this execution to 'cutoff' reconciliation queries.  This allows in-progress or other in-flight operations time to complete and propagate to ElasticSearch/Postgres.  Default is 3600</td>
 </tr>
 <tr>
 <td>dbConcurrency</td>
@@ -4571,15 +4629,15 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="336"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="347"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/migrationCounts</div>
     </div>
-<h4 id="example-request-65">Example request</h4>
+<h4 id="example-request-67">Example request</h4>
 <pre class='hljs'><span class="hljs-variable">$curl</span> -X POST https://<span class="hljs-variable">$API_URL</span>/dev/migrationCounts -d <span class="hljs-string">'reportBucket=someBucket&amp;reportPath=someReportPath&amp;cutoffSeconds=60&amp;dbConcurrency=20&amp;dbMaxPool=20'</span> --header <span class="hljs-string">'Authorization: Bearer $TOKEN'</span></pre>
-<h4 id="example-response-63">Example response</h4>
+<h4 id="example-response-64">Example response</h4>
 <pre class='hljs'>{<span class="hljs-attr">"id"</span>:<span class="hljs-string">"7ccaed31-756b-40bb-855d-e5e6d00dc4b3"</span>,<span class="hljs-attr">"status"</span>:<span class="hljs-string">"RUNNING"</span>,<span class="hljs-attr">"taskArn"</span>:<span class="hljs-string">"arn:aws:ecs:us-east-1:AWSID:task/$PREFIX-CumulusECSCluster/123456789"</span>,<span class="hljs-attr">"description"</span>:<span class="hljs-string">"Migration Count Tool ECS Run"</span>,<span class="hljs-attr">"operationType"</span>:<span class="hljs-string">"Migration Count Report"</span>}</pre>
-</div></div><div data-title="Recover cumulus messages" class="keyline-top section contain clearfix " data-reactid="337"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="338"><h2 id="recover-cumulus-messages">Recover cumulus messages</h2>
+</div></div><div data-title="Recover cumulus messages" class="keyline-top section contain clearfix " data-reactid="348"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="349"><h2 id="recover-cumulus-messages">Recover cumulus messages</h2>
 <p>Endpoint provides a mechanism for recovery of S3 sfEventSqsToDbRecords dead letter objects (created as described in the <a href="https://nasa.github.io/cumulus/docs/features/dead_letter_archive">Core Documentation</a>). The endpoint will invoke an async operation that will attempt to process all of the objects in the specified location.</p>
 <p>The endpoint by default will process all records contained in the S3 objects from the default storage location on the S3 system bucket under the prefix of <code>&#x3C;stackName>/dead-letter-archive/sqs/</code>. However, it is likely useful to process a subset of those objects, which you can do by moving the desired subset of objects to a new path on S3 and then specifying that new path using the <code>path</code> parameter to the endpoint request.</p>
 <p>The query uses the following optional parameters:</p>
@@ -4601,16 +4659,16 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
 </tr>
 </tbody>
 </table>
-</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="339"><div class='endpoint dark fill-dark round '>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="350"><div class='endpoint dark fill-dark round '>
       <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
       <div class='pad0 code small endpoint-url'>/deadLetterArchive/recoverCumulusMessages</div>
     </div>
-<h4 id="example-request-66">Example request</h4>
+<h4 id="example-request-68">Example request</h4>
 <pre class='hljs'>curl -X POST https://cumulus.podaac.sit.earthdata.nasa.gov/deadLetterArchive/recoverCumulusMessages --header <span class="hljs-string">"Authorization: Bearer <span class="hljs-variable">$TOKEN</span>"</span> --header <span class="hljs-string">'Content-Type: application/json'</span> --data <span class="hljs-string">'{
     "bucket": "some-cumulus-bucket",
     "path": "some/path/to/records/"
 }'</span></pre>
-<h4 id="example-response-64">Example response</h4>
+<h4 id="example-response-65">Example response</h4>
 <pre class='hljs'>{
     <span class="hljs-attr">"createdAt"</span>:<span class="hljs-number">1646861517957</span>,
     <span class="hljs-attr">"updatedAt"</span>:<span class="hljs-number">1646861517957</span>,
@@ -4620,9 +4678,9 @@ yellow open cumulus           jQLXsb8yS4aEmLAAyHcmCw 5 1 217298 588 124.3mb 124.
     <span class="hljs-attr">"description"</span>:<span class="hljs-string">"Dead-Letter Processor ECS Run"</span>,
     <span class="hljs-attr">"operationType"</span>:<span class="hljs-string">"Dead-Letter Processing"</span> 
 }</pre>
-</div></div></div></div></div><div class="fixed-top space-left16" data-reactid="340"><div class="events fill-light bottom-shadow pad1 col6 pin-topright  " data-reactid="341"><div class="space-right1 small quiet inline" data-reactid="342">Show examples in:</div><div class="rounded-toggle inline short" data-reactid="343"><a class="strong active" data-reactid="344">cURL</a><a class="strong " data-reactid="345">Python</a><a class="strong " data-reactid="346">JS</a></div><div class="fr pad0" data-reactid="347"><a title="Display as 1 column" style="cursor:pointer;" class="icon quiet caret-left pad0 fill-darken0 round" data-reactid="348"></a></div></div></div><div class="fill-dark dark bottom-shadow fixed-top pad0 width16" data-reactid="349"><a href="/" class="active space-top1 space-left1 pin-topleft icon round dark pad0 fill-blue" data-reactid="350"></a><div class="strong small pad0
+</div></div></div></div></div><div class="fixed-top space-left16" data-reactid="351"><div class="events fill-light bottom-shadow pad1 col6 pin-topright  " data-reactid="352"><div class="space-right1 small quiet inline" data-reactid="353">Show examples in:</div><div class="rounded-toggle inline short" data-reactid="354"><a class="strong active" data-reactid="355">cURL</a><a class="strong " data-reactid="356">Python</a><a class="strong " data-reactid="357">JS</a></div><div class="fr pad0" data-reactid="358"><a title="Display as 1 column" style="cursor:pointer;" class="icon quiet caret-left pad0 fill-darken0 round" data-reactid="359"></a></div></div></div><div class="fill-dark dark bottom-shadow fixed-top pad0 width16" data-reactid="360"><a href="/" class="active space-top1 space-left1 pin-topleft icon round dark pad0 fill-blue" data-reactid="361"></a><div class="strong small pad0
           
-          space-left4 line-height15" data-reactid="351">Cumulus API</div></div></div></div><!--STOP-->
+          space-left4 line-height15" data-reactid="362">Cumulus API</div></div></div></div><!--STOP-->
     <script src='bundle.js'></script>
   </body>
 </html>

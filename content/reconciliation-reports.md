@@ -99,16 +99,6 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
             "s3://cumulus-test-sandbox-protected/MOD09GQ.A2016358.h13v04.006.2016360104606.cmr.xml",
             "s3://cumulus-test-sandbox-private/BROWSE.MYD13Q1.A2017297.h19v10.006.2017313221201.hdf"
         ],
-        "onlyInDynamoDb": [
-            {
-                "uri": "s3://cumulus-test-sandbox-protected/MOD09GQ.A2016358.h13v04.006.2016360104606.hdf",
-                "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606"
-            },
-            {
-                "uri": "s3://cumulus-test-sandbox-private/MYD13Q1.A2017297.h19v10.006.2017313221303.hdf.met",
-                "granuleId": "MYD13Q1.A2017297.h19v10.006.2017313221303"
-            }
-        ]
     },
     "collectionsInCumulusCmr": {
         "okCount": 1,
@@ -197,12 +187,6 @@ $ curl https://example.com/reconciliationReports/inventoryReport-20190305T153430
       "s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122597517/MOD09GQ.A1201557.d6tP2Y.006.7482431709753.hdf",
       "s3://cumulus-sandbox-protected/MOD09GQ___006/2017/MOD/test-data-1593122881446/MOD09GQ.A2708681.CFkGhW.006.7154000014360.hdf"
     ],
-    "onlyInDynamoDb": [
-      {
-        "uri": "s3://cumulus-sandbox-private/MOD09GQ___006/MOD/test-data-1593178175944/MOD09GQ.A2770300.W1_V5Z.006.7853319756315.hdf.met",
-        "granuleId": "MOD09GQ.A2770300.W1_V5Z.006.7853319756315"
-      }
-    ]
   },
   "collectionsInCumulusCmr": {
     "okCount": 0,
