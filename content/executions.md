@@ -571,3 +571,37 @@ $ curl --request DELETE https://example.com/executions/arn:aws:states:us-east-1:
   "message": "Record deleted"
 }
 ```
+
+## Bulk Delete Executions by `collectionId`
+
+This request, when given an existing `collectionId` will trigger a bulk action that will take the following actions:
+
+* Remove all records from elastic search matching the `collectionId` (in a single query with a limit specified by `esBatchSize` in the payload)
+* Remove all records from the postgreSQL database matching the `collectionId` (in a single query with a limit specified by `dbBatchSize` in the payload)
+  * Records will be removed in the order postgreSQL returns them.  Records that deletion would cause a violation with a record's `parent_cumulus_id` field constraints will cause the child record to have that field set to null
+* Failure on any deletion will result in operation failure - if that occurs, the issue will need to be corrected and this operation can be re-run.
+* This operation runs asynchronously, and will return an asynchronous operation ID
+
+```endpoint
+POST /executions/bulk-delete-by-collection
+```
+
+#### Example request
+
+```
+$ curl --request POST \
+    https://example.com/executions/bulk-delete-by-collection --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+        "collectionId": "COLLECTION_NAME___COLLECTION_VERSION",
+        "esBatchSize": 100000,
+        "dbBatchSize": 50000
+    }'
+```
+#### Example response
+
+```json
+{
+    "id": "12345678-2222-3333-4444-1234567890ab"                        
+}
+```
