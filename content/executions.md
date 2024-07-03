@@ -578,7 +578,7 @@ This request, when given an existing `collectionId` will trigger a bulk action t
 
 * Remove all records from elastic search matching the `collectionId` (in a single query with a limit specified by `esBatchSize` in the payload)
 * Remove all records from the postgreSQL database matching the `collectionId` (in a single query with a limit specified by `dbBatchSize` in the payload)
-  * Records will be removed in the order postgreSQL returns them.  Records that deletion would cause a violation with a record's `parent_cumulus_id` field constraints will cause the child record to have that field set to null
+  * Records will be removed in the order postgreSQL returns them.  Where deletion would cause a violation with a record's `parent_cumulus_id` field constraints, the child record will have that field set to null.
 * Failure on any deletion will result in operation failure - if that occurs, the issue will need to be corrected and this operation can be re-run.
 * This operation runs asynchronously, and will return an asynchronous operation ID
 
