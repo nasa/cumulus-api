@@ -594,7 +594,7 @@ $ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
         "collectionId": "COLLECTION_NAME___COLLECTION_VERSION",
-        "esBatchSize": 100000,
+        "esBatchSize": 10000,
         "dbBatchSize": 50000
     }'
 ```
