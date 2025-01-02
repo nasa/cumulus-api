@@ -883,3 +883,50 @@ curl -X POST
 ```
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
+
+## BatchUpdate Granules' CollectionId
+
+Update a batch of apiGranules `collectionId` in postgres to a new `collectionId`.
+
+
+```endpoint
+PATCH /granules/batchRecords
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/granules/batchRecords --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
+    "apiGranules": [{granuleId: "granule_1"}, {granuleId: "granule_2"}],
+    "collectionId": "newCollectionId",
+}'
+```
+
+#### Example response
+
+```json
+{ "message": "Successfully wrote granules with Granule Id: ['granule_1', 'granule_2'], Collection Id: 'newCollectionId'" }
+```
+
+## Batch Patch Granules
+
+Patch a batch of granules.
+
+```endpoint
+PATCH /granules/batchPatch
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/granules/batchPatch --header 'Authorization: Bearer ReplaceWithTheToken'
+--data '{
+    "apiGranules": [{granuleId: "granule_1", status: 'failed'}, {granuleId: "granule_2", pdrName: 'newPdrName'}],
+}'
+```
+
+#### Example response
+
+```json
+{ "message": "Successfully batch patched granules" }
+```
