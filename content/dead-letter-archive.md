@@ -12,7 +12,7 @@ The query uses the following optional parameters:
 | path | The S3 prefix (path) to read DLQ records from. Defaults to `<stackName>/dead-letter-archive/sqs/`|
 | batchSize | Specifies how many DLA objects to read from S3 and hold in memory.  Defaults to 1000|
 | concurrency | Specifies how many messages to process at the same time.  Defaults to 30|
-| dbMaxPool | specifies how many database connections to allow the process to utilize.  Defaults to 30.  Process should at minimum the value set for `concurrency`|
+| dbMaxPool | Specifies how many database connections to allow the process to utilize.  Defaults to 30.  Process should at minimum the value set for `concurrency`|
 
 ```endpoint
 POST /deadLetterArchive/recoverCumulusMessages
