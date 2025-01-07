@@ -406,11 +406,11 @@ $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId
 
 ## Update granule
 
-Update an existing granule.  Expects payload to contain the modified
-parts of the granule and the existing granule values will be overwritten by the
-modified portions.   Unspecified keys will be retained.    Keys set to `null`
-will be removed.    Executions will not be disassociated from the granule via
-`null` deletion.  The same fields are available as are for [creating a
+Update an existing granule. Expects payload to contain the modified
+parts of the granule as the existing granule values will be overwritten by the
+modified portions. Unspecified keys will be retained. Keys set to `null`
+will be removed. Executions will not be disassociated from the granule via
+`null` deletion. The same fields are available as are for [creating a
 granule.](#create-granule).
 
 Returns status 200 on successful update, 201 on new granule creation, 404 if
@@ -430,7 +430,7 @@ PATCH /granules/{collectionId}/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version: 2'\
+  --header 'Cumulus-API-Version: 2' \
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -884,10 +884,12 @@ curl -X POST
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
-## BatchUpdate Granules' CollectionId
+## Batch Update Granules' CollectionId
 
-Update a batch of apiGranules `collectionId` in postgres to a new `collectionId`.
+Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules and the new collectionId to update them to. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
 
+Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
+or 400 for postgres or payload validation errors.
 
 ```endpoint
 PATCH /granules/batchRecords
@@ -896,21 +898,52 @@ PATCH /granules/batchRecords
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/batchRecords --header 'Authorization: Bearer ReplaceWithTheToken' --data '{
-    "apiGranules": [{granuleId: "granule_1"}, {granuleId: "granule_2"}],
-    "collectionId": "newCollectionId",
+$ curl --request PATCH https://example.com/granules/batchRecords \
+  --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2' \
+ --data '{
+    "apiGranules": [{
+        "granuleId": "granuleId.A20200113.006.1005",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  }, {
+        "granuleId": "granuleId.A20200113.006.1006",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  },...,
+    {
+        "granuleId": "granuleId.A20200113.006.1100",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  }}],
+    "collectionId": "collectionId.B31311224.007",
 }'
 ```
 
 #### Example response
 
 ```json
-{ "message": "Successfully wrote granules with Granule Id: ['granule_1', 'granule_2'], Collection Id: 'newCollectionId'" }
+{ "message": "Successfully wrote granules with Granule Id: ['granuleId.A20200113.006.1005', 'granuleId.A20200113.006.1006',...,'granuleId.A20200113.006.1100'], Collection Id: 'collectionId.B31311224.007'" }
 ```
 
-## Batch Patch Granules
+## Batch Update Granules
 
-Patch a batch of granules.
+Update a batch of granules.  Expects payload to contain a list of the modified
+granules as the existing granule values will be overwritten by the
+modified portions. Unspecified keys will be retained. Keys set to `null`
+will be removed. Executions will not be disassociated from the granule via
+`null` deletion. Configuration for concurrency and max DB pool size is provided
+for improved performance/tuning.
+
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 for postgres or payload validation errors
 
 ```endpoint
 PATCH /granules/batchPatch
@@ -919,14 +952,77 @@ PATCH /granules/batchPatch
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/batchPatch --header 'Authorization: Bearer ReplaceWithTheToken'
---data '{
-    "apiGranules": [{granuleId: "granule_1", status: 'failed'}, {granuleId: "granule_2", pdrName: 'newPdrName'}],
+$ curl --request PATCH https://example.com/granules/batchRecords \
+  --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2' \
+ --data '{
+    "apiGranules": [{
+        "granuleId": "granuleId.A20200113.006.1005",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1005.hdf",
+                "fileName": "granuleId.B31311224.007.1005.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1005.jpg",
+                "fileName": "granuleId.B31311224.007.1005.jpg"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+        }, 
+        {
+        "granuleId": "granuleId.A20200113.006.1006",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.hdf",
+                "fileName": "granuleId.B31311224.007.1006.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.jpg",
+                "fileName": "granuleId.B31311224.007.1006.jpg"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.txt",
+                "fileName": "granuleId.B31311224.007.1006.txt"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+        },...,
+        {
+        "granuleId": "granuleId.A20200113.006.1100",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1100.hdf",
+                "fileName": "granuleId.B31311224.007.1100.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1100.jpg",
+                "fileName": "granuleId.B31311224.007.1100.jpg"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+    }],
+    dbConcurrency: 10,
+    dbMaxPool: 20,
 }'
 ```
 
 #### Example response
 
 ```json
-{ "message": "Successfully batch patched granules" }
+{ "message": "Successfully patched Granules" }
 ```
