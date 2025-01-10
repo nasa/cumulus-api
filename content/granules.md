@@ -942,9 +942,9 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
 
 ## Bulk Update Granules
 
-Update a batch of granules.  Expects payload to contain a list of the modified
+Update a batch of granules. Expects payload to contain a list of the modified
 granules as the existing granule values will be overwritten by the
-modified portions. Please see the `Udpate Granule` endpoint above for additional details regarding the update. Configuration for `dbConcurrency`, a configurable postgres database concurrency for the request, and `dbMaxPool`, the maximum number of postgres connections the request can make, is provided
+modified portions. Please see the `Udpate Granule` [endpoint](#update-granule) for additional details. Configuration for `dbConcurrency`, a configurable postgres database concurrency for the request, and `dbMaxPool`, the maximum number of postgres connections the request can make, is provided
 for improved database performance tuning.
 
 Returns status 200 on successful update, 201 on new granule creation, 404 if
