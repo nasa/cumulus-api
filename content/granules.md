@@ -886,12 +886,16 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Update Granules CollectionId
 
-Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value for better tuning of elasticsearch performance. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
+Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value that allows modification of concurrent Elasticsearch requests utilized by the endpoint. 
+
+This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in both datastores.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
-or 400 for postgres or payload validation errors.
+or 400 for datastore write/validation errors.
 
-**Note**: If this endpoint fails, there is a high risk that the postgres and elasticsearch datastores are out of sync. It is recommended to check both datastores for the granules' that were passed in for discrepancies of their collectionIds. After discovering the discrepancies, you can either re-run the endpoint with the new payload of the unupdated granules (or the same payload) or run a manual update query in both postgres and elasticsearch to update their collectionIds.
+**Note**: For elastic search enabled versions of Cumulus, if writes from this endpoint fail, there is a high risk that the postgres and elasticsearch datastores will be out of sync for some (but not all ) of the granuleIds requested for update. 
+
+If a write failure occurs, the endpoint is idempotent so the operation can be re-run and should correct the discrepancy.     
 
 ```endpoint
 PATCH /granules/bulkPatchGranuleCollection
@@ -948,7 +952,9 @@ for improved database performance/tuning.
 Returns status 200 on successful update, 201 on new granule creation, 404 if
 the `granuleId` can not be found in the database, or 400 for postgres or payload validation errors
 
-**Note**: If this endpoint fails, there is a high risk that some of the granules' updated while others didn't.
+**Please Note**: If this endpoint fails on granule update for a batch, some of the batched granules may not be updated.  This endpoint does not provide granular update results for each granule (as a feature design boundary) or other retry logic, that update is anticipated in future releases. 
+
+If a write failure occurs, as this is an update, correct the failure and re-attempt the batch write to resolve. 
 When a failure occurs, a potential resolution includes re-running the endpoint.
 
 ```endpoint
