@@ -893,7 +893,9 @@ This endpoint will fail if non-existant granuleIds are provided, it can only be 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
 or 400 for datastore write/validation errors.
 
-**Note**: If this endpoint fails, there is a high risk that the postgres and elasticsearch datastores are out of sync. It is recommended to check both datastores for the granules' that were passed in for discrepancies of their collectionIds. After discovering the discrepancies, you can either re-run the endpoint with the new payload of the unupdated granules (or the same payload) or run a manual update query in both postgres and elasticsearch to update their collectionIds.
+**Note**: For elastic search enabled versions of Cumulus, if writes from this endpoint fail, there is a high risk that the postgres and elasticsearch datastores will be out of sync for some (but not all ) of the granuleIds requested for update. 
+
+If a write failure occurs, the endpoint is idempotent so the operation can be re-run and should correct the discrepancy.     
 
 ```endpoint
 PATCH /granules/bulkPatchGranuleCollection
