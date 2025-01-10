@@ -884,21 +884,23 @@ curl -X POST
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
-## Batch Update Granules' CollectionId
+## Bulk Update Granules' CollectionId
 
-Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules and the new collectionId to update them to. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
+Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value for better tuning of elasticsearch performance. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
 or 400 for postgres or payload validation errors.
 
+**Note**: If this endpoint fails, there is a high risk that the postgres and elasticsearch datastores are out of sync. It is recommended to check both datastores for the granules' that were passed in for discrepancies of their collectionIds. After discovering the discrepancies, you can either re-run the endpoint with the new payload of the unupdated granules (or the same payload) or run a manual update query in both postgres and elasticsearch to update their collectionIds.
+
 ```endpoint
-PATCH /granules/batchRecords
+PATCH /granules/bulkPatchGranuleCollection
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/batchRecords \
+$ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
   --header 'Authorization: Bearer ReplaceWithTheToken' \
   --header 'Content-Type: application/json' \
   --header 'Cumulus-API-Version: 2' \
@@ -924,6 +926,7 @@ $ curl --request PATCH https://example.com/granules/batchRecords \
         "status": "completed"
   }}],
     "collectionId": "collectionId.B31311224.007",
+    "esConcurrency": 10,
 }'
 ```
 
@@ -933,26 +936,29 @@ $ curl --request PATCH https://example.com/granules/batchRecords \
 { "message": "Successfully wrote granules with Granule Id: ['granuleId.A20200113.006.1005', 'granuleId.A20200113.006.1006',...,'granuleId.A20200113.006.1100'], Collection Id: 'collectionId.B31311224.007'" }
 ```
 
-## Batch Update Granules
+## Bulk Update Granules
 
 Update a batch of granules.  Expects payload to contain a list of the modified
 granules as the existing granule values will be overwritten by the
 modified portions. Unspecified keys will be retained. Keys set to `null`
 will be removed. Executions will not be disassociated from the granule via
-`null` deletion. Configuration for concurrency and max DB pool size is provided
-for improved performance/tuning.
+`null` deletion. Configuration for `dbConcurrency` and `dbMaxPool` is provided
+for improved database performance/tuning.
 
 Returns status 200 on successful update, 201 on new granule creation, 404 if
 the `granuleId` can not be found in the database, or 400 for postgres or payload validation errors
 
+**Note**: If this endpoint fails, there is a high risk that some of the granules' updated while others didn't.
+When a failure occurs, a potential resolution includes re-running the endpoint.
+
 ```endpoint
-PATCH /granules/batchPatch
+PATCH /granules/bulkPatch
 ```
 
 #### Example request
 
 ```curl
-$ curl --request PATCH https://example.com/granules/batchRecords \
+$ curl --request PATCH https://example.com/granules/bulkPatch \
   --header 'Authorization: Bearer ReplaceWithTheToken' \
   --header 'Content-Type: application/json' \
   --header 'Cumulus-API-Version: 2' \
