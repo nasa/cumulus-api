@@ -884,7 +884,7 @@ curl -X POST
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
-## Bulk Update Granules' CollectionId
+## Bulk Update Granules CollectionId
 
 Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value for better tuning of elasticsearch performance. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
 
