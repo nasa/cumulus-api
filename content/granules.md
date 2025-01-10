@@ -952,7 +952,9 @@ for improved database performance/tuning.
 Returns status 200 on successful update, 201 on new granule creation, 404 if
 the `granuleId` can not be found in the database, or 400 for postgres or payload validation errors
 
-**Note**: If this endpoint fails, there is a high risk that some of the granules' updated while others didn't.
+**Please Note**: If this endpoint fails on granule update for a batch, some of the batched granules may not be updated.  This endpoint does not provide granular update results for each granule (as a feature design boundary) or other retry logic, that update is anticipated in future releases. 
+
+If a write failure occurs, as this is an update, correct the failure and re-attempt the batch write to resolve. 
 When a failure occurs, a potential resolution includes re-running the endpoint.
 
 ```endpoint
