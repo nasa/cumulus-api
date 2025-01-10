@@ -886,7 +886,9 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Update Granules CollectionId
 
-Update a batch of existing granules' `collectionId` in postgres and ES to a new `collectionId`. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value for better tuning of elasticsearch performance. This cannot be used to create new granules, only to change existing granules' collectionId in both datastores.
+Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value that allows modification of concurrent Elasticsearch requests utilized by the endpoint. 
+
+This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in both datastores.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
 or 400 for postgres or payload validation errors.
