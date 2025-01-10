@@ -891,7 +891,7 @@ Updates a batch of existing granules' linked collection (`collectionId`) in post
 This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in both datastores.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
-or 400 for datastore write/validation errors.
+or 400 for datastore write or validation errors.
 
 **Note**: For elastic search enabled versions of Cumulus, if writes from this endpoint fail, there is a high risk that the postgres and elasticsearch datastores will be out of sync for some (but not all ) of the granuleIds requested for update. 
 
@@ -944,13 +944,11 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
 
 Update a batch of granules.  Expects payload to contain a list of the modified
 granules as the existing granule values will be overwritten by the
-modified portions. Unspecified keys will be retained. Keys set to `null`
-will be removed. Executions will not be disassociated from the granule via
-`null` deletion. Configuration for `dbConcurrency` and `dbMaxPool` is provided
-for improved database performance/tuning.
+modified portions. Please see the `Udpate Granule` endpoint above for additional details regarding the update. Configuration for `dbConcurrency`, a configurable postgres database concurrency for the request, and `dbMaxPool`, the maximum number of postgres connections the request can make, is provided
+for improved database performance tuning.
 
 Returns status 200 on successful update, 201 on new granule creation, 404 if
-the `granuleId` can not be found in the database, or 400 for postgres or payload validation errors
+the `granuleId` can not be found in the database, or 400 for database write or validation errors.
 
 **Please Note**: If this endpoint fails on granule update for a batch, some of the batched granules may not be updated.  This endpoint does not provide granular update results for each granule (as a feature design boundary) or other retry logic, that update is anticipated in future releases. 
 
