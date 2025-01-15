@@ -67,9 +67,6 @@ module.exports =
   '# Instance Metadata\n' +
   fs.readFileSync('./content/instance-meta.md') + '\n' +
 
-  '# Elasticsearch\n' +
-  fs.readFileSync('./content/elasticsearch.md') + '\n' +
-
   '# Dashboard\n' +
   fs.readFileSync('./content/dashboard.md') + '\n' +
 
