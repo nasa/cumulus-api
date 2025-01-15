@@ -6,6 +6,8 @@ If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus
 
 If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value.
 
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned row count will be the actual exact count, otherwise the row count will be an estimated count. 
+
 ```endpoint
 GET /granules
 ```
