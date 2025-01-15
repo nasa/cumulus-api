@@ -1,7 +1,10 @@
 ## List granules
 
 List granules in the Cumulus system.
+
 If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
+
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value.
 
 ```endpoint
 GET /granules
@@ -194,6 +197,8 @@ Retrieve a single granule. Two routes are currently available. The preferred que
 **Please note** -- Querying by the Granule ID alone (e.g. `GET /granules/{granuleId}`) is supported but may be deprecated in the future.
 
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
+
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in the granule's return value.
 
 ```endpoint
 GET /granules/{collectionId}/{granuleId}
