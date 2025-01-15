@@ -3,7 +3,7 @@ List executions.
 
 If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in each executions's return value.
 
-For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned row count will be the actual exact count, otherwise the row count will be an estimated count. 
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. 
 
 ```endpoint
 GET /executions
