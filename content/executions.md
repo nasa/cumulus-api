@@ -1,9 +1,9 @@
 ## List executions
 List executions.
 
-If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in each executions's return value.
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in each executions's return value. The default value is `false`.
 
-For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. 
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count.  The default value is `true`.
 
 ```endpoint
 GET /executions
@@ -80,8 +80,6 @@ $ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer Re
 ## Retrieve Execution
 
 Retrieve details for a specific execution.
-
-If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in the executions's return value.
 
 ```endpoint
 GET /executions/{executionArn}

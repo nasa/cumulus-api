@@ -4,9 +4,9 @@ List granules in the Cumulus system.
 
 If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
 
-If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value.
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value. The default value is `false`.
 
-For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. 
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. The default value is `true`.
 
 ```endpoint
 GET /granules
@@ -15,7 +15,7 @@ GET /granules
 #### Example request
 
 ```curl
-$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules?includeFullRecord=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -103,8 +103,6 @@ Retrieve a single granule. Two routes are currently available. The preferred que
 **Please note** -- Querying by the Granule ID alone (e.g. `GET /granules/{granuleId}`) is supported but may be deprecated in the future.
 
 If the query includes a value of `true` for `getRecoveryStatus`, the returned granule will include `recoveryStatus` when applicable.
-
-If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in the granule's return value.
 
 ```endpoint
 GET /granules/{collectionId}/{granuleId}
