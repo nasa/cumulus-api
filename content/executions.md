@@ -22,7 +22,7 @@ $ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer Re
   "meta": {
     "name": "cumulus-api",
     "stack": "test-src-integration",
-    "table": "execution",
+    "table": "executions",
     "limit": 3,
     "page": 1,
     "count": 447
