@@ -23,7 +23,7 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "collection",
+        "table": "collections",
         "limit": 1,
         "page": 1,
         "count": 3
@@ -108,7 +108,7 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "collection",
+        "table": "collections",
         "limit": 1,
         "page": 1,
         "count": 3
