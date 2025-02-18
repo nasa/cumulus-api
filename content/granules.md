@@ -1,8 +1,13 @@
 ## List granules
 
 List granules in the Cumulus system.
+
 If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
 
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value. The default value is `false`.
+
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. The default value is `true`.
+
 ```endpoint
 GET /granules
 ```
@@ -10,7 +15,7 @@ GET /granules
 #### Example request
 
 ```curl
-$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules?includeFullRecord=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -20,106 +25,10 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "granule",
+        "table": "granules",
         "limit": 1,
         "page": 1,
         "count": 8,
-        "searchContext": "%5B%221577836800000%22%5D",
-    },
-    "results": [
-        {
-            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
-            "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
-            "collectionId": "MOD11A1___006",
-            "status": "completed",
-            "provider": "LP_TS2_DataPool",
-            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
-            "files": [
-                {
-                    "bucket": "cumulus-devseed-protected",
-                    "checksum": 964704694,
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileSize": 1447347,
-                    "fileType": "data",
-                    "checksumType": "CKSUM",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
-                },
-                {
-                    "bucket": "cumulus-devseed-private",
-                    "checksum": 121318124,
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
-                    "fileSize": 22559,
-                    "fileType": "metadata",
-                    "checksumType": "CKSUM",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
-                },
-                {
-                    "bucket": "cumulus-devseed-private",
-                    "checksum": 2188150664,
-                    "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileSize": 18118,
-                    "fileType": "data",
-                    "checksumType": "CKSUM",
-                    "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
-                },
-                {
-                    "bucket": "cumulus-devseed-public",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
-                    "fileType": "browse",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
-                },
-                {
-                    "bucket": "cumulus-devseed-protected",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
-                    "fileType": "metadata",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
-                },
-                {
-                    "bucket": "cumulus-devseed-public",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
-                    "fileType": "browse",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
-                }
-            ],
-            "error": null,
-            "createdAt": 1513020455831,
-            "timestamp": 1513020462156,
-            "published": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS",
-            "duration": 6.325,
-            "cmrLink": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS"
-        }
-    ]
-}
-```
-
-## List granules with searchContext
-
-List granules in the Cumulus system with searchContext from a previous query.
-Must include all of previous query's `sort`, `order`, or `sort_key` query string parameters.
-Must not include `from` and `to` query string parameters.
-
-```endpoint
-GET /granules
-```
-
-#### Example request
-
-```curl
-$ curl https://example.com/granules?searchContext=%5B%221577836800000%22%5D --header 'Authorization: Bearer ReplaceWithTheToken'
-```
-
-#### Example response
-
-```json
-{
-    "meta": {
-        "name": "cumulus-api",
-        "stack": "lpdaac-cumulus",
-        "table": "granule",
-        "limit": 1,
-        "page": 1,
-        "count": 8,
-        "searchContext": "%5B%221606780899999%22%5D",
     },
     "results": [
         {
@@ -406,11 +315,11 @@ $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId
 
 ## Update granule
 
-Update an existing granule.  Expects payload to contain the modified
-parts of the granule and the existing granule values will be overwritten by the
-modified portions.   Unspecified keys will be retained.    Keys set to `null`
-will be removed.    Executions will not be disassociated from the granule via
-`null` deletion.  The same fields are available as are for [creating a
+Update an existing granule. Expects payload to contain the modified
+parts of the granule as the existing granule values will be overwritten by the
+modified portions. Unspecified keys will be retained. Keys set to `null`
+will be removed. Executions will not be disassociated from the granule via
+`null` deletion. The same fields are available as are for [creating a
 granule.](#create-granule).
 
 Returns status 200 on successful update, 201 on new granule creation, 404 if
@@ -430,7 +339,7 @@ PATCH /granules/{collectionId}/{granuleId}
 $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000 \
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
-  --header 'Cumulus-API-Version: 2'\
+  --header 'Cumulus-API-Version: 2' \
   --data '{
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
@@ -883,3 +792,153 @@ curl -X POST
 ```
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
+
+## Bulk Update Granules CollectionId
+
+Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules and a new collectionId to update them to.
+
+This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in postgres.
+
+Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
+or 400 for datastore write or validation errors.
+
+If a write failure occurs, the endpoint is idempotent so the operation can be re-run and should correct the discrepancy.     
+
+```endpoint
+PATCH /granules/bulkPatchGranuleCollection
+```
+
+#### Example request
+
+```curl
+$ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
+  --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2' \
+ --data '{
+    "apiGranules": [{
+        "granuleId": "granuleId.A20200113.006.1005",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  }, {
+        "granuleId": "granuleId.A20200113.006.1006",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  },...,
+    {
+        "granuleId": "granuleId.A20200113.006.1100",
+        "collectionId: "collectionId.A20200113.006",
+        "files": [...],
+        "duration": 1000,
+        "status": "completed"
+  }}],
+    "collectionId": "collectionId.B31311224.007",
+}'
+```
+
+#### Example response
+
+```json
+{ "message": "Successfully wrote granules with Granule Id: ['granuleId.A20200113.006.1005', 'granuleId.A20200113.006.1006',...,'granuleId.A20200113.006.1100'], Collection Id: 'collectionId.B31311224.007'" }
+```
+
+## Bulk Update Granules
+
+Update a batch of granules. Expects payload to contain a list of the modified
+granules as the existing granule values will be overwritten by the
+modified portions. Please see the `Update Granule` [endpoint](#update-granule) for additional details. Configuration for `dbConcurrency`, a configurable postgres database concurrency for the request, and `dbMaxPool`, the maximum number of postgres connections the request can make, is provided
+for improved database performance tuning.
+
+Returns status 200 on successful update, 201 on new granule creation, 404 if
+the `granuleId` can not be found in the database, or 400 for database write or validation errors.
+
+**Please Note**: If this endpoint fails on granule update for a batch, some of the batched granules may not be updated.  This endpoint does not provide granular update results for each granule (as a feature design boundary) or other retry logic, that update is anticipated in future releases. 
+
+If a write failure occurs, as this is an update, correct the failure and re-attempt the batch write to resolve. 
+When a failure occurs, a potential resolution includes re-running the endpoint.
+
+```endpoint
+PATCH /granules/bulkPatch
+```
+
+#### Example request
+
+```curl
+$ curl --request PATCH https://example.com/granules/bulkPatch \
+  --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2' \
+ --data '{
+    "apiGranules": [{
+        "granuleId": "granuleId.A20200113.006.1005",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1005.hdf",
+                "fileName": "granuleId.B31311224.007.1005.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1005.jpg",
+                "fileName": "granuleId.B31311224.007.1005.jpg"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+        }, 
+        {
+        "granuleId": "granuleId.A20200113.006.1006",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.hdf",
+                "fileName": "granuleId.B31311224.007.1006.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.jpg",
+                "fileName": "granuleId.B31311224.007.1006.jpg"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1006.txt",
+                "fileName": "granuleId.B31311224.007.1006.txt"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+        },...,
+        {
+        "granuleId": "granuleId.A20200113.006.1100",
+        "collectionId: "collectionId.B31311224.007",
+        "files": [
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1100.hdf",
+                "fileName": "granuleId.B31311224.007.1100.hdf"
+            },
+            {
+                "bucket": "stack-protected",
+                "key": "granuleId.B31311224.007.1100.jpg",
+                "fileName": "granuleId.B31311224.007.1100.jpg"
+            }
+        ],
+        "duration": 1000,
+        "status": "completed"
+    }],
+    dbConcurrency: 10,
+    dbMaxPool: 20,
+}'
+```
+
+#### Example response
+
+```json
+{ "message": "Successfully patched Granules" }
+```
