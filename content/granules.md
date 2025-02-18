@@ -1,7 +1,12 @@
 ## List granules
 
 List granules in the Cumulus system.
+
 If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
+
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value. The default value is `false`.
+
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. The default value is `true`.
 
 ```endpoint
 GET /granules
@@ -10,7 +15,7 @@ GET /granules
 #### Example request
 
 ```curl
-$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules?includeFullRecord=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -20,7 +25,7 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "granule",
+        "table": "granules",
         "limit": 1,
         "page": 1,
         "count": 8,
@@ -790,14 +795,12 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Update Granules CollectionId
 
-Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value that allows modification of concurrent Elasticsearch requests utilized by the endpoint. 
+Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules and a new collectionId to update them to.
 
-This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in both datastores.
+This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in postgres.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
 or 400 for datastore write or validation errors.
-
-**Note**: For elastic search enabled versions of Cumulus, if writes from this endpoint fail, there is a high risk that the postgres and elasticsearch datastores will be out of sync for some (but not all ) of the granuleIds requested for update. 
 
 If a write failure occurs, the endpoint is idempotent so the operation can be re-run and should correct the discrepancy.     
 
@@ -834,7 +837,6 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
         "status": "completed"
   }}],
     "collectionId": "collectionId.B31311224.007",
-    "esConcurrency": 10,
 }'
 ```
 

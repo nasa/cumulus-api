@@ -23,7 +23,7 @@ $ curl https://example.com/asyncOperations --header 'Authorization: Bearer Repla
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "asyncOperation",
+        "table": "async_operations",
         "limit": 1,
         "page": 1,
         "count": 8
