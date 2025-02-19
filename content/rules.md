@@ -19,7 +19,7 @@ $ curl https://example.com/rules --header 'Authorization: Bearer ReplaceWithTheT
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "rule",
+        "table": "rules",
         "limit": 1,
         "page": 1,
         "count": 7

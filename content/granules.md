@@ -1,8 +1,13 @@
 ## List granules
 
 List granules in the Cumulus system.
+
 If the query includes a value of `true` for `getRecoveryStatus`, `recoveryStatus` will be included in each granule's return value when applicable.
 
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated files and executions will be included in each granule's return value. The default value is `false`.
+
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count. The default value is `true`.
+
 ```endpoint
 GET /granules
 ```
@@ -10,7 +15,7 @@ GET /granules
 #### Example request
 
 ```curl
-$ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules?includeFullRecord=true --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
@@ -20,106 +25,10 @@ $ curl https://example.com/granules --header 'Authorization: Bearer ReplaceWithT
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "granule",
+        "table": "granules",
         "limit": 1,
         "page": 1,
         "count": 8,
-        "searchContext": "%5B%221577836800000%22%5D",
-    },
-    "results": [
-        {
-            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
-            "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
-            "collectionId": "MOD11A1___006",
-            "status": "completed",
-            "provider": "LP_TS2_DataPool",
-            "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
-            "files": [
-                {
-                    "bucket": "cumulus-devseed-protected",
-                    "checksum": 964704694,
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileSize": 1447347,
-                    "fileType": "data",
-                    "checksumType": "CKSUM",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
-                },
-                {
-                    "bucket": "cumulus-devseed-private",
-                    "checksum": 121318124,
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met",
-                    "fileSize": 22559,
-                    "fileType": "metadata",
-                    "checksumType": "CKSUM",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.hdf.met"
-                },
-                {
-                    "bucket": "cumulus-devseed-private",
-                    "checksum": 2188150664,
-                    "key": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf",
-                    "fileSize": 18118,
-                    "fileType": "data",
-                    "checksumType": "CKSUM",
-                    "fileName": "BROWSE.MOD11A1.A2017137.h20v17.006.2017138085755.hdf"
-                },
-                {
-                    "bucket": "cumulus-devseed-public",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg",
-                    "fileType": "browse",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_2.jpg"
-                },
-                {
-                    "bucket": "cumulus-devseed-protected",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml",
-                    "fileType": "metadata",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755.cmr.xml"
-                },
-                {
-                    "bucket": "cumulus-devseed-public",
-                    "key": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg",
-                    "fileType": "browse",
-                    "fileName": "MOD11A1.A2017137.h20v17.006.2017138085755_1.jpg"
-                }
-            ],
-            "error": null,
-            "createdAt": 1513020455831,
-            "timestamp": 1513020462156,
-            "published": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS",
-            "duration": 6.325,
-            "cmrLink": "https://cmr.uat.earthdata.nasa.gov/search/granules.json?concept_id=G1220753758-CUMULUS"
-        }
-    ]
-}
-```
-
-## List granules with searchContext
-
-List granules in the Cumulus system with searchContext from a previous query.
-Must include all of previous query's `sort`, `order`, or `sort_key` query string parameters.
-Must not include `from` and `to` query string parameters.
-
-```endpoint
-GET /granules
-```
-
-#### Example request
-
-```curl
-$ curl https://example.com/granules?searchContext=%5B%221577836800000%22%5D --header 'Authorization: Bearer ReplaceWithTheToken'
-```
-
-#### Example response
-
-```json
-{
-    "meta": {
-        "name": "cumulus-api",
-        "stack": "lpdaac-cumulus",
-        "table": "granule",
-        "limit": 1,
-        "page": 1,
-        "count": 8,
-        "searchContext": "%5B%221606780899999%22%5D",
     },
     "results": [
         {
@@ -886,14 +795,12 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Update Granules CollectionId
 
-Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules, a new collectionId to update them to, and an optional `esConcurrency` value that allows modification of concurrent Elasticsearch requests utilized by the endpoint. 
+Updates a batch of existing granules' linked collection (`collectionId`) in postgres and ES. Expects payload to contain a list of granules and a new collectionId to update them to.
 
-This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in both datastores.
+This endpoint will fail if non-existant granuleIds are provided, it can only be used to change existing granules' collectionId in postgres.
 
 Returns status 200 on successful update, 404 if the `granuleId` can not be found in the database, 
 or 400 for datastore write or validation errors.
-
-**Note**: For elastic search enabled versions of Cumulus, if writes from this endpoint fail, there is a high risk that the postgres and elasticsearch datastores will be out of sync for some (but not all ) of the granuleIds requested for update. 
 
 If a write failure occurs, the endpoint is idempotent so the operation can be re-run and should correct the discrepancy.     
 
@@ -930,7 +837,6 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
         "status": "completed"
   }}],
     "collectionId": "collectionId.B31311224.007",
-    "esConcurrency": 10,
 }'
 ```
 

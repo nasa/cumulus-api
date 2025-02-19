@@ -12,14 +12,13 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 
 | query string parameter | description |
 | -----  | ----------- |
-| `limit={number}` | number of records to be returned by the API call; default is `1`, maximum is `100` |
+| `limit={number}` | Number of records to be returned by the API call; default is `10`, maximum is `100`. A value of `0` will return all records. |
 | `page={number}` | page number, 1-indexed; default is `1` |
-| `searchContext={value}` | searchContext value returned by a previous query, must be included on subsequent queries to maintain the context. Allows listing past 10,000 results. Incompatible with the `from` and `to` parameters which will both override searchContext behavior and make the query subject to the 10,000 result cap again. |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
 | `order={asc|desc}` | whether to sort in `asc` or `desc` order |
 | `sort_key[]={-fieldName1}&sort_key[]={fieldName2}` | One or more sort keys can be specified using the sort_key[] parameter. The order used impacts searching. Fields can be prepended with a `-` to sort in descending order or a `+` to sort in ascending. Ascending order is the default. The + must be escaped with %2B|
-| `prefix={value}` | `startsWith` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
-| `infix={value}` | `includes` search of the `granuleId`, `status`, `pdrName`, `name`, `error`, `id` and `msg` fields |
+| `prefix={value}` | `startsWith` search of the Providers by `name`, Collections by `name`, Granules by `granuleId`, PDRs by `pdrName`, Rules by `name`, Executions by `arn`, Async Operations by `id`, Reconciliation Reports by `name` |
+| `infix={value}` | `includes` search of the Providers by `name`, Collections by `name`, Granules by `granuleId`, PDRs by `pdrName`, Rules by `name`, Executions by `arn`, Async Operations by `id`, Reconciliation Reports by `name` |
 | `fields={fieldName1, fieldName2}` | which fields to return, separated by a comma |
 | `{fieldName}={value}` | exact value match for the given field |
 | `{fieldName}__from={number}`  | for numeric fields, field value must be greater than the given number |
