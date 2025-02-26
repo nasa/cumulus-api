@@ -942,3 +942,56 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
 ```json
 { "message": "Successfully patched Granules" }
 ```
+
+## Bulk Change Collection
+
+### Please note: this endpoint is currently only supported in the 18.4.x series in release 18.4.4
+
+### `POST` /granules/bulkChangeCollection
+
+Update a batch of granules, 'moving' them from one collection to another via a triggered workflow.  
+
+Currently the feature supported by this endpoint will:
+
+- Copy granule `files` to new locations based upon the target collection configuration
+- Update the Cumulus datastore with the new collection/file locations
+- If present, update the associated CMR metadata files, and update CMR `OnlineResource` locations to the new distribution location.
+- Once all operations complete, remove the S3 object at the 'old' location.
+
+Please note: **This endpoint currently cannot be run concurrently against the same collection.**   Multiple runs against the same collection will result in overlapping result sets that will result in a workflow failure.
+
+Endpoint arguments;
+
+| Field | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `sourceCollectionId` | `string` | `yes` | -- | Collection ID to move granules from (e.g. `MOD10A1___002`) |
+| `targetCollectionId` | `string` | `yes` | -- | Collection ID to move granules to.  Must be configured with appropriate file move targets. (e.g. `MOD10A2___002`) |
+| `batchSize` | `number`| `no` | 100 | The number of granules to process in this workflow |
+| `concurrency` | `number` | `no` | 100 | The number of concurrent operations to allow S3/PG move operations to process |
+| `invalidBehavior` | `enum` `['error', 'skip', ]` | `no` | `error` | Defines behavior when `ChangeGranuleCollectionS3` encounters an invalid granule.  Skip ignores the error, error causes the task to fail |
+| `s3MultipartChunkSizeMb` | `number` | `no` | cumulus terraform module default (`256`) | S3 multipart upload chunk size in MB, used in `ChangeGranuleCollectionS3` |
+| `executionName` | `string` | `no` | Random uuid() | Workflow identifier in AWS for feature execution.  Defaults to a random UUID, but can be specified for process management reasons.  **Must be unique**. |
+| `dbMaxPool` | `number` | `no` | 100 | Maximum number of database connections available to downstream PostgreSQL lambdas/API calls. |
+
+#### Example Request
+
+```bash
+ curl --request POST https://example.com/granules/bulkChangeCollection \
+  --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --header 'Cumulus-API-Version: 2' \
+  --data '{
+    "sourceCollectionId": "MOD09GQ_test-jk-tf4-IngestGranuleSuccess-1739573355119___006",
+    "targetCollectionId": "MOD09GQ_test-jk-tf4-IngestGranuleSuccess-1739573355119___006",
+    "dbMaxPool": 20
+ }'
+ ```
+
+#### Example Response
+
+```json
+{
+    "execution": "arn:aws:states:us-east-1:abcd12345:execution:jk-tf4-MoveGranuleCollectionsWorkflow:567236c0-844d-454c-ac6c-7ee1e84f869a",
+    "message": "Successfully submitted bulk granule move collection with 1 granules"
+}
+```
