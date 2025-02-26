@@ -947,7 +947,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
 
 ### `POST` /granules/bulkChangeCollection
 
-Update a set batch of granules, 'moving' them from one collection to another via a triggered workflow.  
+Update a batch of granules, 'moving' them from one collection to another via a triggered workflow.  
 
 Currently the feature supported by this endpoint will:
 
