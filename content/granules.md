@@ -945,7 +945,9 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
 
 ## Bulk Change Collection
 
-Please note: **This endpoint currently cannot be run concurrently against the same collection.**  
+Please note: This endpoint is currently only supported in the 18.4.x series in release 18.4.4
+
+**This endpoint currently cannot be run concurrently against the same collection.**  
 Multiple runs against the same collection will result in overlapping result sets that will result in a workflow failure.
 
 Update a batch of granules, 'moving' them from one collection to another via a triggered workflow.  
