@@ -945,11 +945,12 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
 
 ## Bulk Change Collection
 
-### Please note: this endpoint is currently only supported in the 18.4.x series in release 18.4.4
-
-### `POST` /granules/bulkChangeCollection
+**This endpoint is currently only supported in the 18.4.x series in release 18.4.4**
 
 Update a batch of granules, 'moving' them from one collection to another via a triggered workflow.  
+
+**Please Note: This endpoint currently cannot be run concurrently against the same collection.**  
+Multiple runs against the same collection will result in overlapping result sets that will result in a workflow failure.
 
 Currently the feature supported by this endpoint will:
 
@@ -957,8 +958,6 @@ Currently the feature supported by this endpoint will:
 - Update the Cumulus datastore with the new collection/file locations
 - If present, update the associated CMR metadata files, and update CMR `OnlineResource` locations to the new distribution location.
 - Once all operations complete, remove the S3 object at the 'old' location.
-
-Please note: **This endpoint currently cannot be run concurrently against the same collection.**   Multiple runs against the same collection will result in overlapping result sets that will result in a workflow failure.
 
 Endpoint arguments;
 
@@ -973,9 +972,13 @@ Endpoint arguments;
 | `executionName` | `string` | `no` | Random uuid() | Workflow identifier in AWS for feature execution.  Defaults to a random UUID, but can be specified for process management reasons.  **Must be unique**. |
 | `dbMaxPool` | `number` | `no` | 100 | Maximum number of database connections available to downstream PostgreSQL lambdas/API calls. |
 
-#### Example Request
+```endpoint
+POST /granules/bulkChangeCollection
+```
 
-```bash
+#### Example request
+
+```curl
  curl --request POST https://example.com/granules/bulkChangeCollection \
   --header 'Authorization: Bearer ReplaceWithTheToken' \
   --header 'Content-Type: application/json' \
@@ -987,7 +990,7 @@ Endpoint arguments;
  }'
  ```
 
-#### Example Response
+#### Example response
 
 ```json
 {
