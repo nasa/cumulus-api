@@ -12,7 +12,7 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 
 | query string parameter | description |
 | -----  | ----------- |
-| `limit={number}` | Number of records to be returned by the API call; default is `10`, maximum is `100`. A value of `0` will return all records. |
+| `limit={number}` | Number of records to be returned by the API call; default is `10`. A value of `null` will return all records. |
 | `page={number}` | page number, 1-indexed; default is `1` |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
 | `order={asc|desc}` | whether to sort in `asc` or `desc` order |
