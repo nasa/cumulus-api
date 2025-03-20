@@ -1,5 +1,5 @@
 {
-  "name": "cumulus-api",
+  "name": "@cumulus/cumulus-api",
   "version": "0.1.0",
   "description": "Cumulus API Docs",
   "main": "handler.js",
