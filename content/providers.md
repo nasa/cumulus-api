@@ -19,7 +19,7 @@ $ curl https://example.com/providers --header 'Authorization: Bearer ReplaceWith
     "meta": {
         "name": "cumulus-api",
         "stack": "daac-cumulus",
-        "table": "provider",
+        "table": "providers",
         "limit": 1,
         "page": 1,
         "count": 2

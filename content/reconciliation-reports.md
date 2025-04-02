@@ -19,7 +19,7 @@ $ curl https://example.com/reconciliationReports --header 'Authorization: Bearer
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "reconciliationReport",
+        "table": "reconciliation_reports",
         "limit": 2,
         "page": 1,
         "count": 7
