@@ -19,7 +19,7 @@ $ curl https://example.com/pdrs --header 'Authorization: Bearer ReplaceWithTheTo
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "pdr",
+        "table": "pdrs",
         "limit": 1,
         "page": 1,
         "count": 8

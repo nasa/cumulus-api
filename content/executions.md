@@ -1,6 +1,10 @@
 ## List executions
 List executions.
 
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in each executions's return value. The default value is `false`.
+
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count.  The default value is `true`.
+
 ```endpoint
 GET /executions
 ```
@@ -18,7 +22,7 @@ $ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer Re
   "meta": {
     "name": "cumulus-api",
     "stack": "test-src-integration",
-    "table": "execution",
+    "table": "executions",
     "limit": 3,
     "page": 1,
     "count": 447
