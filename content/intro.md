@@ -12,7 +12,7 @@ The following table lists the [query string](https://en.wikipedia.org/wiki/Query
 
 | query string parameter | description |
 | -----  | ----------- |
-| `countOnly={boolean}` | For search/list endpoints ONLY, return only count/meta information but an empty array of results.   Used for cases where returning results is undesirable for performance reasons |
+| `countOnly={boolean}` | For search/list endpoints ONLY, if set to `true`, return only count/meta information but an empty array of results.   Used for cases where returning results is undesirable for performance reasons.  Defaults to `false` |
 | `limit={number}` | Number of records to be returned by the API call; default is `10`. A value of `null` will return all records. |
 | `page={number}` | page number, 1-indexed; default is `1` |
 | `sort_by={fieldName}` | which field to sort by; default is `timestamp` |
