@@ -36,6 +36,7 @@ $ curl https://example.com/granules?includeFullRecord=true --header 'Authorizati
             "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
             "collectionId": "MOD11A1___006",
             "status": "completed",
+            "producerGranuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
             "provider": "LP_TS2_DataPool",
             "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
             "files": [
@@ -122,6 +123,7 @@ $ curl https://example.com/granules/MOD11A1.A2017137.h20v17.006.2017138085755 --
     "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
     "collectionId": "MOD11A1___006",
     "status": "completed",
+    "producerGranuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
     "provider": "LP_TS2_DataPool",
     "execution": "https://console.aws.amazon.com/states/home?region=us-east-1#/executions/details/arn:aws:states:us-east-1:123456789012:execution:LpdaacCumulusIngestGranuleStateMachine-N3CLGBXRPAT9:7f071dae1a93c9892272b7fd5",
     "files": [
@@ -198,6 +200,7 @@ Create a granule. A `granule` can have the following fields.
 | `granuleId` | `string`| `yes` | Granule ID |
 | `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database |
 | `pdrName` | `string`| `no` | PDR associated with the granule |
+| `producerGranuleId` | `string`| `yes` | Producer Granule ID |
 | `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time |
 | `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time |
 | `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes |
@@ -241,6 +244,7 @@ $ curl --request POST https://example.com/granules \
   "pdrName": "aPdrName",
   "processingEndDateTime": "2020-10-13T23:59:59.999Z",
   "processingStartDateTime": "2020-10-13T00:00:00.000Z",
+  "producerGranuleId": "granuleId.A20200113.006.1005",
   "productVolume": 59632353,
   "productionDateTime": "2020-10-14T15:40:05.546Z",
   "provider": "s3-local",
@@ -287,6 +291,7 @@ $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId
   --header 'Authorization: Bearer ReplaceWithToken' \
   --header 'Content-Type: application/json' \
   --header 'Cumulus-API-Version: 2'\  --data '{
+  "createdAt": 1631547286190,
   "granuleId": "granuleId.A20200113.006.1005",
   "files": [
     {
@@ -301,7 +306,9 @@ $ curl --request PUT https://example.com/granules/COLLECTION___VERSION/granuleId
     }
   ],
   "duration": 1000,
-  "status": "completed"
+  "producerGranuleId": "granuleId.A20200113.006.1005",
+  "status": "completed",
+  "updatedAt":1631547675248
   }'
 ```
 
@@ -355,6 +362,7 @@ $ curl --request PATCH https://example.com/granules/granuleId.A19990103.006.1000
     }
   ],
   "duration": 1000,
+  "producerGranuleId": "granuleId.A20200113.006.1005",
   "status": "completed"
   }'
 ```
@@ -821,12 +829,14 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
         "collectionId: "collectionId.A20200113.006",
         "files": [...],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1005",
         "status": "completed"
   }, {
         "granuleId": "granuleId.A20200113.006.1006",
         "collectionId: "collectionId.A20200113.006",
         "files": [...],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1006",
         "status": "completed"
   },...,
     {
@@ -834,6 +844,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatchGranuleCollection \
         "collectionId: "collectionId.A20200113.006",
         "files": [...],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1100",
         "status": "completed"
   }}],
     "collectionId": "collectionId.B31311224.007",
@@ -889,6 +900,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
             }
         ],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1005",
         "status": "completed"
         }, 
         {
@@ -912,6 +924,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
             }
         ],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1006",
         "status": "completed"
         },...,
         {
@@ -930,6 +943,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
             }
         ],
         "duration": 1000,
+        "producerGranuleId": "granuleId.A20200113.006.1100",
         "status": "completed"
     }],
     dbConcurrency: 10,
