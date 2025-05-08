@@ -200,7 +200,7 @@ Create a granule. A `granule` can have the following fields.
 | `granuleId` | `string`| `yes` | Granule ID |
 | `lastUpdateDateTime` | `string`| `no` | The date/time that data provider last updated the granule info on data provider's database |
 | `pdrName` | `string`| `no` | PDR associated with the granule |
-| `producerGranuleId` | `string`| `yes` | Producer Granule ID |
+| `producerGranuleId` | `string`| `yes` | Producer Granule ID from the data provider. Can be used to associate granules in the Cumulus system with granules supplied by the data provider |
 | `processingEndDateTime` | `string`| `no` | Time processing of granule ends. Usually a StepFunction's stop time |
 | `processingStartDateTime` | `string`| `no` | Time processing of granule began. Usually a StepFunction's start time |
 | `productVolume` | `number`| `no` | Sum of the granule's file's sizes in bytes |
