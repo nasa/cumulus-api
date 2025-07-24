@@ -1012,3 +1012,28 @@ POST /granules/bulkChangeCollection
     "message": "Successfully submitted bulk granule move collection with 1 granules"
 }
 ```
+
+## Retrieve Granule ID and Collection by File Location
+
+Retrieve granule ID and collection ID for a granule file by S3 bucket and key.
+
+```endpoint
+GET /granules/files/get_collection_and_granule_id/{bucket}/{key}
+```
+
+#### Example request
+
+```curl
+$ curl https://example.com/granules/files/get_collection_and_granule_id/my-bucket/path/to/my-file.hdf --header 'Authorization: Bearer ReplaceWithTheToken'
+```
+
+#### Example response
+
+```json
+{
+  "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
+  "collectionId": "MOD11A1___006"
+}
+```
+
+If no record is found for the file, a 404 response will be returned.
