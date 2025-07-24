@@ -999,18 +999,18 @@ POST /granules/bulkChangeCollection
 }
 ```
 
-## Retrieve Granule by File Location
+## Retrieve Granule ID and Collection by File Location
 
 Retrieve granule ID and collection ID for a granule file by S3 bucket and key.
 
 ```endpoint
-GET /granules/file/{bucket}/{key}
+GET /granules/files/get_collection_and_granule_id/{bucket}/{key}
 ```
 
 #### Example request
 
 ```curl
-$ curl https://example.com/granules/file/my-bucket/path/to/my-file.hdf --header 'Authorization: Bearer ReplaceWithTheToken'
+$ curl https://example.com/granules/files/get_collection_and_granule_id/my-bucket/path/to/my-file.hdf --header 'Authorization: Bearer ReplaceWithTheToken'
 ```
 
 #### Example response
