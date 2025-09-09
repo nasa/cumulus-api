@@ -959,7 +959,7 @@ $ curl --request PATCH https://example.com/granules/bulkPatch \
 
 ## Bulk Change Collection
 
-**This endpoint is currently only supported in the 18.4.x series in release 18.4.4**
+**This endpoint is supported in version 18.5.3, 20.1.2 and after**
 
 Update a batch of granules, 'moving' them from one collection to another via a triggered workflow.  
 
@@ -1008,7 +1008,7 @@ POST /granules/bulkChangeCollection
 
 ```json
 {
-    "execution": "arn:aws:states:us-east-1:abcd12345:execution:jk-tf4-MoveGranuleCollectionsWorkflow:567236c0-844d-454c-ac6c-7ee1e84f869a",
+    "execution": "arn:aws:states:us-east-1:abcd12345:execution:jk-tf4-ChangeGranuleCollectionsWorkflow:567236c0-844d-454c-ac6c-7ee1e84f869a",
     "message": "Successfully submitted bulk granule move collection with 1 granules"
 }
 ```
