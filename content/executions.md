@@ -1,6 +1,10 @@
 ## List executions
 List executions.
 
+If the query string parameters include a value of `true` for `includeFullRecord`, any associated async operations and parent execution will be included in each executions's return value. The default value is `false`.
+
+For requests without filters, if the query string parameters include a value of `false` for `estimateTableRowCount`, the returned `count` will be the actual exact count, otherwise `count` will be an estimated count.  The default value is `true`.
+
 ```endpoint
 GET /executions
 ```
@@ -18,7 +22,7 @@ $ curl https://example.com/executions?limit=3 --header 'Authorization: Bearer Re
   "meta": {
     "name": "cumulus-api",
     "stack": "test-src-integration",
-    "table": "execution",
+    "table": "executions",
     "limit": 3,
     "page": 1,
     "count": 447
@@ -569,5 +573,37 @@ $ curl --request DELETE https://example.com/executions/arn:aws:states:us-east-1:
 ```json
 {
   "message": "Record deleted"
+}
+```
+
+## Bulk Delete Executions by `collectionId`
+
+This request, when given an existing `collectionId` will trigger a bulk action that will take the following actions:
+
+* Remove all records from the postgreSQL database matching the `collectionId` (in a single query with a limit specified by `dbBatchSize` in the payload)
+  * Records will be removed in the order postgreSQL returns them.  Where deletion would cause a violation with a record's `parent_cumulus_id` field constraints, the child record will have that field set to null.
+* Failure on any deletion will result in operation failure - if that occurs, the issue will need to be corrected and this operation can be re-run.
+* This operation runs asynchronously, and will return an asynchronous operation ID
+
+```endpoint
+POST /executions/bulk-delete-by-collection
+```
+
+#### Example request
+
+```
+$ curl --request POST \
+    https://example.com/executions/bulk-delete-by-collection --header 'Authorization: Bearer ReplaceWithTheToken' \
+  --header 'Content-Type: application/json' \
+  --data '{
+        "collectionId": "COLLECTION_NAME___COLLECTION_VERSION",
+        "dbBatchSize": 50000
+    }'
+```
+#### Example response
+
+```json
+{
+    "id": "12345678-2222-3333-4444-1234567890ab"                        
 }
 ```

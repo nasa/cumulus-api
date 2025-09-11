@@ -23,7 +23,7 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "collection",
+        "table": "collections",
         "limit": 1,
         "page": 1,
         "count": 3
@@ -34,7 +34,6 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
             "version": "006",
             "dataType": "MOD11A1",
             "process": "modis",
-            "provider_path": "/",
             "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
@@ -108,7 +107,7 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
     "meta": {
         "name": "cumulus-api",
         "stack": "lpdaac-cumulus",
-        "table": "collection",
+        "table": "collections",
         "limit": 1,
         "page": 1,
         "count": 3
@@ -119,7 +118,6 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
             "version": "006",
             "dataType": "MOD11A1",
             "process": "modis",
-            "provider_path": "/",
             "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
@@ -199,7 +197,6 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "edpa": true,
     "name": "MOD11A1",
     "duplicateHandling": "skip",
-    "provider_path": "/",
     "files": [
         {
             "bucket": "protected",
@@ -251,7 +248,6 @@ Overview of the schema fields:
 | `dataType` | `string` | matches collection with PDR datatype |
 | `duplicateHandling` | `"replace"`&vert;`"version"`&vert;`"skip"`&vert;`"error"` | duplicate handling protocol |
 | `process` | `string` | process choice step variable |
-| `provider_path` | `string` | path of remote files to sync |
 | `granuleId` | `string (regex)` | regex to match granule IDs |
 | `granuleIdExtraction` | `string (regex)` | regex to extract ID from files |
 | `sampleFileName` | `string` | sample filename for granule ID |
@@ -276,7 +272,6 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
   "dataType": "MOD09GQ",
   "process": "modis",
   "duplicateHandling": "replace",
-  "provider_path": "cumulus-test-data/pdrs",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
   "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
@@ -303,7 +298,6 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
         "dataType": "MOD09GQ",
         "duplicateHandling": "replace",
         "process": "modis",
-        "provider_path": "cumulus-test-data/pdrs",
         "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
         "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
         "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
@@ -346,7 +340,6 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "duplicateHandling": "error",
   "newNeededField": "myCustomFieldValue",
   "process": "modis",
-  "provider_path": "new_path/test-data",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
   "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
@@ -372,7 +365,6 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "duplicateHandling": "error",
   "newNeededField": "myCustomFieldValue",
   "process": "modis",
-  "provider_path": "new_path/test-data",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
   "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
