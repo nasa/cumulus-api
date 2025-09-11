@@ -32,7 +32,7 @@ $ curl https://example.com/granules?includeFullRecord=true --header 'Authorizati
     },
     "results": [
         {
-            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755",
+            "granuleId": "MOD11A1.A2017137.h20v17.006.2017138085755_e798fe37",
             "pdrName": "7970bff5-128a-489f-b43c-de4ad7834ce5.PDR",
             "collectionId": "MOD11A1___006",
             "status": "completed",
