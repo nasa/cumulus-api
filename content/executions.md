@@ -607,3 +607,19 @@ $ curl --request POST \
     "id": "12345678-2222-3333-4444-1234567890ab"                        
 }
 ```
+
+## Bulk Archive
+
+Archive a group of executions, older than "expirationDays" old, in batches of "batchSize" up to a number equal to "updateLimit"
+
+Overview of the request fields:
+
+| Field | Required | Value | Description |
+| --- | --- | --- | --- |
+| `updateLimit` | `no` | `number` | how many executions to update (maximum) |
+| `batchSize` | `no` | `number` | number of executions to update per postgres call |
+| `expirationDays` | `no` | `number` | age in days after which an execution is archived |
+
+```endpoint
+POST /executions/bulkArchive
+```

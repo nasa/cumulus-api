@@ -998,3 +998,19 @@ POST /granules/bulkChangeCollection
     "message": "Successfully submitted bulk granule move collection with 1 granules"
 }
 ```
+
+## Bulk Archive
+
+Archive a group of granules, older than "expirationDays" old, in batches of "batchSize" up to a number equal to "updateLimit"
+
+Overview of the request fields:
+
+| Field | Required | Value | Description |
+| --- | --- | --- | --- |
+| `updateLimit` | `no` | `number` | how many granules to update (maximum) |
+| `batchSize` | `no` | `number` | number of granules to update per postgres call |
+| `expirationDays` | `no` | `number` | age in days after which a granule is archived |
+
+```endpoint
+POST /granules/bulkArchive
+```
