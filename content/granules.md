@@ -573,6 +573,7 @@ Apply a workflow to the granules provided. Granules can be specified either as a
 an S3 URI of a file containing granule IDs, or as an Elasticsearch query and index to the Metrics Elasticsearch.
 
 Overview of the request fields:
+
 Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
@@ -583,8 +584,9 @@ Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleId
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
-| `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
+| `meta` | `No` | `Object` | Contents to add to the `meta` field of the workflow input |
+| `knexDebug` |  `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `queueUrl` | `No` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
 
 ```endpoint
 POST /granules/bulk
@@ -665,6 +667,8 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 Bulk delete the provided granules. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
 
 Overview of the request fields:
+
+Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
@@ -757,6 +761,8 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 Reingest the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
 
 Overview of the request fields:
+
+Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
