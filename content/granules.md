@@ -579,7 +579,7 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `workflow` | `Yes` | `string` | Workflow to be applied to all granules |
+| `workflowName` | `Yes` | `string` | Workflow to be applied to all granules |
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
