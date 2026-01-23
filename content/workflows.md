@@ -2,6 +2,8 @@
 
 List workflows in the Cumulus system.
 
+Only the following query string parameters are supported: `countOnly`, `prefix`, `infix`, `fields`, `limit`, and `order`.
+
 ```endpoint
 GET /workflows
 ```
