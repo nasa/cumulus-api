@@ -680,10 +680,10 @@ Overview of the request fields:
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
-| `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
-| `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
-| `maxDbConnections` | `N` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
+| `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
+| `forceRemoveFromCmr` | `No` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
+| `knexDebug` |  `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `maxDbConnections` | `No` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
 
 ```endpoint
 POST /granules/bulkDelete
@@ -776,8 +776,8 @@ Overview of the request fields:
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
-| `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
+| `knexDebug` |  `No` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
+| `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 
 An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
 by finding the most recent execution of the workflowName associated with the granuleId.
