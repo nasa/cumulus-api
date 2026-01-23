@@ -569,19 +569,22 @@ $ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 -
 
 ## Bulk Operations
 
-Apply a workflow to the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+Apply a workflow to the granules provided. Granules can be specified either as a list of IDs, a granule inventory report name,
+an S3 URI of a file containing granule IDs, or as an Elasticsearch query and index to the Metrics Elasticsearch.
 
 Overview of the request fields:
+Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `workflow` | `Y` | `string` | Workflow to be applied to all granules |
-| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
-| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. Required if no Granules are given. |
-| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
+| `workflow` | `Yes` | `string` | Workflow to be applied to all granules |
+| `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
+| `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
+| `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
 | `queueUrl` | `N` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
-
 
 ```endpoint
 POST /granules/bulk
@@ -630,7 +633,21 @@ $ curl --request POST \
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "workflowName": "HelloWorldWorkflow"}'
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granules": ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"], "workflowName": "HelloWorldWorkflow"}'
+```
+
+#### Example request using a granule inventory report:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"granuleInventoryReportName": "granuleList-20260109T115706687", "workflowName": "HelloWorldWorkflow"}'
+```
+
+#### Example request using an S3 file containing granule IDs:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulk --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{"s3GranuleIdInputFile": "s3://my-bucket/path/to/granule-ids.txt", "workflowName": "HelloWorldWorkflow"}'
 ```
 
 #### Example response
@@ -651,9 +668,11 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
-| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `granules` not present | `Object` | Query to Elasticsearch to determine which Granules to delete. Required if no Granules are given |
+| `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
+| `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
+| `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `concurrency` | `N` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `forceRemoveFromCmr` | `N` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
 | `knexDebug` |  `N` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
@@ -706,7 +725,21 @@ $ curl --request POST \
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ], "forceRemoveFromCmr": true}'
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [ { ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"], "forceRemoveFromCmr": true}'
+```
+
+#### Example request using a granule inventory report:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granuleInventoryReportName": "granuleList-20260109T115706687", "forceRemoveFromCmr": true}'
+```
+
+#### Example request using an S3 file containing granule IDs:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"s3GranuleIdInputFile": "s3://my-bucket/path/to/granule-ids.txt", "forceRemoveFromCmr": true}'
 ```
 
 #### Example response
@@ -727,9 +760,11 @@ Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
-| `granules` | `yes` - if `query` not present | `Array<object>` | List of Granules to process e.g. { granuleId, collectionId }. Required if there is no Elasticsearch query provided |
-| `index` | `yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `query` | `yes` - if `ids` not present | `Object` | Query to Elasticsearch to determine which Granules to be reingested. Required if no Granules are given. |
+| `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
+| `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
+| `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `knexDebug` |  `N` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
 | `workflowName` | `no` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 
@@ -786,8 +821,30 @@ curl -X POST
   https://example.com/granules/bulkReingest
   --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
   --data '{
-        "granules": [ { "granuleId": "MOD09GQ.A2016358.h13v04.006.2016360104606", "collectionId": "MOD11A1___006" } ],
-        "workflow": "workflowName",
+        "granules": [ { ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"],
+        "workflow": "workflowName"
+        }'
+```
+
+#### Example request using a granule inventory report:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulkReingest
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+  --data '{
+        "granuleInventoryReportName": "granuleList-20260109T115706687"
+        }'
+```
+
+#### Example request using an S3 file containing granule IDs:
+
+```curl
+curl -X POST
+  https://example.com/granules/bulkReingest
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+  --data '{
+        "s3GranuleIdInputFile": "s3://my-bucket/path/to/granule-ids.txt"
         }'
 ```
 
