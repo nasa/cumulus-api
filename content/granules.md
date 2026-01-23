@@ -572,9 +572,10 @@ $ curl --request DELETE https://example.com/granules/1A0000-2016121001_002_001 -
 Apply a workflow to the granules provided. Granules can be specified either as a list of IDs, a granule inventory report name,
 an S3 URI of a file containing granule IDs, or as an Elasticsearch query and index to the Metrics Elasticsearch.
 
-Overview of the request fields:
+Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
+Granule Inventory reports can be created using the [Reconciliation Reports endpoint](#create-reconciliation-report).
 
-Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
+Overview of the request fields:
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
@@ -664,11 +665,13 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Delete
 
-Bulk delete the provided granules. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+Bulk delete the provided granules. Granules can be specified either as a list of IDs, a granule inventory report name,
+an S3 URI of a file containing granule IDs, or as an Elasticsearch query and index to the Metrics Elasticsearch.
+
+Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
+Granule Inventory reports can be created using the [Reconciliation Reports endpoint](#create-reconciliation-report).
 
 Overview of the request fields:
-
-Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
@@ -758,11 +761,13 @@ Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the 
 
 ## Bulk Reingest
 
-Reingest the granules provided. Granules can be sent as a list of IDs or as an Elasticsearch query to the Metrics' Elasticsearch.
+Reingest the granules provided. Granules can be specified either as a list of IDs, a granule inventory report name,
+an S3 URI of a file containing granule IDs, or as an Elasticsearch query and index to the Metrics Elasticsearch.
+
+Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
+Granule Inventory reports can be created using the [Reconciliation Reports endpoint](#create-reconciliation-report).
 
 Overview of the request fields:
-
-Note: Exactly one of granules, query, granuleInventoryReportName, or s3GranuleIdInputFile must be provided.
 
 | Field | Required | Value | Description |
 | --- | --- | --- | --- |
