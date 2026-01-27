@@ -582,7 +582,7 @@ Overview of the request fields:
 | `workflowName` | `Yes` | `string` | Workflow to be applied to all granules |
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
-| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `meta` | `No` | `Object` | Contents to add to the `meta` field of the workflow input |
@@ -678,7 +678,7 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
-| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
@@ -734,7 +734,7 @@ $ curl --request POST \
 
 ```curl
 curl -X POST
-  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": [ { ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"], "forceRemoveFromCmr": true}'
+  https://example.com/granules/bulkDelete --header 'Authorization: Bearer ReplaceWithTheToken' --data '{"granules": ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"], "forceRemoveFromCmr": true}'
 ```
 
 #### Example request using a granule inventory report:
@@ -775,7 +775,7 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
-| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs                   |
+| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
@@ -831,9 +831,8 @@ $ curl --request POST \
 #### Example request with given Granules and optional workflow parameter:
 
 ```curl
-curl -X POST
-  https://example.com/granules/bulkReingest
-  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+curl -X POST https://example.com/granules/bulkReingest \
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' \
   --data '{
         "granules": ["MOD09GQ.A2016358.h13v04.006.2016360104606", "MOD09GQ.A1657416.CbyoRi.006.9697917818587_e798fe37"],
         "workflowName": "workflowName"
@@ -843,9 +842,8 @@ curl -X POST
 #### Example request using a granule inventory report:
 
 ```curl
-curl -X POST
-  https://example.com/granules/bulkReingest
-  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+curl -X POST https://example.com/granules/bulkReingest \
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' \
   --data '{
         "granuleInventoryReportName": "granuleList-20260109T115706687"
         }'
@@ -854,9 +852,8 @@ curl -X POST
 #### Example request using an S3 file containing granule IDs:
 
 ```curl
-curl -X POST
-  https://example.com/granules/bulkReingest
-  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json'
+curl -X POST https://example.com/granules/bulkReingest \
+  --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' \
   --data '{
         "s3GranuleIdInputFile": "s3://my-bucket/path/to/granule-ids.txt"
         }'
