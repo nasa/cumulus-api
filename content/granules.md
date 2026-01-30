@@ -679,7 +679,7 @@ Overview of the request fields:
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
-| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to delete. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `forceRemoveFromCmr` | `No` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
@@ -776,7 +776,7 @@ Overview of the request fields:
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
-| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to reingest         |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 | `knexDebug` |  `No` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
