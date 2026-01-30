@@ -776,7 +776,7 @@ Overview of the request fields:
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
 | `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
-| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules should be reingested.         |
+| `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to reingest         |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
 | `knexDebug` |  `No` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
