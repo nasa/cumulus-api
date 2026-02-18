@@ -664,8 +664,8 @@ curl -X POST
 }
 ```
 
-The `concurrency` and `maxDbConnections` should be tuned based on the database configuration you are using.
-For effective utility of `concurrency`, when applicable it is best to not set it larger than `batchSize`.
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
 For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
@@ -765,8 +765,8 @@ curl -X POST
 }
 ```
 
-The `concurrency` and `maxDbConnections` should be tuned based on the database configuration you are using.
-For effective utility of `concurrency`, when applicable it is best to not set it larger than `batchSize`.
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
 For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
@@ -879,8 +879,8 @@ curl -X POST https://example.com/granules/bulkReingest \
 }
 ```
 
-The `concurrency` and `maxDbConnections` should be tuned based on the database configuration you are using.
-For effective utility of `concurrency`, when applicable it is best to not set it larger than `batchSize`.
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
 For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
