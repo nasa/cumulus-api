@@ -581,14 +581,16 @@ Overview of the request fields:
 | --- | --- | --- | --- |
 | `workflowName` | `Yes` | `string` | Workflow to be applied to all granules |
 | `granules` | `Yes` - if no other source provided | `Array<string>` | List of Granule IDs |
-| `granuleInventoryReportName` | `Yes` - if no other source provided| `string`    | Name of a pre-generated granule inventory report to use   |
-| `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
+| `granuleInventoryReportName` | `Yes` - if no other source provided | `string` | Name of a pre-generated granule inventory report to use |
+| `s3GranuleIdInputFile` | `Yes` - if no other source provided | `string` | S3 URI of a file containing granule IDs, one per line |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to go through given workflow. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
 | `meta` | `No` | `Object` | Contents to add to the `meta` field of the workflow input |
 | `queueUrl` | `No` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
-| `knexDebug` |  `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
-| `batchSize` |  `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
+| `knexDebug` | `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
+| `maxDbConnections` | `No` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
+| `batchSize` | `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
 
 ```endpoint
 POST /granules/bulk
@@ -662,6 +664,10 @@ curl -X POST
 }
 ```
 
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
+For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
+
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
 ## Bulk Delete
@@ -681,11 +687,11 @@ Overview of the request fields:
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to delete. |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `forceRemoveFromCmr` | `No` | `bool` | Whether to remove published granules from CMR before deletion. **You must set this value to `true` to do bulk deletion of published granules, otherwise deleting them will fail.**
-| `knexDebug` |  `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `knexDebug` | `No` | `bool` | Sets knex PostgreSQL connection pool/query debug output.  Defaults to false |
+| `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
 | `maxDbConnections` | `No` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
-| `batchSize` |  `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
+| `batchSize` | `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
 
 ```endpoint
 POST /granules/bulkDelete
@@ -759,6 +765,10 @@ curl -X POST
 }
 ```
 
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
+For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
+
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
 ## Bulk Reingest
@@ -778,13 +788,15 @@ Overview of the request fields:
 | `s3GranuleIdInputFile`       | `Yes` - if no other source provided | `string`   | S3 URI of a file containing granule IDs, one per line     |
 | `query` | `Yes` - if no other source provided | `Object` | Query to Elasticsearch to determine which Granules to reingest         |
 | `index` | `Yes` - if `query` is present | `string` | Elasticsearch index to search with the given query |
-| `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below.  |
-| `knexDebug` |  `No` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
-| `batchSize` |  `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
+| `workflowName` | `No` | `string` | optional workflow name that allows different workflow and initial input to be used during reingest. See below. |
+| `queueUrl` | `No` | `string` | URL of SQS queue to use for scheduling granule workflows (e.g. `https://sqs.us-east-1.amazonaws.com/12345/queue-name`) |
+| `knexDebug` | `No` | `bool` | Sets knex postgreSQL connection pool/query debug output.  Defaults to false |
+| `concurrency` | `No` | `integer` | Sets the granule concurrency for the bulk deletion operation.  Defaults to `10` |
+| `maxDbConnections` | `No` | `integer` | Sets the maximum database connections to allocate for the operation.  Defaults to `concurrency` value |
+| `batchSize` | `No` | `number` | Defines the maximum number of granule IDs included in each yielded batch from the S3 file. Defaults to `100`. |
 
 An optional data parameter of `workflowName` is also available to allow you to override the input message to the reingest. If `workflowName` is specified, the original message is pulled directly
 by finding the most recent execution of the workflowName associated with the granuleId.
-
 
 ```endpoint
 POST /granules/bulkReingest
@@ -866,6 +878,10 @@ curl -X POST https://example.com/granules/bulkReingest \
     "id": "0eb8e809-8790-5409-1239-bcd9e8d28b8e"
 }
 ```
+
+The `concurrency` and `maxDbConnections` fields should be tuned based on the database configuration you are using.
+For effective utility of `concurrency`, when applicable, it is advisable to set it no larger than `batchSize`.
+For `concurrency` to best use the connections available, it should be set no greater than `maxDbConnections`.
 
 Use the [Retrieve async operation](#retrieve-async-operation) endpoint with the `id` in the response to determine the status of the async operation.
 
