@@ -38,7 +38,7 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
             "reportToEms": true,
             "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
-            "ignoreFilesConfigForDiscovery": "true",
+            "ignoreFilesConfigForDiscovery": true,
             "meta": {
                 "uniquifyGranuleId": true,
                 "hashLength": 6
@@ -128,7 +128,7 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
             "reportToEms": true,
             "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
-            "ignoreFilesConfigForDiscovery": "true",
+            "ignoreFilesConfigForDiscovery": true,
             "meta": {
                 "uniquifyGranuleId": true,
                 "hashLength": 6
@@ -210,7 +210,7 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
     "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
     "reportToEms": true,
-    "ignoreFilesConfigForDiscovery": "true",
+    "ignoreFilesConfigForDiscovery": true,
     "meta": {
         "uniquifyGranuleId": true,
         "hashLength": 6
@@ -256,12 +256,12 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
 
 ## Create collection
 
-Create a collection. For more information on creating collections and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections). A collection generally includes, but is not limited to, the fields listed below.
+Create a collection. A collection generally includes, but is not limited to, the fields listed below.
 
 Overview of the schema fields:
 
 | Field | Value | Description | Required |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | `name` | `string` | collection name | yes |
 | `version` | `string` | collection version | yes |
 | `duplicateHandling` | `"replace"`&vert;`"version"`&vert;`"skip"`&vert;`"error"` | duplicate handling protocol | no |
@@ -269,22 +269,22 @@ Overview of the schema fields:
 | `granuleId` | `string (regex)` | regex to match granule IDs | yes |
 | `cmrProvider` | `string` | data provider identifier | yes |
 | `metricsProvider` | `string` | metrics providers to filter metrics stacks | yes |
-| `reportToEms` | `string` | indicate if collection reported to EMS | no
+| `reportToEms` | `string` | indicate if collection reported to EMS | no |
 | `meta` | `string` | optional metadata for collection | no |
 | `tags` | `string` | optional tags for search | no |
-| `ignoreFilesConfigForDiscovery` | `string` | boolean to ignore collection file config list for determining which files to ingest | no |
+| `ignoreFilesConfigForDiscovery` | `string (boolean)` | Flag to ignore collection file config list for determining which files to ingest | no |
 | `granuleIdExtraction` | `string (regex)` | regex to extract ID from files | yes |
 | `sampleFileName` | `string` | sample filename for granule ID | yes |
 | `url_path` | `string` | s3 prefix template | no |
 | `files` | `array` | array of file specification objects | yes |
-| `-- file.bucket` | `string` | file destination bucket |
-| `-- file.regex` | `string (regex)` | regex to match file names |
-| `-- file.sampleFileName` | `string` | sample filename |
-| `-- file.url_path` | `string` | s3 prefix template |
-| `-- file.type` | `string` | granule file fileType mapping |
-| `-- file.checksumFor` | `string` | regex to identify the base file for which this file serves as checksum file.  Should be identical to regex property of base file| 
-| `-- file.lzards` | string | LZARDS backup flag |
-| `-- file.reportToEms` | string | boolean to indiciate if granule with this filetype is reported to EMS when collection level config is true |
+| `-- file.bucket` | `string` | file destination bucket | |
+| `-- file.regex` | `string (regex)` | regex to match file names | |
+| `-- file.sampleFileName` | `string` | sample filename | |
+| `-- file.url_path` | `string` | s3 prefix template | |
+| `-- file.type` | `string` | granule file fileType mapping | |
+| `-- file.checksumFor` | `string` | regex to identify the base file for which this file serves as checksum | | 
+| `-- file.lzards` | `string` | LZARDS backup flag | |
+| `-- file.reportToEms` | `string` | boolean to indiciate if granule with this filetype is reported to EMS | |
 
 ```endpoint
 POST /collections
@@ -304,7 +304,7 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
   "reportToEms": true,
   "ignoreFilesConfigForDiscovery": "true",
   "meta": {
-    "uniquifyGranuleId": true,
+    "uniquifyGranuleId": "true",
     "hashLength": 6
   },
   "tags": "[tag1,tag2]",
@@ -336,7 +336,7 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
         "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
         "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
         "reportToEms": true,
-        "ignoreFilesConfigForDiscovery": "true",
+        "ignoreFilesConfigForDiscovery": true,
         "meta": {
             "uniquifyGranuleId": true,
             "hashLength": 6
@@ -384,10 +384,10 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-  "reportToEms": true,
+  "reportToEms": "true",
   "ignoreFilesConfigForDiscovery": "true",
   "meta": {
-    "uniquifyGranuleId": true,
+    "uniquifyGranuleId": "true",
     "hashLength": 6
   },
   "tags": "[tag1,tag2]",
@@ -417,7 +417,7 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
   "reportToEms": true,
-  "ignoreFilesConfigForDiscovery": "true",
+  "ignoreFilesConfigForDiscovery": true,
   "meta": {
     "uniquifyGranuleId": true,
     "hashLength": 6
