@@ -37,11 +37,12 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
             "reportToEms": true,
-            "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+            "url_path": "modis/modis_v6/data/",
             "ignoreFilesConfigForDiscovery": true,
             "meta": {
                 "uniquifyGranuleId": true,
-                "hashLength": 6
+                "hashLength": 6,
+                "s3MultipartChunksizeMb":400
             },
             "tags": "tag1,tag2",
             "cmrProvider": "CUMULUS",
@@ -127,11 +128,12 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
             "reportToEms": true,
-            "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+            "url_path": "modis/modis_v6/data/",
             "ignoreFilesConfigForDiscovery": true,
             "meta": {
                 "uniquifyGranuleId": true,
-                "hashLength": 6
+                "hashLength": 6,
+                "s3MultipartChunksizeMb":400
             },
             "tags": "tag1,tag2",
             "cmrProvider": "CUMULUS",
@@ -205,7 +207,7 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "updatedAt": 1513020427162,
     "version": "006",
     "process": "modis",
-    "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+    "url_path": "modis/modis_v6/data/",
     "duplicateHandling": "skip",
     "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
     "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
@@ -213,7 +215,8 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
     "ignoreFilesConfigForDiscovery": true,
     "meta": {
         "uniquifyGranuleId": true,
-        "hashLength": 6
+        "hashLength": 6,
+        "s3MultipartChunksizeMb":400
     },
     "tags": "tag1,tag2",
     "cmrProvider": "CUMULUS",
@@ -297,7 +300,7 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
   "name": "MOD09GQ",
   "version": "006",
   "process": "modis",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "url_path": "modis/modis_v6/data/",
   "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
@@ -305,7 +308,8 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
   "ignoreFilesConfigForDiscovery": "true",
   "meta": {
     "uniquifyGranuleId": "true",
-    "hashLength": 6
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
   },
   "tags": "[tag1,tag2]",
   "cmrProvider": "CUMULUS",
@@ -331,7 +335,7 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
         "name": "MOD09GQ",
         "version": "006",
         "process": "modis",
-        "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+        "url_path": "modis/modis_v6/data/",
         "duplicateHandling": "replace",
         "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
         "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
@@ -339,7 +343,8 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
         "ignoreFilesConfigForDiscovery": true,
         "meta": {
             "uniquifyGranuleId": true,
-            "hashLength": 6
+            "hashLength": 6,
+            "s3MultipartChunksizeMb":400
         },
         "tags": "[tag1,tag2]",
         "cmrProvider": "CUMULUS",
@@ -380,7 +385,7 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "name": "MOD09GQ",
   "version": "006",
   "process": "modis",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "url_path": "modis/modis_v6/data/",
   "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
@@ -388,7 +393,8 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "ignoreFilesConfigForDiscovery": "true",
   "meta": {
     "uniquifyGranuleId": "true",
-    "hashLength": 6
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
   },
   "tags": "[tag1,tag2]",
   "cmrProvider": "a_different_provider",
@@ -412,7 +418,7 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "name": "MOD09GQ",
   "version": "006",
   "process": "modis",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "url_path": "modis/modis_v6/data/",
   "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
@@ -420,7 +426,8 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
   "ignoreFilesConfigForDiscovery": true,
   "meta": {
     "uniquifyGranuleId": true,
-    "hashLength": 6
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
   },
   "tags": "[tag1,tag2]",
   "cmrProvider": "a_different_provider",
