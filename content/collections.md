@@ -32,11 +32,24 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
         {
             "name": "MOD11A1",
             "version": "006",
-            "dataType": "MOD11A1",
             "process": "modis",
             "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "reportToEms": true,
+            "url_path": "modis/modis_v6/data/",
+            "ignoreFilesConfigForDiscovery": true,
+            "meta": {
+                "uniquifyGranuleId": true,
+                "hashLength": 6,
+                "s3MultipartChunksizeMb":400
+            },
+            "tags": "tag1,tag2",
+            "cmrProvider": "CUMULUS",
+            "metricsProvider": "provider",
+            "createdAt": 1510761441174,
+            "updatedAt": 1513020427162,
+            "duplicateHandling": "skip",
             "files": [
                 {
                     "bucket": "protected",
@@ -68,13 +81,7 @@ $ curl https://example.com/collections --header 'Authorization: Bearer ReplaceWi
                     "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$",
                     "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg"
                 }
-            ],
-            "timestamp": 1513020427284,
-            "createdAt": 1510761441174,
-            "updatedAt": 1513020427162,
-            "edpa": true,
-            "some_other_field": "field",
-            "duplicateHandling": "skip",
+            ]
         }
     ]
 }
@@ -116,11 +123,24 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
         {
             "name": "MOD11A1",
             "version": "006",
-            "dataType": "MOD11A1",
             "process": "modis",
             "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
             "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+            "reportToEms": true,
+            "url_path": "modis/modis_v6/data/",
+            "ignoreFilesConfigForDiscovery": true,
+            "meta": {
+                "uniquifyGranuleId": true,
+                "hashLength": 6,
+                "s3MultipartChunksizeMb":400
+            },
+            "tags": "tag1,tag2",
+            "cmrProvider": "CUMULUS",
+            "metricsProvider": "provider",
+            "createdAt": 1510761441174,
+            "updatedAt": 1513020427162,
+            "duplicateHandling": "skip",
             "files": [
                 {
                     "bucket": "protected",
@@ -153,12 +173,6 @@ $ curl https://example.com/collections/active?includeStats=true --header 'Author
                     "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg"
                 }
             ],
-            "timestamp": 1513020427284,
-            "createdAt": 1510761441174,
-            "updatedAt": 1513020427162,
-            "edpa": true,
-            "some_other_field": "field",
-            "duplicateHandling": "skip",
             "stats": {
                 "running": 0,
                 "completed": 6,
@@ -188,15 +202,26 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
 
 ```json
 {
-    "process": "modis",
-    "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
-    "version": "006",
-    "dataType": "MOD11A1",
-    "some_other_field": "field",
-    "createdAt": 1510761441174,
-    "edpa": true,
     "name": "MOD11A1",
+    "createdAt": 1510761441174,
+    "updatedAt": 1513020427162,
+    "version": "006",
+    "process": "modis",
+    "url_path": "modis/modis_v6/data/",
     "duplicateHandling": "skip",
+    "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
+    "granuleIdExtraction": "(MOD11A1\\..*)\\.hdf",
+    "reportToEms": true,
+    "ignoreFilesConfigForDiscovery": true,
+    "meta": {
+        "uniquifyGranuleId": true,
+        "hashLength": 6,
+        "s3MultipartChunksizeMb":400
+    },
+    "tags": "tag1,tag2",
+    "cmrProvider": "CUMULUS",
+    "metricsProvider": "provider",
+    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
     "files": [
         {
             "bucket": "protected",
@@ -228,36 +253,41 @@ $ curl https://example.com/collections/MOD11A1/006 --header 'Authorization: Bear
             "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104_1.jpg",
             "regex": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}_1\\.jpg$"
         }
-    ],
-    "updatedAt": 1513020427162,
-    "granuleId": "^MOD11A1\\.A[\\d]{7}\\.[\\S]{6}\\.006.[\\d]{13}$",
-    "sampleFileName": "MOD11A1.A2017025.h21v00.006.2017034065104.hdf",
+    ]
 }
 ```
 
 ## Create collection
 
-Create a collection. For more information on creating collections and the contents of a request see [the Cumulus setup documentation](https://nasa.github.io/cumulus/docs/data-cookbooks/setup#collections). A collection generally includes, but is not limited to, the fields listed below.
+Create a collection. A collection generally includes, but is not limited to, the fields listed below.
 
 Overview of the schema fields:
 
-| Field | Value | Description |
-| --- | --- | --- |
-| `name` | `string` | collection name |
-| `version` | `string` | collection version |
-| `dataType` | `string` | matches collection with PDR datatype |
-| `duplicateHandling` | `"replace"`&vert;`"version"`&vert;`"skip"`&vert;`"error"` | duplicate handling protocol |
-| `process` | `string` | process choice step variable |
-| `granuleId` | `string (regex)` | regex to match granule IDs |
-| `granuleIdExtraction` | `string (regex)` | regex to extract ID from files |
-| `sampleFileName` | `string` | sample filename for granule ID |
-| `url_path` | `string` | s3 prefix template |
-| `files` | `array` | array of file specification objects |
-| `-- file.bucket` | `string` | file destination bucket |
-| `-- file.regex` | `string (regex)` | regex to match file names |
-| `-- file.sampleFileName` | `string` | sample filename |
-| `-- file.url_path` | `string` | s3 prefix template |
-| `-- file.fileType` | `string` | granule file fileType mapping |
+| Field | Value | Description | Required |
+| --- | --- | --- | --- |
+| `name` | `string` | collection name | yes |
+| `version` | `string` | collection version | yes |
+| `duplicateHandling` | `"replace"`&vert;`"version"`&vert;`"skip"`&vert;`"error"` | duplicate handling protocol | no |
+| `process` | `string` | process choice step variable | no |
+| `granuleId` | `string (regex)` | regex to match granule IDs | yes |
+| `cmrProvider` | `string` | data provider identifier | yes |
+| `metricsProvider` | `string` | metrics providers to filter metrics stacks | yes |
+| `reportToEms` | `string` | indicate if collection reported to EMS | no |
+| `meta` | `string` | optional metadata for collection | no |
+| `tags` | `string` | optional tags for search | no |
+| `ignoreFilesConfigForDiscovery` | `string (boolean)` | Flag to ignore collection file config list for determining which files to ingest | no |
+| `granuleIdExtraction` | `string (regex)` | regex to extract ID from files | yes |
+| `sampleFileName` | `string` | sample filename for granule ID | yes |
+| `url_path` | `string` | s3 prefix template | no |
+| `files` | `array` | array of file specification objects | yes |
+| `-- file.bucket` | `string` | file destination bucket | |
+| `-- file.regex` | `string (regex)` | regex to match file names | |
+| `-- file.sampleFileName` | `string` | sample filename | |
+| `-- file.url_path` | `string` | s3 prefix template | |
+| `-- file.type` | `string` | granule file fileType mapping | |
+| `-- file.checksumFor` | `string` | regex to identify the base file for which this file serves as checksum | | 
+| `-- file.lzards` | `string` | LZARDS backup flag | |
+| `-- file.reportToEms` | `string` | boolean to indiciate if granule with this filetype is reported to EMS | |
 
 ```endpoint
 POST /collections
@@ -269,12 +299,21 @@ POST /collections
 $ curl --request POST https://example.com/collections --header 'Authorization: Bearer ReplaceWithToken' --header 'Content-Type: application/json' --data '{
   "name": "MOD09GQ",
   "version": "006",
-  "dataType": "MOD09GQ",
   "process": "modis",
+  "url_path": "modis/modis_v6/data/",
   "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "reportToEms": true,
+  "ignoreFilesConfigForDiscovery": "true",
+  "meta": {
+    "uniquifyGranuleId": "true",
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
+  },
+  "tags": "[tag1,tag2]",
+  "cmrProvider": "CUMULUS",
+  "metricsProvider": "provider",
   "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
   "files": [
     {
@@ -295,12 +334,21 @@ $ curl --request POST https://example.com/collections --header 'Authorization: B
     "record": {
         "name": "MOD09GQ",
         "version": "006",
-        "dataType": "MOD09GQ",
-        "duplicateHandling": "replace",
         "process": "modis",
+        "url_path": "modis/modis_v6/data/",
+        "duplicateHandling": "replace",
         "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
         "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-        "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+        "reportToEms": true,
+        "ignoreFilesConfigForDiscovery": true,
+        "meta": {
+            "uniquifyGranuleId": true,
+            "hashLength": 6,
+            "s3MultipartChunksizeMb":400
+        },
+        "tags": "[tag1,tag2]",
+        "cmrProvider": "CUMULUS",
+        "metricsProvider": "provider",
         "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
         "files": [
             {
@@ -336,13 +384,21 @@ PUT /collections/{name}/{version}
 $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Authorization: Bearer ReplaceWithTheToken' --header 'Content-Type: application/json' --data '{
   "name": "MOD09GQ",
   "version": "006",
-  "dataType": "MOD09GQ",
-  "duplicateHandling": "error",
-  "newNeededField": "myCustomFieldValue",
   "process": "modis",
+  "url_path": "modis/modis_v6/data/",
+  "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "reportToEms": "true",
+  "ignoreFilesConfigForDiscovery": "true",
+  "meta": {
+    "uniquifyGranuleId": "true",
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
+  },
+  "tags": "[tag1,tag2]",
+  "cmrProvider": "a_different_provider",
+  "metricsProvider": "a_different_metrics_provider",
   "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
   "files": [
     {
@@ -361,13 +417,21 @@ $ curl --request PUT https://example.com/collections/MOD09GQ/006 --header 'Autho
 {
   "name": "MOD09GQ",
   "version": "006",
-  "dataType": "MOD09GQ",
-  "duplicateHandling": "error",
-  "newNeededField": "myCustomFieldValue",
   "process": "modis",
+  "url_path": "modis/modis_v6/data/",
+  "duplicateHandling": "replace",
   "granuleId": "^MOD09GQ\\.A[\\d]{7}\\.[\\S]{6}\\.006\\.[\\d]{13}$",
   "granuleIdExtraction": "(MOD09GQ\\..*)(\\.hdf|\\.cmr|_ndvi\\.jpg)",
-  "url_path": "{cmrMetadata.Granule.Collection.ShortName}___{cmrMetadata.Granule.Collection.VersionId}/{substring(file.name, 0, 3)}",
+  "reportToEms": true,
+  "ignoreFilesConfigForDiscovery": true,
+  "meta": {
+    "uniquifyGranuleId": true,
+    "hashLength": 6,
+    "s3MultipartChunksizeMb":400
+  },
+  "tags": "[tag1,tag2]",
+  "cmrProvider": "a_different_provider",
+  "metricsProvider": "a_different_metrics_provider",
   "sampleFileName": "MOD09GQ.A2017025.h21v00.006.2017034065104.hdf",
   "files": [
     {
