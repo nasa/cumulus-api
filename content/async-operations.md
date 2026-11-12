@@ -10,6 +10,18 @@ This endpoint lists async operations in the Cumulus system.
 GET /asyncOperations
 ```
 
+## async operation statuses
+Async operations feature a status that is output and stored in the Postgres database and can be viewed there, direct endpoint calls, or via the Cumulus Dashboard.  These status are as follows:
+
+`RUNNER_FAILED`: Occurs if the parent ECS runner erors out due to a failure to fetch the lambda function or the ECS runner failed to fetch or delete the lambda payload.
+
+`RUNNING`: Occurs when an ECS async operation was successfully started.
+
+`SUCCEEDED`: Occurs whenever a the lambda task completes regardless of lambda task output.  This can occur even if the output of the lambda contains error messages that were output gracefully by the lambda task, like if a bulk operation coplete with errors in the output.  The wrapper completed execution and the 'SUCCEEDED' status is written.
+
+`TASK_FAILED` : When the lambda task being run inside the ECS task errors out, or a failure occurs from parsing the lambda payload.
+
+
 #### Example request
 
 ```curl
@@ -70,3 +82,4 @@ $ curl https://example.com/asyncOperations/0eb8e809-8790-5409-1239-bcd9e8d28b8e 
   "operationType": "Bulk Granule Delete"
 }
 ```
+
